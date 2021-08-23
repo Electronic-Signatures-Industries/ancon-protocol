@@ -9,6 +9,8 @@ require (
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/ipfs/go-cid v0.1.0
+	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3

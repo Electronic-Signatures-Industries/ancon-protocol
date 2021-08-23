@@ -10,8 +10,15 @@ import (
 func (k msgServer) File(goCtx context.Context, msg *types.MsgFile) (*types.MsgFileResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	// TODO: Requries the
+	// k.Has
+	// msg.ValidateBasic
+	lnk, _ := k.AddFile(
+		ctx,
+		msg,
+	)
 
-	return &types.MsgFileResponse{}, nil
+	return &types.MsgFileResponse{
+		Hash: lnk,
+	}, nil
 }

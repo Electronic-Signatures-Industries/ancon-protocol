@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -16,8 +17,20 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	// TODO: validate cid
+	// if !k.HasMultihash(ctx, req.Cid) {
+	// 	return nil, sdkerrors.ErrKeyNotFound
+	// }
 
-	return &types.QueryResourceResponse{}, nil
+	// TODO: get ipld object (path traversal later)
+	// n, err := k.GetObject(ctx, parsecid)
+
+	var buf bytes.Buffer
+	// if parsecid.Prefix().Codec == 0x71 {
+	// dag-cbor
+	// dagcbor.Encode(n, &buf)
+	// file.Data = buf.Bytes()
+	// }
+
+	return &types.QueryResourceResponse{File: &file}, nil
 }
