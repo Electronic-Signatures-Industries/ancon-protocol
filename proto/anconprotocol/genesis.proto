@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
+
+// GenesisState defines the anconprotocol module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+    // this line is used by starport scaffolding # ibc/genesis/proto
+}
