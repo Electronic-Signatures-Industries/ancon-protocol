@@ -1,13 +1,93 @@
 syntax = "proto3";
 package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
+
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
 // Msg defines the Msg service.
 service Msg {
+    // rpc MetadataHandlerTx(MsgMetadataTx) returns (MsgFileMetadataResponse);
+    // rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
     // this line is used by starport scaffolding # proto/tx/rpc
+  rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
+  rpc File(MsgFile) returns (MsgFileResponse);
 }
 
+
+// MsgEthereumTxResponse defines the Msg/EthereumTx response type.
+message MsgFileMetadataResponse {
+    option (gogoproto.goproto_getters) = false;
+  
+    bytes hash = 1;
+ }
+  
+  message MsgFileTx {
+    option (gogoproto.goproto_getters) = false;
+    string path = 1;
+    string content = 2;
+    string mode = 3;
+    uint64 time = 4;
+    string content_type = 5;  
+
+    string did = 6;
+    string from = 7;
+  }
+  
+ 
+  
+  message MsgMetadataTx {
+    option (gogoproto.goproto_getters) = false;
+
+    string name = 1;
+    string description = 2;
+    string image = 3;
+    string owner = 4;
+    string parent = 5;
+    repeated string sources = 6;
+    repeated string links = 7;
+    string verified_credential_ref = 8;
+  
+    string did = 9;
+    string from = 10;
+  }
+  
+  
+
 // this line is used by starport scaffolding # proto/tx/message
+message MsgMetadata {
+  string creator = 1;
+  string name = 2;
+  string description = 3;
+  string image = 4;
+  string owner = 5;
+  string parent = 6;
+  string sources = 7;
+  string links = 8;
+  string verified_credential_ref = 9;
+  string did = 10;
+  string from = 11;
+}
+
+message MsgMetadataResponse {
+  string cid = 1;
+}
+
+message MsgFile {
+  string creator = 1;
+  string path = 2;
+  string content = 3;
+  string mode = 4;
+  string time = 5;
+  string content_type = 6;
+  string did = 7;
+  string from = 8;
+}
+
+message MsgFileResponse {
+  string hash = 1;
+}

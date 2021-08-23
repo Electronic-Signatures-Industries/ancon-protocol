@@ -1,6 +1,12 @@
 syntax = "proto3";
 package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
+
+
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
@@ -9,7 +15,22 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Query defines the gRPC querier service.
 service Query {
+
     // this line is used by starport scaffolding # 2
+
+	// Queries a list of resource items.
+	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource";
+	}
+
+}
+// this line is used by starport scaffolding # 3
+message QueryResourceRequest {
+  string cid = 1;
+  string path = 2;
 }
 
-// this line is used by starport scaffolding # 3
+message QueryResourceResponse {
+  string data = 1;
+}
+
