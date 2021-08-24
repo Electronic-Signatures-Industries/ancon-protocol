@@ -143,6 +143,10 @@ export const QueryResourceResponse = {
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Queries a list of resource items. */
+  ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /** Queries a list of resource items. */
+  Read(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /** Queries a list of resource items. */
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
 }
 
@@ -151,6 +155,18 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse> {
+    const data = QueryResourceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data)
+    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
+  Read(request: QueryResourceRequest): Promise<QueryResourceResponse> {
+    const data = QueryResourceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data)
+    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse> {
     const data = QueryResourceRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data)

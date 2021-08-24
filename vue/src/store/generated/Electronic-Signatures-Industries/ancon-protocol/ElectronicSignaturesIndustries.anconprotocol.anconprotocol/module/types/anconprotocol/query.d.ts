@@ -25,11 +25,17 @@ export declare const QueryResourceResponse: {
 /** Query defines the gRPC querier service. */
 export interface Query {
     /** Queries a list of resource items. */
+    ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    /** Queries a list of resource items. */
+    Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    /** Queries a list of resource items. */
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
+    ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
 interface Rpc {

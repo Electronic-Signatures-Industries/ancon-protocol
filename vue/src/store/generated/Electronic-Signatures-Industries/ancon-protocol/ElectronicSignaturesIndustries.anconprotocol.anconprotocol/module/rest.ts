@@ -350,13 +350,46 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryResource
    * @summary Queries a list of resource items.
-   * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource
+   * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
    */
-  queryResource = (query?: { cid?: string; path?: string }, params: RequestParams = {}) =>
+  queryResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource`,
+      path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/${cid}`,
       method: "GET",
       query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryRead
+   * @summary Queries a list of resource items.
+   * @request GET:/ancon/{cid}
+   */
+  queryRead = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/ancon/${cid}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadWithPath
+   * @summary Queries a list of resource items.
+   * @request GET:/ancon/{cid}/{path}
+   */
+  queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/ancon/${cid}/${path}`,
+      method: "GET",
       format: "json",
       ...params,
     });

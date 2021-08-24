@@ -16,11 +16,21 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 // Query defines the gRPC querier service.
 service Query {
 
+
+	// Queries a list of resource items.
+	rpc ReadWithPath(QueryResourceRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/ancon/{cid}/{path}";
+	}
+  
+	// Queries a list of resource items.
+	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/ancon/{cid}";
+	}
     // this line is used by starport scaffolding # 2
 
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource";
+		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}";
 	}
 
 }

@@ -195,11 +195,30 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryResource
      * @summary Queries a list of resource items.
-     * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource
+     * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
      */
-    queryResource: (query?: {
-        cid?: string;
+    queryResource: (cid: string, query?: {
         path?: string;
     }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryRead
+     * @summary Queries a list of resource items.
+     * @request GET:/ancon/{cid}
+     */
+    queryRead: (cid: string, query?: {
+        path?: string;
+    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryReadWithPath
+     * @summary Queries a list of resource items.
+     * @request GET:/ancon/{cid}/{path}
+     */
+    queryReadWithPath: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
 }
 export {};

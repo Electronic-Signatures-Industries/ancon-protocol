@@ -126,6 +126,16 @@ export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
     }
+    ReadWithPath(request) {
+        const data = QueryResourceRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data);
+        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+    }
+    Read(request) {
+        const data = QueryResourceRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data);
+        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+    }
     Resource(request) {
         const data = QueryResourceRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data);

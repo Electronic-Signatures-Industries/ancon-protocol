@@ -18,6 +18,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func (k Keeper) Read(goCtx context.Context, req *types.QueryResourceRequest) (*types.QueryResourceResponse, error) {
+	return k.Resource(goCtx, req)
+}
+func (k Keeper) ReadWithPath(goCtx context.Context, req *types.QueryResourceRequest) (*types.QueryResourceResponse, error) {
+	return k.Resource(goCtx, req)
+}
+
 func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest) (*types.QueryResourceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")

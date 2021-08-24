@@ -142,12 +142,41 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryResource
          * @summary Queries a list of resource items.
-         * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource
+         * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
          */
-        this.queryResource = (query, params = {}) => this.request({
-            path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource`,
+        this.queryResource = (cid, query, params = {}) => this.request({
+            path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/${cid}`,
             method: "GET",
             query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryRead
+         * @summary Queries a list of resource items.
+         * @request GET:/ancon/{cid}
+         */
+        this.queryRead = (cid, query, params = {}) => this.request({
+            path: `/ancon/${cid}`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryReadWithPath
+         * @summary Queries a list of resource items.
+         * @request GET:/ancon/{cid}/{path}
+         */
+        this.queryReadWithPath = (cid, path, params = {}) => this.request({
+            path: `/ancon/${cid}/${path}`,
+            method: "GET",
             format: "json",
             ...params,
         });
