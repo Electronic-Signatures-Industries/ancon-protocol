@@ -60,6 +60,7 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 		return "", err
 	}
 
+	// id, _ := cid.Decode(link.String())
 	return link.String(), nil
 }
 
@@ -108,5 +109,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	if err != nil {
 		return "", err
 	}
+
+	//	id, _ := cid.Decode(link.String())
 	return link.String(), nil
 }

@@ -31,3 +31,17 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return keeper, ctx
 }
+
+func TestIPLD(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgFile, 1)
+	f[0].Creator = "rogelio"
+	f[0].Content = "Hello World"
+	f[0].ContentType = "application/octet-stream"
+	f[0].Time = "1"
+	lnk, _ := keeper.AddFile(ctx, &f[0])
+
+	x := &types.QueryResourceRequest{Cid: lnk}
+	n, _ := keeper.GetObject(ctx, x)
+	require.Equal(t, n, 0)
+}
