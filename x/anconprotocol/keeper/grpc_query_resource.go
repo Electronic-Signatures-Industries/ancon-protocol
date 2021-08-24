@@ -3,9 +3,17 @@ package keeper
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"io"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cid "github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -23,14 +31,72 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 	// }
 
 	// TODO: get ipld object (path traversal later)
-	// n, err := k.GetObject(ctx, parsecid)
+	return k.GetObject(ctx, req)
+}
 
-	var buf bytes.Buffer
-	// if parsecid.Prefix().Codec == 0x71 {
-	// dag-cbor
-	// dagcbor.Encode(n, &buf)
-	// file.Data = buf.Bytes()
-	// }
+func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*types.QueryResourceResponse, error) {
 
-	return &types.QueryResourceResponse{File: &file}, nil
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	lnk, err := cid.Parse(req.Cid)
+	if err != nil {
+		return nil, status.Error(
+			codes.InvalidArgument,
+			types.ErrIntOverflowQuery.Error(),
+		)
+	}
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+	has := store.Has([]byte(lnk.String()))
+
+	if !has {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+	lsys := cidlink.DefaultLinkSystem()
+
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+		buf := store.Get([]byte(link.String()))
+		return bytes.NewReader(buf), nil
+	}
+
+	// We'll need to decide what in-memory implementation of ipld.Node we want to use.
+	//  Here, we'll use the "basicnode" implementation.  This is a good getting-started choice.
+	//   But you could also use other implementations, or even a code-generated type with special features!
+	np := basicnode.Prototype.Any
+
+	// Before we use the LinkService, NOTE:
+	//  There's a side-effecting import at the top of the file.  It's for the dag-cbor codec.
+	//  See the comments in ExampleStoringLink for more discussion of this and why it's important.
+
+	lsys.TrustedStorage = true
+
+	// Choose all the parts.
+	decoder, err := lsys.DecoderChooser(cidlink.Link{Cid: lnk})
+	if err != nil {
+		ctx.Logger().Error("could not choose a decoder", err)
+	}
+	if lsys.StorageReadOpener == nil {
+		ctx.Logger().Error("no storage configured for reading", io.ErrClosedPipe)
+	}
+	// Open storage, read it, verify it, and feed the codec to assemble the nodes.
+	// TrustaedStorage indicates the data coming out of this reader has already been hashed and verified earlier.
+	// As a result, we can skip rehashing it
+	//	var n ipld.Node
+	nb := np.NewBuilder()
+	if lsys.TrustedStorage {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+		buf := store.Get([]byte(lnk.String()))
+		decoder(nb, bytes.NewReader(buf))
+	}
+	n := nb.Build()
+
+	var bufdata bytes.Buffer
+	dagcbor.Encode(n, &bufdata)
+
+	return &types.QueryResourceResponse{
+		Data: base64.StdEncoding.EncodeToString(bufdata.Bytes()),
+	}, nil
 }
