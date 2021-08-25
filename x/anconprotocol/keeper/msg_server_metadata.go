@@ -13,5 +13,9 @@ func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*typ
 	// TODO: Handling the message
 	_ = ctx
 
+	println("Message Type", msg.Type())
+
+	//sdk.Handler(k)
+
 	return &types.MsgMetadataResponse{}, nil
 }

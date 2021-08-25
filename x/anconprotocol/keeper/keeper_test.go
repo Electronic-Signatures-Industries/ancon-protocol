@@ -43,5 +43,5 @@ func TestIPLD(t *testing.T) {
 
 	x := &types.QueryResourceRequest{Cid: lnk}
 	n, _ := keeper.GetObject(ctx, x)
-	require.Equal(t, n, 0)
+	require.Equal(t, n, &f[0])
 }
