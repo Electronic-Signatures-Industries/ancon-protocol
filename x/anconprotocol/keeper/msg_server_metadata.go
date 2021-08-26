@@ -9,13 +9,15 @@ import (
 
 func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*types.MsgMetadataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	// TODO: Requries the
+	// k.Has
+	// msg.ValidateBasic
+	lnk, _ := k.AddMetadata(
+		ctx,
+		msg,
+	)
 
-	// TODO: Handling the message
-	_ = ctx
-
-	println("Message Type", msg.Type())
-
-	//sdk.Handler(k)
-
-	return &types.MsgMetadataResponse{}, nil
+	return &types.MsgMetadataResponse{
+		Cid: lnk,
+	}, nil
 }

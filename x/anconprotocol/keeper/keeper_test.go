@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -32,7 +33,7 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	return keeper, ctx
 }
 
-func TestIPLD(t *testing.T) {
+func Test_AddFile_JSON(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 	f := make([]types.MsgFile, 1)
 	f[0].Creator = "rogelio"
@@ -43,5 +44,29 @@ func TestIPLD(t *testing.T) {
 
 	x := &types.QueryResourceRequest{Cid: lnk}
 	n, _ := keeper.GetObject(ctx, x)
-	require.Equal(t, n, &f[0])
+	var match map[string]interface{}
+	json.Unmarshal([]byte(n.Data), &match)
+	require.Equal(t, match["content"], f[0].Content)
+}
+
+func Test_AddMetadata_JSON(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "rogelio"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "https://ancon.dao.pa/render.png"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
+	f[0].VerifiedCredentialRef = "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE\",\"QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm\"]"
+	f[0].Links = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE\",\"QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm\"]"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	x := &types.QueryResourceRequest{Cid: lnk}
+	n, _ := keeper.GetObject(ctx, x)
+	var match map[string]interface{}
+	json.Unmarshal([]byte(n.Data), &match)
+	require.Equal(t, match["image"], f[0].Image)
 }

@@ -13,6 +13,7 @@ import (
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"google.golang.org/grpc/codes"
@@ -70,42 +71,18 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 		return bytes.NewReader(buf), nil
 	}
 
-	// We'll need to decide what in-memory implementation of ipld.Node we want to use.
-	//  Here, we'll use the "basicnode" implementation.  This is a good getting-started choice.
-	//   But you could also use other implementations, or even a code-generated type with special features!
 	np := basicnode.Prototype.Any
 
-	// Before we use the LinkService, NOTE:
-	//  There's a side-effecting import at the top of the file.  It's for the dag-cbor codec.
-	//  See the comments in ExampleStoringLink for more discussion of this and why it's important.
-
-	lsys.TrustedStorage = true
-
-	// Choose all the parts.
-	decoder, err := lsys.DecoderChooser(cidlink.Link{Cid: lnk})
-	if err != nil {
-		ctx.Logger().Error("could not choose a decoder", err)
-	}
-	if lsys.StorageReadOpener == nil {
-		ctx.Logger().Error("no storage configured for reading", io.ErrClosedPipe)
-	}
-	// Open storage, read it, verify it, and feed the codec to assemble the nodes.
-	// TrustaedStorage indicates the data coming out of this reader has already been hashed and verified earlier.
-	// As a result, we can skip rehashing it
-	//	var n ipld.Node
-	nb := np.NewBuilder()
-	if lsys.TrustedStorage {
-		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-		buf := store.Get([]byte(lnk.String()))
-		decoder(nb, bytes.NewReader(buf))
-	}
-	n := nb.Build()
-
+	n, err := lsys.Load(
+		linking.LinkContext{},
+		cidlink.Link{Cid: lnk}, // The Link we want to load!
+		np,                     // The NodePrototype says what kind of Node we want as a result.
+	)
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(n, &bufdata)
 
 	//em, err := opts.EncMode()
-	var temp map[string]string
+	var temp map[string]interface{}
 	cbor.Unmarshal(bufdata.Bytes(), &temp)
 	r, _ := json.Marshal(temp)
 
