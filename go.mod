@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/OneOfOne/xxhash v1.2.5 // indirect
 	github.com/cosmos/cosmos-sdk v0.42.5
+	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.6 // indirect

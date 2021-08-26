@@ -3,12 +3,13 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
+	"encoding/json"
 	"io"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/fxamacker/cbor/v2"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -53,7 +54,7 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 			codes.InvalidArgument,
 			types.ErrIntOverflowQuery.Error(),
 		)
-	}
+	} //Do a separate function
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
 	has := store.Has([]byte(lnk.String()))
@@ -101,9 +102,14 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 	n := nb.Build()
 
 	var bufdata bytes.Buffer
-	dagcbor.Encode(n, &bufdata)
+	_ = dagcbor.Encode(n, &bufdata)
+
+	//em, err := opts.EncMode()
+	var temp map[string]string
+	cbor.Unmarshal(bufdata.Bytes(), &temp)
+	r, _ := json.Marshal(temp)
 
 	return &types.QueryResourceResponse{
-		Data: base64.StdEncoding.EncodeToString(bufdata.Bytes()),
+		Data: string(r),
 	}, nil
 }
