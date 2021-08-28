@@ -98,8 +98,10 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			na.AssembleEntry("verifiedCredentialRef").AssignLink(cidlink.Link{Cid: l})
 		}
 		na.AssembleEntry("owner").AssignString(msg.Owner)
-		p, _ := cid.Parse(msg.Parent)
-		na.AssembleEntry("parent").AssignLink(cidlink.Link{Cid: p})
+		if msg.Parent != "" {
+			p, _ := cid.Parse(msg.Parent)
+			na.AssembleEntry("parent").AssignLink(cidlink.Link{Cid: p})
+		}
 		// Sources
 		if len(sources) > 0 {
 

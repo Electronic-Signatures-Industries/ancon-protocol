@@ -57,13 +57,14 @@ func Test_AddMetadata_JSON(t *testing.T) {
 	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
 	f[0].Image = "https://ancon.dao.pa/render.png"
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
-	f[0].Parent = "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
-	f[0].VerifiedCredentialRef = "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
 	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE\",\"QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm\"]"
-	f[0].Links = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE\",\"QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm\"]"
+	f[0].Links = "[]"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
+	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: lnk}
 	n, _ := keeper.GetObject(ctx, x)
 	var match map[string]interface{}
