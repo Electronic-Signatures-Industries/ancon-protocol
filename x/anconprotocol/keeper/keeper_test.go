@@ -52,15 +52,16 @@ func Test_AddFile_JSON(t *testing.T) {
 func Test_AddMetadata_JSON(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 	f := make([]types.MsgMetadata, 1)
-	f[0].Creator = "rogelio"
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
 	f[0].Description = "NFT Metadata"
 	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
-	f[0].Image = "https://ancon.dao.pa/render.png"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE\",\"QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm\"]"
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
 	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 

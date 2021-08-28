@@ -4,27 +4,6 @@ export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprot
 export interface MsgFileMetadataResponse {
     hash: Uint8Array;
 }
-export interface MsgFileTx {
-    path: string;
-    content: string;
-    mode: string;
-    time: number;
-    contentType: string;
-    did: string;
-    from: string;
-}
-export interface MsgMetadataTx {
-    name: string;
-    description: string;
-    image: string;
-    owner: string;
-    parent: string;
-    sources: string[];
-    links: string[];
-    verifiedCredentialRef: string;
-    did: string;
-    from: string;
-}
 /** this line is used by starport scaffolding # proto/tx/message */
 export interface MsgMetadata {
     creator: string;
@@ -61,20 +40,6 @@ export declare const MsgFileMetadataResponse: {
     fromJSON(object: any): MsgFileMetadataResponse;
     toJSON(message: MsgFileMetadataResponse): unknown;
     fromPartial(object: DeepPartial<MsgFileMetadataResponse>): MsgFileMetadataResponse;
-};
-export declare const MsgFileTx: {
-    encode(message: MsgFileTx, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgFileTx;
-    fromJSON(object: any): MsgFileTx;
-    toJSON(message: MsgFileTx): unknown;
-    fromPartial(object: DeepPartial<MsgFileTx>): MsgFileTx;
-};
-export declare const MsgMetadataTx: {
-    encode(message: MsgMetadataTx, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgMetadataTx;
-    fromJSON(object: any): MsgMetadataTx;
-    toJSON(message: MsgMetadataTx): unknown;
-    fromPartial(object: DeepPartial<MsgMetadataTx>): MsgMetadataTx;
 };
 export declare const MsgMetadata: {
     encode(message: MsgMetadata, writer?: Writer): Writer;

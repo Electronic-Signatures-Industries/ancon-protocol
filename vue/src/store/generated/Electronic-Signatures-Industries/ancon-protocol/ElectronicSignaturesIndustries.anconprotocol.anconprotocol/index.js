@@ -2,9 +2,7 @@ import { txClient, queryClient, MissingWalletError } from './module';
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex';
 import { MsgFileMetadataResponse } from "./module/types/anconprotocol/tx";
-import { MsgFileTx } from "./module/types/anconprotocol/tx";
-import { MsgMetadataTx } from "./module/types/anconprotocol/tx";
-export { MsgFileMetadataResponse, MsgFileTx, MsgMetadataTx };
+export { MsgFileMetadataResponse };
 async function initTxClient(vuexGetters) {
     return await txClient(vuexGetters['common/wallet/signer'], {
         addr: vuexGetters['common/env/apiTendermint']
@@ -43,8 +41,6 @@ const getDefaultState = () => {
         Resource: {},
         _Structure: {
             MsgFileMetadataResponse: getStructure(MsgFileMetadataResponse.fromPartial({})),
-            MsgFileTx: getStructure(MsgFileTx.fromPartial({})),
-            MsgMetadataTx: getStructure(MsgMetadataTx.fromPartial({})),
         },
         _Subscriptions: new Set(),
     };
@@ -163,23 +159,6 @@ export default {
                 throw new SpVuexError('QueryClient:QueryResource', 'API Node Unavailable. Could not perform query: ' + e.message);
             }
         },
-        async sendMsgFile({ rootGetters }, { value, fee = [], memo = '' }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgFile(value);
-                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
-                        gas: "200000" }, memo });
-                return result;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgFile:Send', 'Could not broadcast Tx: ' + e.message);
-                }
-            }
-        },
         async sendMsgMetadata({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -197,18 +176,20 @@ export default {
                 }
             }
         },
-        async MsgFile({ rootGetters }, { value }) {
+        async sendMsgFile({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
                 const msg = await txClient.msgFile(value);
-                return msg;
+                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
+                        gas: "200000" }, memo });
+                return result;
             }
             catch (e) {
                 if (e == MissingWalletError) {
                     throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.');
                 }
                 else {
-                    throw new SpVuexError('TxClient:MsgFile:Create', 'Could not create message: ' + e.message);
+                    throw new SpVuexError('TxClient:MsgFile:Send', 'Could not broadcast Tx: ' + e.message);
                 }
             }
         },
@@ -224,6 +205,21 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgMetadata:Create', 'Could not create message: ' + e.message);
+                }
+            }
+        },
+        async MsgFile({ rootGetters }, { value }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgFile(value);
+                return msg;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgFile:Create', 'Could not create message: ' + e.message);
                 }
             }
         },
