@@ -14,6 +14,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/client/cli"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/client/rest"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -77,6 +78,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxE
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	rest.RegisterHandlers(clientCtx, context.Background(), rtr, types.NewQueryClient(clientCtx))
+
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.

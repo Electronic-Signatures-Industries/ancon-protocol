@@ -206,7 +206,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryRead
      * @summary Queries a list of resource items.
-     * @request GET:/ancon/{cid}
+     * @request GET:/ancon_/{cid}
      */
     queryRead: (cid: string, query?: {
         path?: string;
@@ -217,7 +217,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryReadWithPath
      * @summary Queries a list of resource items.
-     * @request GET:/ancon/{cid}/{path}
+     * @request GET:/ancon_/{cid}/{path}
      */
     queryReadWithPath: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
 }

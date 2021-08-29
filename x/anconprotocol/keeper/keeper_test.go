@@ -66,9 +66,9 @@ func Test_AddMetadata_JSON(t *testing.T) {
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
-	x := &types.QueryResourceRequest{Cid: lnk}
-	n, _ := keeper.GetObject(ctx, x)
-	var match map[string]interface{}
-	json.Unmarshal([]byte(n.Data), &match)
-	require.Equal(t, match["image"], f[0].Image)
+	//x := &types.QueryResourceRequest{Cid: lnk}
+	//n, _ := keeper.ReadCBOR(ctx, x)
+	// var match map[string]interface{}
+	// json.Unmarshal([]byte(n), &match)
+	require.Equal(t, lnk, f[0].Image)
 }

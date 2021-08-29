@@ -10673,7 +10673,7 @@ paths:
           type: string
       tags:
         - Query
-  '/ancon/{cid}':
+  '/ancon_/{cid}':
     get:
       summary: Queries a list of resource items.
       operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolRead
@@ -10883,7 +10883,7 @@ paths:
           type: string
       tags:
         - Query
-  '/ancon/{cid}/{path}':
+  '/ancon_/{cid}/{path}':
     get:
       summary: Queries a list of resource items.
       operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadWithPath

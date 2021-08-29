@@ -23,7 +23,3 @@ type File struct {
 	Did         string
 	From        string
 }
-
-type JSONArrayOfString struct {
-	Items []string
-}

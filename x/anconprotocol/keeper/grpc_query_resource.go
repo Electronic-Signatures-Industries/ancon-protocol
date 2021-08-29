@@ -3,13 +3,11 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"io"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/fxamacker/cbor/v2"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -81,12 +79,55 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(n, &bufdata)
 
-	//em, err := opts.EncMode()
-	var temp map[string]interface{}
-	cbor.Unmarshal(bufdata.Bytes(), &temp)
-	r, _ := json.Marshal(temp)
-
 	return &types.QueryResourceResponse{
-		Data: string(r),
+		Data: bufdata.String(),
 	}, nil
+}
+
+func (k Keeper) ReadCBOR(ctx sdk.Context, req *types.QueryResourceRequest) ([]byte, error) {
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	lnk, err := cid.Parse(req.Cid)
+	if err != nil {
+		return nil, status.Error(
+			codes.InvalidArgument,
+			types.ErrIntOverflowQuery.Error(),
+		)
+	} //Do a separate function
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+	has := store.Has([]byte(lnk.String()))
+
+	if !has {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+	lsys := cidlink.DefaultLinkSystem()
+
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+		buf := store.Get([]byte(link.String()))
+		return bytes.NewReader(buf), nil
+	}
+
+	np := basicnode.Prototype.Any
+
+	n, err := lsys.Load(
+		linking.LinkContext{},
+		cidlink.Link{Cid: lnk},
+		np,
+	)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "failed parsing data")
+	}
+	var bufdata bytes.Buffer
+	err = dagcbor.Encode(n, &bufdata)
+
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "failed decoding cbor")
+	}
+
+	return bufdata.Bytes(), nil
 }

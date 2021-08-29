@@ -19,12 +19,12 @@ service Query {
 
 	// Queries a list of resource items.
 	rpc ReadWithPath(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/{cid}/{path}";
+		option (google.api.http).get = "/ancon_/{cid}/{path}";
 	}
   
 	// Queries a list of resource items.
 	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/{cid}";
+		option (google.api.http).get = "/ancon_/{cid}";
 	}
     // this line is used by starport scaffolding # 2
 

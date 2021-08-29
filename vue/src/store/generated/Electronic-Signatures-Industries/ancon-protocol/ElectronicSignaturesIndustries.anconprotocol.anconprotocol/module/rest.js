@@ -157,10 +157,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryRead
          * @summary Queries a list of resource items.
-         * @request GET:/ancon/{cid}
+         * @request GET:/ancon_/{cid}
          */
         this.queryRead = (cid, query, params = {}) => this.request({
-            path: `/ancon/${cid}`,
+            path: `/ancon_/${cid}`,
             method: "GET",
             query: query,
             format: "json",
@@ -172,10 +172,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryReadWithPath
          * @summary Queries a list of resource items.
-         * @request GET:/ancon/{cid}/{path}
+         * @request GET:/ancon_/{cid}/{path}
          */
         this.queryReadWithPath = (cid, path, params = {}) => this.request({
-            path: `/ancon/${cid}/${path}`,
+            path: `/ancon_/${cid}/${path}`,
             method: "GET",
             format: "json",
             ...params,

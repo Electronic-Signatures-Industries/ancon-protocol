@@ -367,11 +367,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryRead
    * @summary Queries a list of resource items.
-   * @request GET:/ancon/{cid}
+   * @request GET:/ancon_/{cid}
    */
   queryRead = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/${cid}`,
+      path: `/ancon_/${cid}`,
       method: "GET",
       query: query,
       format: "json",
@@ -384,11 +384,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryReadWithPath
    * @summary Queries a list of resource items.
-   * @request GET:/ancon/{cid}/{path}
+   * @request GET:/ancon_/{cid}/{path}
    */
   queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/${cid}/${path}`,
+      path: `/ancon_/${cid}/${path}`,
       method: "GET",
       format: "json",
       ...params,
