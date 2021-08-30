@@ -2,13 +2,27 @@
 
 > Protocol for proof and verfied decentralized content using IPLD multihash
 
-## Documentation
+#### Wave 8 Filecoin Foundation grant recipient
+
+## Documentation (WIP)
 
 > https://ancon.dao.pa
+> https://docs.xdv.digital
+
+## Endpoints
+
+- **RPC**: wss://rpcancon.dao.pa
+- **API**: https://apiancon.dao.pa
 
 ## Installing a Node
 
-TODO
+- Download repo 
+- Compile `go build cmd/ancon-protocold/main.go
+- Join our Discord to get genesis and node id to connect to our internal testnet
+
+## Testnet and Mainnet
+
+Once M1 is QA enough we'll compile with Gaia and start prepping for Cosmos hub.
 
 ## Staking ATOM
 
