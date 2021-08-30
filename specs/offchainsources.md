@@ -1,6 +1,6 @@
 
 # 
-# Ancon Protocol - Offchain Data Sources using IPLD multihashes
+# Ancon Protocol - Data Pipes
 
 
 <table>
