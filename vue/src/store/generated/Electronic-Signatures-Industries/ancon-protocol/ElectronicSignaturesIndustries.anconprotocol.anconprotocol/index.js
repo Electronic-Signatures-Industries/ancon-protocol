@@ -37,6 +37,7 @@ function getStructure(template) {
 const getDefaultState = () => {
     return {
         ReadWithPath: {},
+        ReadFile: {},
         Read: {},
         Resource: {},
         _Structure: {
@@ -70,6 +71,12 @@ export default {
                 params.query = null;
             }
             return state.ReadWithPath[JSON.stringify(params)] ?? {};
+        },
+        getReadFile: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.ReadFile[JSON.stringify(params)] ?? {};
         },
         getRead: (state) => (params = { params: {} }) => {
             if (!params.query) {
@@ -123,6 +130,19 @@ export default {
             }
             catch (e) {
                 throw new SpVuexError('QueryClient:QueryReadWithPath', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
+        },
+        async QueryReadFile({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
+            try {
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryReadFile(key.cid, key.path)).data;
+                commit('QUERY', { query: 'ReadFile', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryReadFile', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getReadFile']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryReadFile', 'API Node Unavailable. Could not perform query: ' + e.message);
             }
         },
         async QueryRead({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {

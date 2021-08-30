@@ -46,10 +46,13 @@ Example 2: Pack and unpack a message in Java.
  Example 4: Pack and unpack a message in Go
 
      foo := &pb.Foo{...}
-     any, err := ptypes.MarshalAny(foo)
+     any, err := anypb.New(foo)
+     if err != nil {
+       ...
+     }
      ...
      foo := &pb.Foo{}
-     if err := ptypes.UnmarshalAny(any, foo); err != nil {
+     if err := any.UnmarshalTo(foo); err != nil {
        ...
      }
 
@@ -200,6 +203,16 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
     queryResource: (cid: string, query?: {
         path?: string;
     }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadFile
+   * @summary additional handler that uses ReadFile
+  Queries a list of resource items.
+   * @request GET:/ancon/file/{cid}/{path}
+   */
+    queryReadFile: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
     /**
      * No description
      *

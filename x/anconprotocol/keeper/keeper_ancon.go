@@ -28,6 +28,13 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 		// change prefix
 		buf := bytes.Buffer{}
 		return &buf, func(lnk ipld.Link) error {
+			//a := "hello"
+			//TODO: append link string::path string (on file and metadata)
+			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::index.html
+			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::/json/index.html
+			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::/json/xml/index.html
+			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::
+			//append()
 			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
 			store.Set([]byte(lnk.String()), buf.Bytes())
 			return nil
@@ -36,13 +43,14 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 
 	// Add Document
 	// Basic Node
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 5, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 6, func(na fluent.MapAssembler) {
 		na.AssembleEntry("path").AssignString(msg.Path)
 		na.AssembleEntry("content").AssignString(msg.Content)
 		na.AssembleEntry("mode").AssignString(msg.Mode)
 
 		na.AssembleEntry("time").AssignInt(cast.ToInt64(msg.Time))
 		na.AssembleEntry("contentType").AssignString(msg.ContentType)
+		na.AssembleEntry("kind").AssignString("file")
 	})
 
 	// tip: 0x0129 dag-json
@@ -88,11 +96,12 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	u := []string{}
 	json.Unmarshal([]byte(msg.Links), &u)
 	links := u
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 6, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 7, func(na fluent.MapAssembler) {
 		// TODO:
 		na.AssembleEntry("name").AssignString(msg.Name)
 		na.AssembleEntry("description").AssignString(msg.Description)
 		na.AssembleEntry("image").AssignString(msg.Image)
+		na.AssembleEntry("did").AssignString(msg.Did)
 		if msg.VerifiedCredentialRef != "" {
 			l, _ := cid.Parse(msg.VerifiedCredentialRef)
 			na.AssembleEntry("verifiedCredentialRef").AssignLink(cidlink.Link{Cid: l})
@@ -102,14 +111,17 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			p, _ := cid.Parse(msg.Parent)
 			na.AssembleEntry("parent").AssignLink(cidlink.Link{Cid: p})
 		}
+
+		na.AssembleEntry("kind").AssignString("metadata")
 		// Sources
 		if len(sources) > 0 {
 
 			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(sources)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(sources); i++ {
-					c, _ := cid.Parse(sources[i])
+					//c, _ := cid.Parse(sources[i])
 					// todo: implement error handling
-					la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					//la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					la.AssembleValue().AssignString(sources[i])
 				}
 			})
 		}
@@ -118,9 +130,10 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 			na.AssembleEntry("links").CreateList(cast.ToInt64(len(links)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(links); i++ {
-					c, _ := cid.Parse(links[i])
+					//c, _ := cid.Parse(links[i])
 					// todo: implement error handling
-					la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					// la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					la.AssembleValue().AssignString(links[i])
 				}
 			})
 		}

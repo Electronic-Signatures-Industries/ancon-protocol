@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cbor "github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -65,10 +67,16 @@ func Test_AddMetadata_JSON(t *testing.T) {
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
+	var res []byte
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: lnk}
-	n, _ := keeper.GetObject(ctx, x)
-	var match map[string]interface{}
-	json.Unmarshal([]byte(n.Data), &match)
-	require.Equal(t, match["image"], f[0].Image)
+	om, _ := keeper.GetObject(ctx, x)
+
+	var cborPayload []byte
+	cborPayload, _ = base64.RawStdEncoding.DecodeString(om.Data)
+
+	var output types.IPLDMetadataStore
+	_ = cbor.Unmarshal(cborPayload, &output)
+	res, _ = json.Marshal(output)
+	require.Equal(t, output, res)
 }

@@ -144,6 +144,11 @@ export const QueryResourceResponse = {
 export interface Query {
   /** Queries a list of resource items. */
   ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /**
+   * additional handler that uses ReadFile
+   * Queries a list of resource items.
+   */
+  ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>
   /** Queries a list of resource items. */
   Read(request: QueryResourceRequest): Promise<QueryResourceResponse>
   /** Queries a list of resource items. */
@@ -158,6 +163,12 @@ export class QueryClientImpl implements Query {
   ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse> {
     const data = QueryResourceRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data)
+    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
+  ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse> {
+    const data = QueryResourceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadFile', data)
     return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
   }
 
