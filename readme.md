@@ -6,8 +6,8 @@
 
 ## Documentation (WIP)
 
-> https://ancon.dao.pa
-> https://docs.xdv.digital
+- https://ancon.dao.pa
+- https://docs.xdv.digital
 
 ## Endpoints
 
