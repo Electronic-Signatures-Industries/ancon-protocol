@@ -1,6 +1,13 @@
-# Ancon Protocol
+<table align="center"><tr><td colspan="4" align="center" width="9999">
 
-> Protocol for proof and verfied decentralized content using IPLD multihash
+<br/>
+<img src="/specs/AnconProtocoLogo.jpg" align="center" width="300" alt="Ancon Protocol Logo" />
+
+# Ancon Protocol
+Protocol for proof and verified decentralized content using IPLD multihash
+<br/>
+</td></tr></table>
+
 
 #### Wave 8 Filecoin Foundation grant recipient
 
@@ -20,7 +27,7 @@
 ## Installing a Node
 
 - Download repo 
-- Compile `go build cmd/ancon-protocold/main.go
+- Compile `go build cmd/ancon-protocold/main.go`
 - Join our Discord to get genesis and node id to connect to our internal testnet
 
 ## Testnet and Mainnet
