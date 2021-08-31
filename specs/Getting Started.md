@@ -7,10 +7,6 @@
 
 <br/>
 </td></tr></table>
-## Table of Contents
- - [Ancon Protocol Chain](#ancon-protocol-chain)
- - [AnconJS Sample Client](#anconjs-sample-client)
- - [Known Issues](#known-issues)
 
 # Ancon Protocol Chain
 1. Clone [this repo](https://github.com/Electronic-Signatures-Industries/ancon-protocol) 
