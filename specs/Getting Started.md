@@ -9,7 +9,7 @@
 </td></tr>
 </table>
 
-# Ancon Protocol Chain
+# Ancon Protocol Chain v0.1.0
 1. Clone [this repo](https://github.com/Electronic-Signatures-Industries/ancon-protocol) 
 2. Install [starport](https://docs.starport.network/guide/install.html)
 3. Run `starport chain serve -r`
@@ -35,7 +35,7 @@
    ![alt text](/specs/Demo/4DemoAncon.png)
 9.  Create
     ![alt text](/specs/Demo/5DemoAncon.png)
-10. Result using the IPLD Index
+10. Result using the Ancon Index
     ![alt text](/specs/Demo/6DemoAncon.png)
     ![alt text](/specs/Demo/7DemoAncon.png)
 
