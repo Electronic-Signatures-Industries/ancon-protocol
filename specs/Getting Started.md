@@ -26,6 +26,18 @@
   Use this mnemonic for testing only
 
 6. Run the web app with ``npm run serve``
+7. Connect & enter the saved mnemonic on the passphrase field 
+   ![alt text](/specs/Demo/1DemoAncon.png)
+   
+   ![alt text](/specs/Demo/2DemoAncon.png)
+8. Upload file
+   ![alt text](/specs/Demo/3DemoAncon.png)
+   ![alt text](/specs/Demo/4DemoAncon.png)
+9.  Create
+    ![alt text](/specs/Demo/5DemoAncon.png)
+10. Result using the IPLD Index
+    ![alt text](/specs/Demo/6DemoAncon.png)
+    ![alt text](/specs/Demo/7DemoAncon.png)
 
 # Known Issues
 - Must erase the local index db every time the mnemonic is changed.
