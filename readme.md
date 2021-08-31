@@ -9,6 +9,9 @@
 - https://ancon.dao.pa
 - https://docs.xdv.digital
 
+## Getting Started
+- [Getting Started](https://github.com/Electronic-Signatures-Industries/ancon-protocol/blob/main/specs/Getting%20Started.md)
+
 ## Endpoints
 
 - **RPC**: ws://rpcancon.dao.pa:26657
