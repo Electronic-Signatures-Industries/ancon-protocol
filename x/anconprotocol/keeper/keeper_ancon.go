@@ -27,26 +27,26 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
 		buf := bytes.Buffer{}
+		path := msg.Path
 		return &buf, func(lnk ipld.Link) error {
-			//a := "hello"
-			//TODO: append link string::path string (on file and metadata)
-			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::index.html
-			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::/json/index.html
-			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::/json/xml/index.html
-			//TODO: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy::
-			//append()
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/xml/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy
+			id := append([]byte(lnk.String()), path...)
 			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-			store.Set([]byte(lnk.String()), buf.Bytes())
+			store.Set(id, buf.Bytes())
 			return nil
 		}, nil
 	}
 
 	// Add Document
 	// Basic Node
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 6, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 7, func(na fluent.MapAssembler) {
 		na.AssembleEntry("path").AssignString(msg.Path)
 		na.AssembleEntry("content").AssignString(msg.Content)
 		na.AssembleEntry("mode").AssignString(msg.Mode)
+		na.AssembleEntry("did").AssignString(msg.Did)
 
 		na.AssembleEntry("time").AssignInt(cast.ToInt64(msg.Time))
 		na.AssembleEntry("contentType").AssignString(msg.ContentType)

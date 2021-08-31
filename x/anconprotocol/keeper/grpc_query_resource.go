@@ -13,7 +13,7 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cbor "github.com/fxamacker/cbor/v2"
+	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	cid "github.com/ipfs/go-cid"
@@ -120,51 +120,37 @@ func RegisterQueryAnconHandler(ctx context.Context, mux *runtime.ServeMux, clien
 			return
 		}
 
-		om, err := outboundMarshaler.Marshal(resp)
-
-		var payload map[string]string
-		//from Object model to json
-		json.Unmarshal(om, &payload)
-		var cborPayload []byte
-		//from json.data base64 to CBOR
-		_, errdecode := base64.RawStdEncoding.Decode([]byte(payload["Data"]), cborPayload)
+		// 1) From json.data base64 to CBOR
+		cborPayload, errdecode := base64.RawStdEncoding.DecodeString(resp.(*types.QueryResourceResponse).Data)
 
 		if errdecode != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, errdecode)
-
 			return
 		}
 
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		//From CBOR to STRUCT with json mapping to json bytes
-		//TODO: error handling on cbor unmarshal
-		// if filter["Kind"] == "metadata" {
-
+		// 2) From CBOR to STRUCT with json mapping to json bytes
 		var instance types.IPLDMetadataStore
 		_ = cbor.Unmarshal(cborPayload, &instance)
-		jsonbytes, err := outboundMarshaler.Marshal(instance)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
+
+		if instance.Kind == "file" {
+			var instance types.IPLDFileStore
+			_ = cbor.Unmarshal(cborPayload, &instance)
+			jsonbytes, err := json.Marshal(instance)
+			if err != nil {
+				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbytes)
+		} else {
+			jsonbytes, err := json.Marshal(instance)
+			if err != nil {
+				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbytes)
 		}
-
-		// } else if filter["Kind"] == "file" {
-
-		// 	var instance types.IPLDFileStore
-		// 	_ = cbor.Unmarshal(cborPayload, &instance)
-		// 	jsonbytes, err = json.Marshal(instance)
-		// 	if err != nil {
-		// 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-		// 		return
-		// 	}
-		// }
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonbytes)
 	})
 
 	return nil
@@ -183,18 +169,25 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 			types.ErrIntOverflowQuery.Error(),
 		)
 	} //Do a separate function
+	lsys := cidlink.DefaultLinkSystem()
 
+	var id []byte
+	if req.Path != "" {
+		path := req.Path
+		id = append([]byte(lnk.String()), path...)
+	} else {
+		id = []byte(lnk.String())
+	}
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-	has := store.Has([]byte(lnk.String()))
+	has := store.Has(id)
 
 	if !has {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
-	lsys := cidlink.DefaultLinkSystem()
 
 	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
 		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-		buf := store.Get([]byte(link.String()))
+		buf := store.Get(id)
 		return bytes.NewReader(buf), nil
 	}
 
