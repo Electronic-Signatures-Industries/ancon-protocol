@@ -11,7 +11,7 @@
 
 ## Endpoints
 
-- **RPC**: wss://rpcancon.dao.pa
+- **RPC**: ws://rpcancon.dao.pa:26657
 - **API**: https://apiancon.dao.pa
 
 ## Installing a Node
