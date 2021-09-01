@@ -50,7 +50,7 @@ This verifiable and consensus based metadata approach is another layer of privac
 
 **Blockchain NFT Orchestration** contains Flow and Ethereum SDK Go Clients to do atomic swap between networks from a Cosmos devops or keeper job.
 
-**Ethereum and Flow smart contracts** implementing Atomic Swap 
+**Ethereum and Flow smart contracts** implementing Atomic Swap implementing Hashed Timelock Contract (HTLC) in both chain Ethereum and Flow, and Cosmos SDK as the bridge chain.
 
 
 ### API
