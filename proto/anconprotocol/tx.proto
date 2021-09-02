@@ -25,38 +25,6 @@ message MsgFileMetadataResponse {
   
     bytes hash = 1;
  }
-  
-  message MsgFileTx {
-    option (gogoproto.goproto_getters) = false;
-    string path = 1;
-    string content = 2;
-    string mode = 3;
-    uint64 time = 4;
-    string content_type = 5;  
-
-    string did = 6;
-    string from = 7;
-  }
-  
- 
-  
-  message MsgMetadataTx {
-    option (gogoproto.goproto_getters) = false;
-
-    string name = 1;
-    string description = 2;
-    string image = 3;
-    string owner = 4;
-    string parent = 5;
-    repeated string sources = 6;
-    repeated string links = 7;
-    string verified_credential_ref = 8;
-  
-    string did = 9;
-    string from = 10;
-  }
-  
-  
 
 // this line is used by starport scaffolding # proto/tx/message
 message MsgMetadata {

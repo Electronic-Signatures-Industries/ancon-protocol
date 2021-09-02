@@ -152,6 +152,21 @@ export class Api extends HttpClient {
             ...params,
         });
         /**
+       * No description
+       *
+       * @tags Query
+       * @name QueryReadFile
+       * @summary additional handler that uses ReadFile
+      Queries a list of resource items.
+       * @request GET:/ancon/file/{cid}/{path}
+       */
+        this.queryReadFile = (cid, path, params = {}) => this.request({
+            path: `/ancon/file/${cid}/${path}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
          * No description
          *
          * @tags Query

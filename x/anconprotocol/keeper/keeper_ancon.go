@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 
 	// This package is needed so that all the preloaded plugins are loaded automatically
@@ -10,6 +11,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/spf13/cast"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,30 +27,38 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
 		buf := bytes.Buffer{}
+		path := msg.Path
 		return &buf, func(lnk ipld.Link) error {
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/xml/index.html
+			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy
+			id := append([]byte(lnk.String()), path...)
 			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-			store.Set([]byte(lnk.String()), buf.Bytes())
+			store.Set(id, buf.Bytes())
 			return nil
 		}, nil
 	}
 
 	// Add Document
 	// Basic Node
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 5, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 7, func(na fluent.MapAssembler) {
 		na.AssembleEntry("path").AssignString(msg.Path)
 		na.AssembleEntry("content").AssignString(msg.Content)
 		na.AssembleEntry("mode").AssignString(msg.Mode)
+		na.AssembleEntry("did").AssignString(msg.Did)
 
-		//  TODO:
-		na.AssembleEntry("time").AssignString("")
+		na.AssembleEntry("time").AssignInt(cast.ToInt64(msg.Time))
 		na.AssembleEntry("contentType").AssignString(msg.ContentType)
+		na.AssembleEntry("kind").AssignString("file")
 	})
 
+	// tip: 0x0129 dag-json
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71, // dag-cbor
-		MhType:   0x13, // sha2-512
-		MhLength: 64,   // sha2-512 hash has a 64-byte sum.
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
 
 	link, err := lsys.Store(
@@ -79,26 +89,62 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	}
 
 	// Add Document
-	// Basic Node
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 6, func(na fluent.MapAssembler) {
+	v := []string{}
+	json.Unmarshal([]byte(msg.Sources), &v)
+	sources := v
+
+	u := []string{}
+	json.Unmarshal([]byte(msg.Links), &u)
+	links := u
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 7, func(na fluent.MapAssembler) {
 		// TODO:
 		na.AssembleEntry("name").AssignString(msg.Name)
 		na.AssembleEntry("description").AssignString(msg.Description)
 		na.AssembleEntry("image").AssignString(msg.Image)
-		l, _ := cid.Parse(msg.VerifiedCredentialRef)
-		na.AssembleEntry("verifiedCredentialRef").AssignLink(cidlink.Link{Cid: l})
+		na.AssembleEntry("did").AssignString(msg.Did)
+		if msg.VerifiedCredentialRef != "" {
+			l, _ := cid.Parse(msg.VerifiedCredentialRef)
+			na.AssembleEntry("verifiedCredentialRef").AssignLink(cidlink.Link{Cid: l})
+		}
 		na.AssembleEntry("owner").AssignString(msg.Owner)
-		p, _ := cid.Parse(msg.Parent)
-		na.AssembleEntry("parent").AssignLink(cidlink.Link{Cid: p})
-		//To do Sources
-		//To do Link
+		if msg.Parent != "" {
+			p, _ := cid.Parse(msg.Parent)
+			na.AssembleEntry("parent").AssignLink(cidlink.Link{Cid: p})
+		}
+
+		na.AssembleEntry("kind").AssignString("metadata")
+		// Sources
+		if len(sources) > 0 {
+
+			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(sources)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(sources); i++ {
+					//c, _ := cid.Parse(sources[i])
+					// todo: implement error handling
+					//la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					la.AssembleValue().AssignString(sources[i])
+				}
+			})
+		}
+		// Link
+		if len(links) > 0 {
+
+			na.AssembleEntry("links").CreateList(cast.ToInt64(len(links)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(links); i++ {
+					//c, _ := cid.Parse(links[i])
+					// todo: implement error handling
+					// la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+					la.AssembleValue().AssignString(links[i])
+				}
+			})
+		}
 	})
 
+	// tip: 0x0129 dag-json
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71, // dag-cbor
-		MhType:   0x13, // sha2-512
-		MhLength: 64,   // sha2-512 hash has a 64-byte sum.
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
 
 	link, err := lsys.Store(

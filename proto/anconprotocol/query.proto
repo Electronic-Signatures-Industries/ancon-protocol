@@ -21,6 +21,12 @@ service Query {
 	rpc ReadWithPath(QueryResourceRequest) returns (QueryResourceResponse) {
 		option (google.api.http).get = "/ancon/{cid}/{path}";
 	}
+
+	//additional handler that uses ReadFile
+	// Queries a list of resource items.
+	rpc ReadFile(QueryResourceRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/ancon/file/{cid}/{path}";
+	}
   
 	// Queries a list of resource items.
 	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {

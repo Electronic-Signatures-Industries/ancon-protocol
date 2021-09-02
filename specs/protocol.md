@@ -30,6 +30,9 @@
 
 Enables an IPLD protocol level Metadata and Files smart contract for use with data economy use cases.
 
+<img src="/specs/Arquitecture-diagram.png" align="center" width="1000" alt="Ancon Protocol Arquitecture diagram" />
+
+
 ##  Abstract
 
 By having Metadata domain model be defined as a smart contract, we can accomplish more advanced scenarios when creating "data tokens", non fungible tokens NFT and securing offchain data computing.

@@ -1,14 +1,38 @@
+<table align="center"><tr><td colspan="4" align="center" width="9999">
+
+<br/>
+<img src="/specs/AnconProtocoLogo.jpg" align="center" width="300" alt="Ancon Protocol Logo" />
+
 # Ancon Protocol
+Protocol for proof and verified decentralized content using IPLD multihash
+<br/>
+</td></tr></table>
 
-> Protocol for proof and verfied decentralized content using IPLD multihash
 
-## Documentation
+#### Wave 8 Filecoin Foundation grant recipient
 
-> https://ancon.dao.pa
+## Documentation (WIP)
+
+- https://ancon.dao.pa
+- https://docs.xdv.digital
+
+## Getting Started
+- [Getting Started](https://github.com/Electronic-Signatures-Industries/ancon-protocol/blob/main/specs/Getting%20Started.md)
+
+## Endpoints
+
+- **RPC**: ws://rpcancon.dao.pa:26657
+- **API**: https://apiancon.dao.pa
 
 ## Installing a Node
 
-TODO
+- Download repo 
+- Compile `go build cmd/ancon-protocold/main.go`
+- Join our Discord to get genesis and node id to connect to our internal testnet
+
+## Testnet and Mainnet
+
+Once M1 is QA enough we'll compile with Gaia and start prepping for Cosmos hub.
 
 ## Staking ATOM
 

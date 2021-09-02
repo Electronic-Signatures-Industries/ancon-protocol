@@ -26,6 +26,11 @@ export declare const QueryResourceResponse: {
 export interface Query {
     /** Queries a list of resource items. */
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    /**
+     * additional handler that uses ReadFile
+     * Queries a list of resource items.
+     */
+    ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of resource items. */
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of resource items. */
@@ -35,6 +40,7 @@ export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }

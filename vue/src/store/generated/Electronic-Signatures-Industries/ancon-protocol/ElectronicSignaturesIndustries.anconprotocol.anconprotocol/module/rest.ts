@@ -362,6 +362,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     });
 
   /**
+ * No description
+ * 
+ * @tags Query
+ * @name QueryReadFile
+ * @summary additional handler that uses ReadFile
+Queries a list of resource items.
+ * @request GET:/ancon/file/{cid}/{path}
+ */
+  queryReadFile = (cid: string, path: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/ancon/file/${cid}/${path}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
    * No description
    *
    * @tags Query

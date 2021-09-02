@@ -201,6 +201,16 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
         path?: string;
     }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
     /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadFile
+   * @summary additional handler that uses ReadFile
+  Queries a list of resource items.
+   * @request GET:/ancon/file/{cid}/{path}
+   */
+    queryReadFile: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
      * No description
      *
      * @tags Query
