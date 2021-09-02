@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+export type AnconprotocolMsgDidRegistryResponse = object;
+
 export interface AnconprotocolMsgFileResponse {
   hash?: string;
 }
@@ -16,6 +18,8 @@ export interface AnconprotocolMsgFileResponse {
 export interface AnconprotocolMsgMetadataResponse {
   cid?: string;
 }
+
+export type AnconprotocolQueryOwnersResponse = object;
 
 export interface AnconprotocolQueryResourceResponse {
   data?: string;
@@ -60,10 +64,13 @@ Example 2: Pack and unpack a message in Java.
  Example 4: Pack and unpack a message in Go
 
      foo := &pb.Foo{...}
-     any, err := ptypes.MarshalAny(foo)
+     any, err := anypb.New(foo)
+     if err != nil {
+       ...
+     }
      ...
      foo := &pb.Foo{}
-     if err := ptypes.UnmarshalAny(any, foo); err != nil {
+     if err := any.UnmarshalTo(foo); err != nil {
        ...
      }
 
@@ -344,6 +351,22 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryOwners
+   * @summary Queries a list of owners items.
+   * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners
+   */
+  queryOwners = (params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryOwnersResponse, RpcStatus>({
+      path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

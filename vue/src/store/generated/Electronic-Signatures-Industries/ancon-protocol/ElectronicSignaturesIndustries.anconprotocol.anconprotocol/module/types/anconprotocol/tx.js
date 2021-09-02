@@ -49,6 +49,89 @@ export const MsgFileMetadataResponse = {
         return message;
     }
 };
+const baseMsgDidRegistry = { creator: '' };
+export const MsgDidRegistry = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgDidRegistry };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgDidRegistry };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgDidRegistry };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    }
+};
+const baseMsgDidRegistryResponse = {};
+export const MsgDidRegistryResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgDidRegistryResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgDidRegistryResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgDidRegistryResponse };
+        return message;
+    }
+};
 const baseMsgMetadata = {
     creator: '',
     name: '',
@@ -591,6 +674,11 @@ export const MsgFileResponse = {
 export class MsgClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
+    }
+    DidRegistry(request) {
+        const data = MsgDidRegistry.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'DidRegistry', data);
+        return promise.then((data) => MsgDidRegistryResponse.decode(new Reader(data)));
     }
     Metadata(request) {
         const data = MsgMetadata.encode(request).finish();

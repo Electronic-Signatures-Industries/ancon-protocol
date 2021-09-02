@@ -34,6 +34,16 @@ service Query {
 	}
     // this line is used by starport scaffolding # 2
 
+	// Queries a list of owners items.
+	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
+		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners";
+	}
+	// Queries a list of Attributes items.
+	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
+		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners";
+	}
+
+
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
 		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}";
@@ -41,6 +51,18 @@ service Query {
 
 }
 // this line is used by starport scaffolding # 3
+message QueryAttributesRequest {
+}
+
+message QueryAttributesRequest {
+}
+
+message QueryOwnersRequest {
+}
+
+message QueryOwnersResponse {
+}
+
 message QueryResourceRequest {
   string cid = 1;
   string path = 2;

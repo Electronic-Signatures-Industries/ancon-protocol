@@ -5,6 +5,11 @@ export interface MsgFileMetadataResponse {
     hash: Uint8Array;
 }
 /** this line is used by starport scaffolding # proto/tx/message */
+export interface MsgDidRegistry {
+    creator: string;
+}
+export interface MsgDidRegistryResponse {
+}
 export interface MsgMetadata {
     creator: string;
     name: string;
@@ -41,6 +46,20 @@ export declare const MsgFileMetadataResponse: {
     toJSON(message: MsgFileMetadataResponse): unknown;
     fromPartial(object: DeepPartial<MsgFileMetadataResponse>): MsgFileMetadataResponse;
 };
+export declare const MsgDidRegistry: {
+    encode(message: MsgDidRegistry, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgDidRegistry;
+    fromJSON(object: any): MsgDidRegistry;
+    toJSON(message: MsgDidRegistry): unknown;
+    fromPartial(object: DeepPartial<MsgDidRegistry>): MsgDidRegistry;
+};
+export declare const MsgDidRegistryResponse: {
+    encode(_: MsgDidRegistryResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgDidRegistryResponse;
+    fromJSON(_: any): MsgDidRegistryResponse;
+    toJSON(_: MsgDidRegistryResponse): unknown;
+    fromPartial(_: DeepPartial<MsgDidRegistryResponse>): MsgDidRegistryResponse;
+};
 export declare const MsgMetadata: {
     encode(message: MsgMetadata, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMetadata;
@@ -76,12 +95,14 @@ export interface Msg {
      * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
      * this line is used by starport scaffolding # proto/tx/rpc
      */
+    DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
 }

@@ -140,6 +140,20 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryOwners
+         * @summary Queries a list of owners items.
+         * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners
+         */
+        this.queryOwners = (params = {}) => this.request({
+            path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryResource
          * @summary Queries a list of resource items.
          * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}

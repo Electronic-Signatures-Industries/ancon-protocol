@@ -18,6 +18,8 @@ const (
 
 	IPLDKey = "ancon_ipld"
 
+	Owners = "didOwner"
+
 	// this line is used by starport scaffolding # ibc/keys/name
 )
 

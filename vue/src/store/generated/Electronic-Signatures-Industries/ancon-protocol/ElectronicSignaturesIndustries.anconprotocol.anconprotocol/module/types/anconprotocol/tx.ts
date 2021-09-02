@@ -9,6 +9,12 @@ export interface MsgFileMetadataResponse {
 }
 
 /** this line is used by starport scaffolding # proto/tx/message */
+export interface MsgDidRegistry {
+  creator: string
+}
+
+export interface MsgDidRegistryResponse {}
+
 export interface MsgMetadata {
   creator: string
   name: string
@@ -91,6 +97,99 @@ export const MsgFileMetadataResponse = {
     } else {
       message.hash = new Uint8Array()
     }
+    return message
+  }
+}
+
+const baseMsgDidRegistry: object = { creator: '' }
+
+export const MsgDidRegistry = {
+  encode(message: MsgDidRegistry, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgDidRegistry {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgDidRegistry } as MsgDidRegistry
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgDidRegistry {
+    const message = { ...baseMsgDidRegistry } as MsgDidRegistry
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgDidRegistry): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgDidRegistry>): MsgDidRegistry {
+    const message = { ...baseMsgDidRegistry } as MsgDidRegistry
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    return message
+  }
+}
+
+const baseMsgDidRegistryResponse: object = {}
+
+export const MsgDidRegistryResponse = {
+  encode(_: MsgDidRegistryResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgDidRegistryResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgDidRegistryResponse } as MsgDidRegistryResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgDidRegistryResponse {
+    const message = { ...baseMsgDidRegistryResponse } as MsgDidRegistryResponse
+    return message
+  },
+
+  toJSON(_: MsgDidRegistryResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgDidRegistryResponse>): MsgDidRegistryResponse {
+    const message = { ...baseMsgDidRegistryResponse } as MsgDidRegistryResponse
     return message
   }
 }
@@ -623,6 +722,7 @@ export interface Msg {
    * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
    * this line is used by starport scaffolding # proto/tx/rpc
    */
+  DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse>
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
   File(request: MsgFile): Promise<MsgFileResponse>
 }
@@ -632,6 +732,12 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse> {
+    const data = MsgDidRegistry.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'DidRegistry', data)
+    return promise.then((data) => MsgDidRegistryResponse.decode(new Reader(data)))
+  }
+
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse> {
     const data = MsgMetadata.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'Metadata', data)

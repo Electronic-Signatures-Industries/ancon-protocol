@@ -1,6 +1,70 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+const baseQueryOwnersRequest = {};
+export const QueryOwnersRequest = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryOwnersRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseQueryOwnersRequest };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseQueryOwnersRequest };
+        return message;
+    }
+};
+const baseQueryOwnersResponse = {};
+export const QueryOwnersResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryOwnersResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseQueryOwnersResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseQueryOwnersResponse };
+        return message;
+    }
+};
 const baseQueryResourceRequest = { cid: '', path: '' };
 export const QueryResourceRequest = {
     encode(message, writer = Writer.create()) {
@@ -140,6 +204,11 @@ export class QueryClientImpl {
         const data = QueryResourceRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data);
         return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+    }
+    Owners(request) {
+        const data = QueryOwnersRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Owners', data);
+        return promise.then((data) => QueryOwnersResponse.decode(new Reader(data)));
     }
     Resource(request) {
         const data = QueryResourceRequest.encode(request).finish();

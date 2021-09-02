@@ -39,6 +39,7 @@ const getDefaultState = () => {
         ReadWithPath: {},
         ReadFile: {},
         Read: {},
+        Owners: {},
         Resource: {},
         _Structure: {
             MsgFileMetadataResponse: getStructure(MsgFileMetadataResponse.fromPartial({})),
@@ -83,6 +84,12 @@ export default {
                 params.query = null;
             }
             return state.Read[JSON.stringify(params)] ?? {};
+        },
+        getOwners: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.Owners[JSON.stringify(params)] ?? {};
         },
         getResource: (state) => (params = { params: {} }) => {
             if (!params.query) {
@@ -162,6 +169,19 @@ export default {
                 throw new SpVuexError('QueryClient:QueryRead', 'API Node Unavailable. Could not perform query: ' + e.message);
             }
         },
+        async QueryOwners({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
+            try {
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryOwners()).data;
+                commit('QUERY', { query: 'Owners', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryOwners', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getOwners']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryOwners', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
+        },
         async QueryResource({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
             try {
                 const queryClient = await initQueryClient(rootGetters);
@@ -196,6 +216,23 @@ export default {
                 }
             }
         },
+        async sendMsgDidRegistry({ rootGetters }, { value, fee = [], memo = '' }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgDidRegistry(value);
+                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
+                        gas: "200000" }, memo });
+                return result;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgDidRegistry:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgDidRegistry:Send', 'Could not broadcast Tx: ' + e.message);
+                }
+            }
+        },
         async sendMsgFile({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -225,6 +262,21 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgMetadata:Create', 'Could not create message: ' + e.message);
+                }
+            }
+        },
+        async MsgDidRegistry({ rootGetters }, { value }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgDidRegistry(value);
+                return msg;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgDidRegistry:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgDidRegistry:Create', 'Could not create message: ' + e.message);
                 }
             }
         },

@@ -4,6 +4,10 @@ import { Reader, Writer } from 'protobufjs/minimal'
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
 /** this line is used by starport scaffolding # 3 */
+export interface QueryOwnersRequest {}
+
+export interface QueryOwnersResponse {}
+
 export interface QueryResourceRequest {
   cid: string
   path: string
@@ -11,6 +15,82 @@ export interface QueryResourceRequest {
 
 export interface QueryResourceResponse {
   data: string
+}
+
+const baseQueryOwnersRequest: object = {}
+
+export const QueryOwnersRequest = {
+  encode(_: QueryOwnersRequest, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryOwnersRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryOwnersRequest {
+    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+    return message
+  },
+
+  toJSON(_: QueryOwnersRequest): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryOwnersRequest>): QueryOwnersRequest {
+    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+    return message
+  }
+}
+
+const baseQueryOwnersResponse: object = {}
+
+export const QueryOwnersResponse = {
+  encode(_: QueryOwnersResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryOwnersResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryOwnersResponse } as QueryOwnersResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryOwnersResponse {
+    const message = { ...baseQueryOwnersResponse } as QueryOwnersResponse
+    return message
+  },
+
+  toJSON(_: QueryOwnersResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryOwnersResponse>): QueryOwnersResponse {
+    const message = { ...baseQueryOwnersResponse } as QueryOwnersResponse
+    return message
+  }
 }
 
 const baseQueryResourceRequest: object = { cid: '', path: '' }
@@ -151,6 +231,8 @@ export interface Query {
   ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>
   /** Queries a list of resource items. */
   Read(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /** Queries a list of owners items. */
+  Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse>
   /** Queries a list of resource items. */
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
 }
@@ -176,6 +258,12 @@ export class QueryClientImpl implements Query {
     const data = QueryResourceRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data)
     return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
+  Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse> {
+    const data = QueryOwnersRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Owners', data)
+    return promise.then((data) => QueryOwnersResponse.decode(new Reader(data)))
   }
 
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse> {
