@@ -35,10 +35,9 @@ Enables an IPLD protocol level Metadata and Files smart contract for use with da
 
 ##  Abstract
 
-By having Metadata domain model be defined as a smart contract, we can accomplish more advanced scenarios when creating "data tokens", non fungible tokens NFT and securing offchain data computing.
-
-IPLD schemas forms the base interface in XDV Protocol that makes in an agnostic way, worked with diverse linked data sets and at the same time, keep track or verified links.
-
+Ancon delivers an immutable CID referene to a IPLD Node stored as a block in a Cosmos IAVL merkle tree.
+Similar to `Flow Cadence` resource oriented language, Ancon Metadata is unique and must be implemented as a store prefix, where any account owns its resources. In our implementation, we defined accounts as a DID method that
+uses a `ethr-did-registry` inspired implementation in Cosmos.
 
 
 ## Specification
