@@ -1488,17 +1488,17 @@ var (
 
 	pattern_Query_Resource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"Electronic-Signatures-Industries", "anconprotocol", "resource", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"irismod", "nft", "collections", "denom_id", "supply"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"ancon", "nft", "collections", "denom_id", "supply"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Owner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"irismod", "nft", "nfts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Owner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "nfts"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Collection_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"irismod", "nft", "collections", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Collection_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "collections", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Denom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"irismod", "nft", "denoms", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Denom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "denoms", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Denoms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"irismod", "nft", "denoms"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Denoms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "denoms"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetNft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetNft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"ancon", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

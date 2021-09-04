@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/irisnet/irismod/modules/htlc/types"
 )
 
 // CreateHTLC creates an HTLC
