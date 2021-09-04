@@ -17,7 +17,37 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		// this line is used by starport scaffolding # 1
+		case *types.MsgCreateHTLC:
+			res, err := msgServer.CreateHTLC(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgClaimHTLC:
+			res, err := msgServer.ClaimHTLC(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgIssueDenom:
+			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgMintNFT:
+			res, err := msgServer.MintNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgTransferNFT:
+			res, err := msgServer.TransferNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgEditNFT:
+			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgBurnNFT:
+			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgTransferDenom:
+			res, err := msgServer.TransferDenom(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgMetadata:
 			res, err := msgServer.Metadata(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

@@ -7,9 +7,9 @@ const (
 	EventTypeClaimHTLC  = "claim_htlc"
 	EventTypeRefundHTLC = "refund_htlc"
 
-	AttributeValueCategory = ModuleName
+	// AttributeValueCategory = ModuleName
 
-	AttributeKeySender               = "sender"
+	// AttributeKeySender               = "sender"
 	AttributeKeyReceiver             = "receiver"
 	AttributeKeyReceiverOnOtherChain = "receiver_on_other_chain"
 	AttributeKeySenderOnOtherChain   = "sender_on_other_chain"
