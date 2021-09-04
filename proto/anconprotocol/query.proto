@@ -36,17 +36,17 @@ service Query {
 
 	// Queries a list of owners items.
 	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
-		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners";
+		option (google.api.http).get = "/ancon/didregistry/identify/{address}";
 	}
 	// Queries a list of Attributes items.
 	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
-		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners";
+		option (google.api.http).get = "/ancon/didregistry/attributes/{key}";
 	}
 
 
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}";
+		option (google.api.http).get = "/ancon/resource/{cid}";
 	}
 
 }
@@ -55,9 +55,11 @@ message QueryAttributesRequest {
 }
 
 message QueryAttributesRequest {
+	string key = 1;
 }
 
 message QueryOwnersRequest {
+	string address = 1;
 }
 
 message QueryOwnersResponse {
