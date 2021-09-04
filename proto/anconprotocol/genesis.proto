@@ -1,12 +1,24 @@
 syntax = "proto3";
 package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos_proto/cosmos.proto";
+import "anconprotocol/htlc.proto";
+import "anconprotocol/nft.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
 // GenesisState defines the anconprotocol module's genesis state.
 message GenesisState {
+    Params params = 1 [ (gogoproto.nullable) = false ];
+    repeated HTLC htlcs = 2 [ (gogoproto.nullable) = false ];
+    repeated AssetSupply supplies = 3 [ (gogoproto.nullable) = false ];
+    google.protobuf.Timestamp previous_block_time = 4 [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"previous_block_time\"" ];
+    repeated Collection collections = 5 [ (gogoproto.nullable) = false ];
+
     // this line is used by starport scaffolding # genesis/proto/state
     // this line is used by starport scaffolding # ibc/genesis/proto
 }

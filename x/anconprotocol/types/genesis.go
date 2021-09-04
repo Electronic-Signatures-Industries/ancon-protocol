@@ -1,27 +1,65 @@
 package types
 
 import (
-// this line is used by starport scaffolding # genesis/types/import
-// this line is used by starport scaffolding # ibc/genesistype/import
+	fmt "fmt"
+	time "time"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
+// NewGenesisState constructs a new GenesisState instance
+func NewGenesisState(params Params, htlcs []HTLC, Supplies []AssetSupply, previousBlockTime time.Time) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # ibc/genesistype/default
-		// this line is used by starport scaffolding # genesis/types/default
+		Params:            params,
+		Htlcs:             htlcs,
+		Supplies:          Supplies,
+		PreviousBlockTime: previousBlockTime,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # ibc/genesistype/validate
+// DefaultGenesisState gets the raw genesis message for testing
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
+		Params:            DefaultParams(),
+		Htlcs:             []HTLC{},
+		Supplies:          DefaultAssetSupplies(),
+		PreviousBlockTime: DefaultPreviousBlockTime,
+	}
+}
 
-	// this line is used by starport scaffolding # genesis/types/validate
+// ValidateGenesis validates the provided HTLC genesis state to ensure the expected invariants holds.
+func ValidateGenesis(data GenesisState) error {
+	if err := data.Params.Validate(); err != nil {
+		return err
+	}
+
+	ids := map[string]bool{}
+	for _, htlc := range data.Htlcs {
+		if ids[htlc.Id] {
+			return fmt.Errorf("found duplicate htlc ID %s", htlc.Id)
+		}
+
+		if htlc.State != Open {
+			return sdkerrors.Wrap(ErrHTLCNotOpen, htlc.Id)
+		}
+
+		if err := htlc.Validate(); err != nil {
+			return err
+		}
+
+		ids[htlc.Id] = true
+	}
+
+	supplyDenoms := map[string]bool{}
+	for _, supply := range data.Supplies {
+		if err := supply.Validate(); err != nil {
+			return err
+		}
+		if supplyDenoms[supply.CurrentSupply.Denom] {
+			return fmt.Errorf("found duplicate denom in asset supplies %s", supply.CurrentSupply.Denom)
+		}
+		supplyDenoms[supply.CurrentSupply.Denom] = true
+	}
 
 	return nil
 }

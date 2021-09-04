@@ -4,6 +4,7 @@ package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -16,8 +17,149 @@ service Msg {
     // this line is used by starport scaffolding # proto/tx/rpc
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
+  // CreateHTLC defines a method for creating a HTLC
+  rpc CreateHTLC(MsgCreateHTLC) returns (MsgCreateHTLCResponse);
+
+  // ClaimHTLC defines a method for claiming a HTLC
+  rpc ClaimHTLC(MsgClaimHTLC) returns (MsgClaimHTLCResponse);
+    // IssueDenom defines a method for issue a denom.
+    rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
+
+    // MintNFT defines a method for mint a new nft
+    rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
+
+    // RefundHTLC defines a method for editing a nft.
+    rpc EditNFT(MsgEditNFT) returns (MsgEditNFTResponse);
+
+    // TransferNFT defines a method for transferring a nft.
+    rpc TransferNFT(MsgTransferNFT) returns (MsgTransferNFTResponse);
+
+    // BurnNFT defines a method for burning a nft.
+    rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
+
+    // TransferDenom defines a method for transferring a denom.
+    rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
 }
 
+// MsgIssueDenom defines an SDK message for creating a new denom.
+message MsgIssueDenom {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string name = 2;
+    string schema = 3;
+    string sender = 4;
+    string symbol = 5;
+    bool mint_restricted = 6 ;
+    bool update_restricted = 7 ;
+}
+
+// MsgIssueDenomResponse defines the Msg/IssueDenom response type.
+message MsgIssueDenomResponse {}
+
+// MsgTransferNFT defines an SDK message for transferring an NFT to recipient.
+message MsgTransferNFT {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string name = 3;
+    string uri = 4 [ (gogoproto.customname) = "URI" ];
+    string data = 5;
+    string sender = 6;
+    string recipient = 7;
+}
+
+// MsgTransferNFTResponse defines the Msg/TransferNFT response type.
+message MsgTransferNFTResponse {}
+
+// MsgEditNFT defines an SDK message for editing a nft.
+message MsgEditNFT {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string name = 3;
+    string uri = 4 [ (gogoproto.customname) = "URI" ];
+    string data = 5;
+    string sender = 6;
+}
+
+// MsgEditNFTResponse defines the Msg/EditNFT response type.
+message MsgEditNFTResponse {}
+
+// MsgMintNFT defines an SDK message for creating a new NFT.
+message MsgMintNFT {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string name = 3;
+    string uri = 4 [ (gogoproto.customname) = "URI" ];
+    string data = 5;
+    string sender = 6;
+    string recipient = 7;
+}
+
+// MsgMintNFTResponse defines the Msg/MintNFT response type.
+message MsgMintNFTResponse {}
+
+// MsgBurnNFT defines an SDK message for burning a NFT.
+message MsgBurnNFT {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string sender = 3;
+}
+
+// MsgBurnNFTResponse defines the Msg/BurnNFT response type.
+message MsgBurnNFTResponse {}
+
+
+// MsgTransferDenom defines an SDK message for transferring an denom to recipient.
+message MsgTransferDenom {
+    option (gogoproto.equal) = true;
+    string id = 1;
+    string sender = 2;
+    string recipient = 3;
+}
+
+// MsgTransferDenomResponse defines the Msg/TransferDenom response type.
+message MsgTransferDenomResponse {}
+
+
+// MsgCreateHTLC defines a message to create an HTLC
+message MsgCreateHTLC {
+  option (gogoproto.equal) = true;
+
+  string sender = 1;
+  string to = 2;
+  string receiver_on_other_chain = 3 [ (gogoproto.moretags) = "yaml:\"receiver_on_other_chain\"" ];
+  string sender_on_other_chain = 4 [ (gogoproto.moretags) = "yaml:\"sender_on_other_chain\"" ];
+  repeated cosmos.base.v1beta1.Coin amount = 5 [ (gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins" ];
+  string hash_lock = 6 [ (gogoproto.moretags) = "yaml:\"hash_lock\"" ];
+  uint64 timestamp = 7;
+  uint64 time_lock = 8 [ (gogoproto.moretags) = "yaml:\"time_lock\"" ];
+  bool transfer = 9;
+}
+
+// MsgCreateHTLCResponse defines the Msg/CreateHTLC response type
+message MsgCreateHTLCResponse {
+  string id = 1;
+}
+
+// MsgClaimHTLC defines a message to claim an HTLC
+message MsgClaimHTLC {
+  option (gogoproto.equal) = true;
+
+  string sender = 1;
+  string id = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string secret = 3;
+}
+
+// MsgClaimHTLCResponse defines the Msg/ClaimHTLC response type
+message MsgClaimHTLCResponse {}
 
 // MsgEthereumTxResponse defines the Msg/EthereumTx response type.
 message MsgFileMetadataResponse {

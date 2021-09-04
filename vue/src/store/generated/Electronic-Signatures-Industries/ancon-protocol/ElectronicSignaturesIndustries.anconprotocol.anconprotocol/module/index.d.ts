@@ -3,6 +3,8 @@ import { OfflineSigner, EncodeObject } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
 import { MsgMetadata } from "./types/anconprotocol/tx";
 import { MsgFile } from "./types/anconprotocol/tx";
+import { MsgClaimHTLC } from "./types/anconprotocol/tx";
+import { MsgCreateHTLC } from "./types/anconprotocol/tx";
 export declare const MissingWalletError: Error;
 interface TxClientOptions {
     addr: string;
@@ -15,6 +17,8 @@ declare const txClient: (wallet: OfflineSigner, { addr: addr }?: TxClientOptions
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }?: SignAndBroadcastOptions) => Promise<import("@cosmjs/stargate").BroadcastTxResponse>;
     msgMetadata: (data: MsgMetadata) => EncodeObject;
     msgFile: (data: MsgFile) => EncodeObject;
+    msgClaimHTLC: (data: MsgClaimHTLC) => EncodeObject;
+    msgCreateHTLC: (data: MsgCreateHTLC) => EncodeObject;
 }>;
 interface QueryClientOptions {
     addr: string;

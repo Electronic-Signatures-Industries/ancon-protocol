@@ -8,6 +8,28 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
+/**
+* - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
+ - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
+ - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
+*/
+export var AnconprotocolHTLCState;
+(function (AnconprotocolHTLCState) {
+    AnconprotocolHTLCState["HTLC_STATE_OPEN"] = "HTLC_STATE_OPEN";
+    AnconprotocolHTLCState["HTLC_STATE_COMPLETED"] = "HTLC_STATE_COMPLETED";
+    AnconprotocolHTLCState["HTLC_STATE_REFUNDED"] = "HTLC_STATE_REFUNDED";
+})(AnconprotocolHTLCState || (AnconprotocolHTLCState = {}));
+/**
+* - NONE: NONE defines an htlt none direction.
+ - INCOMING: INCOMING defines an htlt incoming direction.
+ - OUTGOING: OUTGOING defines an htlt outgoing direction.
+*/
+export var AnconprotocolSwapDirection;
+(function (AnconprotocolSwapDirection) {
+    AnconprotocolSwapDirection["NONE"] = "NONE";
+    AnconprotocolSwapDirection["INCOMING"] = "INCOMING";
+    AnconprotocolSwapDirection["OUTGOING"] = "OUTGOING";
+})(AnconprotocolSwapDirection || (AnconprotocolSwapDirection = {}));
 export var ContentType;
 (function (ContentType) {
     ContentType["Json"] = "application/json";
@@ -170,6 +192,62 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryGetHtlc
+         * @summary HTLC queries the HTLC by the specified hash lock
+         * @request GET:/ancon/htlc/htlcs/{id}
+         */
+        this.queryGetHtlc = (id, params = {}) => this.request({
+            path: `/ancon/htlc/htlcs/${id}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryParams
+         * @summary Params queries the htlc parameters
+         * @request GET:/ancon/htlc/params
+         */
+        this.queryParams = (params = {}) => this.request({
+            path: `/ancon/htlc/params`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryAssetSupplies
+         * @summary AssetSupplies queries the supplies of all assets
+         * @request GET:/ancon/htlc/supplies
+         */
+        this.queryAssetSupplies = (params = {}) => this.request({
+            path: `/ancon/htlc/supplies`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryAssetSupply
+         * @summary AssetSupply queries the supply of an asset
+         * @request GET:/ancon/htlc/supplies/{denom}
+         */
+        this.queryAssetSupply = (denom, params = {}) => this.request({
+            path: `/ancon/htlc/supplies/${denom}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryRead
          * @summary Queries a list of resource items.
          * @request GET:/ancon/{cid}
@@ -191,6 +269,94 @@ export class Api extends HttpClient {
          */
         this.queryReadWithPath = (cid, path, params = {}) => this.request({
             path: `/ancon/${cid}/${path}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryCollection
+         * @summary Collection queries the NFTs of the specified denom
+         * @request GET:/irismod/nft/collections/{denomId}
+         */
+        this.queryCollection = (denomId, query, params = {}) => this.request({
+            path: `/irismod/nft/collections/${denomId}`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QuerySupply
+         * @summary Supply queries the total supply of a given denom or owner
+         * @request GET:/irismod/nft/collections/{denomId}/supply
+         */
+        this.querySupply = (denomId, query, params = {}) => this.request({
+            path: `/irismod/nft/collections/${denomId}/supply`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryDenoms
+         * @summary Denoms queries all the denoms
+         * @request GET:/irismod/nft/denoms
+         */
+        this.queryDenoms = (query, params = {}) => this.request({
+            path: `/irismod/nft/denoms`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryDenom
+         * @summary Denom queries the definition of a given denom
+         * @request GET:/irismod/nft/denoms/{denomId}
+         */
+        this.queryDenom = (denomId, params = {}) => this.request({
+            path: `/irismod/nft/denoms/${denomId}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryOwner
+         * @summary Owner queries the NFTs of the specified owner
+         * @request GET:/irismod/nft/nfts
+         */
+        this.queryOwner = (query, params = {}) => this.request({
+            path: `/irismod/nft/nfts`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryGetNft
+         * @summary NFT queries the NFT for the given denom and token ID
+         * @request GET:/irismod/nft/nfts/{denomId}/{tokenId}
+         */
+        this.queryGetNft = (denomId, tokenId, params = {}) => this.request({
+            path: `/irismod/nft/nfts/${denomId}/${tokenId}`,
             method: "GET",
             format: "json",
             ...params,

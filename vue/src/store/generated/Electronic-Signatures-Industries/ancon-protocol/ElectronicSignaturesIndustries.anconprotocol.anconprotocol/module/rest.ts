@@ -9,16 +9,278 @@
  * ---------------------------------------------------------------
  */
 
+export interface AnconprotocolAssetParam {
+  denom?: string;
+  supplyLimit?: AnconprotocolSupplyLimit;
+  active?: boolean;
+  deputyAddress?: string;
+  fixedFee?: string;
+  minSwapAmount?: string;
+  maxSwapAmount?: string;
+
+  /** @format uint64 */
+  minBlockLock?: string;
+
+  /** @format uint64 */
+  maxBlockLock?: string;
+}
+
+export interface AnconprotocolAssetSupply {
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  incomingSupply?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  outgoingSupply?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  currentSupply?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  timeLimitedCurrentSupply?: V1Beta1Coin;
+  timeElapsed?: string;
+}
+
+export interface AnconprotocolBaseNFT {
+  id?: string;
+  name?: string;
+  uri?: string;
+  data?: string;
+  owner?: string;
+}
+
+export interface AnconprotocolCollection {
+  denom?: AnconprotocolDenom;
+  nfts?: AnconprotocolBaseNFT[];
+}
+
+export interface AnconprotocolDenom {
+  id?: string;
+  name?: string;
+  schema?: string;
+  creator?: string;
+  symbol?: string;
+  mintRestricted?: boolean;
+  updateRestricted?: boolean;
+}
+
+export interface AnconprotocolHTLC {
+  id?: string;
+  sender?: string;
+  to?: string;
+  receiverOnOtherChain?: string;
+  senderOnOtherChain?: string;
+  amount?: V1Beta1Coin[];
+  hashLock?: string;
+  secret?: string;
+
+  /** @format uint64 */
+  timestamp?: string;
+
+  /** @format uint64 */
+  expirationHeight?: string;
+
+  /**
+   * - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
+   *  - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
+   *  - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
+   */
+  state?: AnconprotocolHTLCState;
+
+  /** @format uint64 */
+  closedBlock?: string;
+  transfer?: boolean;
+
+  /**
+   * - NONE: NONE defines an htlt none direction.
+   *  - INCOMING: INCOMING defines an htlt incoming direction.
+   *  - OUTGOING: OUTGOING defines an htlt outgoing direction.
+   */
+  direction?: AnconprotocolSwapDirection;
+}
+
+/**
+* - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
+ - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
+ - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
+*/
+export enum AnconprotocolHTLCState {
+  HTLC_STATE_OPEN = "HTLC_STATE_OPEN",
+  HTLC_STATE_COMPLETED = "HTLC_STATE_COMPLETED",
+  HTLC_STATE_REFUNDED = "HTLC_STATE_REFUNDED",
+}
+
+export interface AnconprotocolIDCollection {
+  denomId?: string;
+  tokenIds?: string[];
+}
+
+/**
+ * MsgBurnNFTResponse defines the Msg/BurnNFT response type.
+ */
+export type AnconprotocolMsgBurnNFTResponse = object;
+
+export type AnconprotocolMsgClaimHTLCResponse = object;
+
+export interface AnconprotocolMsgCreateHTLCResponse {
+  id?: string;
+}
+
+/**
+ * MsgEditNFTResponse defines the Msg/EditNFT response type.
+ */
+export type AnconprotocolMsgEditNFTResponse = object;
+
 export interface AnconprotocolMsgFileResponse {
   hash?: string;
 }
+
+/**
+ * MsgIssueDenomResponse defines the Msg/IssueDenom response type.
+ */
+export type AnconprotocolMsgIssueDenomResponse = object;
 
 export interface AnconprotocolMsgMetadataResponse {
   cid?: string;
 }
 
+/**
+ * MsgMintNFTResponse defines the Msg/MintNFT response type.
+ */
+export type AnconprotocolMsgMintNFTResponse = object;
+
+/**
+ * MsgTransferDenomResponse defines the Msg/TransferDenom response type.
+ */
+export type AnconprotocolMsgTransferDenomResponse = object;
+
+/**
+ * MsgTransferNFTResponse defines the Msg/TransferNFT response type.
+ */
+export type AnconprotocolMsgTransferNFTResponse = object;
+
+export interface AnconprotocolOwner {
+  address?: string;
+  idCollections?: AnconprotocolIDCollection[];
+}
+
+export interface AnconprotocolParams {
+  assetParams?: AnconprotocolAssetParam[];
+}
+
+export interface AnconprotocolQueryAssetSuppliesResponse {
+  assetSupplies?: AnconprotocolAssetSupply[];
+}
+
+export interface AnconprotocolQueryAssetSupplyResponse {
+  assetSupply?: AnconprotocolAssetSupply;
+}
+
+export interface AnconprotocolQueryCollectionResponse {
+  collection?: AnconprotocolCollection;
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryDenomResponse {
+  denom?: AnconprotocolDenom;
+}
+
+export interface AnconprotocolQueryDenomsResponse {
+  denoms?: AnconprotocolDenom[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryHTLCResponse {
+  htlc?: AnconprotocolHTLC;
+}
+
+export interface AnconprotocolQueryNFTResponse {
+  nft?: AnconprotocolBaseNFT;
+}
+
+export interface AnconprotocolQueryOwnerResponse {
+  owner?: AnconprotocolOwner;
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryParamsResponse {
+  params?: AnconprotocolParams;
+}
+
 export interface AnconprotocolQueryResourceResponse {
   data?: string;
+}
+
+export interface AnconprotocolQuerySupplyResponse {
+  /** @format uint64 */
+  amount?: string;
+}
+
+export interface AnconprotocolSupplyLimit {
+  limit?: string;
+  timeLimited?: boolean;
+  timePeriod?: string;
+  timeBasedLimit?: string;
+}
+
+/**
+* - NONE: NONE defines an htlt none direction.
+ - INCOMING: INCOMING defines an htlt incoming direction.
+ - OUTGOING: OUTGOING defines an htlt outgoing direction.
+*/
+export enum AnconprotocolSwapDirection {
+  NONE = "NONE",
+  INCOMING = "INCOMING",
+  OUTGOING = "OUTGOING",
 }
 
 /**
@@ -146,6 +408,73 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
+}
+
+/**
+* message SomeRequest {
+         Foo some_parameter = 1;
+         PageRequest pagination = 2;
+ }
+*/
+export interface V1Beta1PageRequest {
+  /**
+   * key is a value returned in PageResponse.next_key to begin
+   * querying the next page most efficiently. Only one of offset or key
+   * should be set.
+   * @format byte
+   */
+  key?: string;
+
+  /**
+   * offset is a numeric offset that can be used when key is unavailable.
+   * It is less efficient than using key. Only one of offset or key should
+   * be set.
+   * @format uint64
+   */
+  offset?: string;
+
+  /**
+   * limit is the total number of results to be returned in the result page.
+   * If left empty it will default to a value to be set by each app.
+   * @format uint64
+   */
+  limit?: string;
+
+  /**
+   * count_total is set to true  to indicate that the result set should include
+   * a count of the total number of items available for pagination in UIs.
+   * count_total is only respected when offset is used. It is ignored when key
+   * is set.
+   */
+  countTotal?: boolean;
+}
+
+/**
+* PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+*/
+export interface V1Beta1PageResponse {
+  /** @format byte */
+  nextKey?: string;
+
+  /** @format uint64 */
+  total?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -382,6 +711,70 @@ Queries a list of resource items.
    * No description
    *
    * @tags Query
+   * @name QueryGetHtlc
+   * @summary HTLC queries the HTLC by the specified hash lock
+   * @request GET:/ancon/htlc/htlcs/{id}
+   */
+  queryGetHtlc = (id: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryHTLCResponse, RpcStatus>({
+      path: `/ancon/htlc/htlcs/${id}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryParams
+   * @summary Params queries the htlc parameters
+   * @request GET:/ancon/htlc/params
+   */
+  queryParams = (params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryParamsResponse, RpcStatus>({
+      path: `/ancon/htlc/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryAssetSupplies
+   * @summary AssetSupplies queries the supplies of all assets
+   * @request GET:/ancon/htlc/supplies
+   */
+  queryAssetSupplies = (params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryAssetSuppliesResponse, RpcStatus>({
+      path: `/ancon/htlc/supplies`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryAssetSupply
+   * @summary AssetSupply queries the supply of an asset
+   * @request GET:/ancon/htlc/supplies/{denom}
+   */
+  queryAssetSupply = (denom: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryAssetSupplyResponse, RpcStatus>({
+      path: `/ancon/htlc/supplies/${denom}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryRead
    * @summary Queries a list of resource items.
    * @request GET:/ancon/{cid}
@@ -406,6 +799,133 @@ Queries a list of resource items.
   queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
       path: `/ancon/${cid}/${path}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCollection
+   * @summary Collection queries the NFTs of the specified denom
+   * @request GET:/irismod/nft/collections/{denomId}
+   */
+  queryCollection = (
+    denomId: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryCollectionResponse, RpcStatus>({
+      path: `/irismod/nft/collections/${denomId}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QuerySupply
+   * @summary Supply queries the total supply of a given denom or owner
+   * @request GET:/irismod/nft/collections/{denomId}/supply
+   */
+  querySupply = (denomId: string, query?: { owner?: string }, params: RequestParams = {}) =>
+    this.request<AnconprotocolQuerySupplyResponse, RpcStatus>({
+      path: `/irismod/nft/collections/${denomId}/supply`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDenoms
+   * @summary Denoms queries all the denoms
+   * @request GET:/irismod/nft/denoms
+   */
+  queryDenoms = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryDenomsResponse, RpcStatus>({
+      path: `/irismod/nft/denoms`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDenom
+   * @summary Denom queries the definition of a given denom
+   * @request GET:/irismod/nft/denoms/{denomId}
+   */
+  queryDenom = (denomId: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryDenomResponse, RpcStatus>({
+      path: `/irismod/nft/denoms/${denomId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryOwner
+   * @summary Owner queries the NFTs of the specified owner
+   * @request GET:/irismod/nft/nfts
+   */
+  queryOwner = (
+    query?: {
+      denomId?: string;
+      owner?: string;
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryOwnerResponse, RpcStatus>({
+      path: `/irismod/nft/nfts`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGetNft
+   * @summary NFT queries the NFT for the given denom and token ID
+   * @request GET:/irismod/nft/nfts/{denomId}/{tokenId}
+   */
+  queryGetNft = (denomId: string, tokenId: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryNFTResponse, RpcStatus>({
+      path: `/irismod/nft/nfts/${denomId}/${tokenId}`,
       method: "GET",
       format: "json",
       ...params,
