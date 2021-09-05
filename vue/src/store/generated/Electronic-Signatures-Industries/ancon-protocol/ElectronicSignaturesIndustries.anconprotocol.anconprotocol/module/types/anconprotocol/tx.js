@@ -1,6 +1,393 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+const baseMsgChangeOwner = { creator: '' };
+export const MsgChangeOwner = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgChangeOwner };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgChangeOwner };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgChangeOwner };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    }
+};
+const baseMsgChangeOwnerResponse = {};
+export const MsgChangeOwnerResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgChangeOwnerResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgChangeOwnerResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgChangeOwnerResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgAddDelegate = {};
+export const MsgAddDelegate = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgAddDelegate };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgAddDelegate };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgAddDelegate };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgAddDelegateResponse = {};
+export const MsgAddDelegateResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgAddDelegateResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgAddDelegateResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgAddDelegateResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgRevokeDelegate = {};
+export const MsgRevokeDelegate = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeDelegate };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRevokeDelegate };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRevokeDelegate };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgRevokeDelegateResponse = {};
+export const MsgRevokeDelegateResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeDelegateResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRevokeDelegateResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRevokeDelegateResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgSetAttribute = {};
+export const MsgSetAttribute = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgSetAttribute };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgSetAttribute };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgSetAttribute };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgSetAttributeResponse = {};
+export const MsgSetAttributeResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgSetAttributeResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgSetAttributeResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgSetAttributeResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
 const baseMsgFileMetadataResponse = {};
 export const MsgFileMetadataResponse = {
     encode(message, writer = Writer.create()) {
@@ -46,89 +433,6 @@ export const MsgFileMetadataResponse = {
         else {
             message.hash = new Uint8Array();
         }
-        return message;
-    }
-};
-const baseMsgDidRegistry = { creator: '' };
-export const MsgDidRegistry = {
-    encode(message, writer = Writer.create()) {
-        if (message.creator !== '') {
-            writer.uint32(10).string(message.creator);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof Uint8Array ? new Reader(input) : input;
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseMsgDidRegistry };
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.creator = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromJSON(object) {
-        const message = { ...baseMsgDidRegistry };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = String(object.creator);
-        }
-        else {
-            message.creator = '';
-        }
-        return message;
-    },
-    toJSON(message) {
-        const obj = {};
-        message.creator !== undefined && (obj.creator = message.creator);
-        return obj;
-    },
-    fromPartial(object) {
-        const message = { ...baseMsgDidRegistry };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = object.creator;
-        }
-        else {
-            message.creator = '';
-        }
-        return message;
-    }
-};
-const baseMsgDidRegistryResponse = {};
-export const MsgDidRegistryResponse = {
-    encode(_, writer = Writer.create()) {
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof Uint8Array ? new Reader(input) : input;
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseMsgDidRegistryResponse };
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromJSON(_) {
-        const message = { ...baseMsgDidRegistryResponse };
-        return message;
-    },
-    toJSON(_) {
-        const obj = {};
-        return obj;
-    },
-    fromPartial(_) {
-        const message = { ...baseMsgDidRegistryResponse };
         return message;
     }
 };
@@ -675,10 +979,25 @@ export class MsgClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
     }
-    DidRegistry(request) {
-        const data = MsgDidRegistry.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'DidRegistry', data);
-        return promise.then((data) => MsgDidRegistryResponse.decode(new Reader(data)));
+    ChangeOwner(request) {
+        const data = MsgChangeOwner.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ChangeOwner', data);
+        return promise.then((data) => MsgChangeOwnerResponse.decode(new Reader(data)));
+    }
+    AddDelegate(request) {
+        const data = MsgAddDelegate.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDelegate', data);
+        return promise.then((data) => MsgAddDelegateResponse.decode(new Reader(data)));
+    }
+    RevokeDelegate(request) {
+        const data = MsgRevokeDelegate.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RevokeDelegate', data);
+        return promise.then((data) => MsgRevokeDelegateResponse.decode(new Reader(data)));
+    }
+    SetAttribute(request) {
+        const data = MsgSetAttribute.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'SetAttribute', data);
+        return promise.then((data) => MsgSetAttributeResponse.decode(new Reader(data)));
     }
     Metadata(request) {
         const data = MsgMetadata.encode(request).finish();

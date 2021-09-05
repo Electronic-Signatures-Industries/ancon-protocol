@@ -4,7 +4,17 @@ import { Reader, Writer } from 'protobufjs/minimal'
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
 /** this line is used by starport scaffolding # 3 */
-export interface QueryOwnersRequest {}
+export interface QueryGetAttributesResponse {}
+
+export interface QueryIdentifyOwnerResponse {}
+
+export interface QueryGetAttributesRequest {
+  address: string
+}
+
+export interface QueryIdentifyOwnerRequest {
+  address: string
+}
 
 export interface QueryOwnersResponse {}
 
@@ -17,17 +27,17 @@ export interface QueryResourceResponse {
   data: string
 }
 
-const baseQueryOwnersRequest: object = {}
+const baseQueryGetAttributesResponse: object = {}
 
-export const QueryOwnersRequest = {
-  encode(_: QueryOwnersRequest, writer: Writer = Writer.create()): Writer {
+export const QueryGetAttributesResponse = {
+  encode(_: QueryGetAttributesResponse, writer: Writer = Writer.create()): Writer {
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryOwnersRequest {
+  decode(input: Reader | Uint8Array, length?: number): QueryGetAttributesResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+    const message = { ...baseQueryGetAttributesResponse } as QueryGetAttributesResponse
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -39,18 +49,166 @@ export const QueryOwnersRequest = {
     return message
   },
 
-  fromJSON(_: any): QueryOwnersRequest {
-    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+  fromJSON(_: any): QueryGetAttributesResponse {
+    const message = { ...baseQueryGetAttributesResponse } as QueryGetAttributesResponse
     return message
   },
 
-  toJSON(_: QueryOwnersRequest): unknown {
+  toJSON(_: QueryGetAttributesResponse): unknown {
     const obj: any = {}
     return obj
   },
 
-  fromPartial(_: DeepPartial<QueryOwnersRequest>): QueryOwnersRequest {
-    const message = { ...baseQueryOwnersRequest } as QueryOwnersRequest
+  fromPartial(_: DeepPartial<QueryGetAttributesResponse>): QueryGetAttributesResponse {
+    const message = { ...baseQueryGetAttributesResponse } as QueryGetAttributesResponse
+    return message
+  }
+}
+
+const baseQueryIdentifyOwnerResponse: object = {}
+
+export const QueryIdentifyOwnerResponse = {
+  encode(_: QueryIdentifyOwnerResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryIdentifyOwnerResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryIdentifyOwnerResponse } as QueryIdentifyOwnerResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryIdentifyOwnerResponse {
+    const message = { ...baseQueryIdentifyOwnerResponse } as QueryIdentifyOwnerResponse
+    return message
+  },
+
+  toJSON(_: QueryIdentifyOwnerResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryIdentifyOwnerResponse>): QueryIdentifyOwnerResponse {
+    const message = { ...baseQueryIdentifyOwnerResponse } as QueryIdentifyOwnerResponse
+    return message
+  }
+}
+
+const baseQueryGetAttributesRequest: object = { address: '' }
+
+export const QueryGetAttributesRequest = {
+  encode(message: QueryGetAttributesRequest, writer: Writer = Writer.create()): Writer {
+    if (message.address !== '') {
+      writer.uint32(10).string(message.address)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetAttributesRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryGetAttributesRequest } as QueryGetAttributesRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryGetAttributesRequest {
+    const message = { ...baseQueryGetAttributesRequest } as QueryGetAttributesRequest
+    if (object.address !== undefined && object.address !== null) {
+      message.address = String(object.address)
+    } else {
+      message.address = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryGetAttributesRequest): unknown {
+    const obj: any = {}
+    message.address !== undefined && (obj.address = message.address)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryGetAttributesRequest>): QueryGetAttributesRequest {
+    const message = { ...baseQueryGetAttributesRequest } as QueryGetAttributesRequest
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address
+    } else {
+      message.address = ''
+    }
+    return message
+  }
+}
+
+const baseQueryIdentifyOwnerRequest: object = { address: '' }
+
+export const QueryIdentifyOwnerRequest = {
+  encode(message: QueryIdentifyOwnerRequest, writer: Writer = Writer.create()): Writer {
+    if (message.address !== '') {
+      writer.uint32(10).string(message.address)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryIdentifyOwnerRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryIdentifyOwnerRequest } as QueryIdentifyOwnerRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryIdentifyOwnerRequest {
+    const message = { ...baseQueryIdentifyOwnerRequest } as QueryIdentifyOwnerRequest
+    if (object.address !== undefined && object.address !== null) {
+      message.address = String(object.address)
+    } else {
+      message.address = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryIdentifyOwnerRequest): unknown {
+    const obj: any = {}
+    message.address !== undefined && (obj.address = message.address)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryIdentifyOwnerRequest>): QueryIdentifyOwnerRequest {
+    const message = { ...baseQueryIdentifyOwnerRequest } as QueryIdentifyOwnerRequest
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address
+    } else {
+      message.address = ''
+    }
     return message
   }
 }
@@ -232,7 +390,9 @@ export interface Query {
   /** Queries a list of resource items. */
   Read(request: QueryResourceRequest): Promise<QueryResourceResponse>
   /** Queries a list of owners items. */
-  Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse>
+  IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>
+  /** Queries a list of Attributes items. */
+  GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>
   /** Queries a list of resource items. */
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
 }
@@ -260,10 +420,16 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
   }
 
-  Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse> {
-    const data = QueryOwnersRequest.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Owners', data)
-    return promise.then((data) => QueryOwnersResponse.decode(new Reader(data)))
+  IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse> {
+    const data = QueryIdentifyOwnerRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'IdentifyOwner', data)
+    return promise.then((data) => QueryIdentifyOwnerResponse.decode(new Reader(data)))
+  }
+
+  GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse> {
+    const data = QueryGetAttributesRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetAttributes', data)
+    return promise.then((data) => QueryGetAttributesResponse.decode(new Reader(data)))
   }
 
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse> {

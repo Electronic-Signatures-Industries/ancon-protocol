@@ -1,15 +1,15 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseQueryOwnersRequest = {};
-export const QueryOwnersRequest = {
+const baseQueryGetAttributesResponse = {};
+export const QueryGetAttributesResponse = {
     encode(_, writer = Writer.create()) {
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseQueryOwnersRequest };
+        const message = { ...baseQueryGetAttributesResponse };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -21,7 +21,7 @@ export const QueryOwnersRequest = {
         return message;
     },
     fromJSON(_) {
-        const message = { ...baseQueryOwnersRequest };
+        const message = { ...baseQueryGetAttributesResponse };
         return message;
     },
     toJSON(_) {
@@ -29,7 +29,141 @@ export const QueryOwnersRequest = {
         return obj;
     },
     fromPartial(_) {
-        const message = { ...baseQueryOwnersRequest };
+        const message = { ...baseQueryGetAttributesResponse };
+        return message;
+    }
+};
+const baseQueryIdentifyOwnerResponse = {};
+export const QueryIdentifyOwnerResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryIdentifyOwnerResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseQueryIdentifyOwnerResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseQueryIdentifyOwnerResponse };
+        return message;
+    }
+};
+const baseQueryGetAttributesRequest = { address: '' };
+export const QueryGetAttributesRequest = {
+    encode(message, writer = Writer.create()) {
+        if (message.address !== '') {
+            writer.uint32(10).string(message.address);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryGetAttributesRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.address = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryGetAttributesRequest };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = String(object.address);
+        }
+        else {
+            message.address = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.address !== undefined && (obj.address = message.address);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryGetAttributesRequest };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = object.address;
+        }
+        else {
+            message.address = '';
+        }
+        return message;
+    }
+};
+const baseQueryIdentifyOwnerRequest = { address: '' };
+export const QueryIdentifyOwnerRequest = {
+    encode(message, writer = Writer.create()) {
+        if (message.address !== '') {
+            writer.uint32(10).string(message.address);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryIdentifyOwnerRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.address = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryIdentifyOwnerRequest };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = String(object.address);
+        }
+        else {
+            message.address = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.address !== undefined && (obj.address = message.address);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryIdentifyOwnerRequest };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = object.address;
+        }
+        else {
+            message.address = '';
+        }
         return message;
     }
 };
@@ -205,10 +339,15 @@ export class QueryClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data);
         return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
     }
-    Owners(request) {
-        const data = QueryOwnersRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Owners', data);
-        return promise.then((data) => QueryOwnersResponse.decode(new Reader(data)));
+    IdentifyOwner(request) {
+        const data = QueryIdentifyOwnerRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'IdentifyOwner', data);
+        return promise.then((data) => QueryIdentifyOwnerResponse.decode(new Reader(data)));
+    }
+    GetAttributes(request) {
+        const data = QueryGetAttributesRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetAttributes', data);
+        return promise.then((data) => QueryGetAttributesResponse.decode(new Reader(data)));
     }
     Resource(request) {
         const data = QueryResourceRequest.encode(request).finish();

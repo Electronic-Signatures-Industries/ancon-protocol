@@ -9,7 +9,7 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgDidRegistry{}, "anconprotocol/DidRegistry", nil)
+	cdc.RegisterConcrete(&MsgChangeOwner{}, "anconprotocol/ChangeOwner", nil)
 
 	cdc.RegisterConcrete(&MsgMetadata{}, "anconprotocol/Metadata", nil)
 
@@ -20,7 +20,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgDidRegistry{},
+		&MsgChangeOwner{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMetadata{},

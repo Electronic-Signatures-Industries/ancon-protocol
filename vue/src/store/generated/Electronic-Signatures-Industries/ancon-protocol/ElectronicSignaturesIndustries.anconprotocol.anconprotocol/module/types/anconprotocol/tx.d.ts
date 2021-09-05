@@ -1,14 +1,31 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-/** MsgEthereumTxResponse defines the Msg/EthereumTx response type. */
-export interface MsgFileMetadataResponse {
-    hash: Uint8Array;
-}
-/** this line is used by starport scaffolding # proto/tx/message */
-export interface MsgDidRegistry {
+export interface MsgChangeOwner {
     creator: string;
 }
-export interface MsgDidRegistryResponse {
+export interface MsgChangeOwnerResponse {
+    hash: Uint8Array;
+}
+export interface MsgAddDelegate {
+    hash: Uint8Array;
+}
+export interface MsgAddDelegateResponse {
+    hash: Uint8Array;
+}
+export interface MsgRevokeDelegate {
+    hash: Uint8Array;
+}
+export interface MsgRevokeDelegateResponse {
+    hash: Uint8Array;
+}
+export interface MsgSetAttribute {
+    hash: Uint8Array;
+}
+export interface MsgSetAttributeResponse {
+    hash: Uint8Array;
+}
+export interface MsgFileMetadataResponse {
+    hash: Uint8Array;
 }
 export interface MsgMetadata {
     creator: string;
@@ -39,26 +56,68 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgChangeOwner: {
+    encode(message: MsgChangeOwner, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgChangeOwner;
+    fromJSON(object: any): MsgChangeOwner;
+    toJSON(message: MsgChangeOwner): unknown;
+    fromPartial(object: DeepPartial<MsgChangeOwner>): MsgChangeOwner;
+};
+export declare const MsgChangeOwnerResponse: {
+    encode(message: MsgChangeOwnerResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgChangeOwnerResponse;
+    fromJSON(object: any): MsgChangeOwnerResponse;
+    toJSON(message: MsgChangeOwnerResponse): unknown;
+    fromPartial(object: DeepPartial<MsgChangeOwnerResponse>): MsgChangeOwnerResponse;
+};
+export declare const MsgAddDelegate: {
+    encode(message: MsgAddDelegate, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddDelegate;
+    fromJSON(object: any): MsgAddDelegate;
+    toJSON(message: MsgAddDelegate): unknown;
+    fromPartial(object: DeepPartial<MsgAddDelegate>): MsgAddDelegate;
+};
+export declare const MsgAddDelegateResponse: {
+    encode(message: MsgAddDelegateResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddDelegateResponse;
+    fromJSON(object: any): MsgAddDelegateResponse;
+    toJSON(message: MsgAddDelegateResponse): unknown;
+    fromPartial(object: DeepPartial<MsgAddDelegateResponse>): MsgAddDelegateResponse;
+};
+export declare const MsgRevokeDelegate: {
+    encode(message: MsgRevokeDelegate, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeDelegate;
+    fromJSON(object: any): MsgRevokeDelegate;
+    toJSON(message: MsgRevokeDelegate): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeDelegate>): MsgRevokeDelegate;
+};
+export declare const MsgRevokeDelegateResponse: {
+    encode(message: MsgRevokeDelegateResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeDelegateResponse;
+    fromJSON(object: any): MsgRevokeDelegateResponse;
+    toJSON(message: MsgRevokeDelegateResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeDelegateResponse>): MsgRevokeDelegateResponse;
+};
+export declare const MsgSetAttribute: {
+    encode(message: MsgSetAttribute, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgSetAttribute;
+    fromJSON(object: any): MsgSetAttribute;
+    toJSON(message: MsgSetAttribute): unknown;
+    fromPartial(object: DeepPartial<MsgSetAttribute>): MsgSetAttribute;
+};
+export declare const MsgSetAttributeResponse: {
+    encode(message: MsgSetAttributeResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgSetAttributeResponse;
+    fromJSON(object: any): MsgSetAttributeResponse;
+    toJSON(message: MsgSetAttributeResponse): unknown;
+    fromPartial(object: DeepPartial<MsgSetAttributeResponse>): MsgSetAttributeResponse;
+};
 export declare const MsgFileMetadataResponse: {
     encode(message: MsgFileMetadataResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgFileMetadataResponse;
     fromJSON(object: any): MsgFileMetadataResponse;
     toJSON(message: MsgFileMetadataResponse): unknown;
     fromPartial(object: DeepPartial<MsgFileMetadataResponse>): MsgFileMetadataResponse;
-};
-export declare const MsgDidRegistry: {
-    encode(message: MsgDidRegistry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgDidRegistry;
-    fromJSON(object: any): MsgDidRegistry;
-    toJSON(message: MsgDidRegistry): unknown;
-    fromPartial(object: DeepPartial<MsgDidRegistry>): MsgDidRegistry;
-};
-export declare const MsgDidRegistryResponse: {
-    encode(_: MsgDidRegistryResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgDidRegistryResponse;
-    fromJSON(_: any): MsgDidRegistryResponse;
-    toJSON(_: MsgDidRegistryResponse): unknown;
-    fromPartial(_: DeepPartial<MsgDidRegistryResponse>): MsgDidRegistryResponse;
 };
 export declare const MsgMetadata: {
     encode(message: MsgMetadata, writer?: Writer): Writer;
@@ -95,14 +154,21 @@ export interface Msg {
      * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
      * this line is used by starport scaffolding # proto/tx/rpc
      */
-    DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse>;
+    ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
+    /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
+    AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
+    RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
+    SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
-    DidRegistry(request: MsgDidRegistry): Promise<MsgDidRegistryResponse>;
+    ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
+    AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
+    RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
+    SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
 }

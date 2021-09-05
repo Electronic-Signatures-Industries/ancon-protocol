@@ -15,7 +15,7 @@ service Msg {
     // rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
     // this line is used by starport scaffolding # proto/tx/rpc
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
-  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
+//  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
   rpc AddDelegate(MsgAddDelegate) returns (MsgAddDelegateResponse);
   rpc RevokeDelegate(MsgRevokeDelegate) returns (MsgRevokeDelegateResponse);
   rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
@@ -24,7 +24,47 @@ service Msg {
 }
 
 
-// MsgEthereumTxResponse defines the Msg/EthereumTx response type.
+message MsgChangeOwner {
+  option (gogoproto.goproto_getters) = false;
+
+  string creator = 1;
+}
+message MsgChangeOwnerResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgAddDelegate {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgAddDelegateResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgRevokeDelegate {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgRevokeDelegateResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgSetAttribute {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+message MsgSetAttributeResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+
 message MsgFileMetadataResponse {
     option (gogoproto.goproto_getters) = false;
   

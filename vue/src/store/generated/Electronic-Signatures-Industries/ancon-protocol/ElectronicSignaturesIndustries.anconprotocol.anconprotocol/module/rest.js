@@ -140,12 +140,12 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
-         * @name QueryOwners
+         * @name QueryIdentifyOwner
          * @summary Queries a list of owners items.
-         * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners
+         * @request GET:/ancon/didregistry/{address}
          */
-        this.queryOwners = (params = {}) => this.request({
-            path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners`,
+        this.queryIdentifyOwner = (address, params = {}) => this.request({
+            path: `/ancon/didregistry/${address}`,
             method: "GET",
             format: "json",
             ...params,
@@ -154,14 +154,13 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
-         * @name QueryResource
-         * @summary Queries a list of resource items.
-         * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
+         * @name QueryGetAttributes
+         * @summary Queries a list of Attributes items.
+         * @request GET:/ancon/didregistry/{address}/attributes
          */
-        this.queryResource = (cid, query, params = {}) => this.request({
-            path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/${cid}`,
+        this.queryGetAttributes = (address, params = {}) => this.request({
+            path: `/ancon/didregistry/${address}/attributes`,
             method: "GET",
-            query: query,
             format: "json",
             ...params,
         });
@@ -177,6 +176,21 @@ export class Api extends HttpClient {
         this.queryReadFile = (cid, path, params = {}) => this.request({
             path: `/ancon/file/${cid}/${path}`,
             method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryResource
+         * @summary Queries a list of resource items.
+         * @request GET:/ancon/resource/{cid}
+         */
+        this.queryResource = (cid, query, params = {}) => this.request({
+            path: `/ancon/resource/${cid}`,
+            method: "GET",
+            query: query,
             format: "json",
             ...params,
         });

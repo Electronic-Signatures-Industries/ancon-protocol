@@ -1,7 +1,15 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 /** this line is used by starport scaffolding # 3 */
-export interface QueryOwnersRequest {
+export interface QueryGetAttributesResponse {
+}
+export interface QueryIdentifyOwnerResponse {
+}
+export interface QueryGetAttributesRequest {
+    address: string;
+}
+export interface QueryIdentifyOwnerRequest {
+    address: string;
 }
 export interface QueryOwnersResponse {
 }
@@ -12,12 +20,33 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
-export declare const QueryOwnersRequest: {
-    encode(_: QueryOwnersRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryOwnersRequest;
-    fromJSON(_: any): QueryOwnersRequest;
-    toJSON(_: QueryOwnersRequest): unknown;
-    fromPartial(_: DeepPartial<QueryOwnersRequest>): QueryOwnersRequest;
+export declare const QueryGetAttributesResponse: {
+    encode(_: QueryGetAttributesResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetAttributesResponse;
+    fromJSON(_: any): QueryGetAttributesResponse;
+    toJSON(_: QueryGetAttributesResponse): unknown;
+    fromPartial(_: DeepPartial<QueryGetAttributesResponse>): QueryGetAttributesResponse;
+};
+export declare const QueryIdentifyOwnerResponse: {
+    encode(_: QueryIdentifyOwnerResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryIdentifyOwnerResponse;
+    fromJSON(_: any): QueryIdentifyOwnerResponse;
+    toJSON(_: QueryIdentifyOwnerResponse): unknown;
+    fromPartial(_: DeepPartial<QueryIdentifyOwnerResponse>): QueryIdentifyOwnerResponse;
+};
+export declare const QueryGetAttributesRequest: {
+    encode(message: QueryGetAttributesRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetAttributesRequest;
+    fromJSON(object: any): QueryGetAttributesRequest;
+    toJSON(message: QueryGetAttributesRequest): unknown;
+    fromPartial(object: DeepPartial<QueryGetAttributesRequest>): QueryGetAttributesRequest;
+};
+export declare const QueryIdentifyOwnerRequest: {
+    encode(message: QueryIdentifyOwnerRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryIdentifyOwnerRequest;
+    fromJSON(object: any): QueryIdentifyOwnerRequest;
+    toJSON(message: QueryIdentifyOwnerRequest): unknown;
+    fromPartial(object: DeepPartial<QueryIdentifyOwnerRequest>): QueryIdentifyOwnerRequest;
 };
 export declare const QueryOwnersResponse: {
     encode(_: QueryOwnersResponse, writer?: Writer): Writer;
@@ -52,7 +81,9 @@ export interface Query {
     /** Queries a list of resource items. */
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of owners items. */
-    Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse>;
+    IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
+    /** Queries a list of Attributes items. */
+    GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
     /** Queries a list of resource items. */
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
@@ -62,7 +93,8 @@ export declare class QueryClientImpl implements Query {
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    Owners(request: QueryOwnersRequest): Promise<QueryOwnersResponse>;
+    IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
+    GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
 interface Rpc {

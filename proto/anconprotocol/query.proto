@@ -36,11 +36,11 @@ service Query {
 
 	// Queries a list of owners items.
 	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
-		option (google.api.http).get = "/ancon/didregistry/identify/{address}";
+		option (google.api.http).get = "/ancon/didregistry/{address}";
 	}
 	// Queries a list of Attributes items.
 	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
-		option (google.api.http).get = "/ancon/didregistry/attributes/{key}";
+		option (google.api.http).get = "/ancon/didregistry/{address}/attributes";
 	}
 
 
@@ -51,17 +51,21 @@ service Query {
 
 }
 // this line is used by starport scaffolding # 3
-message QueryAttributesRequest {
-}
+message QueryGetAttributesResponse {
 
-message QueryAttributesRequest {
-	string key = 1;
 }
+ 
 
-message QueryOwnersRequest {
+message QueryIdentifyOwnerResponse{
+	
+}
+message QueryGetAttributesRequest {
 	string address = 1;
 }
 
+message QueryIdentifyOwnerRequest {
+	string address = 1;
+}
 message QueryOwnersResponse {
 }
 

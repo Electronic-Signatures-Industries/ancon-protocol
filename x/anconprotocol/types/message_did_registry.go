@@ -5,23 +5,23 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = &MsgDidRegistry{}
+var _ sdk.Msg = &MsgChangeOwner{}
 
-func NewMsgDidRegistry(creator string) *MsgDidRegistry {
-	return &MsgDidRegistry{
+func NewMsgDidRegistry(creator string) *MsgChangeOwner {
+	return &MsgChangeOwner{
 		Creator: creator,
 	}
 }
 
-func (msg *MsgDidRegistry) Route() string {
+func (msg *MsgChangeOwner) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDidRegistry) Type() string {
+func (msg *MsgChangeOwner) Type() string {
 	return "DidRegistry"
 }
 
-func (msg *MsgDidRegistry) GetSigners() []sdk.AccAddress {
+func (msg *MsgChangeOwner) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -29,12 +29,12 @@ func (msg *MsgDidRegistry) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgDidRegistry) GetSignBytes() []byte {
+func (msg *MsgChangeOwner) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgDidRegistry) ValidateBasic() error {
+func (msg *MsgChangeOwner) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

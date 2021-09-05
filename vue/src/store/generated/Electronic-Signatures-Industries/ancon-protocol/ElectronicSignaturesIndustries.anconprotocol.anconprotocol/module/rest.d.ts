@@ -1,11 +1,27 @@
-export declare type AnconprotocolMsgDidRegistryResponse = object;
+export interface AnconprotocolMsgAddDelegateResponse {
+    /** @format byte */
+    hash?: string;
+}
+export interface AnconprotocolMsgChangeOwnerResponse {
+    /** @format byte */
+    hash?: string;
+}
 export interface AnconprotocolMsgFileResponse {
     hash?: string;
 }
 export interface AnconprotocolMsgMetadataResponse {
     cid?: string;
 }
-export declare type AnconprotocolQueryOwnersResponse = object;
+export interface AnconprotocolMsgRevokeDelegateResponse {
+    /** @format byte */
+    hash?: string;
+}
+export interface AnconprotocolMsgSetAttributeResponse {
+    /** @format byte */
+    hash?: string;
+}
+export declare type AnconprotocolQueryGetAttributesResponse = object;
+export declare type AnconprotocolQueryIdentifyOwnerResponse = object;
 export interface AnconprotocolQueryResourceResponse {
     data?: string;
 }
@@ -48,13 +64,10 @@ Example 2: Pack and unpack a message in Java.
  Example 4: Pack and unpack a message in Go
 
      foo := &pb.Foo{...}
-     any, err := anypb.New(foo)
-     if err != nil {
-       ...
-     }
+     any, err := ptypes.MarshalAny(foo)
      ...
      foo := &pb.Foo{}
-     if err := any.UnmarshalTo(foo); err != nil {
+     if err := ptypes.UnmarshalAny(any, foo); err != nil {
        ...
      }
 
@@ -198,22 +211,20 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * No description
      *
      * @tags Query
-     * @name QueryOwners
+     * @name QueryIdentifyOwner
      * @summary Queries a list of owners items.
-     * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/owners
+     * @request GET:/ancon/didregistry/{address}
      */
-    queryOwners: (params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    queryIdentifyOwner: (address: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
     /**
      * No description
      *
      * @tags Query
-     * @name QueryResource
-     * @summary Queries a list of resource items.
-     * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
+     * @name QueryGetAttributes
+     * @summary Queries a list of Attributes items.
+     * @request GET:/ancon/didregistry/{address}/attributes
      */
-    queryResource: (cid: string, query?: {
-        path?: string;
-    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    queryGetAttributes: (address: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
     /**
    * No description
    *
@@ -224,6 +235,17 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
    * @request GET:/ancon/file/{cid}/{path}
    */
     queryReadFile: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryResource
+     * @summary Queries a list of resource items.
+     * @request GET:/ancon/resource/{cid}
+     */
+    queryResource: (cid: string, query?: {
+        path?: string;
+    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
     /**
      * No description
      *
