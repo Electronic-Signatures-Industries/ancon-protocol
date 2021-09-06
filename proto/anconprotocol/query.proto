@@ -32,7 +32,7 @@ service Query {
 	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {
 		option (google.api.http).get = "/ancon/{cid}";
 	}
-    // this line is used by starport scaffolding # 2
+	// this line is used by starport scaffolding # 2
 
 	// Queries a list of owners items.
 	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
@@ -49,12 +49,48 @@ service Query {
 		option (google.api.http).get = "/ancon/resource/{cid}";
 	}
 
+	// Queries a list of nonce items.
+	rpc Resource(QueryNonceRequest) returns (QueryNonceResponse) {
+		option (google.api.http).get = "/ancon/resource/{nonce}";
+	}
+
+	// Queries a list of delegates items.
+	rpc Resource(QueryDelegatesRequest) returns (QueryDelegatesResponse) {
+		option (google.api.http).get = "/ancon/resource/{delegates}";
+	}
+
 }
 // this line is used by starport scaffolding # 3
+message QueryNonceRequest {
+  string delegates = 1;
+}
+
+message QueryNonceResponse {
+}
+
+message QueryNonceRequest {
+  string delegates = 1;
+}
+
+message QueryNonceResponse {
+}
+
+message QueryDelegatesRequest {
+}
+
+message QueryDelegatesResponse {
+}
+
+message QueryNonceRequest {
+  string delegates = 1;
+}
+
+message QueryNonceResponse {
+}
+
 message QueryGetAttributesResponse {
 
 }
- 
 
 message QueryIdentifyOwnerResponse{
 	
@@ -75,6 +111,14 @@ message QueryResourceRequest {
 }
 
 message QueryResourceResponse {
+  string data = 1;
+}
+
+message QueryNonceResponse {
+  string data = 1;
+}
+
+message QueryDelegatesResponse {
   string data = 1;
 }
 

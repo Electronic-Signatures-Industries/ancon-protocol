@@ -20,6 +20,12 @@ const (
 
 	OwnerKey = "ancon_did_owners"
 
+	Delegates = "did_ancon_delegates"
+
+	Nonce = "did_ancon_nonce"
+
+	Owners = "did_ancon_owners"
+
 	// this line is used by starport scaffolding # ibc/keys/name
 )
 

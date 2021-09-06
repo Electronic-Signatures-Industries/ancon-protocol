@@ -14,6 +14,8 @@ service Msg {
     // rpc MetadataHandlerTx(MsgMetadataTx) returns (MsgFileMetadataResponse);
     // rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
     // this line is used by starport scaffolding # proto/tx/rpc
+  rpc Nonce(MsgNonce) returns (MsgNonceResponse);
+  rpc Nonce(MsgNonce) returns (MsgNonceResponse);
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
   rpc AddDelegate(MsgAddDelegate) returns (MsgAddDelegateResponse);
@@ -72,6 +74,14 @@ message MsgFileMetadataResponse {
  }
 
 // this line is used by starport scaffolding # proto/tx/message
+message MsgNonce {
+  string creator = 1;
+  string delegates = 2;
+}
+
+message MsgNonceResponse {
+}
+
 
 message MsgMetadata {
   string creator = 1;
