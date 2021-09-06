@@ -3,7 +3,18 @@ import { Reader, Writer } from 'protobufjs/minimal'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
-/** this line is used by starport scaffolding # 3 */
+export interface QueryDelegatesRequest {
+  id: string
+}
+
+export interface QueryDelegatesResponse {}
+
+export interface QueryNonceRequest {
+  id: string
+}
+
+export interface QueryNonceResponse {}
+
 export interface QueryGetAttributesResponse {}
 
 export interface QueryIdentifyOwnerResponse {}
@@ -25,6 +36,192 @@ export interface QueryResourceRequest {
 
 export interface QueryResourceResponse {
   data: string
+}
+
+const baseQueryDelegatesRequest: object = { id: '' }
+
+export const QueryDelegatesRequest = {
+  encode(message: QueryDelegatesRequest, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryDelegatesRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryDelegatesRequest } as QueryDelegatesRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryDelegatesRequest {
+    const message = { ...baseQueryDelegatesRequest } as QueryDelegatesRequest
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryDelegatesRequest): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryDelegatesRequest>): QueryDelegatesRequest {
+    const message = { ...baseQueryDelegatesRequest } as QueryDelegatesRequest
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    return message
+  }
+}
+
+const baseQueryDelegatesResponse: object = {}
+
+export const QueryDelegatesResponse = {
+  encode(_: QueryDelegatesResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryDelegatesResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryDelegatesResponse } as QueryDelegatesResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryDelegatesResponse {
+    const message = { ...baseQueryDelegatesResponse } as QueryDelegatesResponse
+    return message
+  },
+
+  toJSON(_: QueryDelegatesResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryDelegatesResponse>): QueryDelegatesResponse {
+    const message = { ...baseQueryDelegatesResponse } as QueryDelegatesResponse
+    return message
+  }
+}
+
+const baseQueryNonceRequest: object = { id: '' }
+
+export const QueryNonceRequest = {
+  encode(message: QueryNonceRequest, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryNonceRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryNonceRequest } as QueryNonceRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryNonceRequest {
+    const message = { ...baseQueryNonceRequest } as QueryNonceRequest
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryNonceRequest): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryNonceRequest>): QueryNonceRequest {
+    const message = { ...baseQueryNonceRequest } as QueryNonceRequest
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    return message
+  }
+}
+
+const baseQueryNonceResponse: object = {}
+
+export const QueryNonceResponse = {
+  encode(_: QueryNonceResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryNonceResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryNonceResponse } as QueryNonceResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryNonceResponse {
+    const message = { ...baseQueryNonceResponse } as QueryNonceResponse
+    return message
+  },
+
+  toJSON(_: QueryNonceResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryNonceResponse>): QueryNonceResponse {
+    const message = { ...baseQueryNonceResponse } as QueryNonceResponse
+    return message
+  }
 }
 
 const baseQueryGetAttributesResponse: object = {}
@@ -395,6 +592,12 @@ export interface Query {
   GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>
   /** Queries a list of resource items. */
   Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /** Queries a list of nonce items. */
+  DidRegistryNonces(request: QueryNonceRequest): Promise<QueryNonceResponse>
+  /** Queries a list of nonce items. */
+  GetDidRegistryNonce(request: QueryNonceRequest): Promise<QueryNonceResponse>
+  /** Queries a list of delegates items. */
+  GetDidRegistryDelegate(request: QueryDelegatesRequest): Promise<QueryDelegatesResponse>
 }
 
 export class QueryClientImpl implements Query {
@@ -436,6 +639,24 @@ export class QueryClientImpl implements Query {
     const data = QueryResourceRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data)
     return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
+  DidRegistryNonces(request: QueryNonceRequest): Promise<QueryNonceResponse> {
+    const data = QueryNonceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'DidRegistryNonces', data)
+    return promise.then((data) => QueryNonceResponse.decode(new Reader(data)))
+  }
+
+  GetDidRegistryNonce(request: QueryNonceRequest): Promise<QueryNonceResponse> {
+    const data = QueryNonceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetDidRegistryNonce', data)
+    return promise.then((data) => QueryNonceResponse.decode(new Reader(data)))
+  }
+
+  GetDidRegistryDelegate(request: QueryDelegatesRequest): Promise<QueryDelegatesResponse> {
+    const data = QueryDelegatesRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetDidRegistryDelegate', data)
+    return promise.then((data) => QueryDelegatesResponse.decode(new Reader(data)))
   }
 }
 

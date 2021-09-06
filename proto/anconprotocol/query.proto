@@ -3,8 +3,6 @@ package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/any.proto";
-import "cosmos_proto/cosmos.proto";
 
 
 import "google/api/annotations.proto";
@@ -50,39 +48,32 @@ service Query {
 	}
 
 	// Queries a list of nonce items.
-	rpc Resource(QueryNonceRequest) returns (QueryNonceResponse) {
-		option (google.api.http).get = "/ancon/resource/{nonce}";
+	rpc DidRegistryNonces(QueryNonceRequest) returns (QueryNonceResponse) {
+		option (google.api.http).get = "/ancon/didregistry/nonces";
 	}
 
+	// Queries a list of nonce items.
+	rpc GetDidRegistryNonce(QueryNonceRequest) returns (QueryNonceResponse) {
+		option (google.api.http).get = "/ancon/didregistry/nonces/{id}";
+	}	
+
 	// Queries a list of delegates items.
-	rpc Resource(QueryDelegatesRequest) returns (QueryDelegatesResponse) {
-		option (google.api.http).get = "/ancon/resource/{delegates}";
+	rpc GetDidRegistryDelegate(QueryDelegatesRequest) returns (QueryDelegatesResponse) {
+		option (google.api.http).get = "/ancon/didregistry/delegates/{id}";
 	}
 
 }
 // this line is used by starport scaffolding # 3
-message QueryNonceRequest {
-  string delegates = 1;
-}
-
-message QueryNonceResponse {
-}
-
-message QueryNonceRequest {
-  string delegates = 1;
-}
-
-message QueryNonceResponse {
-}
 
 message QueryDelegatesRequest {
+	string id = 1;
 }
 
 message QueryDelegatesResponse {
 }
 
 message QueryNonceRequest {
-  string delegates = 1;
+  string id = 1;
 }
 
 message QueryNonceResponse {
@@ -111,14 +102,6 @@ message QueryResourceRequest {
 }
 
 message QueryResourceResponse {
-  string data = 1;
-}
-
-message QueryNonceResponse {
-  string data = 1;
-}
-
-message QueryDelegatesResponse {
   string data = 1;
 }
 

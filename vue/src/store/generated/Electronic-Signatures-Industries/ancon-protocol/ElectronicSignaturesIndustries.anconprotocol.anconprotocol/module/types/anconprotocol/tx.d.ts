@@ -27,6 +27,13 @@ export interface MsgSetAttributeResponse {
 export interface MsgFileMetadataResponse {
     hash: Uint8Array;
 }
+/** this line is used by starport scaffolding # proto/tx/message */
+export interface MsgNonce {
+    creator: string;
+    delegates: string;
+}
+export interface MsgNonceResponse {
+}
 export interface MsgMetadata {
     creator: string;
     name: string;
@@ -119,6 +126,20 @@ export declare const MsgFileMetadataResponse: {
     toJSON(message: MsgFileMetadataResponse): unknown;
     fromPartial(object: DeepPartial<MsgFileMetadataResponse>): MsgFileMetadataResponse;
 };
+export declare const MsgNonce: {
+    encode(message: MsgNonce, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgNonce;
+    fromJSON(object: any): MsgNonce;
+    toJSON(message: MsgNonce): unknown;
+    fromPartial(object: DeepPartial<MsgNonce>): MsgNonce;
+};
+export declare const MsgNonceResponse: {
+    encode(_: MsgNonceResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgNonceResponse;
+    fromJSON(_: any): MsgNonceResponse;
+    toJSON(_: MsgNonceResponse): unknown;
+    fromPartial(_: DeepPartial<MsgNonceResponse>): MsgNonceResponse;
+};
 export declare const MsgMetadata: {
     encode(message: MsgMetadata, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMetadata;
@@ -154,6 +175,7 @@ export interface Msg {
      * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
      * this line is used by starport scaffolding # proto/tx/rpc
      */
+    Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
     AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
@@ -165,6 +187,7 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;

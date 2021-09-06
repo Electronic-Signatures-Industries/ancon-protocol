@@ -39,6 +39,14 @@ export interface MsgFileMetadataResponse {
   hash: Uint8Array
 }
 
+/** this line is used by starport scaffolding # proto/tx/message */
+export interface MsgNonce {
+  creator: string
+  delegates: string
+}
+
+export interface MsgNonceResponse {}
+
 export interface MsgMetadata {
   creator: string
   name: string
@@ -553,6 +561,116 @@ export const MsgFileMetadataResponse = {
     } else {
       message.hash = new Uint8Array()
     }
+    return message
+  }
+}
+
+const baseMsgNonce: object = { creator: '', delegates: '' }
+
+export const MsgNonce = {
+  encode(message: MsgNonce, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.delegates !== '') {
+      writer.uint32(18).string(message.delegates)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgNonce {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgNonce } as MsgNonce
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.delegates = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgNonce {
+    const message = { ...baseMsgNonce } as MsgNonce
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.delegates !== undefined && object.delegates !== null) {
+      message.delegates = String(object.delegates)
+    } else {
+      message.delegates = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgNonce): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.delegates !== undefined && (obj.delegates = message.delegates)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgNonce>): MsgNonce {
+    const message = { ...baseMsgNonce } as MsgNonce
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.delegates !== undefined && object.delegates !== null) {
+      message.delegates = object.delegates
+    } else {
+      message.delegates = ''
+    }
+    return message
+  }
+}
+
+const baseMsgNonceResponse: object = {}
+
+export const MsgNonceResponse = {
+  encode(_: MsgNonceResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgNonceResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgNonceResponse {
+    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
+    return message
+  },
+
+  toJSON(_: MsgNonceResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgNonceResponse>): MsgNonceResponse {
+    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
     return message
   }
 }
@@ -1085,6 +1203,7 @@ export interface Msg {
    * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
    * this line is used by starport scaffolding # proto/tx/rpc
    */
+  Nonce(request: MsgNonce): Promise<MsgNonceResponse>
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
   /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
   AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>
@@ -1099,6 +1218,12 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  Nonce(request: MsgNonce): Promise<MsgNonceResponse> {
+    const data = MsgNonce.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'Nonce', data)
+    return promise.then((data) => MsgNonceResponse.decode(new Reader(data)))
+  }
+
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse> {
     const data = MsgChangeOwner.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ChangeOwner', data)

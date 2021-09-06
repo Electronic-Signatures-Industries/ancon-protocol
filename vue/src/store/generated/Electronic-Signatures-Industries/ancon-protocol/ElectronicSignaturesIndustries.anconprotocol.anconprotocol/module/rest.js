@@ -140,6 +140,49 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryGetDidRegistryDelegate
+         * @summary Queries a list of delegates items.
+         * @request GET:/ancon/didregistry/delegates/{id}
+         */
+        this.queryGetDidRegistryDelegate = (id, params = {}) => this.request({
+            path: `/ancon/didregistry/delegates/${id}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryDidRegistryNonces
+         * @summary Queries a list of nonce items.
+         * @request GET:/ancon/didregistry/nonces
+         */
+        this.queryDidRegistryNonces = (query, params = {}) => this.request({
+            path: `/ancon/didregistry/nonces`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryGetDidRegistryNonce
+         * @summary Queries a list of nonce items.
+         * @request GET:/ancon/didregistry/nonces/{id}
+         */
+        this.queryGetDidRegistryNonce = (id, params = {}) => this.request({
+            path: `/ancon/didregistry/nonces/${id}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryIdentifyOwner
          * @summary Queries a list of owners items.
          * @request GET:/ancon/didregistry/{address}
