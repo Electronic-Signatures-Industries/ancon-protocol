@@ -100,11 +100,11 @@ export const MsgChangeOwnerResponse = {
         return message;
     }
 };
-const baseMsgAddDelegate = {};
+const baseMsgAddDelegate = { creator: '' };
 export const MsgAddDelegate = {
     encode(message, writer = Writer.create()) {
-        if (message.hash.length !== 0) {
-            writer.uint32(10).bytes(message.hash);
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
         }
         return writer;
     },
@@ -116,7 +116,7 @@ export const MsgAddDelegate = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.hash = reader.bytes();
+                    message.creator = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -127,23 +127,26 @@ export const MsgAddDelegate = {
     },
     fromJSON(object) {
         const message = { ...baseMsgAddDelegate };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = bytesFromBase64(object.hash);
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        message.creator !== undefined && (obj.creator = message.creator);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgAddDelegate };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = object.hash;
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
         }
         else {
-            message.hash = new Uint8Array();
+            message.creator = '';
         }
         return message;
     }
@@ -196,11 +199,11 @@ export const MsgAddDelegateResponse = {
         return message;
     }
 };
-const baseMsgRevokeDelegate = {};
+const baseMsgRevokeDelegate = { creator: '' };
 export const MsgRevokeDelegate = {
     encode(message, writer = Writer.create()) {
-        if (message.hash.length !== 0) {
-            writer.uint32(10).bytes(message.hash);
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
         }
         return writer;
     },
@@ -212,7 +215,7 @@ export const MsgRevokeDelegate = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.hash = reader.bytes();
+                    message.creator = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -223,23 +226,26 @@ export const MsgRevokeDelegate = {
     },
     fromJSON(object) {
         const message = { ...baseMsgRevokeDelegate };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = bytesFromBase64(object.hash);
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        message.creator !== undefined && (obj.creator = message.creator);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgRevokeDelegate };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = object.hash;
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
         }
         else {
-            message.hash = new Uint8Array();
+            message.creator = '';
         }
         return message;
     }
@@ -292,11 +298,11 @@ export const MsgRevokeDelegateResponse = {
         return message;
     }
 };
-const baseMsgSetAttribute = {};
+const baseMsgSetAttribute = { creator: '' };
 export const MsgSetAttribute = {
     encode(message, writer = Writer.create()) {
-        if (message.hash.length !== 0) {
-            writer.uint32(10).bytes(message.hash);
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
         }
         return writer;
     },
@@ -308,7 +314,7 @@ export const MsgSetAttribute = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.hash = reader.bytes();
+                    message.creator = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -319,23 +325,26 @@ export const MsgSetAttribute = {
     },
     fromJSON(object) {
         const message = { ...baseMsgSetAttribute };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = bytesFromBase64(object.hash);
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        message.creator !== undefined && (obj.creator = message.creator);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgSetAttribute };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = object.hash;
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
         }
         else {
-            message.hash = new Uint8Array();
+            message.creator = '';
         }
         return message;
     }

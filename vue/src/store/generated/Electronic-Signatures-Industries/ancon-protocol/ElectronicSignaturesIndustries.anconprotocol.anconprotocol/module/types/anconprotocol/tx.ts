@@ -12,7 +12,7 @@ export interface MsgChangeOwnerResponse {
 }
 
 export interface MsgAddDelegate {
-  hash: Uint8Array
+  creator: string
 }
 
 export interface MsgAddDelegateResponse {
@@ -20,7 +20,7 @@ export interface MsgAddDelegateResponse {
 }
 
 export interface MsgRevokeDelegate {
-  hash: Uint8Array
+  creator: string
 }
 
 export interface MsgRevokeDelegateResponse {
@@ -28,7 +28,7 @@ export interface MsgRevokeDelegateResponse {
 }
 
 export interface MsgSetAttribute {
-  hash: Uint8Array
+  creator: string
 }
 
 export interface MsgSetAttributeResponse {
@@ -180,12 +180,12 @@ export const MsgChangeOwnerResponse = {
   }
 }
 
-const baseMsgAddDelegate: object = {}
+const baseMsgAddDelegate: object = { creator: '' }
 
 export const MsgAddDelegate = {
   encode(message: MsgAddDelegate, writer: Writer = Writer.create()): Writer {
-    if (message.hash.length !== 0) {
-      writer.uint32(10).bytes(message.hash)
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
     }
     return writer
   },
@@ -198,7 +198,7 @@ export const MsgAddDelegate = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.hash = reader.bytes()
+          message.creator = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -210,24 +210,26 @@ export const MsgAddDelegate = {
 
   fromJSON(object: any): MsgAddDelegate {
     const message = { ...baseMsgAddDelegate } as MsgAddDelegate
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = bytesFromBase64(object.hash)
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
     }
     return message
   },
 
   toJSON(message: MsgAddDelegate): unknown {
     const obj: any = {}
-    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()))
+    message.creator !== undefined && (obj.creator = message.creator)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgAddDelegate>): MsgAddDelegate {
     const message = { ...baseMsgAddDelegate } as MsgAddDelegate
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
     } else {
-      message.hash = new Uint8Array()
+      message.creator = ''
     }
     return message
   }
@@ -286,12 +288,12 @@ export const MsgAddDelegateResponse = {
   }
 }
 
-const baseMsgRevokeDelegate: object = {}
+const baseMsgRevokeDelegate: object = { creator: '' }
 
 export const MsgRevokeDelegate = {
   encode(message: MsgRevokeDelegate, writer: Writer = Writer.create()): Writer {
-    if (message.hash.length !== 0) {
-      writer.uint32(10).bytes(message.hash)
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
     }
     return writer
   },
@@ -304,7 +306,7 @@ export const MsgRevokeDelegate = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.hash = reader.bytes()
+          message.creator = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -316,24 +318,26 @@ export const MsgRevokeDelegate = {
 
   fromJSON(object: any): MsgRevokeDelegate {
     const message = { ...baseMsgRevokeDelegate } as MsgRevokeDelegate
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = bytesFromBase64(object.hash)
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
     }
     return message
   },
 
   toJSON(message: MsgRevokeDelegate): unknown {
     const obj: any = {}
-    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()))
+    message.creator !== undefined && (obj.creator = message.creator)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgRevokeDelegate>): MsgRevokeDelegate {
     const message = { ...baseMsgRevokeDelegate } as MsgRevokeDelegate
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
     } else {
-      message.hash = new Uint8Array()
+      message.creator = ''
     }
     return message
   }
@@ -392,12 +396,12 @@ export const MsgRevokeDelegateResponse = {
   }
 }
 
-const baseMsgSetAttribute: object = {}
+const baseMsgSetAttribute: object = { creator: '' }
 
 export const MsgSetAttribute = {
   encode(message: MsgSetAttribute, writer: Writer = Writer.create()): Writer {
-    if (message.hash.length !== 0) {
-      writer.uint32(10).bytes(message.hash)
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
     }
     return writer
   },
@@ -410,7 +414,7 @@ export const MsgSetAttribute = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.hash = reader.bytes()
+          message.creator = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -422,24 +426,26 @@ export const MsgSetAttribute = {
 
   fromJSON(object: any): MsgSetAttribute {
     const message = { ...baseMsgSetAttribute } as MsgSetAttribute
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = bytesFromBase64(object.hash)
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
     }
     return message
   },
 
   toJSON(message: MsgSetAttribute): unknown {
     const obj: any = {}
-    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()))
+    message.creator !== undefined && (obj.creator = message.creator)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgSetAttribute>): MsgSetAttribute {
     const message = { ...baseMsgSetAttribute } as MsgSetAttribute
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
     } else {
-      message.hash = new Uint8Array()
+      message.creator = ''
     }
     return message
   }

@@ -37,7 +37,7 @@ message MsgChangeOwnerResponse {
 message MsgAddDelegate {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  string creator = 1;
 }
 message MsgAddDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -47,7 +47,7 @@ message MsgAddDelegateResponse {
 message MsgRevokeDelegate {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  string creator = 1;
 }
 message MsgRevokeDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -57,7 +57,7 @@ message MsgRevokeDelegateResponse {
 message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  string creator = 1;
 }
 message MsgSetAttributeResponse {
   option (gogoproto.goproto_getters) = false;

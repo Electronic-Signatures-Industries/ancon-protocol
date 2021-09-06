@@ -7,19 +7,19 @@ export interface MsgChangeOwnerResponse {
     hash: Uint8Array;
 }
 export interface MsgAddDelegate {
-    hash: Uint8Array;
+    creator: string;
 }
 export interface MsgAddDelegateResponse {
     hash: Uint8Array;
 }
 export interface MsgRevokeDelegate {
-    hash: Uint8Array;
+    creator: string;
 }
 export interface MsgRevokeDelegateResponse {
     hash: Uint8Array;
 }
 export interface MsgSetAttribute {
-    hash: Uint8Array;
+    creator: string;
 }
 export interface MsgSetAttributeResponse {
     hash: Uint8Array;
