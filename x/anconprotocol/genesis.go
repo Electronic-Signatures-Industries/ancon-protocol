@@ -16,7 +16,16 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	if err := types.ValidateGenesis(data); err != nil {
 		panic(err.Error())
 	}
-
+	
+	
+	for _, c := range data.Collections {
+		if err := k.SetDenom(ctx, c.Denom); err != nil {
+			panic(err)
+		}
+		if err := k.SetCollection(ctx, c); err != nil {
+			panic(err)
+		}
+	}
 	k.SetPreviousBlockTime(ctx, data.PreviousBlockTime)
 	k.SetParams(ctx, data.Params)
 	for _, supply := range data.Supplies {

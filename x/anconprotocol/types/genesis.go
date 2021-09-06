@@ -14,6 +14,7 @@ func NewGenesisState(params Params, htlcs []HTLC, Supplies []AssetSupply, previo
 		Htlcs:             htlcs,
 		Supplies:          Supplies,
 		PreviousBlockTime: previousBlockTime,
+		Collections: collections,
 	}
 }
 
@@ -24,6 +25,7 @@ func DefaultGenesisState() *GenesisState {
 		Htlcs:             []HTLC{},
 		Supplies:          DefaultAssetSupplies(),
 		PreviousBlockTime: DefaultPreviousBlockTime,
+		Collections: collections,
 	}
 }
 
@@ -61,5 +63,24 @@ func ValidateGenesis(data GenesisState) error {
 		supplyDenoms[supply.CurrentSupply.Denom] = true
 	}
 
+	for _, c := range data.Collections {
+		if err := ValidateDenomID(c.Denom.Name); err != nil {
+			return err
+		}
+
+		for _, nft := range c.NFTs {
+			if nft.GetOwner().Empty() {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "missing owner")
+			}
+
+			if err := ValidateTokenID(nft.GetID()); err != nil {
+				return err
+			}
+
+			if err := ValidateTokenURI(nft.GetURI()); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
