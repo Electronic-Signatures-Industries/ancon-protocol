@@ -39,9 +39,9 @@ export interface AnconprotocolMsgSetAttributeResponse {
   hash?: string;
 }
 
-export type AnconprotocolQueryDelegatesResponse = object;
-
 export type AnconprotocolQueryGetAttributesResponse = object;
+
+export type AnconprotocolQueryGetDelegatesResponse = object;
 
 export type AnconprotocolQueryIdentifyOwnerResponse = object;
 
@@ -265,12 +265,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryGetDidRegistryDelegate
+   * @name QueryReadDelegates
+   * @summary Queries a list of nonce items.
+   * @request GET:/ancon/didregistry/delegates
+   */
+  queryReadDelegates = (query?: { id?: string }, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryGetDelegatesResponse, RpcStatus>({
+      path: `/ancon/didregistry/delegates`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadDelegate
    * @summary Queries a list of delegates items.
    * @request GET:/ancon/didregistry/delegates/{id}
    */
-  queryGetDidRegistryDelegate = (id: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryDelegatesResponse, RpcStatus>({
+  queryReadDelegate = (id: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryGetDelegatesResponse, RpcStatus>({
       path: `/ancon/didregistry/delegates/${id}`,
       method: "GET",
       format: "json",
@@ -281,11 +298,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryDidRegistryNonces
+   * @name QueryReadNonces
    * @summary Queries a list of nonce items.
    * @request GET:/ancon/didregistry/nonces
    */
-  queryDidRegistryNonces = (query?: { id?: string }, params: RequestParams = {}) =>
+  queryReadNonces = (query?: { id?: string }, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryNonceResponse, RpcStatus>({
       path: `/ancon/didregistry/nonces`,
       method: "GET",
@@ -298,11 +315,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryGetDidRegistryNonce
+   * @name QueryReadNonce
    * @summary Queries a list of nonce items.
    * @request GET:/ancon/didregistry/nonces/{id}
    */
-  queryGetDidRegistryNonce = (id: string, params: RequestParams = {}) =>
+  queryReadNonce = (id: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryNonceResponse, RpcStatus>({
       path: `/ancon/didregistry/nonces/${id}`,
       method: "GET",

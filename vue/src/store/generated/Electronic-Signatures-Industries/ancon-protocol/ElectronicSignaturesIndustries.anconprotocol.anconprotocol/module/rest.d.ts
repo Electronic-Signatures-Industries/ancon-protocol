@@ -21,8 +21,8 @@ export interface AnconprotocolMsgSetAttributeResponse {
     /** @format byte */
     hash?: string;
 }
-export declare type AnconprotocolQueryDelegatesResponse = object;
 export declare type AnconprotocolQueryGetAttributesResponse = object;
+export declare type AnconprotocolQueryGetDelegatesResponse = object;
 export declare type AnconprotocolQueryIdentifyOwnerResponse = object;
 export declare type AnconprotocolQueryNonceResponse = object;
 export interface AnconprotocolQueryResourceResponse {
@@ -101,31 +101,42 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * No description
      *
      * @tags Query
-     * @name QueryGetDidRegistryDelegate
-     * @summary Queries a list of delegates items.
-     * @request GET:/ancon/didregistry/delegates/{id}
-     */
-    queryGetDidRegistryDelegate: (id: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
-    /**
-     * No description
-     *
-     * @tags Query
-     * @name QueryDidRegistryNonces
+     * @name QueryReadDelegates
      * @summary Queries a list of nonce items.
-     * @request GET:/ancon/didregistry/nonces
+     * @request GET:/ancon/didregistry/delegates
      */
-    queryDidRegistryNonces: (query?: {
+    queryReadDelegates: (query?: {
         id?: string;
     }, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
     /**
      * No description
      *
      * @tags Query
-     * @name QueryGetDidRegistryNonce
+     * @name QueryReadDelegate
+     * @summary Queries a list of delegates items.
+     * @request GET:/ancon/didregistry/delegates/{id}
+     */
+    queryReadDelegate: (id: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryReadNonces
+     * @summary Queries a list of nonce items.
+     * @request GET:/ancon/didregistry/nonces
+     */
+    queryReadNonces: (query?: {
+        id?: string;
+    }, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryReadNonce
      * @summary Queries a list of nonce items.
      * @request GET:/ancon/didregistry/nonces/{id}
      */
-    queryGetDidRegistryNonce: (id: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    queryReadNonce: (id: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
     /**
      * No description
      *

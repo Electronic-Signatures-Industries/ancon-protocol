@@ -50,3 +50,12 @@ func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDel
 
 	return &types.MsgRevokeDelegateResponse{}, nil
 }
+
+func (k msgServer) Nonce(goCtx context.Context, msg *types.MsgNonce) (*types.MsgNonceResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Handling the message
+	_ = ctx
+
+	return &types.MsgNonceResponse{}, nil
+}

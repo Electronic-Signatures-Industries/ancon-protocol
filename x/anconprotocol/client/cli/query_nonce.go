@@ -1,48 +1,46 @@
 package cli
 
-import (
-    "strconv"
-	"github.com/spf13/cobra"
+// import (
+// 	"github.com/spf13/cobra"
+// 	"strconv"
 
-    "github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-)
+// 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+// 	"github.com/cosmos/cosmos-sdk/client"
+// 	"github.com/cosmos/cosmos-sdk/client/flags"
+// )
 
-var _ = strconv.Itoa(0)
+// var _ = strconv.Itoa(0)
 
-func CmdNonce() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "nonce [delegates]",
-		Short: "Query nonce",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-      reqDelegates := string(args[0])
-      
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
+// func CmdNonce() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "nonce [delegates]",
+// 		Short: "Query nonce",
+// 		Args:  cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+//       reqDelegates := string(args[0])
 
-			queryClient := types.NewQueryClient(clientCtx)
+// 			clientCtx, err := client.GetClientTxContext(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
 
-			params := &types.QueryNonceRequest{
-                
-                Delegates: string(reqDelegates),
-            }
+// 			queryClient := types.NewQueryClient(clientCtx)
 
-            
+// 			params := &types.QueryNonceRequest{
 
-			res, err := queryClient.Nonce(cmd.Context(), params)
-            if err != nil {
-                return err
-            }
+//                 Delegates: string(reqDelegates),
+//             }
 
-            return clientCtx.PrintProto(res)
-		},
-	}
+// 			res, err := queryClient.Nonce(cmd.Context(), params)
+//             if err != nil {
+//                 return err
+//             }
 
-	flags.AddQueryFlagsToCmd(cmd)
+//             return clientCtx.PrintProto(res)
+// 		},
+// 	}
 
-    return cmd
-}
+// 	flags.AddQueryFlagsToCmd(cmd)
+
+//     return cmd
+// }

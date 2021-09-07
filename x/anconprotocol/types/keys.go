@@ -18,13 +18,13 @@ const (
 
 	IPLDKey = "ancon_ipld"
 
-	OwnerKey = "ancon_did_owners"
-
 	Delegates = "did_ancon_delegates"
 
 	Nonce = "did_ancon_nonce"
 
 	Owners = "did_ancon_owners"
+
+	ChangeOwner = "did_change_owner_key"
 
 	// this line is used by starport scaffolding # ibc/keys/name
 )
@@ -33,4 +33,8 @@ const (
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+func MultiKeyPrefix(a []byte, b []byte) []byte {
+	return append(a, b...)
 }

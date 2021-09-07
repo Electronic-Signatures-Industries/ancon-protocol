@@ -182,6 +182,7 @@ export interface Msg {
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
     SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
+    /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
     File(request: MsgFile): Promise<MsgFileResponse>;
 }
 export declare class MsgClientImpl implements Msg {

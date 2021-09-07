@@ -20,6 +20,7 @@ service Msg {
   rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
+  //rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
 }
 
 

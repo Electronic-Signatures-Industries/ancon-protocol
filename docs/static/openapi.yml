@@ -10562,11 +10562,46 @@ paths:
           type: boolean
       tags:
         - Query
+  /ancon/didregistry/delegates:
+    get:
+      summary: Queries a list of nonce items.
+      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadDelegates
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    typeUrl:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: string
+      tags:
+        - Query
   '/ancon/didregistry/delegates/{id}':
     get:
       summary: Queries a list of delegates items.
-      operationId: >-
-        ElectronicSignaturesIndustriesAnconprotocolAnconprotocolGetDidRegistryDelegate
+      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadDelegate
       responses:
         '200':
           description: A successful response.
@@ -10602,8 +10637,7 @@ paths:
   /ancon/didregistry/nonces:
     get:
       summary: Queries a list of nonce items.
-      operationId: >-
-        ElectronicSignaturesIndustriesAnconprotocolAnconprotocolDidRegistryNonces
+      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadNonces
       responses:
         '200':
           description: A successful response.
@@ -10639,8 +10673,7 @@ paths:
   '/ancon/didregistry/nonces/{id}':
     get:
       summary: Queries a list of nonce items.
-      operationId: >-
-        ElectronicSignaturesIndustriesAnconprotocolAnconprotocolGetDidRegistryNonce
+      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadNonce
       responses:
         '200':
           description: A successful response.
@@ -26241,9 +26274,9 @@ definitions:
       hash:
         type: string
         format: byte
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryDelegatesResponse:
-    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetAttributesResponse:
+    type: object
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegatesResponse:
     type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryIdentifyOwnerResponse:
     type: object
