@@ -1,9 +1,12 @@
 package types
 
 import (
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
@@ -27,28 +30,17 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMetadata{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgFile{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgClaimHTLC{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateHTLC{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgIssueDenom{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgTransferNFT{},
 		&MsgTransferDenom{},
-	)
-
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgBurnNFT{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgEditNFT{},
+	)
+	registry.RegisterImplementations((*exported.NFT)(nil),
+		&BaseNFT{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
@@ -57,3 +49,29 @@ var (
 	amino     = codec.NewLegacyAmino()
 	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
 )
+
+// return supply protobuf code
+func MustMarshalSupply(cdc codec.Marshaler, supply uint64) []byte {
+	supplyWrap := gogotypes.UInt64Value{Value: supply}
+	return cdc.MustMarshalBinaryBare(&supplyWrap)
+}
+
+// return th supply
+func MustUnMarshalSupply(cdc codec.Marshaler, value []byte) uint64 {
+	var supplyWrap gogotypes.UInt64Value
+	cdc.MustUnmarshalBinaryBare(value, &supplyWrap)
+	return supplyWrap.Value
+}
+
+// return the tokenID protobuf code
+func MustMarshalTokenID(cdc codec.Marshaler, tokenID string) []byte {
+	tokenIDWrap := gogotypes.StringValue{Value: tokenID}
+	return cdc.MustMarshalBinaryBare(&tokenIDWrap)
+}
+
+// return th tokenID
+func MustUnMarshalTokenID(cdc codec.Marshaler, value []byte) string {
+	var tokenIDWrap gogotypes.StringValue
+	cdc.MustUnmarshalBinaryBare(value, &tokenIDWrap)
+	return tokenIDWrap.Value
+}

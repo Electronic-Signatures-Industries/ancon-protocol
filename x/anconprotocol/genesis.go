@@ -16,8 +16,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	if err := types.ValidateGenesis(data); err != nil {
 		panic(err.Error())
 	}
-	
-	
+
 	for _, c := range data.Collections {
 		if err := k.SetDenom(ctx, c.Denom); err != nil {
 			panic(err)
@@ -125,6 +124,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		htlcs,
 		supplies,
 		previousBlockTime,
+		[]types.Collection{},
 	)
 }
 
