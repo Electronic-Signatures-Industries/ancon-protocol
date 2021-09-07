@@ -27,18 +27,39 @@ type (
 	}
 )
 
-func NewKeeper(
+func NewTestKeeper(
 	cdc codec.Marshaler,
 	key sdk.StoreKey,
+	memKey sdk.StoreKey,
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	blockedAddrs map[string]bool,
 ) Keeper {
-	// ensure the HTLC module account is set
-	if addr := accountKeeper.GetModuleAddress(types.ModuleName); addr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
+
+	return Keeper{
+		storeKey:      key,
+		cdc:           cdc,
+		memKey:        memKey,
+		paramSpace:    paramSpace,
+		accountKeeper: accountKeeper,
+		bankKeeper:    bankKeeper,
+		blockedAddrs:  blockedAddrs,
 	}
+}
+func NewKeeper(
+	cdc codec.Marshaler,
+	key sdk.StoreKey,
+	memKey sdk.StoreKey,
+	paramSpace paramstypes.Subspace,
+	accountKeeper types.AccountKeeper,
+	bankKeeper types.BankKeeper,
+	blockedAddrs map[string]bool,
+) Keeper {
+	// // ensure the HTLC module account is set
+	// if addr := accountKeeper.GetModuleAddress("htlc"); addr == nil {
+	// 	panic(fmt.Sprintf("%s module account has not been set", "htlc"))
+	// }
 
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
@@ -48,6 +69,7 @@ func NewKeeper(
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
+		memKey:        memKey,
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,

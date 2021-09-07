@@ -1,18 +1,16 @@
 package types
 
-import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-)
+import "errors"
 
 var (
-	ErrInvalidCollection = sdkerrors.Register(ModuleName, 2, "invalid nft collection")
-	ErrUnknownCollection = sdkerrors.Register(ModuleName, 3, "unknown nft collection")
-	ErrInvalidNFT        = sdkerrors.Register(ModuleName, 4, "invalid nft")
-	ErrNFTAlreadyExists  = sdkerrors.Register(ModuleName, 5, "nft already exists")
-	ErrUnknownNFT        = sdkerrors.Register(ModuleName, 6, "unknown nft")
-	ErrEmptyTokenData    = sdkerrors.Register(ModuleName, 7, "nft data can't be empty")
-	ErrUnauthorized      = sdkerrors.Register(ModuleName, 8, "unauthorized address")
-	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 9, "invalid denom")
-	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 10, "invalid nft id")
-	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 11, "invalid nft uri")
+	ErrInvalidCollection = errors.New("invalid nft collection")
+	ErrUnknownCollection = errors.New("unknown nft collection")
+	ErrInvalidNFT        = errors.New("invalid nft")
+	ErrNFTAlreadyExists  = errors.New("nft already exists")
+	ErrUnknownNFT        = errors.New("unknown nft")
+	ErrEmptyTokenData    = errors.New("nft data can't be empty")
+	ErrUnauthorized      = errors.New("unauthorized address")
+	ErrInvalidDenom      = errors.New("invalid denom")
+	ErrInvalidTokenID    = errors.New("invalid nft id")
+	ErrInvalidTokenURI   = errors.New("invalid nft uri")
 )
