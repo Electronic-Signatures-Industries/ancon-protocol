@@ -9,17 +9,20 @@
  * ---------------------------------------------------------------
  */
 
-export interface AnconprotocolMsgAddDelegateResponse {
-  /** @format byte */
-  hash?: string;
-}
-
 export interface AnconprotocolMsgChangeOwnerResponse {
-  /** @format byte */
-  hash?: string;
+  identity?: string;
+  owner?: string;
+
+  /** @format uint64 */
+  previousChange?: string;
 }
 
 export interface AnconprotocolMsgFileResponse {
+  hash?: string;
+}
+
+export interface AnconprotocolMsgGrantDelegateResponse {
+  /** @format byte */
   hash?: string;
 }
 
@@ -28,6 +31,11 @@ export interface AnconprotocolMsgMetadataResponse {
 }
 
 export type AnconprotocolMsgNonceResponse = object;
+
+export interface AnconprotocolMsgRevokeAttributeResponse {
+  /** @format byte */
+  hash?: string;
+}
 
 export interface AnconprotocolMsgRevokeDelegateResponse {
   /** @format byte */
@@ -52,10 +60,7 @@ export interface AnconprotocolQueryResourceResponse {
 }
 
 export interface ProtobufAny {
-  typeUrl?: string;
-
-  /** @format byte */
-  value?: string;
+  "@type"?: string;
 }
 
 export interface RpcStatus {
@@ -257,7 +262,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title anconprotocol/genesis.proto
+ * @title anconprotocol/did_registry.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

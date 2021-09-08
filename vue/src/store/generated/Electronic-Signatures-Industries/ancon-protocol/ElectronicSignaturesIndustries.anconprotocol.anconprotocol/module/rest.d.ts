@@ -1,18 +1,24 @@
-export interface AnconprotocolMsgAddDelegateResponse {
-    /** @format byte */
-    hash?: string;
-}
 export interface AnconprotocolMsgChangeOwnerResponse {
-    /** @format byte */
-    hash?: string;
+    identity?: string;
+    owner?: string;
+    /** @format uint64 */
+    previousChange?: string;
 }
 export interface AnconprotocolMsgFileResponse {
+    hash?: string;
+}
+export interface AnconprotocolMsgGrantDelegateResponse {
+    /** @format byte */
     hash?: string;
 }
 export interface AnconprotocolMsgMetadataResponse {
     cid?: string;
 }
 export declare type AnconprotocolMsgNonceResponse = object;
+export interface AnconprotocolMsgRevokeAttributeResponse {
+    /** @format byte */
+    hash?: string;
+}
 export interface AnconprotocolMsgRevokeDelegateResponse {
     /** @format byte */
     hash?: string;
@@ -29,9 +35,7 @@ export interface AnconprotocolQueryResourceResponse {
     data?: string;
 }
 export interface ProtobufAny {
-    typeUrl?: string;
-    /** @format byte */
-    value?: string;
+    "@type"?: string;
 }
 export interface RpcStatus {
     /** @format int32 */
@@ -93,7 +97,7 @@ export declare class HttpClient<SecurityDataType = unknown> {
     request: <T = any, E = any>({ body, secure, path, type, query, format, baseUrl, cancelToken, ...params }: FullRequestParams) => Promise<HttpResponse<T, E>>;
 }
 /**
- * @title anconprotocol/genesis.proto
+ * @title anconprotocol/did_registry.proto
  * @version version not set
  */
 export declare class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

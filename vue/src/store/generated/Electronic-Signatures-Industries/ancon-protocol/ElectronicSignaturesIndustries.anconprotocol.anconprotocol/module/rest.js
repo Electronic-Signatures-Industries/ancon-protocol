@@ -130,7 +130,7 @@ export class HttpClient {
     }
 }
 /**
- * @title anconprotocol/genesis.proto
+ * @title anconprotocol/did_registry.proto
  * @version version not set
  */
 export class Api extends HttpClient {

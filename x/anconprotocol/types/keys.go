@@ -26,6 +26,10 @@ const (
 
 	ChangeOwner = "did_change_owner_key"
 
+	ChangeOwnerEvent = "did_key_ChangeOwner"
+
+	Attribute = "did_attribute"
+
 	// this line is used by starport scaffolding # ibc/keys/name
 )
 

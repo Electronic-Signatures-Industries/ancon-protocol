@@ -1,12 +1,19 @@
 /* eslint-disable */
-import { Reader, Writer } from 'protobufjs/minimal';
+import { Reader, util, configure, Writer } from 'protobufjs/minimal';
+import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseMsgChangeOwner = { creator: '' };
+const baseMsgChangeOwner = { creator: '', identity: '', newOwner: '' };
 export const MsgChangeOwner = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
             writer.uint32(10).string(message.creator);
         }
+        if (message.identity !== '') {
+            writer.uint32(18).string(message.identity);
+        }
+        if (message.newOwner !== '') {
+            writer.uint32(26).string(message.newOwner);
+        }
         return writer;
     },
     decode(input, length) {
@@ -18,6 +25,12 @@ export const MsgChangeOwner = {
             switch (tag >>> 3) {
                 case 1:
                     message.creator = reader.string();
+                    break;
+                case 2:
+                    message.identity = reader.string();
+                    break;
+                case 3:
+                    message.newOwner = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -34,11 +47,25 @@ export const MsgChangeOwner = {
         else {
             message.creator = '';
         }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
+        }
+        else {
+            message.identity = '';
+        }
+        if (object.newOwner !== undefined && object.newOwner !== null) {
+            message.newOwner = String(object.newOwner);
+        }
+        else {
+            message.newOwner = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.creator !== undefined && (obj.creator = message.creator);
+        message.identity !== undefined && (obj.identity = message.identity);
+        message.newOwner !== undefined && (obj.newOwner = message.newOwner);
         return obj;
     },
     fromPartial(object) {
@@ -49,14 +76,32 @@ export const MsgChangeOwner = {
         else {
             message.creator = '';
         }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
+        }
+        else {
+            message.identity = '';
+        }
+        if (object.newOwner !== undefined && object.newOwner !== null) {
+            message.newOwner = object.newOwner;
+        }
+        else {
+            message.newOwner = '';
+        }
         return message;
     }
 };
-const baseMsgChangeOwnerResponse = {};
+const baseMsgChangeOwnerResponse = { identity: '', owner: '', previousChange: 0 };
 export const MsgChangeOwnerResponse = {
     encode(message, writer = Writer.create()) {
-        if (message.hash.length !== 0) {
-            writer.uint32(10).bytes(message.hash);
+        if (message.identity !== '') {
+            writer.uint32(10).string(message.identity);
+        }
+        if (message.owner !== '') {
+            writer.uint32(18).string(message.owner);
+        }
+        if (message.previousChange !== 0) {
+            writer.uint32(24).uint64(message.previousChange);
         }
         return writer;
     },
@@ -68,7 +113,13 @@ export const MsgChangeOwnerResponse = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.hash = reader.bytes();
+                    message.identity = reader.string();
+                    break;
+                case 2:
+                    message.owner = reader.string();
+                    break;
+                case 3:
+                    message.previousChange = longToNumber(reader.uint64());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -79,44 +130,97 @@ export const MsgChangeOwnerResponse = {
     },
     fromJSON(object) {
         const message = { ...baseMsgChangeOwnerResponse };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = bytesFromBase64(object.hash);
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
+        }
+        else {
+            message.identity = '';
+        }
+        if (object.owner !== undefined && object.owner !== null) {
+            message.owner = String(object.owner);
+        }
+        else {
+            message.owner = '';
+        }
+        if (object.previousChange !== undefined && object.previousChange !== null) {
+            message.previousChange = Number(object.previousChange);
+        }
+        else {
+            message.previousChange = 0;
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        message.identity !== undefined && (obj.identity = message.identity);
+        message.owner !== undefined && (obj.owner = message.owner);
+        message.previousChange !== undefined && (obj.previousChange = message.previousChange);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgChangeOwnerResponse };
-        if (object.hash !== undefined && object.hash !== null) {
-            message.hash = object.hash;
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
         }
         else {
-            message.hash = new Uint8Array();
+            message.identity = '';
+        }
+        if (object.owner !== undefined && object.owner !== null) {
+            message.owner = object.owner;
+        }
+        else {
+            message.owner = '';
+        }
+        if (object.previousChange !== undefined && object.previousChange !== null) {
+            message.previousChange = object.previousChange;
+        }
+        else {
+            message.previousChange = 0;
         }
         return message;
     }
 };
-const baseMsgAddDelegate = { creator: '' };
-export const MsgAddDelegate = {
+const baseMsgGrantDelegate = { delegate: '', delegateType: '', validity: false, creator: '', identity: '' };
+export const MsgGrantDelegate = {
     encode(message, writer = Writer.create()) {
+        if (message.delegate !== '') {
+            writer.uint32(10).string(message.delegate);
+        }
+        if (message.delegateType !== '') {
+            writer.uint32(18).string(message.delegateType);
+        }
+        if (message.validity === true) {
+            writer.uint32(24).bool(message.validity);
+        }
         if (message.creator !== '') {
-            writer.uint32(10).string(message.creator);
+            writer.uint32(34).string(message.creator);
+        }
+        if (message.identity !== '') {
+            writer.uint32(42).string(message.identity);
         }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseMsgAddDelegate };
+        const message = { ...baseMsgGrantDelegate };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    message.delegate = reader.string();
+                    break;
+                case 2:
+                    message.delegateType = reader.string();
+                    break;
+                case 3:
+                    message.validity = reader.bool();
+                    break;
+                case 4:
                     message.creator = reader.string();
+                    break;
+                case 5:
+                    message.identity = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -126,33 +230,85 @@ export const MsgAddDelegate = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseMsgAddDelegate };
+        const message = { ...baseMsgGrantDelegate };
+        if (object.delegate !== undefined && object.delegate !== null) {
+            message.delegate = String(object.delegate);
+        }
+        else {
+            message.delegate = '';
+        }
+        if (object.delegateType !== undefined && object.delegateType !== null) {
+            message.delegateType = String(object.delegateType);
+        }
+        else {
+            message.delegateType = '';
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = Boolean(object.validity);
+        }
+        else {
+            message.validity = false;
+        }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = String(object.creator);
         }
         else {
             message.creator = '';
         }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
+        }
+        else {
+            message.identity = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
+        message.delegate !== undefined && (obj.delegate = message.delegate);
+        message.delegateType !== undefined && (obj.delegateType = message.delegateType);
+        message.validity !== undefined && (obj.validity = message.validity);
         message.creator !== undefined && (obj.creator = message.creator);
+        message.identity !== undefined && (obj.identity = message.identity);
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseMsgAddDelegate };
+        const message = { ...baseMsgGrantDelegate };
+        if (object.delegate !== undefined && object.delegate !== null) {
+            message.delegate = object.delegate;
+        }
+        else {
+            message.delegate = '';
+        }
+        if (object.delegateType !== undefined && object.delegateType !== null) {
+            message.delegateType = object.delegateType;
+        }
+        else {
+            message.delegateType = '';
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = object.validity;
+        }
+        else {
+            message.validity = false;
+        }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = object.creator;
         }
         else {
             message.creator = '';
         }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
+        }
+        else {
+            message.identity = '';
+        }
         return message;
     }
 };
-const baseMsgAddDelegateResponse = {};
-export const MsgAddDelegateResponse = {
+const baseMsgGrantDelegateResponse = {};
+export const MsgGrantDelegateResponse = {
     encode(message, writer = Writer.create()) {
         if (message.hash.length !== 0) {
             writer.uint32(10).bytes(message.hash);
@@ -162,7 +318,7 @@ export const MsgAddDelegateResponse = {
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseMsgAddDelegateResponse };
+        const message = { ...baseMsgGrantDelegateResponse };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -177,7 +333,7 @@ export const MsgAddDelegateResponse = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseMsgAddDelegateResponse };
+        const message = { ...baseMsgGrantDelegateResponse };
         if (object.hash !== undefined && object.hash !== null) {
             message.hash = bytesFromBase64(object.hash);
         }
@@ -189,7 +345,7 @@ export const MsgAddDelegateResponse = {
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseMsgAddDelegateResponse };
+        const message = { ...baseMsgGrantDelegateResponse };
         if (object.hash !== undefined && object.hash !== null) {
             message.hash = object.hash;
         }
@@ -199,11 +355,23 @@ export const MsgAddDelegateResponse = {
         return message;
     }
 };
-const baseMsgRevokeDelegate = { creator: '' };
+const baseMsgRevokeDelegate = { delegate: '', delegateType: '', validity: false, creator: '', identity: '' };
 export const MsgRevokeDelegate = {
     encode(message, writer = Writer.create()) {
+        if (message.delegate !== '') {
+            writer.uint32(10).string(message.delegate);
+        }
+        if (message.delegateType !== '') {
+            writer.uint32(18).string(message.delegateType);
+        }
+        if (message.validity === true) {
+            writer.uint32(24).bool(message.validity);
+        }
         if (message.creator !== '') {
-            writer.uint32(10).string(message.creator);
+            writer.uint32(34).string(message.creator);
+        }
+        if (message.identity !== '') {
+            writer.uint32(42).string(message.identity);
         }
         return writer;
     },
@@ -215,7 +383,19 @@ export const MsgRevokeDelegate = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    message.delegate = reader.string();
+                    break;
+                case 2:
+                    message.delegateType = reader.string();
+                    break;
+                case 3:
+                    message.validity = reader.bool();
+                    break;
+                case 4:
                     message.creator = reader.string();
+                    break;
+                case 5:
+                    message.identity = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -226,26 +406,78 @@ export const MsgRevokeDelegate = {
     },
     fromJSON(object) {
         const message = { ...baseMsgRevokeDelegate };
+        if (object.delegate !== undefined && object.delegate !== null) {
+            message.delegate = String(object.delegate);
+        }
+        else {
+            message.delegate = '';
+        }
+        if (object.delegateType !== undefined && object.delegateType !== null) {
+            message.delegateType = String(object.delegateType);
+        }
+        else {
+            message.delegateType = '';
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = Boolean(object.validity);
+        }
+        else {
+            message.validity = false;
+        }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = String(object.creator);
         }
         else {
             message.creator = '';
         }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
+        }
+        else {
+            message.identity = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
+        message.delegate !== undefined && (obj.delegate = message.delegate);
+        message.delegateType !== undefined && (obj.delegateType = message.delegateType);
+        message.validity !== undefined && (obj.validity = message.validity);
         message.creator !== undefined && (obj.creator = message.creator);
+        message.identity !== undefined && (obj.identity = message.identity);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgRevokeDelegate };
+        if (object.delegate !== undefined && object.delegate !== null) {
+            message.delegate = object.delegate;
+        }
+        else {
+            message.delegate = '';
+        }
+        if (object.delegateType !== undefined && object.delegateType !== null) {
+            message.delegateType = object.delegateType;
+        }
+        else {
+            message.delegateType = '';
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = object.validity;
+        }
+        else {
+            message.validity = false;
+        }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = object.creator;
         }
         else {
             message.creator = '';
+        }
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
+        }
+        else {
+            message.identity = '';
         }
         return message;
     }
@@ -298,11 +530,23 @@ export const MsgRevokeDelegateResponse = {
         return message;
     }
 };
-const baseMsgSetAttribute = { creator: '' };
+const baseMsgSetAttribute = { identity: '', actor: '', validity: false };
 export const MsgSetAttribute = {
     encode(message, writer = Writer.create()) {
-        if (message.creator !== '') {
-            writer.uint32(10).string(message.creator);
+        if (message.identity !== '') {
+            writer.uint32(10).string(message.identity);
+        }
+        if (message.actor !== '') {
+            writer.uint32(18).string(message.actor);
+        }
+        if (message.name.length !== 0) {
+            writer.uint32(26).bytes(message.name);
+        }
+        if (message.value.length !== 0) {
+            writer.uint32(34).bytes(message.value);
+        }
+        if (message.validity === true) {
+            writer.uint32(40).bool(message.validity);
         }
         return writer;
     },
@@ -314,7 +558,19 @@ export const MsgSetAttribute = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.creator = reader.string();
+                    message.identity = reader.string();
+                    break;
+                case 2:
+                    message.actor = reader.string();
+                    break;
+                case 3:
+                    message.name = reader.bytes();
+                    break;
+                case 4:
+                    message.value = reader.bytes();
+                    break;
+                case 5:
+                    message.validity = reader.bool();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -325,26 +581,72 @@ export const MsgSetAttribute = {
     },
     fromJSON(object) {
         const message = { ...baseMsgSetAttribute };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = String(object.creator);
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
         }
         else {
-            message.creator = '';
+            message.identity = '';
+        }
+        if (object.actor !== undefined && object.actor !== null) {
+            message.actor = String(object.actor);
+        }
+        else {
+            message.actor = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = bytesFromBase64(object.name);
+        }
+        if (object.value !== undefined && object.value !== null) {
+            message.value = bytesFromBase64(object.value);
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = Boolean(object.validity);
+        }
+        else {
+            message.validity = false;
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.creator !== undefined && (obj.creator = message.creator);
+        message.identity !== undefined && (obj.identity = message.identity);
+        message.actor !== undefined && (obj.actor = message.actor);
+        message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()));
+        message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+        message.validity !== undefined && (obj.validity = message.validity);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgSetAttribute };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = object.creator;
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
         }
         else {
-            message.creator = '';
+            message.identity = '';
+        }
+        if (object.actor !== undefined && object.actor !== null) {
+            message.actor = object.actor;
+        }
+        else {
+            message.actor = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = object.name;
+        }
+        else {
+            message.name = new Uint8Array();
+        }
+        if (object.value !== undefined && object.value !== null) {
+            message.value = object.value;
+        }
+        else {
+            message.value = new Uint8Array();
+        }
+        if (object.validity !== undefined && object.validity !== null) {
+            message.validity = object.validity;
+        }
+        else {
+            message.validity = false;
         }
         return message;
     }
@@ -388,6 +690,156 @@ export const MsgSetAttributeResponse = {
     },
     fromPartial(object) {
         const message = { ...baseMsgSetAttributeResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgRevokeAttribute = { identity: '', actor: '' };
+export const MsgRevokeAttribute = {
+    encode(message, writer = Writer.create()) {
+        if (message.identity !== '') {
+            writer.uint32(10).string(message.identity);
+        }
+        if (message.actor !== '') {
+            writer.uint32(18).string(message.actor);
+        }
+        if (message.name.length !== 0) {
+            writer.uint32(26).bytes(message.name);
+        }
+        if (message.value.length !== 0) {
+            writer.uint32(34).bytes(message.value);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeAttribute };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.identity = reader.string();
+                    break;
+                case 2:
+                    message.actor = reader.string();
+                    break;
+                case 3:
+                    message.name = reader.bytes();
+                    break;
+                case 4:
+                    message.value = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRevokeAttribute };
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = String(object.identity);
+        }
+        else {
+            message.identity = '';
+        }
+        if (object.actor !== undefined && object.actor !== null) {
+            message.actor = String(object.actor);
+        }
+        else {
+            message.actor = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = bytesFromBase64(object.name);
+        }
+        if (object.value !== undefined && object.value !== null) {
+            message.value = bytesFromBase64(object.value);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.identity !== undefined && (obj.identity = message.identity);
+        message.actor !== undefined && (obj.actor = message.actor);
+        message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()));
+        message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRevokeAttribute };
+        if (object.identity !== undefined && object.identity !== null) {
+            message.identity = object.identity;
+        }
+        else {
+            message.identity = '';
+        }
+        if (object.actor !== undefined && object.actor !== null) {
+            message.actor = object.actor;
+        }
+        else {
+            message.actor = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = object.name;
+        }
+        else {
+            message.name = new Uint8Array();
+        }
+        if (object.value !== undefined && object.value !== null) {
+            message.value = object.value;
+        }
+        else {
+            message.value = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseMsgRevokeAttributeResponse = {};
+export const MsgRevokeAttributeResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.hash.length !== 0) {
+            writer.uint32(10).bytes(message.hash);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeAttributeResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.hash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRevokeAttributeResponse };
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = bytesFromBase64(object.hash);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRevokeAttributeResponse };
         if (object.hash !== undefined && object.hash !== null) {
             message.hash = object.hash;
         }
@@ -1101,9 +1553,9 @@ export class MsgClientImpl {
         return promise.then((data) => MsgChangeOwnerResponse.decode(new Reader(data)));
     }
     AddDelegate(request) {
-        const data = MsgAddDelegate.encode(request).finish();
+        const data = MsgGrantDelegate.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDelegate', data);
-        return promise.then((data) => MsgAddDelegateResponse.decode(new Reader(data)));
+        return promise.then((data) => MsgGrantDelegateResponse.decode(new Reader(data)));
     }
     RevokeDelegate(request) {
         const data = MsgRevokeDelegate.encode(request).finish();
@@ -1114,6 +1566,11 @@ export class MsgClientImpl {
         const data = MsgSetAttribute.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'SetAttribute', data);
         return promise.then((data) => MsgSetAttributeResponse.decode(new Reader(data)));
+    }
+    RevokeAttribute(request) {
+        const data = MsgRevokeAttribute.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RevokeAttribute', data);
+        return promise.then((data) => MsgRevokeAttributeResponse.decode(new Reader(data)));
     }
     Metadata(request) {
         const data = MsgMetadata.encode(request).finish();
@@ -1153,4 +1610,14 @@ function base64FromBytes(arr) {
         bin.push(String.fromCharCode(arr[i]));
     }
     return btoa(bin.join(''));
+}
+function longToNumber(long) {
+    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+    }
+    return long.toNumber();
+}
+if (util.Long !== Long) {
+    util.Long = Long;
+    configure();
 }

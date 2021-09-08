@@ -15,9 +15,10 @@ service Msg {
   rpc Nonce(MsgNonce) returns (MsgNonceResponse);
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
-  rpc AddDelegate(MsgAddDelegate) returns (MsgAddDelegateResponse);
+  rpc AddDelegate(MsgGrantDelegate) returns (MsgGrantDelegateResponse);
   rpc RevokeDelegate(MsgRevokeDelegate) returns (MsgRevokeDelegateResponse);
   rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
+  rpc RevokeAttribute(MsgRevokeAttribute) returns (MsgRevokeAttributeResponse);
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
   //rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
@@ -28,26 +29,37 @@ message MsgChangeOwner {
   option (gogoproto.goproto_getters) = false;
 
   string creator = 1;
+  string identity = 2;
+  string newOwner = 3;
 }
 message MsgChangeOwnerResponse {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
-}
-message MsgAddDelegate {
-  option (gogoproto.goproto_getters) = false;
+  string identity = 1;
+  string owner = 2;
+  uint64 previousChange = 3;
 
-  string creator = 1;
 }
-message MsgAddDelegateResponse {
+message MsgGrantDelegate {
+  option (gogoproto.goproto_getters) = false;
+  string delegate = 1;
+  string delegateType = 2;
+  bool validity = 3;
+  string creator = 4;
+  string identity = 5;
+}
+message MsgGrantDelegateResponse {
   option (gogoproto.goproto_getters) = false;
 
   bytes hash = 1;
 }
 message MsgRevokeDelegate {
   option (gogoproto.goproto_getters) = false;
-
-  string creator = 1;
+  string delegate = 1;
+  string delegateType = 2;
+  bool validity = 3;
+  string creator = 4;
+  string identity = 5;
 }
 message MsgRevokeDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -56,10 +68,28 @@ message MsgRevokeDelegateResponse {
 }
 message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
+  string identity = 1;
+  string actor = 2;
+  bytes name = 3;
+  bytes value = 4;
+  bool validity = 5;
 
-  string creator = 1;
 }
 message MsgSetAttributeResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+
+message MsgRevokeAttribute {
+  option (gogoproto.goproto_getters) = false;
+  string identity = 1;
+  string actor = 2;
+  bytes name = 3;
+  bytes value = 4;
+
+}
+message MsgRevokeAttributeResponse {
   option (gogoproto.goproto_getters) = false;
 
   bytes hash = 1;

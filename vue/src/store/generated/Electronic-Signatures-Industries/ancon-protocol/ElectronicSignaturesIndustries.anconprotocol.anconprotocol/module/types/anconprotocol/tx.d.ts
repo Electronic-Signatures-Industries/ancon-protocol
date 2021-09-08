@@ -2,26 +2,51 @@ import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface MsgChangeOwner {
     creator: string;
+    identity: string;
+    newOwner: string;
 }
 export interface MsgChangeOwnerResponse {
-    hash: Uint8Array;
+    identity: string;
+    owner: string;
+    previousChange: number;
 }
-export interface MsgAddDelegate {
+export interface MsgGrantDelegate {
+    delegate: string;
+    delegateType: string;
+    validity: boolean;
     creator: string;
+    identity: string;
 }
-export interface MsgAddDelegateResponse {
+export interface MsgGrantDelegateResponse {
     hash: Uint8Array;
 }
 export interface MsgRevokeDelegate {
+    delegate: string;
+    delegateType: string;
+    validity: boolean;
     creator: string;
+    identity: string;
 }
 export interface MsgRevokeDelegateResponse {
     hash: Uint8Array;
 }
 export interface MsgSetAttribute {
-    creator: string;
+    identity: string;
+    actor: string;
+    name: Uint8Array;
+    value: Uint8Array;
+    validity: boolean;
 }
 export interface MsgSetAttributeResponse {
+    hash: Uint8Array;
+}
+export interface MsgRevokeAttribute {
+    identity: string;
+    actor: string;
+    name: Uint8Array;
+    value: Uint8Array;
+}
+export interface MsgRevokeAttributeResponse {
     hash: Uint8Array;
 }
 export interface MsgFileMetadataResponse {
@@ -77,19 +102,19 @@ export declare const MsgChangeOwnerResponse: {
     toJSON(message: MsgChangeOwnerResponse): unknown;
     fromPartial(object: DeepPartial<MsgChangeOwnerResponse>): MsgChangeOwnerResponse;
 };
-export declare const MsgAddDelegate: {
-    encode(message: MsgAddDelegate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgAddDelegate;
-    fromJSON(object: any): MsgAddDelegate;
-    toJSON(message: MsgAddDelegate): unknown;
-    fromPartial(object: DeepPartial<MsgAddDelegate>): MsgAddDelegate;
+export declare const MsgGrantDelegate: {
+    encode(message: MsgGrantDelegate, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgGrantDelegate;
+    fromJSON(object: any): MsgGrantDelegate;
+    toJSON(message: MsgGrantDelegate): unknown;
+    fromPartial(object: DeepPartial<MsgGrantDelegate>): MsgGrantDelegate;
 };
-export declare const MsgAddDelegateResponse: {
-    encode(message: MsgAddDelegateResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgAddDelegateResponse;
-    fromJSON(object: any): MsgAddDelegateResponse;
-    toJSON(message: MsgAddDelegateResponse): unknown;
-    fromPartial(object: DeepPartial<MsgAddDelegateResponse>): MsgAddDelegateResponse;
+export declare const MsgGrantDelegateResponse: {
+    encode(message: MsgGrantDelegateResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgGrantDelegateResponse;
+    fromJSON(object: any): MsgGrantDelegateResponse;
+    toJSON(message: MsgGrantDelegateResponse): unknown;
+    fromPartial(object: DeepPartial<MsgGrantDelegateResponse>): MsgGrantDelegateResponse;
 };
 export declare const MsgRevokeDelegate: {
     encode(message: MsgRevokeDelegate, writer?: Writer): Writer;
@@ -118,6 +143,20 @@ export declare const MsgSetAttributeResponse: {
     fromJSON(object: any): MsgSetAttributeResponse;
     toJSON(message: MsgSetAttributeResponse): unknown;
     fromPartial(object: DeepPartial<MsgSetAttributeResponse>): MsgSetAttributeResponse;
+};
+export declare const MsgRevokeAttribute: {
+    encode(message: MsgRevokeAttribute, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeAttribute;
+    fromJSON(object: any): MsgRevokeAttribute;
+    toJSON(message: MsgRevokeAttribute): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeAttribute>): MsgRevokeAttribute;
+};
+export declare const MsgRevokeAttributeResponse: {
+    encode(message: MsgRevokeAttributeResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeAttributeResponse;
+    fromJSON(object: any): MsgRevokeAttributeResponse;
+    toJSON(message: MsgRevokeAttributeResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeAttributeResponse>): MsgRevokeAttributeResponse;
 };
 export declare const MsgFileMetadataResponse: {
     encode(message: MsgFileMetadataResponse, writer?: Writer): Writer;
@@ -178,9 +217,10 @@ export interface Msg {
     Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
-    AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
+    AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
     SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
+    RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
     File(request: MsgFile): Promise<MsgFileResponse>;
@@ -190,9 +230,10 @@ export declare class MsgClientImpl implements Msg {
     constructor(rpc: Rpc);
     Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
-    AddDelegate(request: MsgAddDelegate): Promise<MsgAddDelegateResponse>;
+    AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
     SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
+    RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
 }
