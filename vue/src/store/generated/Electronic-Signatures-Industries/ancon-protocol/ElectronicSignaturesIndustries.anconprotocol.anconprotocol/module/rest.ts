@@ -89,7 +89,9 @@ export interface AnconprotocolHTLC {
   to?: string;
   receiverOnOtherChain?: string;
   senderOnOtherChain?: string;
-  amount?: V1Beta1Coin[];
+
+  /** @format uint64 */
+  tokenId?: string;
   hashLock?: string;
   secret?: string;
 
@@ -397,13 +399,7 @@ export interface ProtobufAny {
    * Schemes other than `http`, `https` (or the empty scheme) might be
    * used with implementation specific semantics.
    */
-  typeUrl?: string;
-
-  /**
-   * Must be a valid serialized protocol buffer of the above specified type.
-   * @format byte
-   */
-  value?: string;
+  "@type"?: string;
 }
 
 export interface RpcStatus {

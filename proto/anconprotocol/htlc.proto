@@ -18,7 +18,7 @@ message HTLC {
     string to = 3;
     string receiver_on_other_chain = 4 [ (gogoproto.moretags) = "yaml:\"receiver_on_other_chain\"" ];
     string sender_on_other_chain = 5 [ (gogoproto.moretags) = "yaml:\"sender_on_other_chain\"" ];
-    repeated cosmos.base.v1beta1.Coin amount = 6 [ (gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins" ];
+    uint64 token_id = 6;
     string hash_lock = 7 [ (gogoproto.moretags) = "yaml:\"hash_lock\"" ];
     string secret = 8;
     uint64 timestamp = 9;
@@ -27,6 +27,7 @@ message HTLC {
     uint64 closed_block = 12 [ (gogoproto.moretags) = "yaml:\"closed_block\"" ];
     bool transfer = 13;
     SwapDirection direction = 14;
+
 }
 
 // HTLCState defines the state of an HTLC

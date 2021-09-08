@@ -1,5 +1,4 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-import { Coin } from '../cosmos/base/v1beta1/coin';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
@@ -76,7 +75,7 @@ export interface MsgCreateHTLC {
     to: string;
     receiverOnOtherChain: string;
     senderOnOtherChain: string;
-    amount: Coin[];
+    tokenId: number;
     hashLock: string;
     timestamp: number;
     timeLock: number;

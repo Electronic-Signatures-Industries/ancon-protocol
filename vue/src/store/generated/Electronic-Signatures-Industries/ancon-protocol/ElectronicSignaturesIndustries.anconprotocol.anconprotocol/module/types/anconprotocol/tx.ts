@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
-import { Coin } from '../cosmos/base/v1beta1/coin'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
@@ -86,7 +85,7 @@ export interface MsgCreateHTLC {
   to: string
   receiverOnOtherChain: string
   senderOnOtherChain: string
-  amount: Coin[]
+  tokenId: number
   hashLock: string
   timestamp: number
   timeLock: number
@@ -1169,6 +1168,7 @@ const baseMsgCreateHTLC: object = {
   to: '',
   receiverOnOtherChain: '',
   senderOnOtherChain: '',
+  tokenId: 0,
   hashLock: '',
   timestamp: 0,
   timeLock: 0,
@@ -1189,8 +1189,8 @@ export const MsgCreateHTLC = {
     if (message.senderOnOtherChain !== '') {
       writer.uint32(34).string(message.senderOnOtherChain)
     }
-    for (const v of message.amount) {
-      Coin.encode(v!, writer.uint32(42).fork()).ldelim()
+    if (message.tokenId !== 0) {
+      writer.uint32(40).uint64(message.tokenId)
     }
     if (message.hashLock !== '') {
       writer.uint32(50).string(message.hashLock)
@@ -1211,7 +1211,6 @@ export const MsgCreateHTLC = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
     const message = { ...baseMsgCreateHTLC } as MsgCreateHTLC
-    message.amount = []
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -1228,7 +1227,7 @@ export const MsgCreateHTLC = {
           message.senderOnOtherChain = reader.string()
           break
         case 5:
-          message.amount.push(Coin.decode(reader, reader.uint32()))
+          message.tokenId = longToNumber(reader.uint64() as Long)
           break
         case 6:
           message.hashLock = reader.string()
@@ -1252,7 +1251,6 @@ export const MsgCreateHTLC = {
 
   fromJSON(object: any): MsgCreateHTLC {
     const message = { ...baseMsgCreateHTLC } as MsgCreateHTLC
-    message.amount = []
     if (object.sender !== undefined && object.sender !== null) {
       message.sender = String(object.sender)
     } else {
@@ -1273,10 +1271,10 @@ export const MsgCreateHTLC = {
     } else {
       message.senderOnOtherChain = ''
     }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromJSON(e))
-      }
+    if (object.tokenId !== undefined && object.tokenId !== null) {
+      message.tokenId = Number(object.tokenId)
+    } else {
+      message.tokenId = 0
     }
     if (object.hashLock !== undefined && object.hashLock !== null) {
       message.hashLock = String(object.hashLock)
@@ -1307,11 +1305,7 @@ export const MsgCreateHTLC = {
     message.to !== undefined && (obj.to = message.to)
     message.receiverOnOtherChain !== undefined && (obj.receiverOnOtherChain = message.receiverOnOtherChain)
     message.senderOnOtherChain !== undefined && (obj.senderOnOtherChain = message.senderOnOtherChain)
-    if (message.amount) {
-      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined))
-    } else {
-      obj.amount = []
-    }
+    message.tokenId !== undefined && (obj.tokenId = message.tokenId)
     message.hashLock !== undefined && (obj.hashLock = message.hashLock)
     message.timestamp !== undefined && (obj.timestamp = message.timestamp)
     message.timeLock !== undefined && (obj.timeLock = message.timeLock)
@@ -1321,7 +1315,6 @@ export const MsgCreateHTLC = {
 
   fromPartial(object: DeepPartial<MsgCreateHTLC>): MsgCreateHTLC {
     const message = { ...baseMsgCreateHTLC } as MsgCreateHTLC
-    message.amount = []
     if (object.sender !== undefined && object.sender !== null) {
       message.sender = object.sender
     } else {
@@ -1342,10 +1335,10 @@ export const MsgCreateHTLC = {
     } else {
       message.senderOnOtherChain = ''
     }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromPartial(e))
-      }
+    if (object.tokenId !== undefined && object.tokenId !== null) {
+      message.tokenId = object.tokenId
+    } else {
+      message.tokenId = 0
     }
     if (object.hashLock !== undefined && object.hashLock !== null) {
       message.hashLock = object.hashLock

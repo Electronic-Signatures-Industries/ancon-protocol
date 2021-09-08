@@ -39,7 +39,7 @@ func (m msgServer) CreateHTLC(goCtx context.Context, msg *types.MsgCreateHTLC) (
 		to,
 		msg.ReceiverOnOtherChain,
 		msg.SenderOnOtherChain,
-		msg.Amount,
+		msg.TokenId,
 		hashLock,
 		msg.Timestamp,
 		msg.TimeLock,

@@ -27,8 +27,8 @@ func NewMsgCreateHTLC(
 	to string,
 	receiverOnOtherChain string,
 	senderOnOtherChain string,
-	amount sdk.Coins,
 	hashLock string,
+	tokenId uint64,
 	timestamp uint64,
 	timeLock uint64,
 	transfer bool,
@@ -38,7 +38,7 @@ func NewMsgCreateHTLC(
 		To:                   to,
 		ReceiverOnOtherChain: receiverOnOtherChain,
 		SenderOnOtherChain:   senderOnOtherChain,
-		Amount:               amount,
+		TokenId:              tokenId,
 		HashLock:             hashLock,
 		Timestamp:            timestamp,
 		TimeLock:             timeLock,
@@ -70,9 +70,9 @@ func (msg MsgCreateHTLC) ValidateBasic() error {
 		return err
 	}
 
-	if err := ValidateAmount(msg.Transfer, msg.Amount); err != nil {
-		return err
-	}
+	// if err := sdk.IsNumeric(msg.TokenId); err != nil {
+	// return err
+	// }
 
 	if err := ValidateID(msg.HashLock); err != nil {
 		return err

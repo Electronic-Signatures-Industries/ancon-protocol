@@ -137,7 +137,8 @@ message MsgCreateHTLC {
   string to = 2;
   string receiver_on_other_chain = 3 [ (gogoproto.moretags) = "yaml:\"receiver_on_other_chain\"" ];
   string sender_on_other_chain = 4 [ (gogoproto.moretags) = "yaml:\"sender_on_other_chain\"" ];
-  repeated cosmos.base.v1beta1.Coin amount = 5 [ (gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins" ];
+  
+  uint64 token_id = 5;
   string hash_lock = 6 [ (gogoproto.moretags) = "yaml:\"hash_lock\"" ];
   uint64 timestamp = 7;
   uint64 time_lock = 8 [ (gogoproto.moretags) = "yaml:\"time_lock\"" ];

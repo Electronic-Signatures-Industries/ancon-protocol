@@ -33,7 +33,7 @@ export interface HTLC {
     to: string;
     receiverOnOtherChain: string;
     senderOnOtherChain: string;
-    amount: Coin[];
+    tokenId: number;
     hashLock: string;
     secret: string;
     timestamp: number;

@@ -3,8 +3,6 @@ package keeper
 import (
 	"bytes"
 	"encoding/hex"
-	"fmt"
-	"time"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -20,7 +18,7 @@ func (k Keeper) CreateHTLC(
 	to sdk.AccAddress,
 	receiverOnOtherChain string,
 	senderOnOtherChain string,
-	amount sdk.Coins,
+	tokenId uint64,
 	hashLock tmbytes.HexBytes,
 	timestamp uint64,
 	timeLock uint64,
@@ -29,7 +27,7 @@ func (k Keeper) CreateHTLC(
 	id tmbytes.HexBytes,
 	err error,
 ) {
-	id = types.GetID(sender, to, amount, hashLock)
+	id = types.GetID(sender, to, tokenId, hashLock)
 
 	// check if the HTLC already exists
 	if k.HasHTLC(ctx, id) {
@@ -43,20 +41,20 @@ func (k Keeper) CreateHTLC(
 		// create HTLT
 		if direction, err = k.createHTLT(
 			ctx, sender, to, receiverOnOtherChain, senderOnOtherChain,
-			amount, hashLock, timestamp, timeLock,
+			tokenId, hashLock, timestamp, timeLock,
 		); err != nil {
 			return id, err
 		}
 	} else {
 		// create HTLT
-		if err = k.createHTLC(ctx, sender, amount); err != nil {
+		if err = k.createHTLC(ctx, sender, tokenId); err != nil {
 			return id, err
 		}
 	}
 
 	htlc := types.NewHTLC(
 		id, sender, to, receiverOnOtherChain,
-		senderOnOtherChain, amount, hashLock,
+		senderOnOtherChain, tokenId, hashLock,
 		nil, timestamp, expirationHeight,
 		types.Open, 0, transfer, direction,
 	)
@@ -73,10 +71,11 @@ func (k Keeper) CreateHTLC(
 func (k Keeper) createHTLC(
 	ctx sdk.Context,
 	sender sdk.AccAddress,
-	amount sdk.Coins,
+	tokenId uint64,
 ) error {
 	// transfer the specified tokens to the HTLC module account
-	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, amount)
+	//	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, tokenId)
+	return nil
 }
 
 func (k Keeper) createHTLT(
@@ -85,7 +84,7 @@ func (k Keeper) createHTLT(
 	to sdk.AccAddress,
 	receiverOnOtherChain string,
 	senderOnOtherChain string,
-	amount sdk.Coins,
+	tokenId uint64,
 	hashLock tmbytes.HexBytes,
 	timestamp uint64,
 	timeLock uint64,
@@ -95,87 +94,87 @@ func (k Keeper) createHTLT(
 ) {
 	var direction types.SwapDirection
 
-	if len(amount) != 1 {
-		return direction, sdkerrors.Wrapf(types.ErrInvalidAmount, "amount %s must contain exactly one coin", amount.String())
-	}
+	// if len(amount) != 1 {
+	// 	return direction, sdkerrors.Wrapf(types.ErrInvalidAmount, "amount %s must contain exactly one coin", amount.String())
+	// }
 
-	asset, err := k.GetAsset(ctx, amount[0].Denom)
-	if err != nil {
-		return direction, err
-	}
+	// asset, err := k.GetAsset(ctx, amount[0].Denom)
+	// if err != nil {
+	// 	return direction, err
+	// }
 
-	if err = k.ValidateLiveAsset(ctx, amount[0]); err != nil {
-		return direction, err
-	}
+	// if err = k.ValidateLiveAsset(ctx, amount[0]); err != nil {
+	// 	return direction, err
+	// }
 
-	// Swap amount must be within the specified swap amount limits
-	if amount[0].Amount.LT(asset.MinSwapAmount) || amount[0].Amount.GT(asset.MaxSwapAmount) {
-		return direction, sdkerrors.Wrapf(types.ErrInvalidAmount, "amount %s outside range [%s, %s]", amount[0].Amount, asset.MinSwapAmount.String(), asset.MaxSwapAmount)
-	}
+	// // Swap amount must be within the specified swap amount limits
+	// if amount[0].TokenId.LT(asset.MinSwapAmount) || amount[0].TokenId.GT(asset.MaxSwapAmount) {
+	// 	return direction, sdkerrors.Wrapf(types.ErrInvalidAmount, "amount %s outside range [%s, %s]", amount[0].TokenId, asset.MinSwapAmount.String(), asset.MaxSwapAmount)
+	// }
 
-	// Unix timestamp must be in range [-15 mins, 30 mins) of the current time
-	pastTimestampLimit := ctx.BlockTime().Add(-15 * time.Minute).Unix()
-	futureTimestampLimit := ctx.BlockTime().Add(30 * time.Minute).Unix()
-	if timestamp < uint64(pastTimestampLimit) || timestamp >= uint64(futureTimestampLimit) {
-		return direction, sdkerrors.Wrap(
-			types.ErrInvalidTimestamp,
-			fmt.Sprintf(
-				"timestamp can neither be 15 minutes ahead of the current time, nor 30 minutes later. block time: %s, timestamp: %s",
-				ctx.BlockTime().String(), time.Unix(int64(timestamp), 0).UTC().String(),
-			),
-		)
-	}
+	// // Unix timestamp must be in range [-15 mins, 30 mins) of the current time
+	// pastTimestampLimit := ctx.BlockTime().Add(-15 * time.Minute).Unix()
+	// futureTimestampLimit := ctx.BlockTime().Add(30 * time.Minute).Unix()
+	// if timestamp < uint64(pastTimestampLimit) || timestamp >= uint64(futureTimestampLimit) {
+	// 	return direction, sdkerrors.Wrap(
+	// 		types.ErrInvalidTimestamp,
+	// 		fmt.Sprintf(
+	// 			"timestamp can neither be 15 minutes ahead of the current time, nor 30 minutes later. block time: %s, timestamp: %s",
+	// 			ctx.BlockTime().String(), time.Unix(int64(timestamp), 0).UTC().String(),
+	// 		),
+	// 	)
+	// }
 
-	deputyAddress, _ := sdk.AccAddressFromBech32(asset.DeputyAddress)
+	// deputyAddress, _ := sdk.AccAddressFromBech32(asset.DeputyAddress)
 
-	if sender.Equals(deputyAddress) {
-		if to.Equals(deputyAddress) {
-			return direction, sdkerrors.Wrapf(types.ErrInvalidAccount, "deputy cannot be both sender and receiver: %s", asset.DeputyAddress)
-		}
-		direction = types.Incoming
-	} else {
-		if !to.Equals(deputyAddress) {
-			return direction, sdkerrors.Wrapf(types.ErrInvalidAccount, "deputy must be recipient for outgoing account: %s", to)
-		}
-		direction = types.Outgoing
-	}
+	// if sender.Equals(deputyAddress) {
+	// 	if to.Equals(deputyAddress) {
+	// 		return direction, sdkerrors.Wrapf(types.ErrInvalidAccount, "deputy cannot be both sender and receiver: %s", asset.DeputyAddress)
+	// 	}
+	// 	direction = types.Incoming
+	// } else {
+	// 	if !to.Equals(deputyAddress) {
+	// 		return direction, sdkerrors.Wrapf(types.ErrInvalidAccount, "deputy must be recipient for outgoing account: %s", to)
+	// 	}
+	// 	direction = types.Outgoing
+	// }
 
-	switch direction {
-	case types.Incoming:
-		// If recipient's account doesn't exist, register it in state so that the address can send
-		// a claim swap tx without needing to be registered in state by receiving a coin transfer.
-		recipientAcc := k.accountKeeper.GetAccount(ctx, deputyAddress)
-		if recipientAcc == nil {
-			acc := k.accountKeeper.NewAccountWithAddress(ctx, deputyAddress)
-			k.accountKeeper.SetAccount(ctx, acc)
-		}
-		// Incoming swaps have already had their fees collected by the deputy during the relay process.
-		if err := k.IncrementIncomingAssetSupply(ctx, amount[0]); err != nil {
-			return direction, err
-		}
-	case types.Outgoing:
-		// Outgoing swaps must have a time lock within the accepted range
-		if timeLock < asset.MinBlockLock || timeLock > asset.MaxBlockLock {
-			return direction, sdkerrors.Wrapf(types.ErrInvalidTimeLock, "time lock %d outside range [%d, %d]", timeLock, asset.MinBlockLock, asset.MaxBlockLock)
-		}
-		// Amount in outgoing swaps must be able to pay the deputy's fixed fee.
-		if amount[0].Amount.LT(asset.FixedFee.Add(asset.MinSwapAmount)) {
-			return direction, sdkerrors.Wrapf(
-				types.ErrInsufficientAmount,
-				"amount %s is less than fixed fee %s add min swap amount %s",
-				amount[0].String(), asset.FixedFee.String(), asset.MinSwapAmount.String(),
-			)
-		}
-		if err := k.IncrementOutgoingAssetSupply(ctx, amount[0]); err != nil {
-			return direction, err
-		}
-		// Transfer coins to module - only needed for outgoing swaps
-		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, amount); err != nil {
-			return direction, err
-		}
-	default:
-		return direction, sdkerrors.Wrapf(types.ErrInvalidDirection, direction.String())
-	}
+	// switch direction {
+	// case types.Incoming:
+	// 	// If recipient's account doesn't exist, register it in state so that the address can send
+	// 	// a claim swap tx without needing to be registered in state by receiving a coin transfer.
+	// 	recipientAcc := k.accountKeeper.GetAccount(ctx, deputyAddress)
+	// 	if recipientAcc == nil {
+	// 		acc := k.accountKeeper.NewAccountWithAddress(ctx, deputyAddress)
+	// 		k.accountKeeper.SetAccount(ctx, acc)
+	// 	}
+	// 	// Incoming swaps have already had their fees collected by the deputy during the relay process.
+	// 	if err := k.IncrementIncomingAssetSupply(ctx, amount[0]); err != nil {
+	// 		return direction, err
+	// 	}
+	// case types.Outgoing:
+	// 	// Outgoing swaps must have a time lock within the accepted range
+	// 	if timeLock < asset.MinBlockLock || timeLock > asset.MaxBlockLock {
+	// 		return direction, sdkerrors.Wrapf(types.ErrInvalidTimeLock, "time lock %d outside range [%d, %d]", timeLock, asset.MinBlockLock, asset.MaxBlockLock)
+	// 	}
+	// 	// TokenId in outgoing swaps must be able to pay the deputy's fixed fee.
+	// 	if amount[0].TokenId.LT(asset.FixedFee.Add(asset.MinSwapAmount)) {
+	// 		return direction, sdkerrors.Wrapf(
+	// 			types.ErrInsufficientAmount,
+	// 			"amount %s is less than fixed fee %s add min swap amount %s",
+	// 			amount[0].String(), asset.FixedFee.String(), asset.MinSwapAmount.String(),
+	// 		)
+	// 	}
+	// 	if err := k.IncrementOutgoingAssetSupply(ctx, amount[0]); err != nil {
+	// 		return direction, err
+	// 	}
+	// 	// Transfer coins to module - only needed for outgoing swaps
+	// 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, amount); err != nil {
+	// 		return direction, err
+	// 	}
+	// default:
+	// 	return direction, sdkerrors.Wrapf(types.ErrInvalidDirection, direction.String())
+	// }
 
 	return direction, nil
 }
@@ -209,20 +208,20 @@ func (k Keeper) ClaimHTLC(
 		return "", false, types.None, sdkerrors.Wrap(types.ErrInvalidSecret, secret.String())
 	}
 
-	to, err := sdk.AccAddressFromBech32(htlc.To)
+	_, err := sdk.AccAddressFromBech32(htlc.To)
 	if err != nil {
 		return "", false, types.None, err
 	}
 
-	if htlc.Transfer {
-		if err := k.claimHTLT(ctx, htlc); err != nil {
-			return "", false, types.None, err
-		}
-	} else {
-		if err := k.claimHTLC(ctx, htlc.Amount, to); err != nil {
-			return "", false, types.None, err
-		}
-	}
+	// if htlc.Transfer {
+	// 	if err := k.claimHTLT(ctx, htlc); err != nil {
+	// 		return "", false, types.None, err
+	// 	}
+	// } else {
+	// 	if err := k.claimHTLC(ctx, htlc.TokenId, to); err != nil {
+	// 		return "", false, types.None, err
+	// 	}
+	// }
 
 	// update the secret and state of the HTLC
 	htlc.Secret = secret.String()
@@ -241,87 +240,38 @@ func (k Keeper) claimHTLC(ctx sdk.Context, amount sdk.Coins, to sdk.AccAddress) 
 }
 
 func (k Keeper) claimHTLT(ctx sdk.Context, htlc types.HTLC) error {
-	switch htlc.Direction {
-	case types.Incoming:
-		if err := k.DecrementIncomingAssetSupply(ctx, htlc.Amount[0]); err != nil {
-			return err
-		}
-		if err := k.IncrementCurrentAssetSupply(ctx, htlc.Amount[0]); err != nil {
-			return err
-		}
-		// incoming case - coins should be MINTED, then sent to user
-		if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, htlc.Amount); err != nil {
-			return err
-		}
-		// Send intended recipient coins
-		toAddr, _ := sdk.AccAddressFromBech32(htlc.To)
-		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, toAddr, htlc.Amount); err != nil {
-			return err
-		}
-	case types.Outgoing:
-		if err := k.DecrementOutgoingAssetSupply(ctx, htlc.Amount[0]); err != nil {
-			return err
-		}
-		if err := k.DecrementCurrentAssetSupply(ctx, htlc.Amount[0]); err != nil {
-			return err
-		}
-		// outgoing case  - coins should be burned
-		if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, htlc.Amount); err != nil {
-			return err
-		}
-	default:
-		return sdkerrors.Wrapf(types.ErrInvalidDirection, htlc.Direction.String())
-	}
+	// switch htlc.Direction {
+	// case types.Incoming:
+	// 	if err := k.DecrementIncomingAssetSupply(ctx, htlc.TokenId[0]); err != nil {
+	// 		return err
+	// 	}
+	// 	if err := k.IncrementCurrentAssetSupply(ctx, htlc.TokenId[0]); err != nil {
+	// 		return err
+	// 	}
+	// 	// incoming case - coins should be MINTED, then sent to user
+	// 	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, htlc.TokenId); err != nil {
+	// 		return err
+	// 	}
+	// 	// Send intended recipient coins
+	// 	toAddr, _ := sdk.AccAddressFromBech32(htlc.To)
+	// 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, toAddr, htlc.TokenId); err != nil {
+	// 		return err
+	// 	}
+	// case types.Outgoing:
+	// 	if err := k.DecrementOutgoingAssetSupply(ctx, htlc.TokenId[0]); err != nil {
+	// 		return err
+	// 	}
+	// 	if err := k.DecrementCurrentAssetSupply(ctx, htlc.TokenId[0]); err != nil {
+	// 		return err
+	// 	}
+	// 	// outgoing case  - coins should be burned
+	// 	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, htlc.TokenId); err != nil {
+	// 		return err
+	// 	}
+	// default:
+	// 	return sdkerrors.Wrapf(types.ErrInvalidDirection, htlc.Direction.String())
+	// }
 
-	return nil
-}
-
-// RefundHTLC refunds the specified HTLC
-func (k Keeper) RefundHTLC(ctx sdk.Context, h types.HTLC, id tmbytes.HexBytes) error {
-	sender, err := sdk.AccAddressFromBech32(h.Sender)
-	if err != nil {
-		return err
-	}
-
-	if h.Transfer {
-		if err := k.refundHTLT(ctx, h.Direction, sender, h.Amount); err != nil {
-			return err
-		}
-	} else {
-		if err := k.refundHTLC(ctx, sender, h.Amount); err != nil {
-			return err
-		}
-	}
-
-	// update the state of the HTLC
-	h.State = types.Refunded
-	h.ClosedBlock = uint64(ctx.BlockHeight())
-	k.SetHTLC(ctx, h, id)
-
-	return nil
-}
-
-func (k Keeper) refundHTLC(ctx sdk.Context, sender sdk.AccAddress, amount sdk.Coins) error {
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
-}
-
-func (k Keeper) refundHTLT(ctx sdk.Context, direction types.SwapDirection, sender sdk.AccAddress, amount sdk.Coins) error {
-	switch direction {
-	case types.Incoming:
-		if err := k.DecrementIncomingAssetSupply(ctx, amount[0]); err != nil {
-			return err
-		}
-	case types.Outgoing:
-		if err := k.DecrementOutgoingAssetSupply(ctx, amount[0]); err != nil {
-			return err
-		}
-		// Refund coins to original swap sender for outgoing swaps
-		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("invalid direction")
-	}
 	return nil
 }
 

@@ -18,7 +18,7 @@ func NewHTLC(
 	to sdk.AccAddress,
 	receiverOnOtherChain string,
 	senderOnOtherChain string,
-	amount sdk.Coins,
+	tokenId uint64,
 	hashLock tmbytes.HexBytes,
 	secret tmbytes.HexBytes,
 	timestamp uint64,
@@ -34,7 +34,7 @@ func NewHTLC(
 		To:                   to.String(),
 		ReceiverOnOtherChain: receiverOnOtherChain,
 		SenderOnOtherChain:   senderOnOtherChain,
-		Amount:               amount,
+		TokenId:              tokenId,
 		HashLock:             hashLock.String(),
 		Secret:               secret.String(),
 		Timestamp:            timestamp,
@@ -72,9 +72,9 @@ func (h HTLC) Validate() error {
 	if h.Timestamp == 0 {
 		return sdkerrors.Wrapf(ErrInvalidTimestamp, "timestamp cannot be 0")
 	}
-	if err := ValidateAmount(h.Transfer, h.Amount); err != nil {
-		return err
-	}
+	// if err := ValidateAmount(h.Transfer, h.Amount); err != nil {
+	// return err
+	// }
 	if h.State > Refunded {
 		return sdkerrors.Wrapf(ErrInvalidState, "invalid htlc status")
 	}
@@ -150,10 +150,10 @@ func GetHashLock(secret tmbytes.HexBytes, timestamp uint64) []byte {
 func GetID(
 	sender sdk.AccAddress,
 	to sdk.AccAddress,
-	amount sdk.Coins,
+	tokenId uint64,
 	hashLock tmbytes.HexBytes,
 ) tmbytes.HexBytes {
 	return tmhash.Sum(
-		append(append(append(hashLock, sender...), to...), []byte(amount.Sort().String())...),
+		append(append(append(hashLock, sender...), to...), byte(tokenId)),
 	)
 }

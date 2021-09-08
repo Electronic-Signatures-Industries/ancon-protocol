@@ -90,6 +90,7 @@ const baseHTLC = {
     to: '',
     receiverOnOtherChain: '',
     senderOnOtherChain: '',
+    tokenId: 0,
     hashLock: '',
     secret: '',
     timestamp: 0,
@@ -116,8 +117,8 @@ export const HTLC = {
         if (message.senderOnOtherChain !== '') {
             writer.uint32(42).string(message.senderOnOtherChain);
         }
-        for (const v of message.amount) {
-            Coin.encode(v, writer.uint32(50).fork()).ldelim();
+        if (message.tokenId !== 0) {
+            writer.uint32(48).uint64(message.tokenId);
         }
         if (message.hashLock !== '') {
             writer.uint32(58).string(message.hashLock);
@@ -149,7 +150,6 @@ export const HTLC = {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = { ...baseHTLC };
-        message.amount = [];
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -169,7 +169,7 @@ export const HTLC = {
                     message.senderOnOtherChain = reader.string();
                     break;
                 case 6:
-                    message.amount.push(Coin.decode(reader, reader.uint32()));
+                    message.tokenId = longToNumber(reader.uint64());
                     break;
                 case 7:
                     message.hashLock = reader.string();
@@ -204,7 +204,6 @@ export const HTLC = {
     },
     fromJSON(object) {
         const message = { ...baseHTLC };
-        message.amount = [];
         if (object.id !== undefined && object.id !== null) {
             message.id = String(object.id);
         }
@@ -235,10 +234,11 @@ export const HTLC = {
         else {
             message.senderOnOtherChain = '';
         }
-        if (object.amount !== undefined && object.amount !== null) {
-            for (const e of object.amount) {
-                message.amount.push(Coin.fromJSON(e));
-            }
+        if (object.tokenId !== undefined && object.tokenId !== null) {
+            message.tokenId = Number(object.tokenId);
+        }
+        else {
+            message.tokenId = 0;
         }
         if (object.hashLock !== undefined && object.hashLock !== null) {
             message.hashLock = String(object.hashLock);
@@ -297,12 +297,7 @@ export const HTLC = {
         message.to !== undefined && (obj.to = message.to);
         message.receiverOnOtherChain !== undefined && (obj.receiverOnOtherChain = message.receiverOnOtherChain);
         message.senderOnOtherChain !== undefined && (obj.senderOnOtherChain = message.senderOnOtherChain);
-        if (message.amount) {
-            obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
-        }
-        else {
-            obj.amount = [];
-        }
+        message.tokenId !== undefined && (obj.tokenId = message.tokenId);
         message.hashLock !== undefined && (obj.hashLock = message.hashLock);
         message.secret !== undefined && (obj.secret = message.secret);
         message.timestamp !== undefined && (obj.timestamp = message.timestamp);
@@ -315,7 +310,6 @@ export const HTLC = {
     },
     fromPartial(object) {
         const message = { ...baseHTLC };
-        message.amount = [];
         if (object.id !== undefined && object.id !== null) {
             message.id = object.id;
         }
@@ -346,10 +340,11 @@ export const HTLC = {
         else {
             message.senderOnOtherChain = '';
         }
-        if (object.amount !== undefined && object.amount !== null) {
-            for (const e of object.amount) {
-                message.amount.push(Coin.fromPartial(e));
-            }
+        if (object.tokenId !== undefined && object.tokenId !== null) {
+            message.tokenId = object.tokenId;
+        }
+        else {
+            message.tokenId = 0;
         }
         if (object.hashLock !== undefined && object.hashLock !== null) {
             message.hashLock = object.hashLock;
