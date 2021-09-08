@@ -8,28 +8,6 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
-/**
-* - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
- - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
- - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
-*/
-export var AnconprotocolHTLCState;
-(function (AnconprotocolHTLCState) {
-    AnconprotocolHTLCState["HTLC_STATE_OPEN"] = "HTLC_STATE_OPEN";
-    AnconprotocolHTLCState["HTLC_STATE_COMPLETED"] = "HTLC_STATE_COMPLETED";
-    AnconprotocolHTLCState["HTLC_STATE_REFUNDED"] = "HTLC_STATE_REFUNDED";
-})(AnconprotocolHTLCState || (AnconprotocolHTLCState = {}));
-/**
-* - NONE: NONE defines an htlt none direction.
- - INCOMING: INCOMING defines an htlt incoming direction.
- - OUTGOING: OUTGOING defines an htlt outgoing direction.
-*/
-export var AnconprotocolSwapDirection;
-(function (AnconprotocolSwapDirection) {
-    AnconprotocolSwapDirection["NONE"] = "NONE";
-    AnconprotocolSwapDirection["INCOMING"] = "INCOMING";
-    AnconprotocolSwapDirection["OUTGOING"] = "OUTGOING";
-})(AnconprotocolSwapDirection || (AnconprotocolSwapDirection = {}));
 export var ContentType;
 (function (ContentType) {
     ContentType["Json"] = "application/json";
@@ -192,83 +170,12 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
-         * @name QueryGetHtlc
-         * @summary HTLC queries the HTLC by the specified hash lock
-         * @request GET:/ancon/htlc/htlcs/{id}
-         */
-        this.queryGetHtlc = (id, params = {}) => this.request({
-            path: `/ancon/htlc/htlcs/${id}`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryParams
-         * @summary Params queries the htlc parameters
-         * @request GET:/ancon/htlc/params
-         */
-        this.queryParams = (params = {}) => this.request({
-            path: `/ancon/htlc/params`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryAssetSupplies
-         * @summary AssetSupplies queries the supplies of all assets
-         * @request GET:/ancon/htlc/supplies
-         */
-        this.queryAssetSupplies = (params = {}) => this.request({
-            path: `/ancon/htlc/supplies`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryAssetSupply
-         * @summary AssetSupply queries the supply of an asset
-         * @request GET:/ancon/htlc/supplies/{denom}
-         */
-        this.queryAssetSupply = (denom, params = {}) => this.request({
-            path: `/ancon/htlc/supplies/${denom}`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
          * @name QueryCollection
          * @summary Collection queries the NFTs of the specified denom
          * @request GET:/ancon/nft/collections/{denomId}
          */
         this.queryCollection = (denomId, query, params = {}) => this.request({
             path: `/ancon/nft/collections/${denomId}`,
-            method: "GET",
-            query: query,
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QuerySupply
-         * @summary Supply queries the total supply of a given denom or owner
-         * @request GET:/ancon/nft/collections/{denomId}/supply
-         */
-        this.querySupply = (denomId, query, params = {}) => this.request({
-            path: `/ancon/nft/collections/${denomId}/supply`,
             method: "GET",
             query: query,
             format: "json",

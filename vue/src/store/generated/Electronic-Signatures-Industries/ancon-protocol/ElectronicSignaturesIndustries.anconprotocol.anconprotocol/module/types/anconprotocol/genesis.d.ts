@@ -1,13 +1,8 @@
-import { Params, HTLC, AssetSupply } from '../anconprotocol/htlc';
 import { Collection } from '../anconprotocol/nft';
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 /** GenesisState defines the anconprotocol module's genesis state. */
 export interface GenesisState {
-    params: Params | undefined;
-    htlcs: HTLC[];
-    supplies: AssetSupply[];
-    previousBlockTime: Date | undefined;
     collections: Collection[];
 }
 export declare const GenesisState: {

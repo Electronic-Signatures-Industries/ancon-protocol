@@ -13,23 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
-func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*types.QuerySupplyResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	var supply uint64
-	switch {
-	case len(request.Owner) == 0 && len(request.DenomId) > 0:
-		supply = k.GetTotalSupply(ctx, request.DenomId)
-	default:
-		owner, err := sdk.AccAddressFromBech32(request.Owner)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
-		}
-		supply = k.GetTotalSupplyOfOwner(ctx, request.DenomId, owner)
-	}
-	return &types.QuerySupplyResponse{Amount: supply}, nil
-}
-
 func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 

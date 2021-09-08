@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -31,51 +30,6 @@ var (
 	ReadWithPathQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
 	ReadQuery         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"ancon", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
 )
-
-func (k Keeper) GetHtlc(c context.Context, request *types.QueryHTLCRequest) (*types.QueryHTLCResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	id, err := hex.DecodeString(request.Id)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid htlc id %s", request.Id)
-	}
-
-	htlc, found := k.GetHTLC(ctx, id)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "HTLC %s not found", request.Id)
-	}
-
-	return &types.QueryHTLCResponse{Htlc: &htlc}, nil
-}
-
-func (k Keeper) AssetSupply(c context.Context, request *types.QueryAssetSupplyRequest) (*types.QueryAssetSupplyResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	assetSupply, found := k.GetAssetSupply(ctx, request.Denom)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, string(request.Denom))
-	}
-
-	return &types.QueryAssetSupplyResponse{AssetSupply: &assetSupply}, nil
-}
-
-func (k Keeper) AssetSupplies(c context.Context, request *types.QueryAssetSuppliesRequest) (*types.QueryAssetSuppliesResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	assets := k.GetAllAssetSupplies(ctx)
-	if assets == nil {
-		assets = []types.AssetSupply{}
-	}
-
-	return &types.QueryAssetSuppliesResponse{AssetSupplies: assets}, nil
-}
-
-func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	params := k.GetParams(ctx)
-
-	return &types.QueryParamsResponse{Params: params}, nil
-}
 
 func (k Keeper) Read(goCtx context.Context, req *types.QueryResourceRequest) (*types.QueryResourceResponse, error) {
 	return k.Resource(goCtx, req)

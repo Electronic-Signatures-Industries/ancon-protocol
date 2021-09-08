@@ -69,31 +69,6 @@ export interface MsgTransferDenom {
 /** MsgTransferDenomResponse defines the Msg/TransferDenom response type. */
 export interface MsgTransferDenomResponse {
 }
-/** MsgCreateHTLC defines a message to create an HTLC */
-export interface MsgCreateHTLC {
-    sender: string;
-    to: string;
-    receiverOnOtherChain: string;
-    senderOnOtherChain: string;
-    tokenId: number;
-    hashLock: string;
-    timestamp: number;
-    timeLock: number;
-    transfer: boolean;
-}
-/** MsgCreateHTLCResponse defines the Msg/CreateHTLC response type */
-export interface MsgCreateHTLCResponse {
-    id: string;
-}
-/** MsgClaimHTLC defines a message to claim an HTLC */
-export interface MsgClaimHTLC {
-    sender: string;
-    id: string;
-    secret: string;
-}
-/** MsgClaimHTLCResponse defines the Msg/ClaimHTLC response type */
-export interface MsgClaimHTLCResponse {
-}
 /** MsgEthereumTxResponse defines the Msg/EthereumTx response type. */
 export interface MsgFileMetadataResponse {
     hash: Uint8Array;
@@ -212,34 +187,6 @@ export declare const MsgTransferDenomResponse: {
     toJSON(_: MsgTransferDenomResponse): unknown;
     fromPartial(_: DeepPartial<MsgTransferDenomResponse>): MsgTransferDenomResponse;
 };
-export declare const MsgCreateHTLC: {
-    encode(message: MsgCreateHTLC, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgCreateHTLC;
-    fromJSON(object: any): MsgCreateHTLC;
-    toJSON(message: MsgCreateHTLC): unknown;
-    fromPartial(object: DeepPartial<MsgCreateHTLC>): MsgCreateHTLC;
-};
-export declare const MsgCreateHTLCResponse: {
-    encode(message: MsgCreateHTLCResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgCreateHTLCResponse;
-    fromJSON(object: any): MsgCreateHTLCResponse;
-    toJSON(message: MsgCreateHTLCResponse): unknown;
-    fromPartial(object: DeepPartial<MsgCreateHTLCResponse>): MsgCreateHTLCResponse;
-};
-export declare const MsgClaimHTLC: {
-    encode(message: MsgClaimHTLC, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgClaimHTLC;
-    fromJSON(object: any): MsgClaimHTLC;
-    toJSON(message: MsgClaimHTLC): unknown;
-    fromPartial(object: DeepPartial<MsgClaimHTLC>): MsgClaimHTLC;
-};
-export declare const MsgClaimHTLCResponse: {
-    encode(_: MsgClaimHTLCResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgClaimHTLCResponse;
-    fromJSON(_: any): MsgClaimHTLCResponse;
-    toJSON(_: MsgClaimHTLCResponse): unknown;
-    fromPartial(_: DeepPartial<MsgClaimHTLCResponse>): MsgClaimHTLCResponse;
-};
 export declare const MsgFileMetadataResponse: {
     encode(message: MsgFileMetadataResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgFileMetadataResponse;
@@ -284,10 +231,6 @@ export interface Msg {
      */
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
-    /** CreateHTLC defines a method for creating a HTLC */
-    CreateHTLC(request: MsgCreateHTLC): Promise<MsgCreateHTLCResponse>;
-    /** ClaimHTLC defines a method for claiming a HTLC */
-    ClaimHTLC(request: MsgClaimHTLC): Promise<MsgClaimHTLCResponse>;
     /** IssueDenom defines a method for issue a denom. */
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     /** MintNFT defines a method for mint a new nft */
@@ -306,8 +249,6 @@ export declare class MsgClientImpl implements Msg {
     constructor(rpc: Rpc);
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
-    CreateHTLC(request: MsgCreateHTLC): Promise<MsgCreateHTLCResponse>;
-    ClaimHTLC(request: MsgClaimHTLC): Promise<MsgClaimHTLCResponse>;
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
     EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>;

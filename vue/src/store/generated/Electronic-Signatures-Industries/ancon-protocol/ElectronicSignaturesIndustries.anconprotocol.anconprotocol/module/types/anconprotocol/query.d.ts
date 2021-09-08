@@ -1,14 +1,7 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
-import { HTLC, AssetSupply, Params } from '../anconprotocol/htlc';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-/** QuerySupplyRequest is the request type for the Query/HTLC RPC method */
-export interface QuerySupplyRequest {
-    denomId: string;
-    owner: string;
-}
-/** QuerySupplyResponse is the response type for the Query/Supply RPC method */
 export interface QuerySupplyResponse {
     amount: number;
 }
@@ -70,43 +63,6 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
-/** QueryHTLCRequest is the request type for the Query/HTLC RPC method */
-export interface QueryHTLCRequest {
-    id: string;
-}
-/** QueryBalanceResponse is the response type for the Query/HTLC RPC method */
-export interface QueryHTLCResponse {
-    htlc: HTLC | undefined;
-}
-/** QueryAssetSupplyRequest is request type for the Query/AssetSupply RPC method */
-export interface QueryAssetSupplyRequest {
-    denom: string;
-}
-/** QueryAssetSupplyResponse is response type for the Query/AssetSupply RPC method */
-export interface QueryAssetSupplyResponse {
-    assetSupply: AssetSupply | undefined;
-}
-/** QueryAssetSuppliesRequest is request type for the Query/AssetSupplies RPC method */
-export interface QueryAssetSuppliesRequest {
-}
-/** QueryAssetSuppliesResponse is response type for the Query/AssetSupplies RPC method */
-export interface QueryAssetSuppliesResponse {
-    assetSupplies: AssetSupply[];
-}
-/** QueryParamsRequest is request type for the Query/Parameters RPC method */
-export interface QueryParamsRequest {
-}
-/** QueryParamsResponse is response type for the Query/Parameters RPC method */
-export interface QueryParamsResponse {
-    params: Params | undefined;
-}
-export declare const QuerySupplyRequest: {
-    encode(message: QuerySupplyRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QuerySupplyRequest;
-    fromJSON(object: any): QuerySupplyRequest;
-    toJSON(message: QuerySupplyRequest): unknown;
-    fromPartial(object: DeepPartial<QuerySupplyRequest>): QuerySupplyRequest;
-};
 export declare const QuerySupplyResponse: {
     encode(message: QuerySupplyResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QuerySupplyResponse;
@@ -198,62 +154,6 @@ export declare const QueryResourceResponse: {
     toJSON(message: QueryResourceResponse): unknown;
     fromPartial(object: DeepPartial<QueryResourceResponse>): QueryResourceResponse;
 };
-export declare const QueryHTLCRequest: {
-    encode(message: QueryHTLCRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryHTLCRequest;
-    fromJSON(object: any): QueryHTLCRequest;
-    toJSON(message: QueryHTLCRequest): unknown;
-    fromPartial(object: DeepPartial<QueryHTLCRequest>): QueryHTLCRequest;
-};
-export declare const QueryHTLCResponse: {
-    encode(message: QueryHTLCResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryHTLCResponse;
-    fromJSON(object: any): QueryHTLCResponse;
-    toJSON(message: QueryHTLCResponse): unknown;
-    fromPartial(object: DeepPartial<QueryHTLCResponse>): QueryHTLCResponse;
-};
-export declare const QueryAssetSupplyRequest: {
-    encode(message: QueryAssetSupplyRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryAssetSupplyRequest;
-    fromJSON(object: any): QueryAssetSupplyRequest;
-    toJSON(message: QueryAssetSupplyRequest): unknown;
-    fromPartial(object: DeepPartial<QueryAssetSupplyRequest>): QueryAssetSupplyRequest;
-};
-export declare const QueryAssetSupplyResponse: {
-    encode(message: QueryAssetSupplyResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryAssetSupplyResponse;
-    fromJSON(object: any): QueryAssetSupplyResponse;
-    toJSON(message: QueryAssetSupplyResponse): unknown;
-    fromPartial(object: DeepPartial<QueryAssetSupplyResponse>): QueryAssetSupplyResponse;
-};
-export declare const QueryAssetSuppliesRequest: {
-    encode(_: QueryAssetSuppliesRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryAssetSuppliesRequest;
-    fromJSON(_: any): QueryAssetSuppliesRequest;
-    toJSON(_: QueryAssetSuppliesRequest): unknown;
-    fromPartial(_: DeepPartial<QueryAssetSuppliesRequest>): QueryAssetSuppliesRequest;
-};
-export declare const QueryAssetSuppliesResponse: {
-    encode(message: QueryAssetSuppliesResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryAssetSuppliesResponse;
-    fromJSON(object: any): QueryAssetSuppliesResponse;
-    toJSON(message: QueryAssetSuppliesResponse): unknown;
-    fromPartial(object: DeepPartial<QueryAssetSuppliesResponse>): QueryAssetSuppliesResponse;
-};
-export declare const QueryParamsRequest: {
-    encode(_: QueryParamsRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryParamsRequest;
-    fromJSON(_: any): QueryParamsRequest;
-    toJSON(_: QueryParamsRequest): unknown;
-    fromPartial(_: DeepPartial<QueryParamsRequest>): QueryParamsRequest;
-};
-export declare const QueryParamsResponse: {
-    encode(message: QueryParamsResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryParamsResponse;
-    fromJSON(object: any): QueryParamsResponse;
-    toJSON(message: QueryParamsResponse): unknown;
-    fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse;
-};
 /** Query defines the gRPC querier service. */
 export interface Query {
     /** Queries a list of resource items. */
@@ -265,18 +165,8 @@ export interface Query {
     ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of resource items. */
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    /** HTLC queries the HTLC by the specified hash lock */
-    GetHtlc(request: QueryHTLCRequest): Promise<QueryHTLCResponse>;
-    /** AssetSupply queries the supply of an asset */
-    AssetSupply(request: QueryAssetSupplyRequest): Promise<QueryAssetSupplyResponse>;
-    /** AssetSupplies queries the supplies of all assets */
-    AssetSupplies(request: QueryAssetSuppliesRequest): Promise<QueryAssetSuppliesResponse>;
-    /** Params queries the htlc parameters */
-    Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
     /** Queries a list of resource items. */
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    /** Supply queries the total supply of a given denom or owner */
-    Supply(request: QuerySupplyRequest): Promise<QuerySupplyResponse>;
     /** Owner queries the NFTs of the specified owner */
     Owner(request: QueryOwnerRequest): Promise<QueryOwnerResponse>;
     /** Collection queries the NFTs of the specified denom */
@@ -294,12 +184,7 @@ export declare class QueryClientImpl implements Query {
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    GetHtlc(request: QueryHTLCRequest): Promise<QueryHTLCResponse>;
-    AssetSupply(request: QueryAssetSupplyRequest): Promise<QueryAssetSupplyResponse>;
-    AssetSupplies(request: QueryAssetSuppliesRequest): Promise<QueryAssetSuppliesResponse>;
-    Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    Supply(request: QuerySupplyRequest): Promise<QuerySupplyResponse>;
     Owner(request: QueryOwnerRequest): Promise<QueryOwnerResponse>;
     Collection(request: QueryCollectionRequest): Promise<QueryCollectionResponse>;
     Denom(request: QueryDenomRequest): Promise<QueryDenomResponse>;

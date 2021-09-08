@@ -1,14 +1,10 @@
-import { HTLC } from "./module/types/anconprotocol/htlc";
-import { AssetSupply } from "./module/types/anconprotocol/htlc";
-import { Params } from "./module/types/anconprotocol/htlc";
-import { AssetParam } from "./module/types/anconprotocol/htlc";
-import { SupplyLimit } from "./module/types/anconprotocol/htlc";
 import { BaseNFT } from "./module/types/anconprotocol/nft";
 import { Denom } from "./module/types/anconprotocol/nft";
 import { IDCollection } from "./module/types/anconprotocol/nft";
 import { Owner } from "./module/types/anconprotocol/nft";
 import { Collection } from "./module/types/anconprotocol/nft";
+import { QuerySupplyResponse } from "./module/types/anconprotocol/query";
 import { MsgFileMetadataResponse } from "./module/types/anconprotocol/tx";
-export { HTLC, AssetSupply, Params, AssetParam, SupplyLimit, BaseNFT, Denom, IDCollection, Owner, Collection, MsgFileMetadataResponse };
+export { BaseNFT, Denom, IDCollection, Owner, Collection, QuerySupplyResponse, MsgFileMetadataResponse };
 declare const _default;
 export default _default;

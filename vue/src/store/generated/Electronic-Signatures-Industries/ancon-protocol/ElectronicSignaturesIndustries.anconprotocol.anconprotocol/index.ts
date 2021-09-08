@@ -2,20 +2,16 @@ import { txClient, queryClient, MissingWalletError } from './module'
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex'
 
-import { HTLC } from "./module/types/anconprotocol/htlc"
-import { AssetSupply } from "./module/types/anconprotocol/htlc"
-import { Params } from "./module/types/anconprotocol/htlc"
-import { AssetParam } from "./module/types/anconprotocol/htlc"
-import { SupplyLimit } from "./module/types/anconprotocol/htlc"
 import { BaseNFT } from "./module/types/anconprotocol/nft"
 import { Denom } from "./module/types/anconprotocol/nft"
 import { IDCollection } from "./module/types/anconprotocol/nft"
 import { Owner } from "./module/types/anconprotocol/nft"
 import { Collection } from "./module/types/anconprotocol/nft"
+import { QuerySupplyResponse } from "./module/types/anconprotocol/query"
 import { MsgFileMetadataResponse } from "./module/types/anconprotocol/tx"
 
 
-export { HTLC, AssetSupply, Params, AssetParam, SupplyLimit, BaseNFT, Denom, IDCollection, Owner, Collection, MsgFileMetadataResponse };
+export { BaseNFT, Denom, IDCollection, Owner, Collection, QuerySupplyResponse, MsgFileMetadataResponse };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -56,12 +52,7 @@ const getDefaultState = () => {
 				ReadWithPath: {},
 				ReadFile: {},
 				Read: {},
-				GetHtlc: {},
-				AssetSupply: {},
-				AssetSupplies: {},
-				Params: {},
 				Resource: {},
-				Supply: {},
 				Owner: {},
 				Collection: {},
 				Denom: {},
@@ -69,16 +60,12 @@ const getDefaultState = () => {
 				GetNft: {},
 				
 				_Structure: {
-						HTLC: getStructure(HTLC.fromPartial({})),
-						AssetSupply: getStructure(AssetSupply.fromPartial({})),
-						Params: getStructure(Params.fromPartial({})),
-						AssetParam: getStructure(AssetParam.fromPartial({})),
-						SupplyLimit: getStructure(SupplyLimit.fromPartial({})),
 						BaseNFT: getStructure(BaseNFT.fromPartial({})),
 						Denom: getStructure(Denom.fromPartial({})),
 						IDCollection: getStructure(IDCollection.fromPartial({})),
 						Owner: getStructure(Owner.fromPartial({})),
 						Collection: getStructure(Collection.fromPartial({})),
+						QuerySupplyResponse: getStructure(QuerySupplyResponse.fromPartial({})),
 						MsgFileMetadataResponse: getStructure(MsgFileMetadataResponse.fromPartial({})),
 						
 		},
@@ -125,41 +112,11 @@ export default {
 					}
 			return state.Read[JSON.stringify(params)] ?? {}
 		},
-				getGetHtlc: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.GetHtlc[JSON.stringify(params)] ?? {}
-		},
-				getAssetSupply: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.AssetSupply[JSON.stringify(params)] ?? {}
-		},
-				getAssetSupplies: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.AssetSupplies[JSON.stringify(params)] ?? {}
-		},
-				getParams: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.Params[JSON.stringify(params)] ?? {}
-		},
 				getResource: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
 			return state.Resource[JSON.stringify(params)] ?? {}
-		},
-				getSupply: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.Supply[JSON.stringify(params)] ?? {}
 		},
 				getOwner: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
@@ -293,90 +250,6 @@ export default {
 		 		
 		
 		
-		async QueryGetHtlc({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
-			try {
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryGetHtlc( key.id)).data
-				
-					
-				commit('QUERY', { query: 'GetHtlc', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryGetHtlc', payload: { options: { all }, params: {...key},query }})
-				return getters['getGetHtlc']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new SpVuexError('QueryClient:QueryGetHtlc', 'API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryAssetSupply({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
-			try {
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryAssetSupply( key.denom)).data
-				
-					
-				commit('QUERY', { query: 'AssetSupply', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAssetSupply', payload: { options: { all }, params: {...key},query }})
-				return getters['getAssetSupply']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new SpVuexError('QueryClient:QueryAssetSupply', 'API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryAssetSupplies({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
-			try {
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryAssetSupplies()).data
-				
-					
-				commit('QUERY', { query: 'AssetSupplies', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAssetSupplies', payload: { options: { all }, params: {...key},query }})
-				return getters['getAssetSupplies']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new SpVuexError('QueryClient:QueryAssetSupplies', 'API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryParams({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
-			try {
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryParams()).data
-				
-					
-				commit('QUERY', { query: 'Params', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryParams', payload: { options: { all }, params: {...key},query }})
-				return getters['getParams']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new SpVuexError('QueryClient:QueryParams', 'API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
 		async QueryResource({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
 			try {
 				const queryClient=await initQueryClient(rootGetters)
@@ -392,31 +265,6 @@ export default {
 				return getters['getResource']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new SpVuexError('QueryClient:QueryResource', 'API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QuerySupply({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
-			try {
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.querySupply( key.denom_id, query)).data
-				
-					
-				while (all && (<any> value).pagination && (<any> value).pagination.nextKey!=null) {
-					let next_values=(await queryClient.querySupply( key.denom_id, {...query, 'pagination.key':(<any> value).pagination.nextKey})).data
-					value = mergeResults(value, next_values);
-				}
-				commit('QUERY', { query: 'Supply', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QuerySupply', payload: { options: { all }, params: {...key},query }})
-				return getters['getSupply']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new SpVuexError('QueryClient:QuerySupply', 'API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -554,63 +402,18 @@ export default {
 				}
 			}
 		},
-		async sendMsgFile({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgEditNFT({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgFile(value)
+				const msg = await txClient.msgEditNFT(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.')
+					throw new SpVuexError('TxClient:MsgEditNFT:Init', 'Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new SpVuexError('TxClient:MsgFile:Send', 'Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgClaimHTLC({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgClaimHTLC(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgClaimHTLC:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgClaimHTLC:Send', 'Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgIssueDenom({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgIssueDenom(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgIssueDenom:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgIssueDenom:Send', 'Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgBurnNFT({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgBurnNFT(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgBurnNFT:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgBurnNFT:Send', 'Could not broadcast Tx: '+ e.message)
+					throw new SpVuexError('TxClient:MsgEditNFT:Send', 'Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -629,48 +432,18 @@ export default {
 				}
 			}
 		},
-		async sendMsgTransferNFT({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgBurnNFT({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgTransferNFT(value)
+				const msg = await txClient.msgBurnNFT(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgTransferNFT:Init', 'Could not initialize signing client. Wallet is required.')
+					throw new SpVuexError('TxClient:MsgBurnNFT:Init', 'Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new SpVuexError('TxClient:MsgTransferNFT:Send', 'Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgCreateHTLC({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateHTLC(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgCreateHTLC:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgCreateHTLC:Send', 'Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgEditNFT({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgEditNFT(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgEditNFT:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgEditNFT:Send', 'Could not broadcast Tx: '+ e.message)
+					throw new SpVuexError('TxClient:MsgBurnNFT:Send', 'Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -689,6 +462,51 @@ export default {
 				}
 			}
 		},
+		async sendMsgFile({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgFile(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgFile:Send', 'Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgIssueDenom({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgIssueDenom(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgIssueDenom:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgIssueDenom:Send', 'Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgTransferNFT({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgTransferNFT(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgTransferNFT:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgTransferNFT:Send', 'Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
 		async MsgMintNFT({ rootGetters }, { value }) {
 			try {
@@ -700,104 +518,6 @@ export default {
 					throw new SpVuexError('TxClient:MsgMintNFT:Init', 'Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new SpVuexError('TxClient:MsgMintNFT:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgFile({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgFile(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgFile:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgClaimHTLC({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgClaimHTLC(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgClaimHTLC:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgClaimHTLC:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgIssueDenom({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgIssueDenom(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgIssueDenom:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgIssueDenom:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgBurnNFT({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgBurnNFT(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgBurnNFT:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgBurnNFT:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgMetadata({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgMetadata(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgMetadata:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgMetadata:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgTransferNFT({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgTransferNFT(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgTransferNFT:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgTransferNFT:Create', 'Could not create message: ' + e.message)
-					
-				}
-			}
-		},
-		async MsgCreateHTLC({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateHTLC(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new SpVuexError('TxClient:MsgCreateHTLC:Init', 'Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new SpVuexError('TxClient:MsgCreateHTLC:Create', 'Could not create message: ' + e.message)
 					
 				}
 			}
@@ -816,6 +536,34 @@ export default {
 				}
 			}
 		},
+		async MsgMetadata({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgMetadata(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgMetadata:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgMetadata:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
+		async MsgBurnNFT({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgBurnNFT(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgBurnNFT:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgBurnNFT:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
 		async MsgTransferDenom({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -826,6 +574,48 @@ export default {
 					throw new SpVuexError('TxClient:MsgTransferDenom:Init', 'Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new SpVuexError('TxClient:MsgTransferDenom:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
+		async MsgFile({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgFile(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgFile:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgFile:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
+		async MsgIssueDenom({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgIssueDenom(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgIssueDenom:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgIssueDenom:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
+		async MsgTransferNFT({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgTransferNFT(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgTransferNFT:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgTransferNFT:Create', 'Could not create message: ' + e.message)
 					
 				}
 			}

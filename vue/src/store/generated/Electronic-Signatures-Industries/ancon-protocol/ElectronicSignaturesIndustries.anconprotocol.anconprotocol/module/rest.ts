@@ -9,57 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface AnconprotocolAssetParam {
-  denom?: string;
-  supplyLimit?: AnconprotocolSupplyLimit;
-  active?: boolean;
-  deputyAddress?: string;
-  fixedFee?: string;
-  minSwapAmount?: string;
-  maxSwapAmount?: string;
-
-  /** @format uint64 */
-  minBlockLock?: string;
-
-  /** @format uint64 */
-  maxBlockLock?: string;
-}
-
-export interface AnconprotocolAssetSupply {
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  incomingSupply?: V1Beta1Coin;
-
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  outgoingSupply?: V1Beta1Coin;
-
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  currentSupply?: V1Beta1Coin;
-
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  timeLimitedCurrentSupply?: V1Beta1Coin;
-  timeElapsed?: string;
-}
-
 export interface AnconprotocolBaseNFT {
   id?: string;
   name?: string;
@@ -83,54 +32,6 @@ export interface AnconprotocolDenom {
   updateRestricted?: boolean;
 }
 
-export interface AnconprotocolHTLC {
-  id?: string;
-  sender?: string;
-  to?: string;
-  receiverOnOtherChain?: string;
-  senderOnOtherChain?: string;
-
-  /** @format uint64 */
-  tokenId?: string;
-  hashLock?: string;
-  secret?: string;
-
-  /** @format uint64 */
-  timestamp?: string;
-
-  /** @format uint64 */
-  expirationHeight?: string;
-
-  /**
-   * - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
-   *  - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
-   *  - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
-   */
-  state?: AnconprotocolHTLCState;
-
-  /** @format uint64 */
-  closedBlock?: string;
-  transfer?: boolean;
-
-  /**
-   * - NONE: NONE defines an htlt none direction.
-   *  - INCOMING: INCOMING defines an htlt incoming direction.
-   *  - OUTGOING: OUTGOING defines an htlt outgoing direction.
-   */
-  direction?: AnconprotocolSwapDirection;
-}
-
-/**
-* - HTLC_STATE_OPEN: HTLC_STATE_OPEN defines an open state.
- - HTLC_STATE_COMPLETED: HTLC_STATE_COMPLETED defines a completed state.
- - HTLC_STATE_REFUNDED: HTLC_STATE_REFUNDED defines a refunded state.
-*/
-export enum AnconprotocolHTLCState {
-  HTLC_STATE_OPEN = "HTLC_STATE_OPEN",
-  HTLC_STATE_COMPLETED = "HTLC_STATE_COMPLETED",
-  HTLC_STATE_REFUNDED = "HTLC_STATE_REFUNDED",
-}
-
 export interface AnconprotocolIDCollection {
   denomId?: string;
   tokenIds?: string[];
@@ -140,12 +41,6 @@ export interface AnconprotocolIDCollection {
  * MsgBurnNFTResponse defines the Msg/BurnNFT response type.
  */
 export type AnconprotocolMsgBurnNFTResponse = object;
-
-export type AnconprotocolMsgClaimHTLCResponse = object;
-
-export interface AnconprotocolMsgCreateHTLCResponse {
-  id?: string;
-}
 
 /**
  * MsgEditNFTResponse defines the Msg/EditNFT response type.
@@ -185,18 +80,6 @@ export interface AnconprotocolOwner {
   idCollections?: AnconprotocolIDCollection[];
 }
 
-export interface AnconprotocolParams {
-  assetParams?: AnconprotocolAssetParam[];
-}
-
-export interface AnconprotocolQueryAssetSuppliesResponse {
-  assetSupplies?: AnconprotocolAssetSupply[];
-}
-
-export interface AnconprotocolQueryAssetSupplyResponse {
-  assetSupply?: AnconprotocolAssetSupply;
-}
-
 export interface AnconprotocolQueryCollectionResponse {
   collection?: AnconprotocolCollection;
 
@@ -231,10 +114,6 @@ export interface AnconprotocolQueryDenomsResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface AnconprotocolQueryHTLCResponse {
-  htlc?: AnconprotocolHTLC;
-}
-
 export interface AnconprotocolQueryNFTResponse {
   nft?: AnconprotocolBaseNFT;
 }
@@ -254,35 +133,8 @@ export interface AnconprotocolQueryOwnerResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface AnconprotocolQueryParamsResponse {
-  params?: AnconprotocolParams;
-}
-
 export interface AnconprotocolQueryResourceResponse {
   data?: string;
-}
-
-export interface AnconprotocolQuerySupplyResponse {
-  /** @format uint64 */
-  amount?: string;
-}
-
-export interface AnconprotocolSupplyLimit {
-  limit?: string;
-  timeLimited?: boolean;
-  timePeriod?: string;
-  timeBasedLimit?: string;
-}
-
-/**
-* - NONE: NONE defines an htlt none direction.
- - INCOMING: INCOMING defines an htlt incoming direction.
- - OUTGOING: OUTGOING defines an htlt outgoing direction.
-*/
-export enum AnconprotocolSwapDirection {
-  NONE = "NONE",
-  INCOMING = "INCOMING",
-  OUTGOING = "OUTGOING",
 }
 
 /**
@@ -407,17 +259,6 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
-}
-
-/**
-* Coin defines a token with a denomination and an amount.
-
-NOTE: The amount field is an Int which implements the custom method
-signatures required by gogoproto.
-*/
-export interface V1Beta1Coin {
-  denom?: string;
-  amount?: string;
 }
 
 /**
@@ -710,70 +551,6 @@ Queries a list of resource items.
    * No description
    *
    * @tags Query
-   * @name QueryGetHtlc
-   * @summary HTLC queries the HTLC by the specified hash lock
-   * @request GET:/ancon/htlc/htlcs/{id}
-   */
-  queryGetHtlc = (id: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryHTLCResponse, RpcStatus>({
-      path: `/ancon/htlc/htlcs/${id}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryParams
-   * @summary Params queries the htlc parameters
-   * @request GET:/ancon/htlc/params
-   */
-  queryParams = (params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryParamsResponse, RpcStatus>({
-      path: `/ancon/htlc/params`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryAssetSupplies
-   * @summary AssetSupplies queries the supplies of all assets
-   * @request GET:/ancon/htlc/supplies
-   */
-  queryAssetSupplies = (params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryAssetSuppliesResponse, RpcStatus>({
-      path: `/ancon/htlc/supplies`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryAssetSupply
-   * @summary AssetSupply queries the supply of an asset
-   * @request GET:/ancon/htlc/supplies/{denom}
-   */
-  queryAssetSupply = (denom: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryAssetSupplyResponse, RpcStatus>({
-      path: `/ancon/htlc/supplies/${denom}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
    * @name QueryCollection
    * @summary Collection queries the NFTs of the specified denom
    * @request GET:/ancon/nft/collections/{denomId}
@@ -790,23 +567,6 @@ Queries a list of resource items.
   ) =>
     this.request<AnconprotocolQueryCollectionResponse, RpcStatus>({
       path: `/ancon/nft/collections/${denomId}`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QuerySupply
-   * @summary Supply queries the total supply of a given denom or owner
-   * @request GET:/ancon/nft/collections/{denomId}/supply
-   */
-  querySupply = (denomId: string, query?: { owner?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQuerySupplyResponse, RpcStatus>({
-      path: `/ancon/nft/collections/${denomId}/supply`,
       method: "GET",
       query: query,
       format: "json",

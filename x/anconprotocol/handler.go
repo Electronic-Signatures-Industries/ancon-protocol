@@ -17,13 +17,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgCreateHTLC:
-			res, err := msgServer.CreateHTLC(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-
-		case *types.MsgClaimHTLC:
-			res, err := msgServer.ClaimHTLC(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgIssueDenom:
 			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

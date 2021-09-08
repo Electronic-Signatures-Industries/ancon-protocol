@@ -17,8 +17,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 
 	cdc.RegisterConcrete(&MsgFile{}, "anconprotocol/File", nil)
 
-	cdc.RegisterConcrete(&MsgCreateHTLC{}, "anconprotocol/CreateHTLC", nil)
-	cdc.RegisterConcrete(&MsgClaimHTLC{}, "anconprotocol/ClaimHTLC", nil)
 	cdc.RegisterConcrete(&MsgIssueDenom{}, "anconprotocol/IssueDenom", nil)
 	cdc.RegisterConcrete(&MsgEditNFT{}, "anconprotocol/EditNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "anconprotocol/BurnNFT", nil)
@@ -31,8 +29,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMetadata{},
 		&MsgFile{},
-		&MsgClaimHTLC{},
-		&MsgCreateHTLC{},
 		&MsgIssueDenom{},
 		&MsgTransferNFT{},
 		&MsgTransferDenom{},

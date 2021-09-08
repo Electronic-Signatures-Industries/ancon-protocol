@@ -17,11 +17,7 @@ service Msg {
     // this line is used by starport scaffolding # proto/tx/rpc
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
-  // CreateHTLC defines a method for creating a HTLC
-  rpc CreateHTLC(MsgCreateHTLC) returns (MsgCreateHTLCResponse);
 
-  // ClaimHTLC defines a method for claiming a HTLC
-  rpc ClaimHTLC(MsgClaimHTLC) returns (MsgClaimHTLCResponse);
     // IssueDenom defines a method for issue a denom.
     rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
 
@@ -128,39 +124,8 @@ message MsgTransferDenom {
 // MsgTransferDenomResponse defines the Msg/TransferDenom response type.
 message MsgTransferDenomResponse {}
 
-
-// MsgCreateHTLC defines a message to create an HTLC
-message MsgCreateHTLC {
-  option (gogoproto.equal) = true;
-
-  string sender = 1;
-  string to = 2;
-  string receiver_on_other_chain = 3 [ (gogoproto.moretags) = "yaml:\"receiver_on_other_chain\"" ];
-  string sender_on_other_chain = 4 [ (gogoproto.moretags) = "yaml:\"sender_on_other_chain\"" ];
-  
-  uint64 token_id = 5;
-  string hash_lock = 6 [ (gogoproto.moretags) = "yaml:\"hash_lock\"" ];
-  uint64 timestamp = 7;
-  uint64 time_lock = 8 [ (gogoproto.moretags) = "yaml:\"time_lock\"" ];
-  bool transfer = 9;
-}
-
 // MsgCreateHTLCResponse defines the Msg/CreateHTLC response type
-message MsgCreateHTLCResponse {
-  string id = 1;
-}
 
-// MsgClaimHTLC defines a message to claim an HTLC
-message MsgClaimHTLC {
-  option (gogoproto.equal) = true;
-
-  string sender = 1;
-  string id = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string secret = 3;
-}
-
-// MsgClaimHTLCResponse defines the Msg/ClaimHTLC response type
-message MsgClaimHTLCResponse {}
 
 // MsgEthereumTxResponse defines the Msg/EthereumTx response type.
 message MsgFileMetadataResponse {
