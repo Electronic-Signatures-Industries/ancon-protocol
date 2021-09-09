@@ -1,8 +1,8 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseQueryGetDelegatesRequest = { id: '' };
-export const QueryGetDelegatesRequest = {
+const baseQueryGetDelegateRequest = { id: '' };
+export const QueryGetDelegateRequest = {
     encode(message, writer = Writer.create()) {
         if (message.id !== '') {
             writer.uint32(10).string(message.id);
@@ -12,7 +12,7 @@ export const QueryGetDelegatesRequest = {
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseQueryGetDelegatesRequest };
+        const message = { ...baseQueryGetDelegateRequest };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -27,7 +27,7 @@ export const QueryGetDelegatesRequest = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseQueryGetDelegatesRequest };
+        const message = { ...baseQueryGetDelegateRequest };
         if (object.id !== undefined && object.id !== null) {
             message.id = String(object.id);
         }
@@ -42,7 +42,7 @@ export const QueryGetDelegatesRequest = {
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseQueryGetDelegatesRequest };
+        const message = { ...baseQueryGetDelegateRequest };
         if (object.id !== undefined && object.id !== null) {
             message.id = object.id;
         }
@@ -52,15 +52,15 @@ export const QueryGetDelegatesRequest = {
         return message;
     }
 };
-const baseQueryGetDelegatesResponse = {};
-export const QueryGetDelegatesResponse = {
+const baseQueryGetDelegateResponse = {};
+export const QueryGetDelegateResponse = {
     encode(_, writer = Writer.create()) {
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseQueryGetDelegatesResponse };
+        const message = { ...baseQueryGetDelegateResponse };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -72,7 +72,7 @@ export const QueryGetDelegatesResponse = {
         return message;
     },
     fromJSON(_) {
-        const message = { ...baseQueryGetDelegatesResponse };
+        const message = { ...baseQueryGetDelegateResponse };
         return message;
     },
     toJSON(_) {
@@ -80,7 +80,7 @@ export const QueryGetDelegatesResponse = {
         return obj;
     },
     fromPartial(_) {
-        const message = { ...baseQueryGetDelegatesResponse };
+        const message = { ...baseQueryGetDelegateResponse };
         return message;
     }
 };
@@ -520,24 +520,9 @@ export class QueryClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data);
         return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
     }
-    ReadNonces(request) {
-        const data = QueryNonceRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadNonces', data);
-        return promise.then((data) => QueryNonceResponse.decode(new Reader(data)));
-    }
-    ReadNonce(request) {
-        const data = QueryNonceRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadNonce', data);
-        return promise.then((data) => QueryNonceResponse.decode(new Reader(data)));
-    }
     ReadDelegate(request) {
-        const data = QueryGetDelegatesRequest.encode(request).finish();
+        const data = QueryGetDelegateRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadDelegate', data);
-        return promise.then((data) => QueryGetDelegatesResponse.decode(new Reader(data)));
-    }
-    ReadDelegates(request) {
-        const data = QueryGetDelegatesRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadDelegates', data);
-        return promise.then((data) => QueryGetDelegatesResponse.decode(new Reader(data)));
+        return promise.then((data) => QueryGetDelegateResponse.decode(new Reader(data)));
     }
 }

@@ -46,11 +46,6 @@ func (k Keeper) GetDelegates(ctx sdk.Context, delegate string, deleateType strin
 	return string(store.Get([]byte(o)))
 }
 
-func (k Keeper) GetNonce(ctx sdk.Context, n string) string {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.Nonce))
-	return string(store.Get([]byte(n)))
-}
-
 func (k Keeper) SetOwner(ctx sdk.Context, o types.Owner) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.Owners))
 	res := k.cdc.MustMarshalBinaryBare(&o)
@@ -70,30 +65,76 @@ func (k Keeper) SetDelegate(ctx sdk.Context, msg *types.Delegate) {
 }
 
 func (k Keeper) SetAttribute(ctx sdk.Context, msg *types.Attribute) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(msg.Identity))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.Attributes))
 	res := k.cdc.MustMarshalBinaryBare(msg)
 	store.Set([]byte(msg.Identity), res)
 }
 
-func (k Keeper) RevokeAttribute(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
+func (k Keeper) RemoveAttribute(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix([]byte(msg.Delegate), []byte(msg.DelegateType)))
 	//res := k.cdc.MustMarshalBinaryBare(msg)
 	store.Delete([]byte(msg.Identity))
+
+	change := types.Change{
+		Identity:       msg.Identity,
+		Owner:          msg.Creator,
+		PreviousChange: uint64(ctx.BlockHeight()),
+	}
+
+	k.SetChange(ctx, change)
 }
 
-func (k Keeper) RevokeDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
+func (k Keeper) RemoveDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix([]byte(msg.Delegate), []byte(msg.DelegateType)))
 	//res := k.cdc.MustMarshalBinaryBare(msg)
 	store.Delete([]byte(msg.Identity))
+
+	change := types.Change{
+		Identity:       msg.Identity,
+		Owner:          msg.Creator,
+		PreviousChange: uint64(ctx.BlockHeight()),
+	}
+
+	k.SetChange(ctx, change)
 }
 
-func (k Keeper) GrantDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) {
+func (k Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) (types.Change, error) {
+	blockTime := ctx.BlockTime()
+	grantDelegate := &types.Delegate{
+		Delegate:     msg.Delegate,
+		DelegateType: msg.DelegateType,
+		Validity:     msg.Validity + uint64(blockTime.Unix()),
+		Creator:      msg.Creator,
+		Identity:     msg.Identity,
+	}
+	k.SetDelegate(ctx, grantDelegate)
 
+	change := types.Change{
+		Identity:       msg.Identity,
+		Owner:          msg.Delegate,
+		PreviousChange: uint64(ctx.BlockHeight()),
+	}
+
+	k.SetChange(ctx, change)
+	return change, nil
 }
 
-func (k Keeper) ChangeDelegates(ctx sdk.Context) (string, error) {
-	// id := append([]byte(lnk.String()), path...)
-	return "", nil
+func (k Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgGrantAttribute) (types.Change, error) {
+	grantAttribute := &types.Attribute{
+		Identity: msg.Identity,
+		Name:     msg.Name,
+		Value:    msg.Value,
+	}
+	k.SetAttribute(ctx, grantAttribute)
+
+	change := types.Change{
+		Identity:       msg.Identity,
+		Owner:          msg.Actor,
+		PreviousChange: uint64(ctx.BlockHeight()),
+	}
+
+	k.SetChange(ctx, change)
+	return change, nil
 }
 
 // Has functions checks if the documents exists in the store
@@ -110,9 +151,4 @@ func (k Keeper) HasChangeOwner(ctx sdk.Context, identity string) bool {
 func (k Keeper) HasOwner(ctx sdk.Context, o string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.Owners))
 	return store.Has([]byte(o))
-}
-
-func (k Keeper) HasNonce(ctx sdk.Context, n string) bool {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.Nonce))
-	return store.Has([]byte(n))
 }

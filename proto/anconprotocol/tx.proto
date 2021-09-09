@@ -12,13 +12,14 @@ service Msg {
     // rpc MetadataHandlerTx(MsgMetadataTx) returns (MsgFileMetadataResponse);
     // rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
     // this line is used by starport scaffolding # proto/tx/rpc
-  rpc Nonce(MsgNonce) returns (MsgNonceResponse);
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
-  rpc AddDelegate(MsgGrantDelegate) returns (MsgGrantDelegateResponse);
   rpc RevokeDelegate(MsgRevokeDelegate) returns (MsgRevokeDelegateResponse);
-  rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
+  rpc GrantDelegate(MsgGrantDelegate) returns (MsgGrantDelegateResponse);
+  rpc GrantAttribute(MsgGrantAttribute) returns (MsgGrantAttributeResponse);
+  //rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
   rpc RevokeAttribute(MsgRevokeAttribute) returns (MsgRevokeAttributeResponse);
+
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
   //rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
@@ -44,7 +45,7 @@ message MsgGrantDelegate {
   option (gogoproto.goproto_getters) = false;
   string delegate = 1;
   string delegateType = 2;
-  bool validity = 3;
+  uint64 validity = 3;
   string creator = 4;
   string identity = 5;
 }
@@ -57,7 +58,7 @@ message MsgRevokeDelegate {
   option (gogoproto.goproto_getters) = false;
   string delegate = 1;
   string delegateType = 2;
-  bool validity = 3;
+  uint64 validity = 3;
   string creator = 4;
   string identity = 5;
 }
@@ -70,12 +71,27 @@ message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
   string identity = 1;
   string actor = 2;
-  bytes name = 3;
-  bytes value = 4;
-  bool validity = 5;
+  string creator = 3;
+  bytes name = 4;
+  bytes value = 5;
 
 }
 message MsgSetAttributeResponse {
+  option (gogoproto.goproto_getters) = false;
+
+  bytes hash = 1;
+}
+
+message MsgGrantAttribute {
+  option (gogoproto.goproto_getters) = false;
+  string identity = 1;
+  string actor = 2;
+  bytes name = 3;
+  bytes value = 4;
+  string creator = 5;
+}
+
+message MsgGrantAttributeResponse {
   option (gogoproto.goproto_getters) = false;
 
   bytes hash = 1;
@@ -87,6 +103,7 @@ message MsgRevokeAttribute {
   string actor = 2;
   bytes name = 3;
   bytes value = 4;
+  string creator = 5;
 
 }
 message MsgRevokeAttributeResponse {
@@ -102,14 +119,6 @@ message MsgFileMetadataResponse {
  }
 
 // this line is used by starport scaffolding # proto/tx/message
-message MsgNonce {
-  string creator = 1;
-  string delegates = 2;
-}
-
-message MsgNonceResponse {
-}
-
 
 message MsgMetadata {
   string creator = 1;

@@ -34,7 +34,7 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 	}, nil
 }
 
-func (k msgServer) SetAttribute(goCtx context.Context, msg *types.MsgSetAttribute) (*types.MsgSetAttributeResponse, error) {
+func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttribute) (*types.MsgGrantAttributeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// owners[identity] = newOwner;
 	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
@@ -42,10 +42,10 @@ func (k msgServer) SetAttribute(goCtx context.Context, msg *types.MsgSetAttribut
 	// TODO: Handling the message
 	_ = ctx
 
-	return &types.MsgSetAttributeResponse{}, nil
+	return &types.MsgGrantAttributeResponse{}, nil
 }
 
-func (k msgServer) AddDelegate(goCtx context.Context, msg *types.MsgAddDelegate) (*types.MsgAddDelegateResponse, error) {
+func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDelegate) (*types.MsgGrantDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// owners[identity] = newOwner;
 	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
@@ -53,31 +53,12 @@ func (k msgServer) AddDelegate(goCtx context.Context, msg *types.MsgAddDelegate)
 	// TODO: Handling the message
 	_ = ctx
 
-	return &types.MsgAddDelegateResponse{}, nil
+	return &types.MsgGrantDelegateResponse{}, nil
 }
+func (k msgServer) RevokeAttribute(goCtx context.Context, msg *types.MsgRevokeAttribute) (*types.MsgRevokeAttributeResponse, error) {
 
-// event DIDDelegateChanged(
-// 	address indexed identity,
-// 	bytes32 delegateType,
-// 	address delegate,
-// 	uint validTo,
-// 	uint previousChange
-// );
-
-// function validDelegate(address identity, bytes32 delegateType, address delegate) public view returns(bool) {
-// 	uint validity = delegates[identity][keccak256(delegateType)][delegate];
-// 	return (validity > now);
-// }
-
-// function addDelegate(address identity, address actor, bytes32 delegateType, address delegate, uint validity) internal onlyOwner(identity, actor) {
-// 	delegates[identity][keccak256(delegateType)][delegate] = now + validity;
-// 	emit DIDDelegateChanged(identity, delegateType, delegate, now + validity, changed[identity]);
-// 	changed[identity] = block.number;
-// }
-
-// function addDelegate(address identity, bytes32 delegateType, address delegate, uint validity) public {
-// 	addDelegate(identity, msg.sender, delegateType, delegate, validity);
-// }
+	return &types.MsgRevokeAttributeResponse{}, nil
+}
 
 func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDelegate) (*types.MsgRevokeDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -88,13 +69,4 @@ func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDel
 	_ = ctx
 
 	return &types.MsgRevokeDelegateResponse{}, nil
-}
-
-func (k msgServer) Nonce(goCtx context.Context, msg *types.MsgNonce) (*types.MsgNonceResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Handling the message
-	_ = ctx
-
-	return &types.MsgNonceResponse{}, nil
 }

@@ -41,39 +41,25 @@ service Query {
 		option (google.api.http).get = "/ancon/didregistry/{address}/attributes";
 	}
 
-
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
 		option (google.api.http).get = "/ancon/resource/{cid}";
 	}
 
-// Queries a list of nonce items.
-rpc ReadNonces(QueryNonceRequest) returns (QueryNonceResponse) {
-	option (google.api.http).get = "/ancon/didregistry/nonces";
-}
-
-// Queries a list of nonce items.
-rpc ReadNonce(QueryNonceRequest) returns (QueryNonceResponse) {
-	option (google.api.http).get = "/ancon/didregistry/nonces/{id}";
-}	
-
 	// Queries a list of delegates items.
-	rpc ReadDelegate(QueryGetDelegatesRequest) returns (QueryGetDelegatesResponse) {
+	rpc ReadDelegate(QueryGetDelegateRequest) returns (QueryGetDelegateResponse) {
 		option (google.api.http).get = "/ancon/didregistry/delegates/{id}";
 	}
 
-	// Queries a list of nonce items.
-	rpc ReadDelegates(QueryGetDelegatesRequest) returns (QueryGetDelegatesResponse) {
-		option (google.api.http).get = "/ancon/didregistry/delegates";
-	}
 }
 // this line is used by starport scaffolding # 3
 
-message QueryGetDelegatesRequest {
+message QueryGetDelegateRequest {
 	string id = 1;
+	
 }
 
-message QueryGetDelegatesResponse {
+message QueryGetDelegateResponse {
 }
 
 message QueryNonceRequest {

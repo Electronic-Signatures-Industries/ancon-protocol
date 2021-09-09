@@ -3,10 +3,11 @@ import { OfflineSigner, EncodeObject } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
 import { MsgMetadata } from "./types/anconprotocol/tx";
 import { MsgFile } from "./types/anconprotocol/tx";
-import { MsgSetAttribute } from "./types/anconprotocol/tx";
-import { MsgNonce } from "./types/anconprotocol/tx";
 import { MsgRevokeDelegate } from "./types/anconprotocol/tx";
+import { MsgRevokeAttribute } from "./types/anconprotocol/tx";
+import { MsgGrantAttribute } from "./types/anconprotocol/tx";
 import { MsgChangeOwner } from "./types/anconprotocol/tx";
+import { MsgGrantDelegate } from "./types/anconprotocol/tx";
 export declare const MissingWalletError: Error;
 interface TxClientOptions {
     addr: string;
@@ -19,10 +20,11 @@ declare const txClient: (wallet: OfflineSigner, { addr: addr }?: TxClientOptions
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }?: SignAndBroadcastOptions) => Promise<import("@cosmjs/stargate").BroadcastTxResponse>;
     msgMetadata: (data: MsgMetadata) => EncodeObject;
     msgFile: (data: MsgFile) => EncodeObject;
-    msgSetAttribute: (data: MsgSetAttribute) => EncodeObject;
-    msgNonce: (data: MsgNonce) => EncodeObject;
     msgRevokeDelegate: (data: MsgRevokeDelegate) => EncodeObject;
+    msgRevokeAttribute: (data: MsgRevokeAttribute) => EncodeObject;
+    msgGrantAttribute: (data: MsgGrantAttribute) => EncodeObject;
     msgChangeOwner: (data: MsgChangeOwner) => EncodeObject;
+    msgGrantDelegate: (data: MsgGrantDelegate) => EncodeObject;
 }>;
 interface QueryClientOptions {
     addr: string;

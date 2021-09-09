@@ -21,6 +21,11 @@ export interface AnconprotocolMsgFileResponse {
   hash?: string;
 }
 
+export interface AnconprotocolMsgGrantAttributeResponse {
+  /** @format byte */
+  hash?: string;
+}
+
 export interface AnconprotocolMsgGrantDelegateResponse {
   /** @format byte */
   hash?: string;
@@ -29,8 +34,6 @@ export interface AnconprotocolMsgGrantDelegateResponse {
 export interface AnconprotocolMsgMetadataResponse {
   cid?: string;
 }
-
-export type AnconprotocolMsgNonceResponse = object;
 
 export interface AnconprotocolMsgRevokeAttributeResponse {
   /** @format byte */
@@ -42,18 +45,11 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
   hash?: string;
 }
 
-export interface AnconprotocolMsgSetAttributeResponse {
-  /** @format byte */
-  hash?: string;
-}
-
 export type AnconprotocolQueryGetAttributesResponse = object;
 
-export type AnconprotocolQueryGetDelegatesResponse = object;
+export type AnconprotocolQueryGetDelegateResponse = object;
 
 export type AnconprotocolQueryIdentifyOwnerResponse = object;
-
-export type AnconprotocolQueryNonceResponse = object;
 
 export interface AnconprotocolQueryResourceResponse {
   data?: string;
@@ -270,63 +266,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryReadDelegates
-   * @summary Queries a list of nonce items.
-   * @request GET:/ancon/didregistry/delegates
-   */
-  queryReadDelegates = (query?: { id?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryGetDelegatesResponse, RpcStatus>({
-      path: `/ancon/didregistry/delegates`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
    * @name QueryReadDelegate
    * @summary Queries a list of delegates items.
    * @request GET:/ancon/didregistry/delegates/{id}
    */
   queryReadDelegate = (id: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryGetDelegatesResponse, RpcStatus>({
+    this.request<AnconprotocolQueryGetDelegateResponse, RpcStatus>({
       path: `/ancon/didregistry/delegates/${id}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryReadNonces
-   * @summary Queries a list of nonce items.
-   * @request GET:/ancon/didregistry/nonces
-   */
-  queryReadNonces = (query?: { id?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryNonceResponse, RpcStatus>({
-      path: `/ancon/didregistry/nonces`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryReadNonce
-   * @summary Queries a list of nonce items.
-   * @request GET:/ancon/didregistry/nonces/{id}
-   */
-  queryReadNonce = (id: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryNonceResponse, RpcStatus>({
-      path: `/ancon/didregistry/nonces/${id}`,
       method: "GET",
       format: "json",
       ...params,

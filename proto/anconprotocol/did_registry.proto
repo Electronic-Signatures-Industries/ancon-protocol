@@ -16,7 +16,7 @@ message Owner {
 message Delegate {
   string delegate = 1;
   string delegateType = 2;
-  bool validity = 3;
+  uint64 validity = 3;
   string creator = 4;
   string identity = 5;
 }
@@ -31,6 +31,4 @@ message Attribute {
   string identity = 1;
   bytes name = 2;
   bytes value = 3;
-  bool validity = 4;
-  uint64 previousChange = 5;
 }

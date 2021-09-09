@@ -72,7 +72,7 @@ export const Owner = {
         return message;
     }
 };
-const baseDelegate = { delegate: '', delegateType: '', validity: false, creator: '', identity: '' };
+const baseDelegate = { delegate: '', delegateType: '', validity: 0, creator: '', identity: '' };
 export const Delegate = {
     encode(message, writer = Writer.create()) {
         if (message.delegate !== '') {
@@ -81,8 +81,8 @@ export const Delegate = {
         if (message.delegateType !== '') {
             writer.uint32(18).string(message.delegateType);
         }
-        if (message.validity === true) {
-            writer.uint32(24).bool(message.validity);
+        if (message.validity !== 0) {
+            writer.uint32(24).uint64(message.validity);
         }
         if (message.creator !== '') {
             writer.uint32(34).string(message.creator);
@@ -106,7 +106,7 @@ export const Delegate = {
                     message.delegateType = reader.string();
                     break;
                 case 3:
-                    message.validity = reader.bool();
+                    message.validity = longToNumber(reader.uint64());
                     break;
                 case 4:
                     message.creator = reader.string();
@@ -136,10 +136,10 @@ export const Delegate = {
             message.delegateType = '';
         }
         if (object.validity !== undefined && object.validity !== null) {
-            message.validity = Boolean(object.validity);
+            message.validity = Number(object.validity);
         }
         else {
-            message.validity = false;
+            message.validity = 0;
         }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = String(object.creator);
@@ -182,7 +182,7 @@ export const Delegate = {
             message.validity = object.validity;
         }
         else {
-            message.validity = false;
+            message.validity = 0;
         }
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = object.creator;
@@ -288,7 +288,7 @@ export const Change = {
         return message;
     }
 };
-const baseAttribute = { identity: '', validity: false, previousChange: 0 };
+const baseAttribute = { identity: '' };
 export const Attribute = {
     encode(message, writer = Writer.create()) {
         if (message.identity !== '') {
@@ -299,12 +299,6 @@ export const Attribute = {
         }
         if (message.value.length !== 0) {
             writer.uint32(26).bytes(message.value);
-        }
-        if (message.validity === true) {
-            writer.uint32(32).bool(message.validity);
-        }
-        if (message.previousChange !== 0) {
-            writer.uint32(40).uint64(message.previousChange);
         }
         return writer;
     },
@@ -323,12 +317,6 @@ export const Attribute = {
                     break;
                 case 3:
                     message.value = reader.bytes();
-                    break;
-                case 4:
-                    message.validity = reader.bool();
-                    break;
-                case 5:
-                    message.previousChange = longToNumber(reader.uint64());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -351,18 +339,6 @@ export const Attribute = {
         if (object.value !== undefined && object.value !== null) {
             message.value = bytesFromBase64(object.value);
         }
-        if (object.validity !== undefined && object.validity !== null) {
-            message.validity = Boolean(object.validity);
-        }
-        else {
-            message.validity = false;
-        }
-        if (object.previousChange !== undefined && object.previousChange !== null) {
-            message.previousChange = Number(object.previousChange);
-        }
-        else {
-            message.previousChange = 0;
-        }
         return message;
     },
     toJSON(message) {
@@ -370,8 +346,6 @@ export const Attribute = {
         message.identity !== undefined && (obj.identity = message.identity);
         message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()));
         message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
-        message.validity !== undefined && (obj.validity = message.validity);
-        message.previousChange !== undefined && (obj.previousChange = message.previousChange);
         return obj;
     },
     fromPartial(object) {
@@ -393,18 +367,6 @@ export const Attribute = {
         }
         else {
             message.value = new Uint8Array();
-        }
-        if (object.validity !== undefined && object.validity !== null) {
-            message.validity = object.validity;
-        }
-        else {
-            message.validity = false;
-        }
-        if (object.previousChange !== undefined && object.previousChange !== null) {
-            message.previousChange = object.previousChange;
-        }
-        else {
-            message.previousChange = 0;
         }
         return message;
     }

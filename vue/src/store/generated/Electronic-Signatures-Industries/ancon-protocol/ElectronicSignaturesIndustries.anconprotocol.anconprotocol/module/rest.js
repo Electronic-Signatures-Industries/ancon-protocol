@@ -140,56 +140,12 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
-         * @name QueryReadDelegates
-         * @summary Queries a list of nonce items.
-         * @request GET:/ancon/didregistry/delegates
-         */
-        this.queryReadDelegates = (query, params = {}) => this.request({
-            path: `/ancon/didregistry/delegates`,
-            method: "GET",
-            query: query,
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
          * @name QueryReadDelegate
          * @summary Queries a list of delegates items.
          * @request GET:/ancon/didregistry/delegates/{id}
          */
         this.queryReadDelegate = (id, params = {}) => this.request({
             path: `/ancon/didregistry/delegates/${id}`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryReadNonces
-         * @summary Queries a list of nonce items.
-         * @request GET:/ancon/didregistry/nonces
-         */
-        this.queryReadNonces = (query, params = {}) => this.request({
-            path: `/ancon/didregistry/nonces`,
-            method: "GET",
-            query: query,
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryReadNonce
-         * @summary Queries a list of nonce items.
-         * @request GET:/ancon/didregistry/nonces/{id}
-         */
-        this.queryReadNonce = (id, params = {}) => this.request({
-            path: `/ancon/didregistry/nonces/${id}`,
             method: "GET",
             format: "json",
             ...params,

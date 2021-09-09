@@ -19,7 +19,7 @@ export interface MsgChangeOwnerResponse {
 export interface MsgGrantDelegate {
   delegate: string
   delegateType: string
-  validity: boolean
+  validity: number
   creator: string
   identity: string
 }
@@ -31,7 +31,7 @@ export interface MsgGrantDelegateResponse {
 export interface MsgRevokeDelegate {
   delegate: string
   delegateType: string
-  validity: boolean
+  validity: number
   creator: string
   identity: string
 }
@@ -43,12 +43,24 @@ export interface MsgRevokeDelegateResponse {
 export interface MsgSetAttribute {
   identity: string
   actor: string
+  creator: string
   name: Uint8Array
   value: Uint8Array
-  validity: boolean
 }
 
 export interface MsgSetAttributeResponse {
+  hash: Uint8Array
+}
+
+export interface MsgGrantAttribute {
+  identity: string
+  actor: string
+  name: Uint8Array
+  value: Uint8Array
+  creator: string
+}
+
+export interface MsgGrantAttributeResponse {
   hash: Uint8Array
 }
 
@@ -57,6 +69,7 @@ export interface MsgRevokeAttribute {
   actor: string
   name: Uint8Array
   value: Uint8Array
+  creator: string
 }
 
 export interface MsgRevokeAttributeResponse {
@@ -66,14 +79,6 @@ export interface MsgRevokeAttributeResponse {
 export interface MsgFileMetadataResponse {
   hash: Uint8Array
 }
-
-/** this line is used by starport scaffolding # proto/tx/message */
-export interface MsgNonce {
-  creator: string
-  delegates: string
-}
-
-export interface MsgNonceResponse {}
 
 export interface MsgMetadata {
   creator: string
@@ -286,7 +291,7 @@ export const MsgChangeOwnerResponse = {
   }
 }
 
-const baseMsgGrantDelegate: object = { delegate: '', delegateType: '', validity: false, creator: '', identity: '' }
+const baseMsgGrantDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', identity: '' }
 
 export const MsgGrantDelegate = {
   encode(message: MsgGrantDelegate, writer: Writer = Writer.create()): Writer {
@@ -296,8 +301,8 @@ export const MsgGrantDelegate = {
     if (message.delegateType !== '') {
       writer.uint32(18).string(message.delegateType)
     }
-    if (message.validity === true) {
-      writer.uint32(24).bool(message.validity)
+    if (message.validity !== 0) {
+      writer.uint32(24).uint64(message.validity)
     }
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
@@ -322,7 +327,7 @@ export const MsgGrantDelegate = {
           message.delegateType = reader.string()
           break
         case 3:
-          message.validity = reader.bool()
+          message.validity = longToNumber(reader.uint64() as Long)
           break
         case 4:
           message.creator = reader.string()
@@ -351,9 +356,9 @@ export const MsgGrantDelegate = {
       message.delegateType = ''
     }
     if (object.validity !== undefined && object.validity !== null) {
-      message.validity = Boolean(object.validity)
+      message.validity = Number(object.validity)
     } else {
-      message.validity = false
+      message.validity = 0
     }
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator)
@@ -393,7 +398,7 @@ export const MsgGrantDelegate = {
     if (object.validity !== undefined && object.validity !== null) {
       message.validity = object.validity
     } else {
-      message.validity = false
+      message.validity = 0
     }
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator
@@ -462,7 +467,7 @@ export const MsgGrantDelegateResponse = {
   }
 }
 
-const baseMsgRevokeDelegate: object = { delegate: '', delegateType: '', validity: false, creator: '', identity: '' }
+const baseMsgRevokeDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', identity: '' }
 
 export const MsgRevokeDelegate = {
   encode(message: MsgRevokeDelegate, writer: Writer = Writer.create()): Writer {
@@ -472,8 +477,8 @@ export const MsgRevokeDelegate = {
     if (message.delegateType !== '') {
       writer.uint32(18).string(message.delegateType)
     }
-    if (message.validity === true) {
-      writer.uint32(24).bool(message.validity)
+    if (message.validity !== 0) {
+      writer.uint32(24).uint64(message.validity)
     }
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
@@ -498,7 +503,7 @@ export const MsgRevokeDelegate = {
           message.delegateType = reader.string()
           break
         case 3:
-          message.validity = reader.bool()
+          message.validity = longToNumber(reader.uint64() as Long)
           break
         case 4:
           message.creator = reader.string()
@@ -527,9 +532,9 @@ export const MsgRevokeDelegate = {
       message.delegateType = ''
     }
     if (object.validity !== undefined && object.validity !== null) {
-      message.validity = Boolean(object.validity)
+      message.validity = Number(object.validity)
     } else {
-      message.validity = false
+      message.validity = 0
     }
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator)
@@ -569,7 +574,7 @@ export const MsgRevokeDelegate = {
     if (object.validity !== undefined && object.validity !== null) {
       message.validity = object.validity
     } else {
-      message.validity = false
+      message.validity = 0
     }
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator
@@ -638,7 +643,7 @@ export const MsgRevokeDelegateResponse = {
   }
 }
 
-const baseMsgSetAttribute: object = { identity: '', actor: '', validity: false }
+const baseMsgSetAttribute: object = { identity: '', actor: '', creator: '' }
 
 export const MsgSetAttribute = {
   encode(message: MsgSetAttribute, writer: Writer = Writer.create()): Writer {
@@ -648,14 +653,14 @@ export const MsgSetAttribute = {
     if (message.actor !== '') {
       writer.uint32(18).string(message.actor)
     }
+    if (message.creator !== '') {
+      writer.uint32(26).string(message.creator)
+    }
     if (message.name.length !== 0) {
-      writer.uint32(26).bytes(message.name)
+      writer.uint32(34).bytes(message.name)
     }
     if (message.value.length !== 0) {
-      writer.uint32(34).bytes(message.value)
-    }
-    if (message.validity === true) {
-      writer.uint32(40).bool(message.validity)
+      writer.uint32(42).bytes(message.value)
     }
     return writer
   },
@@ -674,13 +679,13 @@ export const MsgSetAttribute = {
           message.actor = reader.string()
           break
         case 3:
-          message.name = reader.bytes()
+          message.creator = reader.string()
           break
         case 4:
-          message.value = reader.bytes()
+          message.name = reader.bytes()
           break
         case 5:
-          message.validity = reader.bool()
+          message.value = reader.bytes()
           break
         default:
           reader.skipType(tag & 7)
@@ -702,16 +707,16 @@ export const MsgSetAttribute = {
     } else {
       message.actor = ''
     }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
     if (object.name !== undefined && object.name !== null) {
       message.name = bytesFromBase64(object.name)
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = bytesFromBase64(object.value)
-    }
-    if (object.validity !== undefined && object.validity !== null) {
-      message.validity = Boolean(object.validity)
-    } else {
-      message.validity = false
     }
     return message
   },
@@ -720,9 +725,9 @@ export const MsgSetAttribute = {
     const obj: any = {}
     message.identity !== undefined && (obj.identity = message.identity)
     message.actor !== undefined && (obj.actor = message.actor)
+    message.creator !== undefined && (obj.creator = message.creator)
     message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
     message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
-    message.validity !== undefined && (obj.validity = message.validity)
     return obj
   },
 
@@ -738,6 +743,11 @@ export const MsgSetAttribute = {
     } else {
       message.actor = ''
     }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name
     } else {
@@ -747,11 +757,6 @@ export const MsgSetAttribute = {
       message.value = object.value
     } else {
       message.value = new Uint8Array()
-    }
-    if (object.validity !== undefined && object.validity !== null) {
-      message.validity = object.validity
-    } else {
-      message.validity = false
     }
     return message
   }
@@ -810,7 +815,179 @@ export const MsgSetAttributeResponse = {
   }
 }
 
-const baseMsgRevokeAttribute: object = { identity: '', actor: '' }
+const baseMsgGrantAttribute: object = { identity: '', actor: '', creator: '' }
+
+export const MsgGrantAttribute = {
+  encode(message: MsgGrantAttribute, writer: Writer = Writer.create()): Writer {
+    if (message.identity !== '') {
+      writer.uint32(10).string(message.identity)
+    }
+    if (message.actor !== '') {
+      writer.uint32(18).string(message.actor)
+    }
+    if (message.name.length !== 0) {
+      writer.uint32(26).bytes(message.name)
+    }
+    if (message.value.length !== 0) {
+      writer.uint32(34).bytes(message.value)
+    }
+    if (message.creator !== '') {
+      writer.uint32(42).string(message.creator)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgGrantAttribute {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgGrantAttribute } as MsgGrantAttribute
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.identity = reader.string()
+          break
+        case 2:
+          message.actor = reader.string()
+          break
+        case 3:
+          message.name = reader.bytes()
+          break
+        case 4:
+          message.value = reader.bytes()
+          break
+        case 5:
+          message.creator = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgGrantAttribute {
+    const message = { ...baseMsgGrantAttribute } as MsgGrantAttribute
+    if (object.identity !== undefined && object.identity !== null) {
+      message.identity = String(object.identity)
+    } else {
+      message.identity = ''
+    }
+    if (object.actor !== undefined && object.actor !== null) {
+      message.actor = String(object.actor)
+    } else {
+      message.actor = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = bytesFromBase64(object.name)
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = bytesFromBase64(object.value)
+    }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgGrantAttribute): unknown {
+    const obj: any = {}
+    message.identity !== undefined && (obj.identity = message.identity)
+    message.actor !== undefined && (obj.actor = message.actor)
+    message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
+    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
+    message.creator !== undefined && (obj.creator = message.creator)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgGrantAttribute>): MsgGrantAttribute {
+    const message = { ...baseMsgGrantAttribute } as MsgGrantAttribute
+    if (object.identity !== undefined && object.identity !== null) {
+      message.identity = object.identity
+    } else {
+      message.identity = ''
+    }
+    if (object.actor !== undefined && object.actor !== null) {
+      message.actor = object.actor
+    } else {
+      message.actor = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = new Uint8Array()
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = object.value
+    } else {
+      message.value = new Uint8Array()
+    }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    return message
+  }
+}
+
+const baseMsgGrantAttributeResponse: object = {}
+
+export const MsgGrantAttributeResponse = {
+  encode(message: MsgGrantAttributeResponse, writer: Writer = Writer.create()): Writer {
+    if (message.hash.length !== 0) {
+      writer.uint32(10).bytes(message.hash)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgGrantAttributeResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgGrantAttributeResponse } as MsgGrantAttributeResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.hash = reader.bytes()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgGrantAttributeResponse {
+    const message = { ...baseMsgGrantAttributeResponse } as MsgGrantAttributeResponse
+    if (object.hash !== undefined && object.hash !== null) {
+      message.hash = bytesFromBase64(object.hash)
+    }
+    return message
+  },
+
+  toJSON(message: MsgGrantAttributeResponse): unknown {
+    const obj: any = {}
+    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()))
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgGrantAttributeResponse>): MsgGrantAttributeResponse {
+    const message = { ...baseMsgGrantAttributeResponse } as MsgGrantAttributeResponse
+    if (object.hash !== undefined && object.hash !== null) {
+      message.hash = object.hash
+    } else {
+      message.hash = new Uint8Array()
+    }
+    return message
+  }
+}
+
+const baseMsgRevokeAttribute: object = { identity: '', actor: '', creator: '' }
 
 export const MsgRevokeAttribute = {
   encode(message: MsgRevokeAttribute, writer: Writer = Writer.create()): Writer {
@@ -825,6 +1002,9 @@ export const MsgRevokeAttribute = {
     }
     if (message.value.length !== 0) {
       writer.uint32(34).bytes(message.value)
+    }
+    if (message.creator !== '') {
+      writer.uint32(42).string(message.creator)
     }
     return writer
   },
@@ -847,6 +1027,9 @@ export const MsgRevokeAttribute = {
           break
         case 4:
           message.value = reader.bytes()
+          break
+        case 5:
+          message.creator = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -874,6 +1057,11 @@ export const MsgRevokeAttribute = {
     if (object.value !== undefined && object.value !== null) {
       message.value = bytesFromBase64(object.value)
     }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
     return message
   },
 
@@ -883,6 +1071,7 @@ export const MsgRevokeAttribute = {
     message.actor !== undefined && (obj.actor = message.actor)
     message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
     message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
+    message.creator !== undefined && (obj.creator = message.creator)
     return obj
   },
 
@@ -907,6 +1096,11 @@ export const MsgRevokeAttribute = {
       message.value = object.value
     } else {
       message.value = new Uint8Array()
+    }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
     }
     return message
   }
@@ -1014,116 +1208,6 @@ export const MsgFileMetadataResponse = {
     } else {
       message.hash = new Uint8Array()
     }
-    return message
-  }
-}
-
-const baseMsgNonce: object = { creator: '', delegates: '' }
-
-export const MsgNonce = {
-  encode(message: MsgNonce, writer: Writer = Writer.create()): Writer {
-    if (message.creator !== '') {
-      writer.uint32(10).string(message.creator)
-    }
-    if (message.delegates !== '') {
-      writer.uint32(18).string(message.delegates)
-    }
-    return writer
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MsgNonce {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input
-    let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseMsgNonce } as MsgNonce
-    while (reader.pos < end) {
-      const tag = reader.uint32()
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string()
-          break
-        case 2:
-          message.delegates = reader.string()
-          break
-        default:
-          reader.skipType(tag & 7)
-          break
-      }
-    }
-    return message
-  },
-
-  fromJSON(object: any): MsgNonce {
-    const message = { ...baseMsgNonce } as MsgNonce
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator)
-    } else {
-      message.creator = ''
-    }
-    if (object.delegates !== undefined && object.delegates !== null) {
-      message.delegates = String(object.delegates)
-    } else {
-      message.delegates = ''
-    }
-    return message
-  },
-
-  toJSON(message: MsgNonce): unknown {
-    const obj: any = {}
-    message.creator !== undefined && (obj.creator = message.creator)
-    message.delegates !== undefined && (obj.delegates = message.delegates)
-    return obj
-  },
-
-  fromPartial(object: DeepPartial<MsgNonce>): MsgNonce {
-    const message = { ...baseMsgNonce } as MsgNonce
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator
-    } else {
-      message.creator = ''
-    }
-    if (object.delegates !== undefined && object.delegates !== null) {
-      message.delegates = object.delegates
-    } else {
-      message.delegates = ''
-    }
-    return message
-  }
-}
-
-const baseMsgNonceResponse: object = {}
-
-export const MsgNonceResponse = {
-  encode(_: MsgNonceResponse, writer: Writer = Writer.create()): Writer {
-    return writer
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MsgNonceResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input
-    let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
-    while (reader.pos < end) {
-      const tag = reader.uint32()
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7)
-          break
-      }
-    }
-    return message
-  },
-
-  fromJSON(_: any): MsgNonceResponse {
-    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
-    return message
-  },
-
-  toJSON(_: MsgNonceResponse): unknown {
-    const obj: any = {}
-    return obj
-  },
-
-  fromPartial(_: DeepPartial<MsgNonceResponse>): MsgNonceResponse {
-    const message = { ...baseMsgNonceResponse } as MsgNonceResponse
     return message
   }
 }
@@ -1656,12 +1740,12 @@ export interface Msg {
    * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
    * this line is used by starport scaffolding # proto/tx/rpc
    */
-  Nonce(request: MsgNonce): Promise<MsgNonceResponse>
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
   /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
-  AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>
   RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>
-  SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>
+  GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>
+  GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>
+  /** rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse); */
   RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
   /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
@@ -1673,22 +1757,10 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
-  Nonce(request: MsgNonce): Promise<MsgNonceResponse> {
-    const data = MsgNonce.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'Nonce', data)
-    return promise.then((data) => MsgNonceResponse.decode(new Reader(data)))
-  }
-
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse> {
     const data = MsgChangeOwner.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ChangeOwner', data)
     return promise.then((data) => MsgChangeOwnerResponse.decode(new Reader(data)))
-  }
-
-  AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse> {
-    const data = MsgGrantDelegate.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDelegate', data)
-    return promise.then((data) => MsgGrantDelegateResponse.decode(new Reader(data)))
   }
 
   RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse> {
@@ -1697,10 +1769,16 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgRevokeDelegateResponse.decode(new Reader(data)))
   }
 
-  SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse> {
-    const data = MsgSetAttribute.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'SetAttribute', data)
-    return promise.then((data) => MsgSetAttributeResponse.decode(new Reader(data)))
+  GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse> {
+    const data = MsgGrantDelegate.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'GrantDelegate', data)
+    return promise.then((data) => MsgGrantDelegateResponse.decode(new Reader(data)))
+  }
+
+  GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse> {
+    const data = MsgGrantAttribute.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'GrantAttribute', data)
+    return promise.then((data) => MsgGrantAttributeResponse.decode(new Reader(data)))
   }
 
   RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse> {

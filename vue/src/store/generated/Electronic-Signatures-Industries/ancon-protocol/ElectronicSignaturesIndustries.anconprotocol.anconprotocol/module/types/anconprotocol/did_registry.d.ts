@@ -7,7 +7,7 @@ export interface Owner {
 export interface Delegate {
     delegate: string;
     delegateType: string;
-    validity: boolean;
+    validity: number;
     creator: string;
     identity: string;
 }
@@ -20,8 +20,6 @@ export interface Attribute {
     identity: string;
     name: Uint8Array;
     value: Uint8Array;
-    validity: boolean;
-    previousChange: number;
 }
 export declare const Owner: {
     encode(message: Owner, writer?: Writer): Writer;

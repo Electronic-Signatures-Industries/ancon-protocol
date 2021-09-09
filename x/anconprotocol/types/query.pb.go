@@ -30,22 +30,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type QueryGetDelegatesRequest struct {
+type QueryGetDelegateRequest struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryGetDelegatesRequest) Reset()         { *m = QueryGetDelegatesRequest{} }
-func (m *QueryGetDelegatesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetDelegatesRequest) ProtoMessage()    {}
-func (*QueryGetDelegatesRequest) Descriptor() ([]byte, []int) {
+func (m *QueryGetDelegateRequest) Reset()         { *m = QueryGetDelegateRequest{} }
+func (m *QueryGetDelegateRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetDelegateRequest) ProtoMessage()    {}
+func (*QueryGetDelegateRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_9e5642cda6493b99, []int{0}
 }
-func (m *QueryGetDelegatesRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetDelegateRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetDelegatesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetDelegateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetDelegatesRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetDelegateRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -55,40 +55,40 @@ func (m *QueryGetDelegatesRequest) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *QueryGetDelegatesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetDelegatesRequest.Merge(m, src)
+func (m *QueryGetDelegateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetDelegateRequest.Merge(m, src)
 }
-func (m *QueryGetDelegatesRequest) XXX_Size() int {
+func (m *QueryGetDelegateRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetDelegatesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetDelegatesRequest.DiscardUnknown(m)
+func (m *QueryGetDelegateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetDelegateRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetDelegatesRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetDelegateRequest proto.InternalMessageInfo
 
-func (m *QueryGetDelegatesRequest) GetId() string {
+func (m *QueryGetDelegateRequest) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type QueryGetDelegatesResponse struct {
+type QueryGetDelegateResponse struct {
 }
 
-func (m *QueryGetDelegatesResponse) Reset()         { *m = QueryGetDelegatesResponse{} }
-func (m *QueryGetDelegatesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetDelegatesResponse) ProtoMessage()    {}
-func (*QueryGetDelegatesResponse) Descriptor() ([]byte, []int) {
+func (m *QueryGetDelegateResponse) Reset()         { *m = QueryGetDelegateResponse{} }
+func (m *QueryGetDelegateResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetDelegateResponse) ProtoMessage()    {}
+func (*QueryGetDelegateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_9e5642cda6493b99, []int{1}
 }
-func (m *QueryGetDelegatesResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetDelegateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetDelegatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetDelegateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetDelegatesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetDelegateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -98,17 +98,17 @@ func (m *QueryGetDelegatesResponse) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *QueryGetDelegatesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetDelegatesResponse.Merge(m, src)
+func (m *QueryGetDelegateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetDelegateResponse.Merge(m, src)
 }
-func (m *QueryGetDelegatesResponse) XXX_Size() int {
+func (m *QueryGetDelegateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetDelegatesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetDelegatesResponse.DiscardUnknown(m)
+func (m *QueryGetDelegateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetDelegateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetDelegatesResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetDelegateResponse proto.InternalMessageInfo
 
 type QueryNonceRequest struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -483,8 +483,8 @@ func (m *QueryResourceResponse) GetData() string {
 }
 
 func init() {
-	proto.RegisterType((*QueryGetDelegatesRequest)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegatesRequest")
-	proto.RegisterType((*QueryGetDelegatesResponse)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegatesResponse")
+	proto.RegisterType((*QueryGetDelegateRequest)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegateRequest")
+	proto.RegisterType((*QueryGetDelegateResponse)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegateResponse")
 	proto.RegisterType((*QueryNonceRequest)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryNonceRequest")
 	proto.RegisterType((*QueryNonceResponse)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryNonceResponse")
 	proto.RegisterType((*QueryGetAttributesResponse)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetAttributesResponse")
@@ -499,51 +499,47 @@ func init() {
 func init() { proto.RegisterFile("anconprotocol/query.proto", fileDescriptor_9e5642cda6493b99) }
 
 var fileDescriptor_9e5642cda6493b99 = []byte{
-	// 698 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x96, 0x4d, 0x4f, 0x14, 0x31,
-	0x18, 0xc7, 0xe9, 0x8a, 0x2f, 0x34, 0x40, 0xa4, 0xec, 0xc6, 0x65, 0xc0, 0x09, 0x2c, 0x46, 0x05,
-	0xc3, 0x36, 0x68, 0xbc, 0x18, 0x2f, 0x1a, 0x5f, 0xc2, 0x41, 0x84, 0x55, 0x34, 0xf1, 0xd6, 0x9d,
-	0x29, 0xb3, 0x35, 0x4b, 0xbb, 0xb4, 0x1d, 0x75, 0xb3, 0xe1, 0xe2, 0x27, 0x20, 0xf1, 0x13, 0x79,
-	0xf3, 0x44, 0x50, 0x2f, 0x1e, 0xcd, 0x42, 0xbc, 0xfa, 0x15, 0xcc, 0x74, 0xba, 0x3b, 0xbb, 0x9b,
-	0x01, 0x13, 0x99, 0x83, 0x7b, 0x6b, 0xa7, 0xff, 0xe7, 0xdf, 0xe7, 0x37, 0xed, 0xd3, 0x16, 0xce,
-	0x10, 0xee, 0x09, 0xde, 0x90, 0x42, 0x0b, 0x4f, 0xd4, 0xf1, 0x6e, 0x48, 0x65, 0xb3, 0x6c, 0xba,
-	0xe8, 0xde, 0xe3, 0x3a, 0xf5, 0xb4, 0x14, 0x9c, 0x79, 0x2f, 0x58, 0xc0, 0x89, 0x0e, 0x25, 0x55,
-	0x6b, 0xdc, 0x0f, 0x95, 0x96, 0x8c, 0xaa, 0x72, 0x5f, 0x64, 0x7f, 0xcf, 0xc9, 0x07, 0x22, 0x10,
-	0xa6, 0x87, 0xa3, 0x56, 0xec, 0xe8, 0xcc, 0x05, 0x42, 0x04, 0x75, 0x8a, 0x49, 0x83, 0x61, 0xc2,
-	0xb9, 0xd0, 0x44, 0x33, 0xc1, 0x95, 0x1d, 0x5d, 0xf6, 0x84, 0xda, 0x11, 0x0a, 0x57, 0x89, 0xa2,
-	0x71, 0x22, 0xf8, 0xdd, 0x6a, 0x95, 0x6a, 0xb2, 0x8a, 0x1b, 0x24, 0x60, 0xdc, 0x88, 0x63, 0x6d,
-	0x69, 0x19, 0x16, 0x37, 0x23, 0xc5, 0x53, 0xaa, 0x1f, 0xd1, 0x3a, 0x0d, 0x88, 0xa6, 0xaa, 0x42,
-	0x77, 0x43, 0xaa, 0x34, 0x9a, 0x84, 0x39, 0xe6, 0x17, 0xc1, 0x3c, 0xb8, 0x39, 0x56, 0xc9, 0x31,
-	0xbf, 0x34, 0x0b, 0x67, 0x52, 0xb4, 0xaa, 0x21, 0xb8, 0xa2, 0xa5, 0x45, 0x38, 0x65, 0x06, 0xd7,
-	0x05, 0xf7, 0xe8, 0x49, 0x0e, 0x79, 0x88, 0x7a, 0x45, 0x36, 0x74, 0x0e, 0x3a, 0x1d, 0xdf, 0x07,
-	0x5a, 0x4b, 0x56, 0x0d, 0x7b, 0x8d, 0x3b, 0xa3, 0x6b, 0x3e, 0xe5, 0x9a, 0x6d, 0x37, 0x9f, 0xbf,
-	0xe7, 0x54, 0x76, 0x47, 0xef, 0x26, 0x39, 0xf5, 0xc6, 0xc6, 0xd3, 0x17, 0xe1, 0x45, 0xe2, 0xfb,
-	0x92, 0x2a, 0x65, 0x73, 0xe8, 0x74, 0xbb, 0x61, 0x03, 0xa6, 0x7f, 0x0b, 0x2b, 0xc0, 0x69, 0x13,
-	0x66, 0xe4, 0x49, 0x8a, 0xf7, 0x61, 0xde, 0x7c, 0xae, 0x50, 0x25, 0x42, 0x99, 0xe0, 0x5f, 0x86,
-	0xe7, 0xbc, 0x2e, 0x7f, 0xd4, 0x44, 0x08, 0x8e, 0x36, 0x88, 0xae, 0x15, 0x73, 0xe6, 0x93, 0x69,
-	0x97, 0x6e, 0xc1, 0xc2, 0x40, 0x74, 0x6c, 0x1b, 0x89, 0x7d, 0xa2, 0x89, 0x8d, 0x37, 0xed, 0xdb,
-	0xfb, 0x53, 0xf0, 0xbc, 0x51, 0xa3, 0x43, 0x00, 0xc7, 0x2b, 0x94, 0xf8, 0xaf, 0x99, 0xae, 0x6d,
-	0x10, 0x5d, 0x43, 0x1b, 0xe5, 0x7f, 0xdf, 0x67, 0xe5, 0xb4, 0xfc, 0x9d, 0xcd, 0x0c, 0x1d, 0xed,
-	0xaf, 0x9a, 0xfd, 0xf8, 0xfd, 0xf8, 0x53, 0xae, 0x80, 0xa6, 0xb1, 0x51, 0xe3, 0x96, 0xc7, 0xfc,
-	0x3d, 0xdc, 0x8a, 0x7e, 0xc4, 0x1e, 0xfa, 0x0a, 0xe0, 0xa5, 0x08, 0xe9, 0x09, 0xab, 0xd3, 0xe1,
-	0xc0, 0x99, 0x37, 0x38, 0x0e, 0x2a, 0x5a, 0x9c, 0x6d, 0x56, 0xa7, 0xfd, 0x4c, 0x9f, 0x01, 0x1c,
-	0x8d, 0x98, 0x86, 0x83, 0x27, 0x6f, 0x78, 0x26, 0xd1, 0x78, 0xef, 0xf2, 0xa0, 0x63, 0x00, 0x27,
-	0xfa, 0x2a, 0x05, 0x6d, 0x9d, 0x79, 0xea, 0xb4, 0xca, 0x73, 0x5e, 0x65, 0x6d, 0x6b, 0xb1, 0xae,
-	0x19, 0x2c, 0x17, 0xcd, 0x59, 0x2c, 0x9f, 0xf9, 0x92, 0x06, 0x4c, 0x69, 0xd9, 0xc4, 0x2d, 0x5b,
-	0xdc, 0x7b, 0xe8, 0x37, 0x80, 0x13, 0x7d, 0xe7, 0x48, 0x06, 0x98, 0x69, 0xe7, 0x52, 0x06, 0x98,
-	0xe9, 0x47, 0x25, 0x36, 0x98, 0x4b, 0xe8, 0xc6, 0x69, 0x98, 0x98, 0x24, 0x7c, 0x07, 0xa6, 0xe0,
-	0xe2, 0x3d, 0x30, 0x1c, 0x1b, 0xf4, 0xaa, 0x41, 0xbc, 0x82, 0x0a, 0x16, 0x51, 0x5a, 0x81, 0xdd,
-	0xa9, 0x07, 0x00, 0xc2, 0xa8, 0xda, 0xcc, 0x05, 0xa3, 0xd0, 0xb3, 0x33, 0x27, 0xd0, 0x7b, 0x9d,
-	0x39, 0xeb, 0x59, 0xd9, 0x59, 0x98, 0x05, 0x03, 0x33, 0x8b, 0x66, 0x52, 0xd6, 0x8b, 0xc7, 0x04,
-	0xdf, 0x00, 0x1c, 0xeb, 0x02, 0xfd, 0xef, 0x3c, 0xd7, 0x0d, 0xcf, 0x3c, 0x72, 0x4f, 0xe4, 0xc1,
-	0xad, 0x68, 0x95, 0x7e, 0xd9, 0xab, 0xab, 0xf3, 0x8a, 0x40, 0x2f, 0xb3, 0x28, 0x88, 0xc1, 0xf7,
-	0x8b, 0xb3, 0x95, 0xb1, 0xab, 0xa5, 0x5c, 0x32, 0x94, 0x8b, 0x68, 0x21, 0x85, 0xd2, 0xef, 0xa8,
-	0x63, 0xd0, 0x36, 0x80, 0x13, 0xbd, 0xa0, 0x6a, 0xb8, 0x48, 0x4f, 0x3b, 0x36, 0xbb, 0xa4, 0x0f,
-	0xdf, 0x7e, 0x69, 0xbb, 0xe0, 0xb0, 0xed, 0x82, 0x9f, 0x6d, 0x17, 0xec, 0x1f, 0xb9, 0x23, 0x87,
-	0x47, 0xee, 0xc8, 0x8f, 0x23, 0x77, 0xe4, 0xcd, 0x46, 0xc0, 0x74, 0x2d, 0xac, 0x96, 0x3d, 0xb1,
-	0x83, 0x93, 0x04, 0x57, 0x92, 0x0c, 0x57, 0x92, 0x14, 0xe3, 0x29, 0x56, 0xba, 0x0f, 0xe8, 0x0f,
-	0xb8, 0xff, 0x41, 0xad, 0x9b, 0x0d, 0xaa, 0xaa, 0x17, 0x4c, 0xff, 0xce, 0x9f, 0x00, 0x00, 0x00,
-	0xff, 0xff, 0x32, 0x03, 0x01, 0xc4, 0x6e, 0x0b, 0x00, 0x00,
+	// 632 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x96, 0x4d, 0x6f, 0xd3, 0x30,
+	0x18, 0xc7, 0x97, 0x32, 0xde, 0xac, 0x6d, 0x02, 0xaf, 0xd5, 0xba, 0x30, 0xa2, 0xd1, 0x21, 0xc1,
+	0x40, 0xab, 0x35, 0x10, 0x17, 0xc4, 0x05, 0xc4, 0x8b, 0x76, 0x81, 0xad, 0xe3, 0x45, 0xe2, 0xe6,
+	0xc6, 0xcf, 0x52, 0xa3, 0xce, 0xee, 0x6c, 0x07, 0xa8, 0xaa, 0x5e, 0xe0, 0x0b, 0x20, 0xf1, 0x89,
+	0xb8, 0x71, 0x42, 0x43, 0x5c, 0x38, 0xa2, 0x6d, 0x77, 0xbe, 0x02, 0x8a, 0xe3, 0x35, 0xcb, 0x16,
+	0x40, 0x82, 0x5c, 0x76, 0xf3, 0x13, 0xff, 0x9f, 0xbf, 0x9f, 0x9f, 0x63, 0x3f, 0x09, 0x9a, 0xa5,
+	0x22, 0x94, 0xa2, 0xa7, 0xa4, 0x91, 0xa1, 0xec, 0x92, 0xad, 0x18, 0x54, 0xbf, 0x69, 0x43, 0x7c,
+	0xfb, 0x41, 0x17, 0x42, 0xa3, 0xa4, 0xe0, 0xe1, 0x3a, 0x8f, 0x04, 0x35, 0xb1, 0x02, 0xbd, 0x22,
+	0x58, 0xac, 0x8d, 0xe2, 0xa0, 0x9b, 0xb9, 0xcc, 0x7c, 0xe4, 0x57, 0x23, 0x19, 0x49, 0x1b, 0x91,
+	0x64, 0x94, 0x3a, 0xfa, 0x73, 0x91, 0x94, 0x51, 0x17, 0x08, 0xed, 0x71, 0x42, 0x85, 0x90, 0x86,
+	0x1a, 0x2e, 0x85, 0x76, 0xb3, 0xd7, 0x42, 0xa9, 0x37, 0xa5, 0x26, 0x6d, 0xaa, 0x21, 0x2d, 0x84,
+	0xbc, 0x5e, 0x6e, 0x83, 0xa1, 0xcb, 0xa4, 0x47, 0x23, 0x2e, 0xac, 0x38, 0xd5, 0x36, 0x16, 0xd1,
+	0xcc, 0x5a, 0xa2, 0x78, 0x04, 0xe6, 0x3e, 0x74, 0x21, 0xa2, 0x06, 0x5a, 0xb0, 0x15, 0x83, 0x36,
+	0x78, 0x0a, 0x55, 0x38, 0xab, 0x7b, 0xf3, 0xde, 0xd5, 0xb3, 0xad, 0x0a, 0x67, 0x0d, 0x1f, 0xd5,
+	0x8f, 0x4a, 0x75, 0x4f, 0x0a, 0x0d, 0x8d, 0x05, 0x74, 0xde, 0xce, 0x3d, 0x96, 0x22, 0xfc, 0xad,
+	0x41, 0x15, 0xe1, 0x83, 0x22, 0x97, 0x3a, 0x87, 0xfc, 0x7d, 0xdb, 0xbb, 0xc6, 0x28, 0xde, 0x8e,
+	0x0d, 0xe8, 0x23, 0xb3, 0x2b, 0x0c, 0x84, 0xe1, 0x1b, 0xfd, 0x27, 0x6f, 0x04, 0xa8, 0xd1, 0xec,
+	0x2d, 0x34, 0x5b, 0x94, 0x9b, 0x2e, 0x5f, 0x47, 0xa7, 0x29, 0x63, 0x0a, 0xb4, 0x76, 0x35, 0xec,
+	0x87, 0xa3, 0xb4, 0x43, 0xa6, 0x7f, 0x4b, 0xab, 0xa1, 0x69, 0x9b, 0x66, 0xe5, 0x59, 0x89, 0x77,
+	0x50, 0xd5, 0x3e, 0x6e, 0x81, 0x96, 0xb1, 0xca, 0xf0, 0xcf, 0xa1, 0x13, 0xe1, 0x88, 0x3f, 0x19,
+	0x62, 0x8c, 0xc6, 0x7b, 0xd4, 0x74, 0xea, 0x15, 0xfb, 0xc8, 0x8e, 0x1b, 0xd7, 0x51, 0xed, 0x50,
+	0x76, 0x6a, 0x9b, 0x88, 0x19, 0x35, 0xd4, 0xe5, 0xdb, 0xf1, 0x8d, 0xf7, 0x13, 0xe8, 0xa4, 0x55,
+	0xe3, 0x6d, 0x0f, 0x4d, 0xb4, 0x80, 0xb2, 0x17, 0xdc, 0x74, 0x56, 0xa9, 0xe9, 0xe0, 0xd5, 0xe6,
+	0xbf, 0x9f, 0xb2, 0x66, 0x51, 0xfd, 0xfe, 0x5a, 0x89, 0x8e, 0x6e, 0xab, 0x2e, 0xbc, 0xfb, 0xb6,
+	0xf7, 0xb1, 0x52, 0xc3, 0xd3, 0xc4, 0xaa, 0xc9, 0x20, 0xe4, 0x6c, 0x48, 0x06, 0xc9, 0x46, 0x0c,
+	0xf1, 0x57, 0x0f, 0x9d, 0x49, 0x90, 0x1e, 0xf2, 0x2e, 0x1c, 0x0f, 0x9c, 0x79, 0x8b, 0xe3, 0xe3,
+	0xba, 0xc3, 0xd9, 0xe0, 0x5d, 0xc8, 0x33, 0x7d, 0xf2, 0xd0, 0x78, 0xc2, 0x74, 0x3c, 0x78, 0xaa,
+	0x96, 0x67, 0x0a, 0x4f, 0x1c, 0x7c, 0x3d, 0x78, 0xcf, 0x43, 0x93, 0xb9, 0x9b, 0x82, 0x9f, 0xfd,
+	0xf7, 0xd2, 0x45, 0x37, 0xcf, 0x7f, 0x5e, 0xb6, 0xad, 0xc3, 0xba, 0x6c, 0xb1, 0x02, 0x3c, 0xe7,
+	0xb0, 0x18, 0x67, 0x0a, 0x22, 0xae, 0x8d, 0xea, 0x93, 0x81, 0xbb, 0xdc, 0x43, 0xfc, 0xd3, 0x43,
+	0x93, 0xb9, 0x3e, 0x52, 0x02, 0x66, 0x51, 0x5f, 0x2a, 0x01, 0xb3, 0xb8, 0x55, 0x12, 0x8b, 0xb9,
+	0x88, 0xaf, 0xfc, 0x09, 0x93, 0xd0, 0x8c, 0xef, 0x8b, 0xbd, 0x70, 0xe9, 0x19, 0x38, 0x1e, 0x07,
+	0xf4, 0xa2, 0x45, 0x9c, 0xc1, 0x35, 0x87, 0xa8, 0x9c, 0x20, 0x3b, 0xa9, 0xb6, 0x29, 0xee, 0x7f,
+	0x9e, 0xf0, 0x7a, 0x19, 0x5b, 0x7d, 0xe8, 0xbb, 0xe8, 0x3f, 0x2d, 0xd7, 0xd4, 0xa1, 0x2d, 0x5a,
+	0xb4, 0x05, 0x7c, 0xa9, 0xe0, 0xed, 0x31, 0x27, 0xd6, 0x64, 0xc0, 0xd9, 0xf0, 0xde, 0xab, 0xcf,
+	0x3b, 0x81, 0xb7, 0xbd, 0x13, 0x78, 0x3f, 0x76, 0x02, 0xef, 0xc3, 0x6e, 0x30, 0xb6, 0xbd, 0x1b,
+	0x8c, 0x7d, 0xdf, 0x0d, 0xc6, 0x5e, 0xae, 0x46, 0xdc, 0x74, 0xe2, 0x76, 0x33, 0x94, 0x9b, 0x24,
+	0x2b, 0x72, 0x29, 0xab, 0x72, 0x29, 0x2b, 0x33, 0x5d, 0x67, 0x69, 0xf4, 0xc7, 0xf2, 0x96, 0xe4,
+	0xff, 0x60, 0x4c, 0xbf, 0x07, 0xba, 0x7d, 0xca, 0xc6, 0x37, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff,
+	0xf8, 0xc2, 0xce, 0xf2, 0xdf, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -571,14 +567,8 @@ type QueryClient interface {
 	GetAttributes(ctx context.Context, in *QueryGetAttributesRequest, opts ...grpc.CallOption) (*QueryGetAttributesResponse, error)
 	// Queries a list of resource items.
 	Resource(ctx context.Context, in *QueryResourceRequest, opts ...grpc.CallOption) (*QueryResourceResponse, error)
-	// Queries a list of nonce items.
-	ReadNonces(ctx context.Context, in *QueryNonceRequest, opts ...grpc.CallOption) (*QueryNonceResponse, error)
-	// Queries a list of nonce items.
-	ReadNonce(ctx context.Context, in *QueryNonceRequest, opts ...grpc.CallOption) (*QueryNonceResponse, error)
 	// Queries a list of delegates items.
-	ReadDelegate(ctx context.Context, in *QueryGetDelegatesRequest, opts ...grpc.CallOption) (*QueryGetDelegatesResponse, error)
-	// Queries a list of nonce items.
-	ReadDelegates(ctx context.Context, in *QueryGetDelegatesRequest, opts ...grpc.CallOption) (*QueryGetDelegatesResponse, error)
+	ReadDelegate(ctx context.Context, in *QueryGetDelegateRequest, opts ...grpc.CallOption) (*QueryGetDelegateResponse, error)
 }
 
 type queryClient struct {
@@ -643,36 +633,9 @@ func (c *queryClient) Resource(ctx context.Context, in *QueryResourceRequest, op
 	return out, nil
 }
 
-func (c *queryClient) ReadNonces(ctx context.Context, in *QueryNonceRequest, opts ...grpc.CallOption) (*QueryNonceResponse, error) {
-	out := new(QueryNonceResponse)
-	err := c.cc.Invoke(ctx, "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadNonces", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ReadNonce(ctx context.Context, in *QueryNonceRequest, opts ...grpc.CallOption) (*QueryNonceResponse, error) {
-	out := new(QueryNonceResponse)
-	err := c.cc.Invoke(ctx, "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadNonce", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ReadDelegate(ctx context.Context, in *QueryGetDelegatesRequest, opts ...grpc.CallOption) (*QueryGetDelegatesResponse, error) {
-	out := new(QueryGetDelegatesResponse)
+func (c *queryClient) ReadDelegate(ctx context.Context, in *QueryGetDelegateRequest, opts ...grpc.CallOption) (*QueryGetDelegateResponse, error) {
+	out := new(QueryGetDelegateResponse)
 	err := c.cc.Invoke(ctx, "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadDelegate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ReadDelegates(ctx context.Context, in *QueryGetDelegatesRequest, opts ...grpc.CallOption) (*QueryGetDelegatesResponse, error) {
-	out := new(QueryGetDelegatesResponse)
-	err := c.cc.Invoke(ctx, "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadDelegates", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -694,14 +657,8 @@ type QueryServer interface {
 	GetAttributes(context.Context, *QueryGetAttributesRequest) (*QueryGetAttributesResponse, error)
 	// Queries a list of resource items.
 	Resource(context.Context, *QueryResourceRequest) (*QueryResourceResponse, error)
-	// Queries a list of nonce items.
-	ReadNonces(context.Context, *QueryNonceRequest) (*QueryNonceResponse, error)
-	// Queries a list of nonce items.
-	ReadNonce(context.Context, *QueryNonceRequest) (*QueryNonceResponse, error)
 	// Queries a list of delegates items.
-	ReadDelegate(context.Context, *QueryGetDelegatesRequest) (*QueryGetDelegatesResponse, error)
-	// Queries a list of nonce items.
-	ReadDelegates(context.Context, *QueryGetDelegatesRequest) (*QueryGetDelegatesResponse, error)
+	ReadDelegate(context.Context, *QueryGetDelegateRequest) (*QueryGetDelegateResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -726,17 +683,8 @@ func (*UnimplementedQueryServer) GetAttributes(ctx context.Context, req *QueryGe
 func (*UnimplementedQueryServer) Resource(ctx context.Context, req *QueryResourceRequest) (*QueryResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Resource not implemented")
 }
-func (*UnimplementedQueryServer) ReadNonces(ctx context.Context, req *QueryNonceRequest) (*QueryNonceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadNonces not implemented")
-}
-func (*UnimplementedQueryServer) ReadNonce(ctx context.Context, req *QueryNonceRequest) (*QueryNonceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadNonce not implemented")
-}
-func (*UnimplementedQueryServer) ReadDelegate(ctx context.Context, req *QueryGetDelegatesRequest) (*QueryGetDelegatesResponse, error) {
+func (*UnimplementedQueryServer) ReadDelegate(ctx context.Context, req *QueryGetDelegateRequest) (*QueryGetDelegateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadDelegate not implemented")
-}
-func (*UnimplementedQueryServer) ReadDelegates(ctx context.Context, req *QueryGetDelegatesRequest) (*QueryGetDelegatesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadDelegates not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -851,44 +799,8 @@ func _Query_Resource_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ReadNonces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryNonceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ReadNonces(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadNonces",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ReadNonces(ctx, req.(*QueryNonceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ReadNonce_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryNonceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ReadNonce(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadNonce",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ReadNonce(ctx, req.(*QueryNonceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_ReadDelegate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetDelegatesRequest)
+	in := new(QueryGetDelegateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -900,25 +812,7 @@ func _Query_ReadDelegate_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadDelegate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ReadDelegate(ctx, req.(*QueryGetDelegatesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ReadDelegates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetDelegatesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ReadDelegates(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query/ReadDelegates",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ReadDelegates(ctx, req.(*QueryGetDelegatesRequest))
+		return srv.(QueryServer).ReadDelegate(ctx, req.(*QueryGetDelegateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -952,27 +846,15 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Resource_Handler,
 		},
 		{
-			MethodName: "ReadNonces",
-			Handler:    _Query_ReadNonces_Handler,
-		},
-		{
-			MethodName: "ReadNonce",
-			Handler:    _Query_ReadNonce_Handler,
-		},
-		{
 			MethodName: "ReadDelegate",
 			Handler:    _Query_ReadDelegate_Handler,
-		},
-		{
-			MethodName: "ReadDelegates",
-			Handler:    _Query_ReadDelegates_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "anconprotocol/query.proto",
 }
 
-func (m *QueryGetDelegatesRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetDelegateRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -982,12 +864,12 @@ func (m *QueryGetDelegatesRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetDelegatesRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetDelegatesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1002,7 +884,7 @@ func (m *QueryGetDelegatesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetDelegatesResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetDelegateResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1012,12 +894,12 @@ func (m *QueryGetDelegatesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetDelegatesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetDelegatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1285,7 +1167,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryGetDelegatesRequest) Size() (n int) {
+func (m *QueryGetDelegateRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1298,7 +1180,7 @@ func (m *QueryGetDelegatesRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetDelegatesResponse) Size() (n int) {
+func (m *QueryGetDelegateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1418,7 +1300,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryGetDelegatesRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryGetDelegateRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1441,10 +1323,10 @@ func (m *QueryGetDelegatesRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetDelegatesRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetDelegateRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetDelegatesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetDelegateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1500,7 +1382,7 @@ func (m *QueryGetDelegatesRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetDelegatesResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryGetDelegateResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1523,10 +1405,10 @@ func (m *QueryGetDelegatesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetDelegatesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetDelegateResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetDelegatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetDelegateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

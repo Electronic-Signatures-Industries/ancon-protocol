@@ -1,9 +1,9 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-export interface QueryGetDelegatesRequest {
+export interface QueryGetDelegateRequest {
     id: string;
 }
-export interface QueryGetDelegatesResponse {
+export interface QueryGetDelegateResponse {
 }
 export interface QueryNonceRequest {
     id: string;
@@ -29,19 +29,19 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
-export declare const QueryGetDelegatesRequest: {
-    encode(message: QueryGetDelegatesRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryGetDelegatesRequest;
-    fromJSON(object: any): QueryGetDelegatesRequest;
-    toJSON(message: QueryGetDelegatesRequest): unknown;
-    fromPartial(object: DeepPartial<QueryGetDelegatesRequest>): QueryGetDelegatesRequest;
+export declare const QueryGetDelegateRequest: {
+    encode(message: QueryGetDelegateRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetDelegateRequest;
+    fromJSON(object: any): QueryGetDelegateRequest;
+    toJSON(message: QueryGetDelegateRequest): unknown;
+    fromPartial(object: DeepPartial<QueryGetDelegateRequest>): QueryGetDelegateRequest;
 };
-export declare const QueryGetDelegatesResponse: {
-    encode(_: QueryGetDelegatesResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryGetDelegatesResponse;
-    fromJSON(_: any): QueryGetDelegatesResponse;
-    toJSON(_: QueryGetDelegatesResponse): unknown;
-    fromPartial(_: DeepPartial<QueryGetDelegatesResponse>): QueryGetDelegatesResponse;
+export declare const QueryGetDelegateResponse: {
+    encode(_: QueryGetDelegateResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetDelegateResponse;
+    fromJSON(_: any): QueryGetDelegateResponse;
+    toJSON(_: QueryGetDelegateResponse): unknown;
+    fromPartial(_: DeepPartial<QueryGetDelegateResponse>): QueryGetDelegateResponse;
 };
 export declare const QueryNonceRequest: {
     encode(message: QueryNonceRequest, writer?: Writer): Writer;
@@ -123,14 +123,8 @@ export interface Query {
     GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
     /** Queries a list of resource items. */
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    /** Queries a list of nonce items. */
-    ReadNonces(request: QueryNonceRequest): Promise<QueryNonceResponse>;
-    /** Queries a list of nonce items. */
-    ReadNonce(request: QueryNonceRequest): Promise<QueryNonceResponse>;
     /** Queries a list of delegates items. */
-    ReadDelegate(request: QueryGetDelegatesRequest): Promise<QueryGetDelegatesResponse>;
-    /** Queries a list of nonce items. */
-    ReadDelegates(request: QueryGetDelegatesRequest): Promise<QueryGetDelegatesResponse>;
+    ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
@@ -141,10 +135,7 @@ export declare class QueryClientImpl implements Query {
     IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
     GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    ReadNonces(request: QueryNonceRequest): Promise<QueryNonceResponse>;
-    ReadNonce(request: QueryNonceRequest): Promise<QueryNonceResponse>;
-    ReadDelegate(request: QueryGetDelegatesRequest): Promise<QueryGetDelegatesResponse>;
-    ReadDelegates(request: QueryGetDelegatesRequest): Promise<QueryGetDelegatesResponse>;
+    ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

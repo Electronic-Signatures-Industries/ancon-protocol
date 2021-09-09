@@ -10359,112 +10359,10 @@ paths:
           type: boolean
       tags:
         - Query
-  /ancon/didregistry/delegates:
-    get:
-      summary: Queries a list of nonce items.
-      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadDelegates
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: query
-          required: false
-          type: string
-      tags:
-        - Query
   '/ancon/didregistry/delegates/{id}':
     get:
       summary: Queries a list of delegates items.
       operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadDelegate
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /ancon/didregistry/nonces:
-    get:
-      summary: Queries a list of nonce items.
-      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadNonces
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: query
-          required: false
-          type: string
-      tags:
-        - Query
-  '/ancon/didregistry/nonces/{id}':
-    get:
-      summary: Queries a list of nonce items.
-      operationId: ElectronicSignaturesIndustriesAnconprotocolAnconprotocolReadNonce
       responses:
         '200':
           description: A successful response.
@@ -25790,6 +25688,12 @@ definitions:
     properties:
       hash:
         type: string
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgGrantAttributeResponse:
+    type: object
+    properties:
+      hash:
+        type: string
+        format: byte
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgGrantDelegateResponse:
     type: object
     properties:
@@ -25801,8 +25705,6 @@ definitions:
     properties:
       cid:
         type: string
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgNonceResponse:
-    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRevokeAttributeResponse:
     type: object
     properties:
@@ -25815,19 +25717,11 @@ definitions:
       hash:
         type: string
         format: byte
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgSetAttributeResponse:
-    type: object
-    properties:
-      hash:
-        type: string
-        format: byte
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetAttributesResponse:
     type: object
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegatesResponse:
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryGetDelegateResponse:
     type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryIdentifyOwnerResponse:
-    type: object
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryNonceResponse:
     type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryResourceResponse:
     type: object

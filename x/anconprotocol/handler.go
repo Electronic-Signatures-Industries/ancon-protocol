@@ -18,26 +18,21 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		switch msg := msg.(type) {
 		// this line is used by starport scaffolding # 1
-		case *types.MsgNonce:
-					res, err := msgServer.Nonce(sdk.WrapSDKContext(ctx), msg)
-					return sdk.WrapServiceResult(ctx, res, err)
-
-		case *types.MsgNonce:
-					res, err := msgServer.Nonce(sdk.WrapSDKContext(ctx), msg)
-					return sdk.WrapServiceResult(ctx, res, err)
-
 		case *types.MsgChangeOwner:
 			res, err := msgServer.ChangeOwner(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgAddDelegate:
-			res, err := msgServer.AddDelegate(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgGrantDelegate:
+			res, err := msgServer.GrantDelegate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgRevokeDelegate:
 			res, err := msgServer.RevokeDelegate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgSetAttribute:
-			res, err := msgServer.SetAttribute(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgGrantAttribute:
+			res, err := msgServer.GrantAttribute(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRevokeAttribute:
+			res, err := msgServer.RevokeAttribute(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgMetadata:
 			res, err := msgServer.Metadata(sdk.WrapSDKContext(ctx), msg)

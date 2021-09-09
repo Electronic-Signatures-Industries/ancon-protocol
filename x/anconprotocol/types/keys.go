@@ -20,15 +20,13 @@ const (
 
 	Delegates = "did_ancon_delegates"
 
-	Nonce = "did_ancon_nonce"
-
 	Owners = "did_ancon_owners"
 
 	ChangeOwner = "did_change_owner_key"
 
 	ChangeOwnerEvent = "did_key_ChangeOwner"
 
-	Attribute = "did_attribute"
+	Attributes = "did_attribute"
 
 	// this line is used by starport scaffolding # ibc/keys/name
 )

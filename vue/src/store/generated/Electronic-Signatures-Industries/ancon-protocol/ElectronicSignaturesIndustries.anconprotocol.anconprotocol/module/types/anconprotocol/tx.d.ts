@@ -13,7 +13,7 @@ export interface MsgChangeOwnerResponse {
 export interface MsgGrantDelegate {
     delegate: string;
     delegateType: string;
-    validity: boolean;
+    validity: number;
     creator: string;
     identity: string;
 }
@@ -23,7 +23,7 @@ export interface MsgGrantDelegateResponse {
 export interface MsgRevokeDelegate {
     delegate: string;
     delegateType: string;
-    validity: boolean;
+    validity: number;
     creator: string;
     identity: string;
 }
@@ -33,11 +33,21 @@ export interface MsgRevokeDelegateResponse {
 export interface MsgSetAttribute {
     identity: string;
     actor: string;
+    creator: string;
     name: Uint8Array;
     value: Uint8Array;
-    validity: boolean;
 }
 export interface MsgSetAttributeResponse {
+    hash: Uint8Array;
+}
+export interface MsgGrantAttribute {
+    identity: string;
+    actor: string;
+    name: Uint8Array;
+    value: Uint8Array;
+    creator: string;
+}
+export interface MsgGrantAttributeResponse {
     hash: Uint8Array;
 }
 export interface MsgRevokeAttribute {
@@ -45,19 +55,13 @@ export interface MsgRevokeAttribute {
     actor: string;
     name: Uint8Array;
     value: Uint8Array;
+    creator: string;
 }
 export interface MsgRevokeAttributeResponse {
     hash: Uint8Array;
 }
 export interface MsgFileMetadataResponse {
     hash: Uint8Array;
-}
-/** this line is used by starport scaffolding # proto/tx/message */
-export interface MsgNonce {
-    creator: string;
-    delegates: string;
-}
-export interface MsgNonceResponse {
 }
 export interface MsgMetadata {
     creator: string;
@@ -144,6 +148,20 @@ export declare const MsgSetAttributeResponse: {
     toJSON(message: MsgSetAttributeResponse): unknown;
     fromPartial(object: DeepPartial<MsgSetAttributeResponse>): MsgSetAttributeResponse;
 };
+export declare const MsgGrantAttribute: {
+    encode(message: MsgGrantAttribute, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgGrantAttribute;
+    fromJSON(object: any): MsgGrantAttribute;
+    toJSON(message: MsgGrantAttribute): unknown;
+    fromPartial(object: DeepPartial<MsgGrantAttribute>): MsgGrantAttribute;
+};
+export declare const MsgGrantAttributeResponse: {
+    encode(message: MsgGrantAttributeResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgGrantAttributeResponse;
+    fromJSON(object: any): MsgGrantAttributeResponse;
+    toJSON(message: MsgGrantAttributeResponse): unknown;
+    fromPartial(object: DeepPartial<MsgGrantAttributeResponse>): MsgGrantAttributeResponse;
+};
 export declare const MsgRevokeAttribute: {
     encode(message: MsgRevokeAttribute, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgRevokeAttribute;
@@ -164,20 +182,6 @@ export declare const MsgFileMetadataResponse: {
     fromJSON(object: any): MsgFileMetadataResponse;
     toJSON(message: MsgFileMetadataResponse): unknown;
     fromPartial(object: DeepPartial<MsgFileMetadataResponse>): MsgFileMetadataResponse;
-};
-export declare const MsgNonce: {
-    encode(message: MsgNonce, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgNonce;
-    fromJSON(object: any): MsgNonce;
-    toJSON(message: MsgNonce): unknown;
-    fromPartial(object: DeepPartial<MsgNonce>): MsgNonce;
-};
-export declare const MsgNonceResponse: {
-    encode(_: MsgNonceResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgNonceResponse;
-    fromJSON(_: any): MsgNonceResponse;
-    toJSON(_: MsgNonceResponse): unknown;
-    fromPartial(_: DeepPartial<MsgNonceResponse>): MsgNonceResponse;
 };
 export declare const MsgMetadata: {
     encode(message: MsgMetadata, writer?: Writer): Writer;
@@ -214,12 +218,12 @@ export interface Msg {
      * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
      * this line is used by starport scaffolding # proto/tx/rpc
      */
-    Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
-    AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
-    SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
+    GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
+    GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>;
+    /** rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse); */
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
@@ -228,11 +232,10 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
-    Nonce(request: MsgNonce): Promise<MsgNonceResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
-    AddDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
-    SetAttribute(request: MsgSetAttribute): Promise<MsgSetAttributeResponse>;
+    GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
+    GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>;
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
