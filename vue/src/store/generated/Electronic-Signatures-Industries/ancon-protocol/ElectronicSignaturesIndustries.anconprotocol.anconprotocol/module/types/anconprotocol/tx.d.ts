@@ -1,14 +1,43 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-export interface MsgChangeOwner {
-    creator: string;
-    identity: string;
-    newOwner: string;
+/** MsgIssueDenom defines an SDK message for creating a new denom. */
+export interface MsgIssueDenom {
+    id: string;
+    name: string;
+    schema: string;
+    sender: string;
+    symbol: string;
+    mintRestricted: boolean;
+    updateRestricted: boolean;
+}
+/** MsgIssueDenomResponse defines the Msg/IssueDenom response type. */
+export interface MsgIssueDenomResponse {
+}
+/** MsgTransferNFT defines an SDK message for transferring an NFT to recipient. */
+export interface MsgTransferNFT {
+    id: string;
+    denomId: string;
+    name: string;
+    uri: string;
+    data: string;
+    sender: string;
+    recipient: string;
 }
 export interface MsgChangeOwnerResponse {
     identity: string;
     owner: string;
     previousChange: number;
+}
+export interface MsgCreateDIDOwner {
+    creator: string;
+    owner: string;
+    didKey: string;
+    didWeb: string;
+}
+export interface MsgChangeOwner {
+    creator: string;
+    identity: string;
+    newOwner: string;
 }
 export interface MsgGrantDelegate {
     delegate: string;
@@ -46,9 +75,10 @@ export interface MsgGrantAttribute {
     name: Uint8Array;
     value: Uint8Array;
     creator: string;
+    validity: number;
 }
 export interface MsgGrantAttributeResponse {
-    hash: Uint8Array;
+    ok: boolean;
 }
 export interface MsgRevokeAttribute {
     identity: string;
@@ -60,20 +90,71 @@ export interface MsgRevokeAttribute {
 export interface MsgRevokeAttributeResponse {
     hash: Uint8Array;
 }
+/** MsgTransferNFTResponse defines the Msg/TransferNFT response type. */
+export interface MsgTransferNFTResponse {
+}
+/** MsgEditNFT defines an SDK message for editing a nft. */
+export interface MsgEditNFT {
+    id: string;
+    denomId: string;
+    name: string;
+    uri: string;
+    data: string;
+    sender: string;
+}
+/** MsgEditNFTResponse defines the Msg/EditNFT response type. */
+export interface MsgEditNFTResponse {
+}
+/** MsgMintNFT defines an SDK message for creating a new NFT. */
+export interface MsgMintNFT {
+    id: string;
+    denomId: string;
+    name: string;
+    uri: string;
+    data: string;
+    sender: string;
+    recipient: string;
+}
+/** MsgMintNFTResponse defines the Msg/MintNFT response type. */
+export interface MsgMintNFTResponse {
+}
+/** MsgBurnNFT defines an SDK message for burning a NFT. */
+export interface MsgBurnNFT {
+    id: string;
+    denomId: string;
+    sender: string;
+}
+/** MsgBurnNFTResponse defines the Msg/BurnNFT response type. */
+export interface MsgBurnNFTResponse {
+}
+/** MsgTransferDenom defines an SDK message for transferring an denom to recipient. */
+export interface MsgTransferDenom {
+    id: string;
+    sender: string;
+    recipient: string;
+}
+/** MsgTransferDenomResponse defines the Msg/TransferDenom response type. */
+export interface MsgTransferDenomResponse {
+}
 export interface MsgFileMetadataResponse {
     hash: Uint8Array;
 }
 export interface MsgMetadata {
+    /** cosmos sdk* */
     creator: string;
     name: string;
     description: string;
     image: string;
+    /** did owner*eg. did:ancon:{hex-bech32} */
     owner: string;
+    /** change/diff , ancestor is parent */
     parent: string;
     sources: string;
     links: string;
     verifiedCredentialRef: string;
+    /** did doc* */
     did: string;
+    /** reserved */
     from: string;
 }
 export interface MsgMetadataResponse {
@@ -92,12 +173,26 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
-export declare const MsgChangeOwner: {
-    encode(message: MsgChangeOwner, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgChangeOwner;
-    fromJSON(object: any): MsgChangeOwner;
-    toJSON(message: MsgChangeOwner): unknown;
-    fromPartial(object: DeepPartial<MsgChangeOwner>): MsgChangeOwner;
+export declare const MsgIssueDenom: {
+    encode(message: MsgIssueDenom, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgIssueDenom;
+    fromJSON(object: any): MsgIssueDenom;
+    toJSON(message: MsgIssueDenom): unknown;
+    fromPartial(object: DeepPartial<MsgIssueDenom>): MsgIssueDenom;
+};
+export declare const MsgIssueDenomResponse: {
+    encode(_: MsgIssueDenomResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgIssueDenomResponse;
+    fromJSON(_: any): MsgIssueDenomResponse;
+    toJSON(_: MsgIssueDenomResponse): unknown;
+    fromPartial(_: DeepPartial<MsgIssueDenomResponse>): MsgIssueDenomResponse;
+};
+export declare const MsgTransferNFT: {
+    encode(message: MsgTransferNFT, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgTransferNFT;
+    fromJSON(object: any): MsgTransferNFT;
+    toJSON(message: MsgTransferNFT): unknown;
+    fromPartial(object: DeepPartial<MsgTransferNFT>): MsgTransferNFT;
 };
 export declare const MsgChangeOwnerResponse: {
     encode(message: MsgChangeOwnerResponse, writer?: Writer): Writer;
@@ -105,6 +200,20 @@ export declare const MsgChangeOwnerResponse: {
     fromJSON(object: any): MsgChangeOwnerResponse;
     toJSON(message: MsgChangeOwnerResponse): unknown;
     fromPartial(object: DeepPartial<MsgChangeOwnerResponse>): MsgChangeOwnerResponse;
+};
+export declare const MsgCreateDIDOwner: {
+    encode(message: MsgCreateDIDOwner, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateDIDOwner;
+    fromJSON(object: any): MsgCreateDIDOwner;
+    toJSON(message: MsgCreateDIDOwner): unknown;
+    fromPartial(object: DeepPartial<MsgCreateDIDOwner>): MsgCreateDIDOwner;
+};
+export declare const MsgChangeOwner: {
+    encode(message: MsgChangeOwner, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgChangeOwner;
+    fromJSON(object: any): MsgChangeOwner;
+    toJSON(message: MsgChangeOwner): unknown;
+    fromPartial(object: DeepPartial<MsgChangeOwner>): MsgChangeOwner;
 };
 export declare const MsgGrantDelegate: {
     encode(message: MsgGrantDelegate, writer?: Writer): Writer;
@@ -176,6 +285,69 @@ export declare const MsgRevokeAttributeResponse: {
     toJSON(message: MsgRevokeAttributeResponse): unknown;
     fromPartial(object: DeepPartial<MsgRevokeAttributeResponse>): MsgRevokeAttributeResponse;
 };
+export declare const MsgTransferNFTResponse: {
+    encode(_: MsgTransferNFTResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgTransferNFTResponse;
+    fromJSON(_: any): MsgTransferNFTResponse;
+    toJSON(_: MsgTransferNFTResponse): unknown;
+    fromPartial(_: DeepPartial<MsgTransferNFTResponse>): MsgTransferNFTResponse;
+};
+export declare const MsgEditNFT: {
+    encode(message: MsgEditNFT, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgEditNFT;
+    fromJSON(object: any): MsgEditNFT;
+    toJSON(message: MsgEditNFT): unknown;
+    fromPartial(object: DeepPartial<MsgEditNFT>): MsgEditNFT;
+};
+export declare const MsgEditNFTResponse: {
+    encode(_: MsgEditNFTResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgEditNFTResponse;
+    fromJSON(_: any): MsgEditNFTResponse;
+    toJSON(_: MsgEditNFTResponse): unknown;
+    fromPartial(_: DeepPartial<MsgEditNFTResponse>): MsgEditNFTResponse;
+};
+export declare const MsgMintNFT: {
+    encode(message: MsgMintNFT, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintNFT;
+    fromJSON(object: any): MsgMintNFT;
+    toJSON(message: MsgMintNFT): unknown;
+    fromPartial(object: DeepPartial<MsgMintNFT>): MsgMintNFT;
+};
+export declare const MsgMintNFTResponse: {
+    encode(_: MsgMintNFTResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintNFTResponse;
+    fromJSON(_: any): MsgMintNFTResponse;
+    toJSON(_: MsgMintNFTResponse): unknown;
+    fromPartial(_: DeepPartial<MsgMintNFTResponse>): MsgMintNFTResponse;
+};
+export declare const MsgBurnNFT: {
+    encode(message: MsgBurnNFT, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgBurnNFT;
+    fromJSON(object: any): MsgBurnNFT;
+    toJSON(message: MsgBurnNFT): unknown;
+    fromPartial(object: DeepPartial<MsgBurnNFT>): MsgBurnNFT;
+};
+export declare const MsgBurnNFTResponse: {
+    encode(_: MsgBurnNFTResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgBurnNFTResponse;
+    fromJSON(_: any): MsgBurnNFTResponse;
+    toJSON(_: MsgBurnNFTResponse): unknown;
+    fromPartial(_: DeepPartial<MsgBurnNFTResponse>): MsgBurnNFTResponse;
+};
+export declare const MsgTransferDenom: {
+    encode(message: MsgTransferDenom, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgTransferDenom;
+    fromJSON(object: any): MsgTransferDenom;
+    toJSON(message: MsgTransferDenom): unknown;
+    fromPartial(object: DeepPartial<MsgTransferDenom>): MsgTransferDenom;
+};
+export declare const MsgTransferDenomResponse: {
+    encode(_: MsgTransferDenomResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgTransferDenomResponse;
+    fromJSON(_: any): MsgTransferDenomResponse;
+    toJSON(_: MsgTransferDenomResponse): unknown;
+    fromPartial(_: DeepPartial<MsgTransferDenomResponse>): MsgTransferDenomResponse;
+};
 export declare const MsgFileMetadataResponse: {
     encode(message: MsgFileMetadataResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgFileMetadataResponse;
@@ -213,11 +385,6 @@ export declare const MsgFileResponse: {
 };
 /** Msg defines the Msg service. */
 export interface Msg {
-    /**
-     * rpc MetadataHandlerTx(MsgMetadataTx) returns (MsgFileMetadataResponse);
-     * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
-     * this line is used by starport scaffolding # proto/tx/rpc
-     */
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
@@ -228,6 +395,18 @@ export interface Msg {
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
     File(request: MsgFile): Promise<MsgFileResponse>;
+    /** IssueDenom defines a method for issue a denom. */
+    IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
+    /** MintNFT defines a method for mint a new nft */
+    MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
+    /** RefundHTLC defines a method for editing a nft. */
+    EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>;
+    /** TransferNFT defines a method for transferring a nft. */
+    TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>;
+    /** BurnNFT defines a method for burning a nft. */
+    BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse>;
+    /** TransferDenom defines a method for transferring a denom. */
+    TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -239,6 +418,12 @@ export declare class MsgClientImpl implements Msg {
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
+    IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
+    MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
+    EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>;
+    TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>;
+    BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse>;
+    TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

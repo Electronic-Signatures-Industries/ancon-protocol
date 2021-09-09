@@ -35,7 +35,7 @@ Enables an IPLD protocol level Metadata and Files smart contract for use with da
 
 ##  Abstract
 
-Ancon delivers an immutable CID referene to a IPLD Node stored as a block in a Cosmos IAVL merkle tree.
+Ancon delivers an immutable CID reference to a IPLD Node stored as a block in a Cosmos IAVL merkle tree.
 Similar to `Flow Cadence` resource oriented language, Ancon Metadata is unique and must be implemented as a store prefix, where any account owns its resources. In our implementation, we defined accounts as a DID method that
 uses a `ethr-did-registry` inspired implementation in Cosmos.
 

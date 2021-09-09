@@ -2,8 +2,8 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseOwner = { identity: '', owner: '' };
-export const Owner = {
+const baseDIDOwner = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '' };
+export const DIDOwner = {
     encode(message, writer = Writer.create()) {
         if (message.identity !== '') {
             writer.uint32(10).string(message.identity);
@@ -11,12 +11,21 @@ export const Owner = {
         if (message.owner !== '') {
             writer.uint32(18).string(message.owner);
         }
+        if (message.didAncon !== '') {
+            writer.uint32(26).string(message.didAncon);
+        }
+        if (message.didKey !== '') {
+            writer.uint32(34).string(message.didKey);
+        }
+        if (message.didWeb !== '') {
+            writer.uint32(42).string(message.didWeb);
+        }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseOwner };
+        const message = { ...baseDIDOwner };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -26,6 +35,15 @@ export const Owner = {
                 case 2:
                     message.owner = reader.string();
                     break;
+                case 3:
+                    message.didAncon = reader.string();
+                    break;
+                case 4:
+                    message.didKey = reader.string();
+                    break;
+                case 5:
+                    message.didWeb = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -34,7 +52,7 @@ export const Owner = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseOwner };
+        const message = { ...baseDIDOwner };
         if (object.identity !== undefined && object.identity !== null) {
             message.identity = String(object.identity);
         }
@@ -47,16 +65,37 @@ export const Owner = {
         else {
             message.owner = '';
         }
+        if (object.didAncon !== undefined && object.didAncon !== null) {
+            message.didAncon = String(object.didAncon);
+        }
+        else {
+            message.didAncon = '';
+        }
+        if (object.didKey !== undefined && object.didKey !== null) {
+            message.didKey = String(object.didKey);
+        }
+        else {
+            message.didKey = '';
+        }
+        if (object.didWeb !== undefined && object.didWeb !== null) {
+            message.didWeb = String(object.didWeb);
+        }
+        else {
+            message.didWeb = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.identity !== undefined && (obj.identity = message.identity);
         message.owner !== undefined && (obj.owner = message.owner);
+        message.didAncon !== undefined && (obj.didAncon = message.didAncon);
+        message.didKey !== undefined && (obj.didKey = message.didKey);
+        message.didWeb !== undefined && (obj.didWeb = message.didWeb);
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseOwner };
+        const message = { ...baseDIDOwner };
         if (object.identity !== undefined && object.identity !== null) {
             message.identity = object.identity;
         }
@@ -68,6 +107,24 @@ export const Owner = {
         }
         else {
             message.owner = '';
+        }
+        if (object.didAncon !== undefined && object.didAncon !== null) {
+            message.didAncon = object.didAncon;
+        }
+        else {
+            message.didAncon = '';
+        }
+        if (object.didKey !== undefined && object.didKey !== null) {
+            message.didKey = object.didKey;
+        }
+        else {
+            message.didKey = '';
+        }
+        if (object.didWeb !== undefined && object.didWeb !== null) {
+            message.didWeb = object.didWeb;
+        }
+        else {
+            message.didWeb = '';
         }
         return message;
     }

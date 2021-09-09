@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +22,7 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 			types.ChangeOwnerEvent,
 			sdk.NewAttribute("Identity", res.Identity),
 			sdk.NewAttribute("Owner", res.Owner),
-			sdk.NewAttribute("Height", string(res.PreviousChange)),
+			sdk.NewAttribute("Height", fmt.Sprint(res.PreviousChange)),
 		),
 	})
 
@@ -36,13 +37,30 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 
 func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttribute) (*types.MsgGrantAttributeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
+
+	_, err := k.ApplyAttribute(ctx, msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	until := msg.Validity + uint64(ctx.BlockTime().Unix())
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Name", string(msg.Name)),
+			sdk.NewAttribute("Value", string(msg.Value)),
+			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
+
 	_ = ctx
 
-	return &types.MsgGrantAttributeResponse{}, nil
+	return &types.MsgGrantAttributeResponse{
+		Ok: true,
+	}, nil
 }
 
 func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDelegate) (*types.MsgGrantDelegateResponse, error) {

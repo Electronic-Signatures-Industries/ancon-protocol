@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	cbor "github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -29,10 +30,14 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
-	keeper := NewKeeper(codec.NewProtoCodec(registry), storeKey, memStoreKey)
+	keeper := NewTestKeeper(codec.NewProtoCodec(registry), storeKey, memStoreKey,
+		paramstypes.NewSubspace(
+			codec.NewProtoCodec(registry),
+			nil, storeKey, memStoreKey, "test",
+		), nil, nil, map[string]bool{})
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
-	return keeper, ctx
+	return &keeper, ctx
 }
 
 func Test_AddFile_JSON(t *testing.T) {

@@ -4,16 +4,48 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
-export interface MsgChangeOwner {
-  creator: string
-  identity: string
-  newOwner: string
+/** MsgIssueDenom defines an SDK message for creating a new denom. */
+export interface MsgIssueDenom {
+  id: string
+  name: string
+  schema: string
+  sender: string
+  symbol: string
+  mintRestricted: boolean
+  updateRestricted: boolean
+}
+
+/** MsgIssueDenomResponse defines the Msg/IssueDenom response type. */
+export interface MsgIssueDenomResponse {}
+
+/** MsgTransferNFT defines an SDK message for transferring an NFT to recipient. */
+export interface MsgTransferNFT {
+  id: string
+  denomId: string
+  name: string
+  uri: string
+  data: string
+  sender: string
+  recipient: string
 }
 
 export interface MsgChangeOwnerResponse {
   identity: string
   owner: string
   previousChange: number
+}
+
+export interface MsgCreateDIDOwner {
+  creator: string
+  owner: string
+  didKey: string
+  didWeb: string
+}
+
+export interface MsgChangeOwner {
+  creator: string
+  identity: string
+  newOwner: string
 }
 
 export interface MsgGrantDelegate {
@@ -58,10 +90,11 @@ export interface MsgGrantAttribute {
   name: Uint8Array
   value: Uint8Array
   creator: string
+  validity: number
 }
 
 export interface MsgGrantAttributeResponse {
-  hash: Uint8Array
+  ok: boolean
 }
 
 export interface MsgRevokeAttribute {
@@ -76,21 +109,76 @@ export interface MsgRevokeAttributeResponse {
   hash: Uint8Array
 }
 
+/** MsgTransferNFTResponse defines the Msg/TransferNFT response type. */
+export interface MsgTransferNFTResponse {}
+
+/** MsgEditNFT defines an SDK message for editing a nft. */
+export interface MsgEditNFT {
+  id: string
+  denomId: string
+  name: string
+  uri: string
+  data: string
+  sender: string
+}
+
+/** MsgEditNFTResponse defines the Msg/EditNFT response type. */
+export interface MsgEditNFTResponse {}
+
+/** MsgMintNFT defines an SDK message for creating a new NFT. */
+export interface MsgMintNFT {
+  id: string
+  denomId: string
+  name: string
+  uri: string
+  data: string
+  sender: string
+  recipient: string
+}
+
+/** MsgMintNFTResponse defines the Msg/MintNFT response type. */
+export interface MsgMintNFTResponse {}
+
+/** MsgBurnNFT defines an SDK message for burning a NFT. */
+export interface MsgBurnNFT {
+  id: string
+  denomId: string
+  sender: string
+}
+
+/** MsgBurnNFTResponse defines the Msg/BurnNFT response type. */
+export interface MsgBurnNFTResponse {}
+
+/** MsgTransferDenom defines an SDK message for transferring an denom to recipient. */
+export interface MsgTransferDenom {
+  id: string
+  sender: string
+  recipient: string
+}
+
+/** MsgTransferDenomResponse defines the Msg/TransferDenom response type. */
+export interface MsgTransferDenomResponse {}
+
 export interface MsgFileMetadataResponse {
   hash: Uint8Array
 }
 
 export interface MsgMetadata {
+  /** cosmos sdk* */
   creator: string
   name: string
   description: string
   image: string
+  /** did owner*eg. did:ancon:{hex-bech32} */
   owner: string
+  /** change/diff , ancestor is parent */
   parent: string
   sources: string
   links: string
   verifiedCredentialRef: string
+  /** did doc* */
   did: string
+  /** reserved */
   from: string
 }
 
@@ -113,37 +201,61 @@ export interface MsgFileResponse {
   hash: string
 }
 
-const baseMsgChangeOwner: object = { creator: '', identity: '', newOwner: '' }
+const baseMsgIssueDenom: object = { id: '', name: '', schema: '', sender: '', symbol: '', mintRestricted: false, updateRestricted: false }
 
-export const MsgChangeOwner = {
-  encode(message: MsgChangeOwner, writer: Writer = Writer.create()): Writer {
-    if (message.creator !== '') {
-      writer.uint32(10).string(message.creator)
+export const MsgIssueDenom = {
+  encode(message: MsgIssueDenom, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
     }
-    if (message.identity !== '') {
-      writer.uint32(18).string(message.identity)
+    if (message.name !== '') {
+      writer.uint32(18).string(message.name)
     }
-    if (message.newOwner !== '') {
-      writer.uint32(26).string(message.newOwner)
+    if (message.schema !== '') {
+      writer.uint32(26).string(message.schema)
+    }
+    if (message.sender !== '') {
+      writer.uint32(34).string(message.sender)
+    }
+    if (message.symbol !== '') {
+      writer.uint32(42).string(message.symbol)
+    }
+    if (message.mintRestricted === true) {
+      writer.uint32(48).bool(message.mintRestricted)
+    }
+    if (message.updateRestricted === true) {
+      writer.uint32(56).bool(message.updateRestricted)
     }
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgChangeOwner {
+  decode(input: Reader | Uint8Array, length?: number): MsgIssueDenom {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
+    const message = { ...baseMsgIssueDenom } as MsgIssueDenom
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.creator = reader.string()
+          message.id = reader.string()
           break
         case 2:
-          message.identity = reader.string()
+          message.name = reader.string()
           break
         case 3:
-          message.newOwner = reader.string()
+          message.schema = reader.string()
+          break
+        case 4:
+          message.sender = reader.string()
+          break
+        case 5:
+          message.symbol = reader.string()
+          break
+        case 6:
+          message.mintRestricted = reader.bool()
+          break
+        case 7:
+          message.updateRestricted = reader.bool()
           break
         default:
           reader.skipType(tag & 7)
@@ -153,50 +265,289 @@ export const MsgChangeOwner = {
     return message
   },
 
-  fromJSON(object: any): MsgChangeOwner {
-    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator)
+  fromJSON(object: any): MsgIssueDenom {
+    const message = { ...baseMsgIssueDenom } as MsgIssueDenom
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
     } else {
-      message.creator = ''
+      message.id = ''
     }
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = String(object.identity)
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
     } else {
-      message.identity = ''
+      message.name = ''
     }
-    if (object.newOwner !== undefined && object.newOwner !== null) {
-      message.newOwner = String(object.newOwner)
+    if (object.schema !== undefined && object.schema !== null) {
+      message.schema = String(object.schema)
     } else {
-      message.newOwner = ''
+      message.schema = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    if (object.symbol !== undefined && object.symbol !== null) {
+      message.symbol = String(object.symbol)
+    } else {
+      message.symbol = ''
+    }
+    if (object.mintRestricted !== undefined && object.mintRestricted !== null) {
+      message.mintRestricted = Boolean(object.mintRestricted)
+    } else {
+      message.mintRestricted = false
+    }
+    if (object.updateRestricted !== undefined && object.updateRestricted !== null) {
+      message.updateRestricted = Boolean(object.updateRestricted)
+    } else {
+      message.updateRestricted = false
     }
     return message
   },
 
-  toJSON(message: MsgChangeOwner): unknown {
+  toJSON(message: MsgIssueDenom): unknown {
     const obj: any = {}
-    message.creator !== undefined && (obj.creator = message.creator)
-    message.identity !== undefined && (obj.identity = message.identity)
-    message.newOwner !== undefined && (obj.newOwner = message.newOwner)
+    message.id !== undefined && (obj.id = message.id)
+    message.name !== undefined && (obj.name = message.name)
+    message.schema !== undefined && (obj.schema = message.schema)
+    message.sender !== undefined && (obj.sender = message.sender)
+    message.symbol !== undefined && (obj.symbol = message.symbol)
+    message.mintRestricted !== undefined && (obj.mintRestricted = message.mintRestricted)
+    message.updateRestricted !== undefined && (obj.updateRestricted = message.updateRestricted)
     return obj
   },
 
-  fromPartial(object: DeepPartial<MsgChangeOwner>): MsgChangeOwner {
-    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator
+  fromPartial(object: DeepPartial<MsgIssueDenom>): MsgIssueDenom {
+    const message = { ...baseMsgIssueDenom } as MsgIssueDenom
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
     } else {
-      message.creator = ''
+      message.id = ''
     }
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = object.identity
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
     } else {
-      message.identity = ''
+      message.name = ''
     }
-    if (object.newOwner !== undefined && object.newOwner !== null) {
-      message.newOwner = object.newOwner
+    if (object.schema !== undefined && object.schema !== null) {
+      message.schema = object.schema
     } else {
-      message.newOwner = ''
+      message.schema = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    if (object.symbol !== undefined && object.symbol !== null) {
+      message.symbol = object.symbol
+    } else {
+      message.symbol = ''
+    }
+    if (object.mintRestricted !== undefined && object.mintRestricted !== null) {
+      message.mintRestricted = object.mintRestricted
+    } else {
+      message.mintRestricted = false
+    }
+    if (object.updateRestricted !== undefined && object.updateRestricted !== null) {
+      message.updateRestricted = object.updateRestricted
+    } else {
+      message.updateRestricted = false
+    }
+    return message
+  }
+}
+
+const baseMsgIssueDenomResponse: object = {}
+
+export const MsgIssueDenomResponse = {
+  encode(_: MsgIssueDenomResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgIssueDenomResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgIssueDenomResponse } as MsgIssueDenomResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgIssueDenomResponse {
+    const message = { ...baseMsgIssueDenomResponse } as MsgIssueDenomResponse
+    return message
+  },
+
+  toJSON(_: MsgIssueDenomResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgIssueDenomResponse>): MsgIssueDenomResponse {
+    const message = { ...baseMsgIssueDenomResponse } as MsgIssueDenomResponse
+    return message
+  }
+}
+
+const baseMsgTransferNFT: object = { id: '', denomId: '', name: '', uri: '', data: '', sender: '', recipient: '' }
+
+export const MsgTransferNFT = {
+  encode(message: MsgTransferNFT, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(18).string(message.denomId)
+    }
+    if (message.name !== '') {
+      writer.uint32(26).string(message.name)
+    }
+    if (message.uri !== '') {
+      writer.uint32(34).string(message.uri)
+    }
+    if (message.data !== '') {
+      writer.uint32(42).string(message.data)
+    }
+    if (message.sender !== '') {
+      writer.uint32(50).string(message.sender)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(58).string(message.recipient)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgTransferNFT {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgTransferNFT } as MsgTransferNFT
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.denomId = reader.string()
+          break
+        case 3:
+          message.name = reader.string()
+          break
+        case 4:
+          message.uri = reader.string()
+          break
+        case 5:
+          message.data = reader.string()
+          break
+        case 6:
+          message.sender = reader.string()
+          break
+        case 7:
+          message.recipient = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgTransferNFT {
+    const message = { ...baseMsgTransferNFT } as MsgTransferNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = String(object.uri)
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = String(object.data)
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgTransferNFT): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.uri !== undefined && (obj.uri = message.uri)
+    message.data !== undefined && (obj.data = message.data)
+    message.sender !== undefined && (obj.sender = message.sender)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgTransferNFT>): MsgTransferNFT {
+    const message = { ...baseMsgTransferNFT } as MsgTransferNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = object.uri
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = object.data
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
     }
     return message
   }
@@ -286,6 +637,201 @@ export const MsgChangeOwnerResponse = {
       message.previousChange = object.previousChange
     } else {
       message.previousChange = 0
+    }
+    return message
+  }
+}
+
+const baseMsgCreateDIDOwner: object = { creator: '', owner: '', didKey: '', didWeb: '' }
+
+export const MsgCreateDIDOwner = {
+  encode(message: MsgCreateDIDOwner, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.owner !== '') {
+      writer.uint32(18).string(message.owner)
+    }
+    if (message.didKey !== '') {
+      writer.uint32(26).string(message.didKey)
+    }
+    if (message.didWeb !== '') {
+      writer.uint32(34).string(message.didWeb)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateDIDOwner {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgCreateDIDOwner } as MsgCreateDIDOwner
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.owner = reader.string()
+          break
+        case 3:
+          message.didKey = reader.string()
+          break
+        case 4:
+          message.didWeb = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgCreateDIDOwner {
+    const message = { ...baseMsgCreateDIDOwner } as MsgCreateDIDOwner
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner)
+    } else {
+      message.owner = ''
+    }
+    if (object.didKey !== undefined && object.didKey !== null) {
+      message.didKey = String(object.didKey)
+    } else {
+      message.didKey = ''
+    }
+    if (object.didWeb !== undefined && object.didWeb !== null) {
+      message.didWeb = String(object.didWeb)
+    } else {
+      message.didWeb = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgCreateDIDOwner): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.owner !== undefined && (obj.owner = message.owner)
+    message.didKey !== undefined && (obj.didKey = message.didKey)
+    message.didWeb !== undefined && (obj.didWeb = message.didWeb)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateDIDOwner>): MsgCreateDIDOwner {
+    const message = { ...baseMsgCreateDIDOwner } as MsgCreateDIDOwner
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner
+    } else {
+      message.owner = ''
+    }
+    if (object.didKey !== undefined && object.didKey !== null) {
+      message.didKey = object.didKey
+    } else {
+      message.didKey = ''
+    }
+    if (object.didWeb !== undefined && object.didWeb !== null) {
+      message.didWeb = object.didWeb
+    } else {
+      message.didWeb = ''
+    }
+    return message
+  }
+}
+
+const baseMsgChangeOwner: object = { creator: '', identity: '', newOwner: '' }
+
+export const MsgChangeOwner = {
+  encode(message: MsgChangeOwner, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.identity !== '') {
+      writer.uint32(18).string(message.identity)
+    }
+    if (message.newOwner !== '') {
+      writer.uint32(26).string(message.newOwner)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgChangeOwner {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.identity = reader.string()
+          break
+        case 3:
+          message.newOwner = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgChangeOwner {
+    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.identity !== undefined && object.identity !== null) {
+      message.identity = String(object.identity)
+    } else {
+      message.identity = ''
+    }
+    if (object.newOwner !== undefined && object.newOwner !== null) {
+      message.newOwner = String(object.newOwner)
+    } else {
+      message.newOwner = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgChangeOwner): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.identity !== undefined && (obj.identity = message.identity)
+    message.newOwner !== undefined && (obj.newOwner = message.newOwner)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgChangeOwner>): MsgChangeOwner {
+    const message = { ...baseMsgChangeOwner } as MsgChangeOwner
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.identity !== undefined && object.identity !== null) {
+      message.identity = object.identity
+    } else {
+      message.identity = ''
+    }
+    if (object.newOwner !== undefined && object.newOwner !== null) {
+      message.newOwner = object.newOwner
+    } else {
+      message.newOwner = ''
     }
     return message
   }
@@ -815,7 +1361,7 @@ export const MsgSetAttributeResponse = {
   }
 }
 
-const baseMsgGrantAttribute: object = { identity: '', actor: '', creator: '' }
+const baseMsgGrantAttribute: object = { identity: '', actor: '', creator: '', validity: 0 }
 
 export const MsgGrantAttribute = {
   encode(message: MsgGrantAttribute, writer: Writer = Writer.create()): Writer {
@@ -833,6 +1379,9 @@ export const MsgGrantAttribute = {
     }
     if (message.creator !== '') {
       writer.uint32(42).string(message.creator)
+    }
+    if (message.validity !== 0) {
+      writer.uint32(48).uint64(message.validity)
     }
     return writer
   },
@@ -858,6 +1407,9 @@ export const MsgGrantAttribute = {
           break
         case 5:
           message.creator = reader.string()
+          break
+        case 6:
+          message.validity = longToNumber(reader.uint64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -890,6 +1442,11 @@ export const MsgGrantAttribute = {
     } else {
       message.creator = ''
     }
+    if (object.validity !== undefined && object.validity !== null) {
+      message.validity = Number(object.validity)
+    } else {
+      message.validity = 0
+    }
     return message
   },
 
@@ -900,6 +1457,7 @@ export const MsgGrantAttribute = {
     message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
     message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
     message.creator !== undefined && (obj.creator = message.creator)
+    message.validity !== undefined && (obj.validity = message.validity)
     return obj
   },
 
@@ -930,16 +1488,21 @@ export const MsgGrantAttribute = {
     } else {
       message.creator = ''
     }
+    if (object.validity !== undefined && object.validity !== null) {
+      message.validity = object.validity
+    } else {
+      message.validity = 0
+    }
     return message
   }
 }
 
-const baseMsgGrantAttributeResponse: object = {}
+const baseMsgGrantAttributeResponse: object = { ok: false }
 
 export const MsgGrantAttributeResponse = {
   encode(message: MsgGrantAttributeResponse, writer: Writer = Writer.create()): Writer {
-    if (message.hash.length !== 0) {
-      writer.uint32(10).bytes(message.hash)
+    if (message.ok === true) {
+      writer.uint32(8).bool(message.ok)
     }
     return writer
   },
@@ -952,7 +1515,7 @@ export const MsgGrantAttributeResponse = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.hash = reader.bytes()
+          message.ok = reader.bool()
           break
         default:
           reader.skipType(tag & 7)
@@ -964,24 +1527,26 @@ export const MsgGrantAttributeResponse = {
 
   fromJSON(object: any): MsgGrantAttributeResponse {
     const message = { ...baseMsgGrantAttributeResponse } as MsgGrantAttributeResponse
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = bytesFromBase64(object.hash)
+    if (object.ok !== undefined && object.ok !== null) {
+      message.ok = Boolean(object.ok)
+    } else {
+      message.ok = false
     }
     return message
   },
 
   toJSON(message: MsgGrantAttributeResponse): unknown {
     const obj: any = {}
-    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()))
+    message.ok !== undefined && (obj.ok = message.ok)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgGrantAttributeResponse>): MsgGrantAttributeResponse {
     const message = { ...baseMsgGrantAttributeResponse } as MsgGrantAttributeResponse
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash
+    if (object.ok !== undefined && object.ok !== null) {
+      message.ok = object.ok
     } else {
-      message.hash = new Uint8Array()
+      message.ok = false
     }
     return message
   }
@@ -1155,6 +1720,671 @@ export const MsgRevokeAttributeResponse = {
     } else {
       message.hash = new Uint8Array()
     }
+    return message
+  }
+}
+
+const baseMsgTransferNFTResponse: object = {}
+
+export const MsgTransferNFTResponse = {
+  encode(_: MsgTransferNFTResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgTransferNFTResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgTransferNFTResponse } as MsgTransferNFTResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgTransferNFTResponse {
+    const message = { ...baseMsgTransferNFTResponse } as MsgTransferNFTResponse
+    return message
+  },
+
+  toJSON(_: MsgTransferNFTResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgTransferNFTResponse>): MsgTransferNFTResponse {
+    const message = { ...baseMsgTransferNFTResponse } as MsgTransferNFTResponse
+    return message
+  }
+}
+
+const baseMsgEditNFT: object = { id: '', denomId: '', name: '', uri: '', data: '', sender: '' }
+
+export const MsgEditNFT = {
+  encode(message: MsgEditNFT, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(18).string(message.denomId)
+    }
+    if (message.name !== '') {
+      writer.uint32(26).string(message.name)
+    }
+    if (message.uri !== '') {
+      writer.uint32(34).string(message.uri)
+    }
+    if (message.data !== '') {
+      writer.uint32(42).string(message.data)
+    }
+    if (message.sender !== '') {
+      writer.uint32(50).string(message.sender)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgEditNFT {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgEditNFT } as MsgEditNFT
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.denomId = reader.string()
+          break
+        case 3:
+          message.name = reader.string()
+          break
+        case 4:
+          message.uri = reader.string()
+          break
+        case 5:
+          message.data = reader.string()
+          break
+        case 6:
+          message.sender = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgEditNFT {
+    const message = { ...baseMsgEditNFT } as MsgEditNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = String(object.uri)
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = String(object.data)
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgEditNFT): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.uri !== undefined && (obj.uri = message.uri)
+    message.data !== undefined && (obj.data = message.data)
+    message.sender !== undefined && (obj.sender = message.sender)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgEditNFT>): MsgEditNFT {
+    const message = { ...baseMsgEditNFT } as MsgEditNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = object.uri
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = object.data
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    return message
+  }
+}
+
+const baseMsgEditNFTResponse: object = {}
+
+export const MsgEditNFTResponse = {
+  encode(_: MsgEditNFTResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgEditNFTResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgEditNFTResponse } as MsgEditNFTResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgEditNFTResponse {
+    const message = { ...baseMsgEditNFTResponse } as MsgEditNFTResponse
+    return message
+  },
+
+  toJSON(_: MsgEditNFTResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgEditNFTResponse>): MsgEditNFTResponse {
+    const message = { ...baseMsgEditNFTResponse } as MsgEditNFTResponse
+    return message
+  }
+}
+
+const baseMsgMintNFT: object = { id: '', denomId: '', name: '', uri: '', data: '', sender: '', recipient: '' }
+
+export const MsgMintNFT = {
+  encode(message: MsgMintNFT, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(18).string(message.denomId)
+    }
+    if (message.name !== '') {
+      writer.uint32(26).string(message.name)
+    }
+    if (message.uri !== '') {
+      writer.uint32(34).string(message.uri)
+    }
+    if (message.data !== '') {
+      writer.uint32(42).string(message.data)
+    }
+    if (message.sender !== '') {
+      writer.uint32(50).string(message.sender)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(58).string(message.recipient)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintNFT {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintNFT } as MsgMintNFT
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.denomId = reader.string()
+          break
+        case 3:
+          message.name = reader.string()
+          break
+        case 4:
+          message.uri = reader.string()
+          break
+        case 5:
+          message.data = reader.string()
+          break
+        case 6:
+          message.sender = reader.string()
+          break
+        case 7:
+          message.recipient = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgMintNFT {
+    const message = { ...baseMsgMintNFT } as MsgMintNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = String(object.uri)
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = String(object.data)
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgMintNFT): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.uri !== undefined && (obj.uri = message.uri)
+    message.data !== undefined && (obj.data = message.data)
+    message.sender !== undefined && (obj.sender = message.sender)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgMintNFT>): MsgMintNFT {
+    const message = { ...baseMsgMintNFT } as MsgMintNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = object.uri
+    } else {
+      message.uri = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = object.data
+    } else {
+      message.data = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
+    }
+    return message
+  }
+}
+
+const baseMsgMintNFTResponse: object = {}
+
+export const MsgMintNFTResponse = {
+  encode(_: MsgMintNFTResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintNFTResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintNFTResponse } as MsgMintNFTResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgMintNFTResponse {
+    const message = { ...baseMsgMintNFTResponse } as MsgMintNFTResponse
+    return message
+  },
+
+  toJSON(_: MsgMintNFTResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgMintNFTResponse>): MsgMintNFTResponse {
+    const message = { ...baseMsgMintNFTResponse } as MsgMintNFTResponse
+    return message
+  }
+}
+
+const baseMsgBurnNFT: object = { id: '', denomId: '', sender: '' }
+
+export const MsgBurnNFT = {
+  encode(message: MsgBurnNFT, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(18).string(message.denomId)
+    }
+    if (message.sender !== '') {
+      writer.uint32(26).string(message.sender)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgBurnNFT {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgBurnNFT } as MsgBurnNFT
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.denomId = reader.string()
+          break
+        case 3:
+          message.sender = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgBurnNFT {
+    const message = { ...baseMsgBurnNFT } as MsgBurnNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgBurnNFT): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.sender !== undefined && (obj.sender = message.sender)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgBurnNFT>): MsgBurnNFT {
+    const message = { ...baseMsgBurnNFT } as MsgBurnNFT
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    return message
+  }
+}
+
+const baseMsgBurnNFTResponse: object = {}
+
+export const MsgBurnNFTResponse = {
+  encode(_: MsgBurnNFTResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgBurnNFTResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgBurnNFTResponse } as MsgBurnNFTResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgBurnNFTResponse {
+    const message = { ...baseMsgBurnNFTResponse } as MsgBurnNFTResponse
+    return message
+  },
+
+  toJSON(_: MsgBurnNFTResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgBurnNFTResponse>): MsgBurnNFTResponse {
+    const message = { ...baseMsgBurnNFTResponse } as MsgBurnNFTResponse
+    return message
+  }
+}
+
+const baseMsgTransferDenom: object = { id: '', sender: '', recipient: '' }
+
+export const MsgTransferDenom = {
+  encode(message: MsgTransferDenom, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.sender !== '') {
+      writer.uint32(18).string(message.sender)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(26).string(message.recipient)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgTransferDenom {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgTransferDenom } as MsgTransferDenom
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.sender = reader.string()
+          break
+        case 3:
+          message.recipient = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgTransferDenom {
+    const message = { ...baseMsgTransferDenom } as MsgTransferDenom
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgTransferDenom): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.sender !== undefined && (obj.sender = message.sender)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgTransferDenom>): MsgTransferDenom {
+    const message = { ...baseMsgTransferDenom } as MsgTransferDenom
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
+    }
+    return message
+  }
+}
+
+const baseMsgTransferDenomResponse: object = {}
+
+export const MsgTransferDenomResponse = {
+  encode(_: MsgTransferDenomResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgTransferDenomResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgTransferDenomResponse } as MsgTransferDenomResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgTransferDenomResponse {
+    const message = { ...baseMsgTransferDenomResponse } as MsgTransferDenomResponse
+    return message
+  },
+
+  toJSON(_: MsgTransferDenomResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgTransferDenomResponse>): MsgTransferDenomResponse {
+    const message = { ...baseMsgTransferDenomResponse } as MsgTransferDenomResponse
     return message
   }
 }
@@ -1735,11 +2965,6 @@ export const MsgFileResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  /**
-   * rpc MetadataHandlerTx(MsgMetadataTx) returns (MsgFileMetadataResponse);
-   * rpc FileHandlerTx(MsgFileTx) returns (MsgFileMetadataResponse);
-   * this line is used by starport scaffolding # proto/tx/rpc
-   */
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
   /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
   RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>
@@ -1750,6 +2975,18 @@ export interface Msg {
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
   /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
   File(request: MsgFile): Promise<MsgFileResponse>
+  /** IssueDenom defines a method for issue a denom. */
+  IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>
+  /** MintNFT defines a method for mint a new nft */
+  MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>
+  /** RefundHTLC defines a method for editing a nft. */
+  EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>
+  /** TransferNFT defines a method for transferring a nft. */
+  TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>
+  /** BurnNFT defines a method for burning a nft. */
+  BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse>
+  /** TransferDenom defines a method for transferring a denom. */
+  TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -1797,6 +3034,42 @@ export class MsgClientImpl implements Msg {
     const data = MsgFile.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'File', data)
     return promise.then((data) => MsgFileResponse.decode(new Reader(data)))
+  }
+
+  IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse> {
+    const data = MsgIssueDenom.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'IssueDenom', data)
+    return promise.then((data) => MsgIssueDenomResponse.decode(new Reader(data)))
+  }
+
+  MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse> {
+    const data = MsgMintNFT.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintNFT', data)
+    return promise.then((data) => MsgMintNFTResponse.decode(new Reader(data)))
+  }
+
+  EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse> {
+    const data = MsgEditNFT.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'EditNFT', data)
+    return promise.then((data) => MsgEditNFTResponse.decode(new Reader(data)))
+  }
+
+  TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse> {
+    const data = MsgTransferNFT.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'TransferNFT', data)
+    return promise.then((data) => MsgTransferNFTResponse.decode(new Reader(data)))
+  }
+
+  BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse> {
+    const data = MsgBurnNFT.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'BurnNFT', data)
+    return promise.then((data) => MsgBurnNFTResponse.decode(new Reader(data)))
+  }
+
+  TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse> {
+    const data = MsgTransferDenom.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'TransferDenom', data)
+    return promise.then((data) => MsgTransferDenomResponse.decode(new Reader(data)))
   }
 }
 

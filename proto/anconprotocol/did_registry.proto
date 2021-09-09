@@ -8,9 +8,12 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
 
-message Owner {
+message DIDOwner {
   string identity = 1;
   string owner = 2;
+  string did_ancon = 3;  // internal use eg. did:ancon:{hex-bech32}
+  string did_key = 4[ (gogoproto.nullable) = true ];
+  string did_web = 5[ (gogoproto.nullable) = true ];
 }
 
 message Delegate {

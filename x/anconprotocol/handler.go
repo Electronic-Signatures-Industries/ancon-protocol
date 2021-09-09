@@ -18,10 +18,34 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		switch msg := msg.(type) {
 		// this line is used by starport scaffolding # 1
+
+		// Immutable Metadata
+		// Use case #classic erc-721
+		// MsgCreateDIDOwner
+		// MsgMintTrustedContent
+		// Metadata = stored in metadata anconprotocol
+		// NFT Token = mint nft cosmos
+		// DID = create DID Owner
+		// Storage classic  = cid
+
+		// Use case #2 Resource oriented
+		// MsgCreateDIDOwner
+		// MsgMintTrustedResourceContent
+		// Metadata = stored in metadata anconprotocol
+		// NFT Token = mint nft cosmos
+		// DID = create DID Owner
+		// Storage resource oriented = owner.did::cid::path StoreCIDAsResource
+		// Ex. 1 did:ancon:xyz::baby.../private
+		// Ex. 2 did:ancon:xyz::baby.../public
+		// get query private did-owner
+
+		// case *types.MsgMintTrustedContent:
+		// 	res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
+		// 	return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgChangeOwner:
 			res, err := msgServer.ChangeOwner(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-
 		case *types.MsgGrantDelegate:
 			res, err := msgServer.GrantDelegate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -34,6 +58,30 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgRevokeAttribute:
 			res, err := msgServer.RevokeAttribute(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgIssueDenom:
+			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgMintNFT:
+			res, err := msgServer.MintNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgTransferNFT:
+			res, err := msgServer.TransferNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgEditNFT:
+			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgBurnNFT:
+			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgTransferDenom:
+			res, err := msgServer.TransferDenom(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgMetadata:
 			res, err := msgServer.Metadata(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

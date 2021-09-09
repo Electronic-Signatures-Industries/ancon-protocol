@@ -197,6 +197,79 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryCollection
+         * @summary Collection queries the NFTs of the specified denom
+         * @request GET:/ancon/nft/collections/{denomId}
+         */
+        this.queryCollection = (denomId, query, params = {}) => this.request({
+            path: `/ancon/nft/collections/${denomId}`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryDenoms
+         * @summary Denoms queries all the denoms
+         * @request GET:/ancon/nft/denoms
+         */
+        this.queryDenoms = (query, params = {}) => this.request({
+            path: `/ancon/nft/denoms`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryDenom
+         * @summary Denom queries the definition of a given denom
+         * @request GET:/ancon/nft/denoms/{denomId}
+         */
+        this.queryDenom = (denomId, params = {}) => this.request({
+            path: `/ancon/nft/denoms/${denomId}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryOwner
+         * @summary Owner queries the NFTs of the specified owner
+         * @request GET:/ancon/nft/nfts
+         */
+        this.queryOwner = (query, params = {}) => this.request({
+            path: `/ancon/nft/nfts`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryGetNft
+         * @summary NFT queries the NFT for the given denom and token ID
+         * @request GET:/ancon/nft/nfts/{denomId}/{tokenId}
+         */
+        this.queryGetNft = (denomId, tokenId, params = {}) => this.request({
+            path: `/ancon/nft/nfts/${denomId}/${tokenId}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryResource
          * @summary Queries a list of resource items.
          * @request GET:/ancon/resource/{cid}

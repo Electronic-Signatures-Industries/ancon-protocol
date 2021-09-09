@@ -1,8 +1,12 @@
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-export interface Owner {
+export interface DIDOwner {
     identity: string;
     owner: string;
+    /** internal use eg. did:ancon:{hex-bech32} */
+    didAncon: string;
+    didKey: string;
+    didWeb: string;
 }
 export interface Delegate {
     delegate: string;
@@ -21,12 +25,12 @@ export interface Attribute {
     name: Uint8Array;
     value: Uint8Array;
 }
-export declare const Owner: {
-    encode(message: Owner, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): Owner;
-    fromJSON(object: any): Owner;
-    toJSON(message: Owner): unknown;
-    fromPartial(object: DeepPartial<Owner>): Owner;
+export declare const DIDOwner: {
+    encode(message: DIDOwner, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): DIDOwner;
+    fromJSON(object: any): DIDOwner;
+    toJSON(message: DIDOwner): unknown;
+    fromPartial(object: DeepPartial<DIDOwner>): DIDOwner;
 };
 export declare const Delegate: {
     encode(message: Delegate, writer?: Writer): Writer;
