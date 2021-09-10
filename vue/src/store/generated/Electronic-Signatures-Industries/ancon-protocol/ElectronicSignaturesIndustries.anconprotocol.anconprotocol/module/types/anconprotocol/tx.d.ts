@@ -1,18 +1,18 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-export interface MsgMintTrustedContent {
-    did: string;
-    metadata: string;
-    cid: string;
+/** MsgRoyaltyInfo */
+export interface MsgRoyaltyInfo {
+    creator: string;
+    receiver: string;
+    royaltyFeePercentage: number;
+    metadataUri: string;
+    denomId: string;
 }
-export interface MsgMintTrustedContentResponse {
-}
-export interface MsgMintTrustedResource {
-    did: string;
-    metadata: string;
-    cid: string;
-}
-export interface MsgMintTrustedResourceResponse {
+/** MsgRoyaltyInfoResponse */
+export interface MsgRoyaltyInfoResponse {
+    receiver: string;
+    royaltyFeePercentage: number;
+    metadataUri: string;
 }
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
@@ -189,33 +189,19 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
-export declare const MsgMintTrustedContent: {
-    encode(message: MsgMintTrustedContent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContent;
-    fromJSON(object: any): MsgMintTrustedContent;
-    toJSON(message: MsgMintTrustedContent): unknown;
-    fromPartial(object: DeepPartial<MsgMintTrustedContent>): MsgMintTrustedContent;
+export declare const MsgRoyaltyInfo: {
+    encode(message: MsgRoyaltyInfo, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfo;
+    fromJSON(object: any): MsgRoyaltyInfo;
+    toJSON(message: MsgRoyaltyInfo): unknown;
+    fromPartial(object: DeepPartial<MsgRoyaltyInfo>): MsgRoyaltyInfo;
 };
-export declare const MsgMintTrustedContentResponse: {
-    encode(_: MsgMintTrustedContentResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContentResponse;
-    fromJSON(_: any): MsgMintTrustedContentResponse;
-    toJSON(_: MsgMintTrustedContentResponse): unknown;
-    fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
-};
-export declare const MsgMintTrustedResource: {
-    encode(message: MsgMintTrustedResource, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResource;
-    fromJSON(object: any): MsgMintTrustedResource;
-    toJSON(message: MsgMintTrustedResource): unknown;
-    fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource;
-};
-export declare const MsgMintTrustedResourceResponse: {
-    encode(_: MsgMintTrustedResourceResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResourceResponse;
-    fromJSON(_: any): MsgMintTrustedResourceResponse;
-    toJSON(_: MsgMintTrustedResourceResponse): unknown;
-    fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse;
+export declare const MsgRoyaltyInfoResponse: {
+    encode(message: MsgRoyaltyInfoResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfoResponse;
+    fromJSON(object: any): MsgRoyaltyInfoResponse;
+    toJSON(message: MsgRoyaltyInfoResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRoyaltyInfoResponse>): MsgRoyaltyInfoResponse;
 };
 export declare const MsgIssueDenom: {
     encode(message: MsgIssueDenom, writer?: Writer): Writer;
@@ -436,6 +422,8 @@ export declare const MsgFileResponse: {
 };
 /** Msg defines the Msg service. */
 export interface Msg {
+    /** RoyaltyInfo defines a metadata CID royalty info */
+    RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
@@ -466,6 +454,7 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
     GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;

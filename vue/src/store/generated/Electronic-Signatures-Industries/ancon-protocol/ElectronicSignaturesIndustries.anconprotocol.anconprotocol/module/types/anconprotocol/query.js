@@ -1193,6 +1193,11 @@ export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
     }
+    ReadRoyaltyInfo(request) {
+        const data = QueryResourceRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadRoyaltyInfo', data);
+        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+    }
     ReadWithPath(request) {
         const data = QueryResourceRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data);

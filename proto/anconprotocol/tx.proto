@@ -12,6 +12,8 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Msg defines the Msg service.
 service Msg {
+  // RoyaltyInfo defines a metadata CID royalty info
+  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
   rpc RevokeDelegate(MsgRevokeDelegate) returns (MsgRevokeDelegateResponse);
@@ -69,6 +71,38 @@ message MsgMintTrustedResourceResponse {
 
 }
 
+// MsgRoyaltyInfo
+message MsgRoyaltyInfo {
+  option (gogoproto.equal) = true;
+
+  string creator = 1;
+  string receiver = 2;
+  uint64 royaltyFeePercentage =3;
+  string metadataUri = 4;
+  string denomId = 5;  
+}
+
+/*
+message RoyaltyInfo {
+  ...
+  uint64 updates
+  uint64 lastUpdated  
+}
+message QueryReadRoyaltyInfoResponse {
+  string receiver = 1;
+  uint64 royaltyAmount = 2; // fee % * sales amount
+}
+*/
+
+// MsgRoyaltyInfoResponse
+message MsgRoyaltyInfoResponse {
+  option (gogoproto.equal) = true;
+
+  string receiver = 1;
+  uint64 royaltyFeePercentage = 2;
+  string metadataUri = 3;
+
+}
 // MsgIssueDenom defines an SDK message for creating a new denom.
 message MsgIssueDenom {
     option (gogoproto.equal) = true;

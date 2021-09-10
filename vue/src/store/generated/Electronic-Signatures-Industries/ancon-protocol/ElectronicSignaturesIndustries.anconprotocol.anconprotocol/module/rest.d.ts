@@ -67,6 +67,12 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
     /** @format byte */
     hash?: string;
 }
+export interface AnconprotocolMsgRoyaltyInfoResponse {
+    receiver?: string;
+    /** @format uint64 */
+    royaltyFeePercentage?: string;
+    metadataUri?: string;
+}
 /**
  * MsgTransferDenomResponse defines the Msg/TransferDenom response type.
  */
@@ -468,6 +474,17 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @request GET:/ancon/resource/{cid}
      */
     queryResource: (cid: string, query?: {
+        path?: string;
+    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryReadRoyaltyInfo
+     * @summary ReadRoyaltyInfo
+     * @request GET:/ancon/royalty/{cid}/info
+     */
+    queryReadRoyaltyInfo: (cid: string, query?: {
         path?: string;
     }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
     /**

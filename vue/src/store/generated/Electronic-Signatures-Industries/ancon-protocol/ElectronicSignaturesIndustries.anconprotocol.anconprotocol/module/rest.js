@@ -285,6 +285,21 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryReadRoyaltyInfo
+         * @summary ReadRoyaltyInfo
+         * @request GET:/ancon/royalty/{cid}/info
+         */
+        this.queryReadRoyaltyInfo = (cid, query, params = {}) => this.request({
+            path: `/ancon/royalty/${cid}/info`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryRead
          * @summary Queries a list of resource items.
          * @request GET:/ancon/{cid}
