@@ -10,6 +10,12 @@ var _ sdk.Msg = &MsgGrantDelegate{}
 var _ sdk.Msg = &MsgRevokeDelegate{}
 var _ sdk.Msg = &MsgGrantAttribute{}
 var _ sdk.Msg = &MsgRevokeAttribute{}
+var _ sdk.Msg = &MsgFile{}
+var _ sdk.Msg = &MsgMetadata{}
+var _ sdk.Msg = &MsgBurnNFT{}
+var _ sdk.Msg = &MsgEditNFT{}
+var _ sdk.Msg = &MsgTransferNFT{}
+var _ sdk.Msg = &MsgMintNFT{}
 
 func NewMsgChangeOwner(creator string) *MsgChangeOwner {
 	return &MsgChangeOwner{

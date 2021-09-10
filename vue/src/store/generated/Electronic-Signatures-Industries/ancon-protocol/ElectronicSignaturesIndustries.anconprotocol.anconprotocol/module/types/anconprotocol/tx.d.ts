@@ -1,5 +1,19 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+export interface MsgMintTrustedContent {
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgMintTrustedContentResponse {
+}
+export interface MsgMintTrustedResource {
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgMintTrustedResourceResponse {
+}
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
     id: string;
@@ -33,6 +47,8 @@ export interface MsgCreateDIDOwner {
     owner: string;
     didKey: string;
     didWeb: string;
+}
+export interface MsgCreateDIDOwnerResponse {
 }
 export interface MsgChangeOwner {
     creator: string;
@@ -173,6 +189,34 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgMintTrustedContent: {
+    encode(message: MsgMintTrustedContent, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContent;
+    fromJSON(object: any): MsgMintTrustedContent;
+    toJSON(message: MsgMintTrustedContent): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedContent>): MsgMintTrustedContent;
+};
+export declare const MsgMintTrustedContentResponse: {
+    encode(_: MsgMintTrustedContentResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContentResponse;
+    fromJSON(_: any): MsgMintTrustedContentResponse;
+    toJSON(_: MsgMintTrustedContentResponse): unknown;
+    fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
+};
+export declare const MsgMintTrustedResource: {
+    encode(message: MsgMintTrustedResource, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResource;
+    fromJSON(object: any): MsgMintTrustedResource;
+    toJSON(message: MsgMintTrustedResource): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource;
+};
+export declare const MsgMintTrustedResourceResponse: {
+    encode(_: MsgMintTrustedResourceResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResourceResponse;
+    fromJSON(_: any): MsgMintTrustedResourceResponse;
+    toJSON(_: MsgMintTrustedResourceResponse): unknown;
+    fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse;
+};
 export declare const MsgIssueDenom: {
     encode(message: MsgIssueDenom, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgIssueDenom;
@@ -207,6 +251,13 @@ export declare const MsgCreateDIDOwner: {
     fromJSON(object: any): MsgCreateDIDOwner;
     toJSON(message: MsgCreateDIDOwner): unknown;
     fromPartial(object: DeepPartial<MsgCreateDIDOwner>): MsgCreateDIDOwner;
+};
+export declare const MsgCreateDIDOwnerResponse: {
+    encode(_: MsgCreateDIDOwnerResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateDIDOwnerResponse;
+    fromJSON(_: any): MsgCreateDIDOwnerResponse;
+    toJSON(_: MsgCreateDIDOwnerResponse): unknown;
+    fromPartial(_: DeepPartial<MsgCreateDIDOwnerResponse>): MsgCreateDIDOwnerResponse;
 };
 export declare const MsgChangeOwner: {
     encode(message: MsgChangeOwner, writer?: Writer): Writer;
@@ -407,6 +458,10 @@ export interface Msg {
     BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse>;
     /** TransferDenom defines a method for transferring a denom. */
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
+    /** MintTrustedContent defines a method for minting a content. */
+    MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
+    /** MintTrustedResource defines a method for minting a resource. */
+    MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -424,6 +479,8 @@ export declare class MsgClientImpl implements Msg {
     TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>;
     BurnNFT(request: MsgBurnNFT): Promise<MsgBurnNFTResponse>;
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
+    MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
+    MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

@@ -57,6 +57,8 @@ export interface AnconprotocolMsgMetadataResponse {
  * MsgMintNFTResponse defines the Msg/MintNFT response type.
  */
 export declare type AnconprotocolMsgMintNFTResponse = object;
+export declare type AnconprotocolMsgMintTrustedContentResponse = object;
+export declare type AnconprotocolMsgMintTrustedResourceResponse = object;
 export interface AnconprotocolMsgRevokeAttributeResponse {
     /** @format byte */
     hash?: string;

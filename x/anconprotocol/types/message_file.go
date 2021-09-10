@@ -46,5 +46,8 @@ func (msg *MsgFile) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+	if len(msg.ContentType) == 0 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid content type (%s)", err)
+	}
 	return nil
 }

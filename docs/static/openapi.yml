@@ -32619,6 +32619,10 @@ definitions:
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintNFTResponse:
     type: object
     description: MsgMintNFTResponse defines the Msg/MintNFT response type.
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintTrustedContentResponse:
+    type: object
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintTrustedResourceResponse:
+    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRevokeAttributeResponse:
     type: object
     properties:

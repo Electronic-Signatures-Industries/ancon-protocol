@@ -104,6 +104,10 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
+
+	if sdk.IsAlphaNumeric(msg.Name) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid name type (%s)")
+	}
 	return ValidateTokenID(msg.Id)
 }
 
@@ -154,6 +158,10 @@ func (msg MsgEditNFT) ValidateBasic() error {
 
 	if err := ValidateTokenURI(msg.URI); err != nil {
 		return err
+	}
+
+	if sdk.IsAlphaNumeric(msg.Name) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid name type (%s)")
 	}
 	return ValidateTokenID(msg.Id)
 }
@@ -207,6 +215,9 @@ func (msg MsgMintNFT) ValidateBasic() error {
 	}
 	if err := ValidateTokenURI(msg.URI); err != nil {
 		return err
+	}
+	if sdk.IsAlphaNumeric(msg.Name) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid name type (%s)")
 	}
 	return ValidateTokenID(msg.Id)
 }

@@ -82,6 +82,10 @@ export interface AnconprotocolMsgMetadataResponse {
  */
 export type AnconprotocolMsgMintNFTResponse = object;
 
+export type AnconprotocolMsgMintTrustedContentResponse = object;
+
+export type AnconprotocolMsgMintTrustedResourceResponse = object;
+
 export interface AnconprotocolMsgRevokeAttributeResponse {
   /** @format byte */
   hash?: string;

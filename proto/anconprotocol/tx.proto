@@ -41,6 +41,32 @@ service Msg {
 
     // TransferDenom defines a method for transferring a denom.
     rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
+    
+    // MintTrustedContent defines a method for minting a content.
+    rpc MintTrustedContent(MsgMintTrustedContent) returns (MsgMintTrustedContentResponse);
+    
+    // MintTrustedResource defines a method for minting a resource.
+    rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
+}
+
+message MsgMintTrustedContent {
+  string did = 1;
+  string metadata = 2;
+  string cid = 3;
+}
+
+message MsgMintTrustedContentResponse {
+
+}
+
+message MsgMintTrustedResource {
+  string did = 1;
+  string metadata = 2;
+  string cid = 3;
+}
+
+message MsgMintTrustedResourceResponse {
+
 }
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
@@ -85,6 +111,10 @@ message MsgCreateDIDOwner {
   string owner = 2;
   string did_key = 3[ (gogoproto.nullable) = true ];
   string did_web = 4[ (gogoproto.nullable) = true ];  
+}
+
+message MsgCreateDIDOwnerResponse {
+
 }
 
 message MsgChangeOwner {

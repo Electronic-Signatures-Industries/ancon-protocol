@@ -36,10 +36,12 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		// NFT Token = mint nft cosmos
 		// DID = create DID Owner
 
-		// case *types.MsgMintTrustedContent:
-		// 	res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
-		// 	return sdk.WrapServiceResult(ctx, res, err)
-
+		case *types.MsgMintTrustedContent:
+			res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgMintTrustedResource:
+			res, err := msgServer.MintTrustedResource(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgChangeOwner:
 			res, err := msgServer.ChangeOwner(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
