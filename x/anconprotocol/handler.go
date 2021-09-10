@@ -20,7 +20,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		// this line is used by starport scaffolding # 1
 
 		// Immutable Metadata
-		// Use case #classic erc-721
+		// Use case #1 IDCollection
 		// MsgCreateDIDOwner
 		// MsgMintTrustedContent
 		// Metadata = stored in metadata anconprotocol
@@ -28,16 +28,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		// DID = create DID Owner
 		// Storage classic  = cid
 
-		// Use case #2 Resource oriented
+		// Not yet
+		// Use case #2 IDCollection + pub/priv spaces
 		// MsgCreateDIDOwner
 		// MsgMintTrustedResourceContent
 		// Metadata = stored in metadata anconprotocol
 		// NFT Token = mint nft cosmos
 		// DID = create DID Owner
-		// Storage resource oriented = owner.did::cid::path StoreCIDAsResource
-		// Ex. 1 did:ancon:xyz::baby.../private
-		// Ex. 2 did:ancon:xyz::baby.../public
-		// get query private did-owner
 
 		// case *types.MsgMintTrustedContent:
 		// 	res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
