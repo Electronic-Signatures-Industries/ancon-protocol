@@ -85,3 +85,45 @@ func Test_AddMetadata_JSON(t *testing.T) {
 	res, _ = json.Marshal(output)
 	require.Equal(t, output, res)
 }
+
+func TestTrustedContent(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
+	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	reqDenom := types.MsgIssueDenom{
+		Id:               "ancon",
+		Name:             "anconprotocol",
+		Schema:           "",
+		Sender:           "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		Symbol:           "ancon",
+		MintRestricted:   false,
+		UpdateRestricted: false,
+	}
+
+	// Issue token
+	err := keeper.IssueDenom(ctx, reqDenom.Id, reqDenom.Name, reqDenom.Schema, reqDenom.Symbol,
+		sdk.AccAddress(reqDenom.Sender), false, false)
+	require.Equal(t, nil, err)
+	acct, _ := sdk.AccAddressFromBech32(f[0].Creator)
+	// Mint
+	err = keeper.MintNFT(ctx, reqDenom.Id, "1", "anconnft", lnk, "",
+		acct)
+	require.Equal(t, nil, err)
+	found := keeper.HasNFT(ctx, reqDenom.Id, "1")
+	require.Equal(t, true, found)
+	items := keeper.GetNFTs(ctx, reqDenom.Id)
+	require.Equal(t, lnk, items[0].GetURI())
+	// require.Equal(t, output, res)
+}

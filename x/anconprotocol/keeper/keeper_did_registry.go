@@ -16,8 +16,6 @@ func (k Keeper) ApplyChangeOwner(ctx sdk.Context, msg *types.MsgChangeOwner) (*t
 	owner := types.DIDOwner{
 		Identity: msg.Identity,
 		Owner:    msg.NewOwner,
-		Didkey:   msg.Didkey,
-		Didweb:   msg.Didweb,
 	}
 
 	k.SetOwner(ctx, owner)
