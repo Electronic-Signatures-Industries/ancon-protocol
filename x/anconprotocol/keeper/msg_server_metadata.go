@@ -21,3 +21,24 @@ func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*typ
 		Cid: lnk,
 	}, nil
 }
+
+func (k msgServer) RoyaltyInfo(goCtx context.Context, msg *types.MsgRoyaltyInfo) (*types.MsgRoyaltyInfoResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	// TODO: Requries the
+	// k.Has
+	// msg.ValidateBasic
+	// lnk, _ := k.AddMetadata(
+	// 	ctx,
+	// 	msg,
+	// )
+
+	return &types.MsgRoyaltyInfoResponse{}, nil
+}
+
+// function royaltyInfo(
+// 	uint256 _tokenId,
+// 	uint256 _salePrice
+// ) external view returns (
+// 	address receiver,
+// 	uint256 royaltyAmount
+// );

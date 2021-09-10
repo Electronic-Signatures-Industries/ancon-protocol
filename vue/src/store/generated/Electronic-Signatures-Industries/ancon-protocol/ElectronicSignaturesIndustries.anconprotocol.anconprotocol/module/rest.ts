@@ -92,6 +92,14 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
   hash?: string;
 }
 
+export interface AnconprotocolMsgRoyaltyInfoResponse {
+  receiver?: string;
+
+  /** @format uint64 */
+  royaltyFeePercentage?: string;
+  metadataUri?: string;
+}
+
 /**
  * MsgTransferDenomResponse defines the Msg/TransferDenom response type.
  */
@@ -732,6 +740,23 @@ Queries a list of resource items.
   queryResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
       path: `/ancon/resource/${cid}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadRoyaltyInfo
+   * @summary ReadRoyaltyInfo
+   * @request GET:/ancon/royalty/{cid}/info
+   */
+  queryReadRoyaltyInfo = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/ancon/royalty/${cid}/info`,
       method: "GET",
       query: query,
       format: "json",

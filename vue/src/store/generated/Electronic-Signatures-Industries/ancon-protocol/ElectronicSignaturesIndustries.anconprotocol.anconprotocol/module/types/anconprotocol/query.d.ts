@@ -240,6 +240,8 @@ export declare const QueryResourceResponse: {
 };
 /** Query defines the gRPC querier service. */
 export interface Query {
+    /** ReadRoyaltyInfo */
+    ReadRoyaltyInfo(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of resource items. */
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /**
@@ -271,6 +273,7 @@ export interface Query {
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
+    ReadRoyaltyInfo(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;

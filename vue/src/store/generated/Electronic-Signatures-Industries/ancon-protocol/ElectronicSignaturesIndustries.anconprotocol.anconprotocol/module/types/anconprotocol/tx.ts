@@ -4,6 +4,22 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+/** MsgRoyaltyInfo */
+export interface MsgRoyaltyInfo {
+  creator: string
+  receiver: string
+  royaltyFeePercentage: number
+  metadataUri: string
+  denomId: string
+}
+
+/** MsgRoyaltyInfoResponse */
+export interface MsgRoyaltyInfoResponse {
+  receiver: string
+  royaltyFeePercentage: number
+  metadataUri: string
+}
+
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
   id: string
@@ -199,6 +215,218 @@ export interface MsgFile {
 
 export interface MsgFileResponse {
   hash: string
+}
+
+const baseMsgRoyaltyInfo: object = { creator: '', receiver: '', royaltyFeePercentage: 0, metadataUri: '', denomId: '' }
+
+export const MsgRoyaltyInfo = {
+  encode(message: MsgRoyaltyInfo, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.receiver !== '') {
+      writer.uint32(18).string(message.receiver)
+    }
+    if (message.royaltyFeePercentage !== 0) {
+      writer.uint32(24).uint64(message.royaltyFeePercentage)
+    }
+    if (message.metadataUri !== '') {
+      writer.uint32(34).string(message.metadataUri)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(42).string(message.denomId)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfo {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRoyaltyInfo } as MsgRoyaltyInfo
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.receiver = reader.string()
+          break
+        case 3:
+          message.royaltyFeePercentage = longToNumber(reader.uint64() as Long)
+          break
+        case 4:
+          message.metadataUri = reader.string()
+          break
+        case 5:
+          message.denomId = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgRoyaltyInfo {
+    const message = { ...baseMsgRoyaltyInfo } as MsgRoyaltyInfo
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.receiver !== undefined && object.receiver !== null) {
+      message.receiver = String(object.receiver)
+    } else {
+      message.receiver = ''
+    }
+    if (object.royaltyFeePercentage !== undefined && object.royaltyFeePercentage !== null) {
+      message.royaltyFeePercentage = Number(object.royaltyFeePercentage)
+    } else {
+      message.royaltyFeePercentage = 0
+    }
+    if (object.metadataUri !== undefined && object.metadataUri !== null) {
+      message.metadataUri = String(object.metadataUri)
+    } else {
+      message.metadataUri = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgRoyaltyInfo): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.receiver !== undefined && (obj.receiver = message.receiver)
+    message.royaltyFeePercentage !== undefined && (obj.royaltyFeePercentage = message.royaltyFeePercentage)
+    message.metadataUri !== undefined && (obj.metadataUri = message.metadataUri)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgRoyaltyInfo>): MsgRoyaltyInfo {
+    const message = { ...baseMsgRoyaltyInfo } as MsgRoyaltyInfo
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.receiver !== undefined && object.receiver !== null) {
+      message.receiver = object.receiver
+    } else {
+      message.receiver = ''
+    }
+    if (object.royaltyFeePercentage !== undefined && object.royaltyFeePercentage !== null) {
+      message.royaltyFeePercentage = object.royaltyFeePercentage
+    } else {
+      message.royaltyFeePercentage = 0
+    }
+    if (object.metadataUri !== undefined && object.metadataUri !== null) {
+      message.metadataUri = object.metadataUri
+    } else {
+      message.metadataUri = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    return message
+  }
+}
+
+const baseMsgRoyaltyInfoResponse: object = { receiver: '', royaltyFeePercentage: 0, metadataUri: '' }
+
+export const MsgRoyaltyInfoResponse = {
+  encode(message: MsgRoyaltyInfoResponse, writer: Writer = Writer.create()): Writer {
+    if (message.receiver !== '') {
+      writer.uint32(10).string(message.receiver)
+    }
+    if (message.royaltyFeePercentage !== 0) {
+      writer.uint32(16).uint64(message.royaltyFeePercentage)
+    }
+    if (message.metadataUri !== '') {
+      writer.uint32(26).string(message.metadataUri)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfoResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRoyaltyInfoResponse } as MsgRoyaltyInfoResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.receiver = reader.string()
+          break
+        case 2:
+          message.royaltyFeePercentage = longToNumber(reader.uint64() as Long)
+          break
+        case 3:
+          message.metadataUri = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgRoyaltyInfoResponse {
+    const message = { ...baseMsgRoyaltyInfoResponse } as MsgRoyaltyInfoResponse
+    if (object.receiver !== undefined && object.receiver !== null) {
+      message.receiver = String(object.receiver)
+    } else {
+      message.receiver = ''
+    }
+    if (object.royaltyFeePercentage !== undefined && object.royaltyFeePercentage !== null) {
+      message.royaltyFeePercentage = Number(object.royaltyFeePercentage)
+    } else {
+      message.royaltyFeePercentage = 0
+    }
+    if (object.metadataUri !== undefined && object.metadataUri !== null) {
+      message.metadataUri = String(object.metadataUri)
+    } else {
+      message.metadataUri = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgRoyaltyInfoResponse): unknown {
+    const obj: any = {}
+    message.receiver !== undefined && (obj.receiver = message.receiver)
+    message.royaltyFeePercentage !== undefined && (obj.royaltyFeePercentage = message.royaltyFeePercentage)
+    message.metadataUri !== undefined && (obj.metadataUri = message.metadataUri)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgRoyaltyInfoResponse>): MsgRoyaltyInfoResponse {
+    const message = { ...baseMsgRoyaltyInfoResponse } as MsgRoyaltyInfoResponse
+    if (object.receiver !== undefined && object.receiver !== null) {
+      message.receiver = object.receiver
+    } else {
+      message.receiver = ''
+    }
+    if (object.royaltyFeePercentage !== undefined && object.royaltyFeePercentage !== null) {
+      message.royaltyFeePercentage = object.royaltyFeePercentage
+    } else {
+      message.royaltyFeePercentage = 0
+    }
+    if (object.metadataUri !== undefined && object.metadataUri !== null) {
+      message.metadataUri = object.metadataUri
+    } else {
+      message.metadataUri = ''
+    }
+    return message
+  }
 }
 
 const baseMsgIssueDenom: object = { id: '', name: '', schema: '', sender: '', symbol: '', mintRestricted: false, updateRestricted: false }
@@ -2965,6 +3193,8 @@ export const MsgFileResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
+  /** RoyaltyInfo defines a metadata CID royalty info */
+  RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
   /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
   RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>
@@ -2994,6 +3224,12 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse> {
+    const data = MsgRoyaltyInfo.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RoyaltyInfo', data)
+    return promise.then((data) => MsgRoyaltyInfoResponse.decode(new Reader(data)))
+  }
+
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse> {
     const data = MsgChangeOwner.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ChangeOwner', data)

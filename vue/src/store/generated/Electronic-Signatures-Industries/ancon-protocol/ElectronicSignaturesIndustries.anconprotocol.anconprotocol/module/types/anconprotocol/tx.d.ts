@@ -1,5 +1,19 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+/** MsgRoyaltyInfo */
+export interface MsgRoyaltyInfo {
+    creator: string;
+    receiver: string;
+    royaltyFeePercentage: number;
+    metadataUri: string;
+    denomId: string;
+}
+/** MsgRoyaltyInfoResponse */
+export interface MsgRoyaltyInfoResponse {
+    receiver: string;
+    royaltyFeePercentage: number;
+    metadataUri: string;
+}
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
     id: string;
@@ -173,6 +187,20 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgRoyaltyInfo: {
+    encode(message: MsgRoyaltyInfo, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfo;
+    fromJSON(object: any): MsgRoyaltyInfo;
+    toJSON(message: MsgRoyaltyInfo): unknown;
+    fromPartial(object: DeepPartial<MsgRoyaltyInfo>): MsgRoyaltyInfo;
+};
+export declare const MsgRoyaltyInfoResponse: {
+    encode(message: MsgRoyaltyInfoResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfoResponse;
+    fromJSON(object: any): MsgRoyaltyInfoResponse;
+    toJSON(message: MsgRoyaltyInfoResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRoyaltyInfoResponse>): MsgRoyaltyInfoResponse;
+};
 export declare const MsgIssueDenom: {
     encode(message: MsgIssueDenom, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgIssueDenom;
@@ -385,6 +413,8 @@ export declare const MsgFileResponse: {
 };
 /** Msg defines the Msg service. */
 export interface Msg {
+    /** RoyaltyInfo defines a metadata CID royalty info */
+    RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
@@ -411,6 +441,7 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
     GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
