@@ -1,5 +1,21 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+export interface MsgMintTrustedContent {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgMintTrustedContentResponse {
+}
+export interface MsgMintTrustedResource {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgMintTrustedResourceResponse {
+}
 /** MsgRoyaltyInfo */
 export interface MsgRoyaltyInfo {
     creator: string;
@@ -189,6 +205,34 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgMintTrustedContent: {
+    encode(message: MsgMintTrustedContent, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContent;
+    fromJSON(object: any): MsgMintTrustedContent;
+    toJSON(message: MsgMintTrustedContent): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedContent>): MsgMintTrustedContent;
+};
+export declare const MsgMintTrustedContentResponse: {
+    encode(_: MsgMintTrustedContentResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContentResponse;
+    fromJSON(_: any): MsgMintTrustedContentResponse;
+    toJSON(_: MsgMintTrustedContentResponse): unknown;
+    fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
+};
+export declare const MsgMintTrustedResource: {
+    encode(message: MsgMintTrustedResource, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResource;
+    fromJSON(object: any): MsgMintTrustedResource;
+    toJSON(message: MsgMintTrustedResource): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource;
+};
+export declare const MsgMintTrustedResourceResponse: {
+    encode(_: MsgMintTrustedResourceResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResourceResponse;
+    fromJSON(_: any): MsgMintTrustedResourceResponse;
+    toJSON(_: MsgMintTrustedResourceResponse): unknown;
+    fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse;
+};
 export declare const MsgRoyaltyInfo: {
     encode(message: MsgRoyaltyInfo, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgRoyaltyInfo;
@@ -424,17 +468,26 @@ export declare const MsgFileResponse: {
 export interface Msg {
     /** RoyaltyInfo defines a metadata CID royalty info */
     RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
+    /** ChangeOwer TODO */
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
-    /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
+    /**
+     * rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
+     * RevokeDelegate TODO
+     */
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;
+    /** GrantDelegate TODO */
     GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>;
+    /** GrantAttribute TODO */
     GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>;
-    /** rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse); */
+    /** RevokeAttribute TODO */
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
+    /** Metadata TODO */
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
-    /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
     File(request: MsgFile): Promise<MsgFileResponse>;
-    /** IssueDenom defines a method for issue a denom. */
+    /**
+     * rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
+     * IssueDenom defines a method for issue a denom.
+     */
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     /** MintNFT defines a method for mint a new nft */
     MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
@@ -450,6 +503,10 @@ export interface Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     /** MintTrustedResource defines a method for minting a resource. */
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    /** InitiateSwap adds a metadata and creates signed voucher */
+    InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
+    ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -470,6 +527,8 @@ export declare class MsgClientImpl implements Msg {
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

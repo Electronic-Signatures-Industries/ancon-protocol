@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
+	"net/http"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,7 +14,76 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/fxamacker/cbor/v2"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
+
+var (
+	ReadOwnerQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "nfts"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadCollectionQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "collections", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadDenomQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "denoms", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadDenomsQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "denoms"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadGetNftQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"ancon", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
+)
+
+func RegisterQueryNFTHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient) error {
+
+	mux.Handle("GET", ReadWithPathQuery, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := requestReadWithPath(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		// 1) From json.data base64 to CBOR
+		cborPayload, errdecode := base64.RawStdEncoding.DecodeString(resp.(*types.QueryResourceResponse).Data)
+
+		if errdecode != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, errdecode)
+			return
+		}
+
+		// 2) From CBOR to STRUCT with json mapping to json bytes
+		var instance types.IPLDMetadataStore
+		_ = cbor.Unmarshal(cborPayload, &instance)
+
+		if instance.Kind == "file" {
+			var instance types.IPLDFileStore
+			_ = cbor.Unmarshal(cborPayload, &instance)
+			jsonbytes, err := json.Marshal(instance)
+			if err != nil {
+				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbytes)
+		} else {
+			jsonbytes, err := json.Marshal(instance)
+			if err != nil {
+				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonbytes)
+		}
+	})
+
+	return nil
+}
 
 func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)

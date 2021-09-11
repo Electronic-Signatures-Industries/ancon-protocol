@@ -14,47 +14,49 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 service Msg {
   // RoyaltyInfo defines a metadata CID royalty info
   rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
+
+  // ChangeOwer TODO
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
+  // RevokeDelegate TODO
   rpc RevokeDelegate(MsgRevokeDelegate) returns (MsgRevokeDelegateResponse);
+    // GrantDelegate TODO
   rpc GrantDelegate(MsgGrantDelegate) returns (MsgGrantDelegateResponse);
+    // GrantAttribute TODO
   rpc GrantAttribute(MsgGrantAttribute) returns (MsgGrantAttributeResponse);
-  //rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse);
+  // RevokeAttribute TODO
   rpc RevokeAttribute(MsgRevokeAttribute) returns (MsgRevokeAttributeResponse);
-
+  // Metadata TODO
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
   rpc File(MsgFile) returns (MsgFileResponse);
   //rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
-
-
     // IssueDenom defines a method for issue a denom.
     rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
     // MintNFT defines a method for mint a new nft
     rpc MintNFT(MsgMintNFT) returns (MsgMintNFTResponse);
-
     // RefundHTLC defines a method for editing a nft.
     rpc EditNFT(MsgEditNFT) returns (MsgEditNFTResponse);
-
     // TransferNFT defines a method for transferring a nft.
     rpc TransferNFT(MsgTransferNFT) returns (MsgTransferNFTResponse);
-
     // BurnNFT defines a method for burning a nft.
     rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
-
     // TransferDenom defines a method for transferring a denom.
     rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
-    
     // MintTrustedContent defines a method for minting a content.
     rpc MintTrustedContent(MsgMintTrustedContent) returns (MsgMintTrustedContentResponse);
-    
     // MintTrustedResource defines a method for minting a resource.
     rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
+    // InitiateSwap adds a metadata and creates signed voucher
+    rpc InitiateSwap(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
+    // ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata
+    rpc ClaimSwap(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);        
 }
 
 message MsgMintTrustedContent {
-  string did = 1;
-  string metadata = 2;
-  string cid = 3;
+  string creator = 1;
+  string did = 2;
+  string metadata = 3;
+  string cid = 4;
 }
 
 message MsgMintTrustedContentResponse {
@@ -62,9 +64,10 @@ message MsgMintTrustedContentResponse {
 }
 
 message MsgMintTrustedResource {
-  string did = 1;
-  string metadata = 2;
-  string cid = 3;
+  string creator = 1;
+  string did = 2;
+  string metadata = 3;
+  string cid = 4;
 }
 
 message MsgMintTrustedResourceResponse {
@@ -77,7 +80,7 @@ message MsgRoyaltyInfo {
 
   string creator = 1;
   string receiver = 2;
-  uint64 royaltyFeePercentage =3;
+  uint64 royaltyFeePercentage =3;  
   string metadataUri = 4;
   string denomId = 5;  
 }

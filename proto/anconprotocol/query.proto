@@ -15,7 +15,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 // Query defines the gRPC querier service.
 service Query {
 	// ReadRoyaltyInfo
-	rpc ReadRoyaltyInfo(QueryResourceRequest) returns (QueryResourceResponse) {
+	rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
 		option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
 	}
 
@@ -25,16 +25,6 @@ service Query {
 		option (google.api.http).get = "/ancon/{cid}/{path}";
 	}
 
-	//additional handler that uses ReadFile
-	// Queries a list of resource items.
-	rpc ReadFile(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/file/{cid}/{path}";
-	}
-  
-	// Queries a list of resource items.
-	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/{cid}";
-	}
 	// this line is used by starport scaffolding # 2
 
 	// Queries a list of owners items.
@@ -56,38 +46,41 @@ service Query {
 		option (google.api.http).get = "/ancon/didregistry/delegates/{id}";
 	}
 
-// Owner queries the NFTs of the specified owner
-rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
-	option (google.api.http).get = "/ancon/nft/nfts";
+	// Owner queries the NFTs of the specified owner
+	rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
+		option (google.api.http).get = "/ancon/nft/nfts";
+	}
+
+	// Collection queries the NFTs of the specified denom
+	rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
+		option (google.api.http).get = "/ancon/nft/collections/{denom_id}";
+	}
+
+	// Denom queries the definition of a given denom
+	rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
+		option (google.api.http).get = "/ancon/nft/denoms/{denom_id}";
+	}
+
+	// Denoms queries all the denoms
+	rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
+		option (google.api.http).get = "/ancon/nft/denoms";
+	}
+
+	// NFT queries the NFT for the given denom and token ID
+	rpc GetNft(QueryNFTRequest) returns (QueryNFTResponse) {
+		option (google.api.http).get = "/ancon/nft/nfts/{denom_id}/{token_id}";
+	}
 }
 
-// Collection queries the NFTs of the specified denom
-rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
-	option (google.api.http).get = "/ancon/nft/collections/{denom_id}";
+message QueryReadRoyaltyInfo {
+	string cid = 1;
+	string price = 2; // fee % * sales amount
 }
-
-// Denom queries the definition of a given denom
-rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
-	option (google.api.http).get = "/ancon/nft/denoms/{denom_id}";
+message QueryReadRoyaltyInfoResponse {
+	string receiver = 1;
+	uint64 royaltyAmount = 2; // fee % * sales amount
 }
-
-// Denoms queries all the denoms
-rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
-	option (google.api.http).get = "/ancon/nft/denoms";
-}
-
-// NFT queries the NFT for the given denom and token ID
-rpc GetNft(QueryNFTRequest) returns (QueryNFTResponse) {
-	option (google.api.http).get = "/ancon/nft/nfts/{denom_id}/{token_id}";
-}
-}
-
-// QuerySupplyRequest is the request type for the Query/HTLC RPC method
-
-message QuerySupplyResponse {
-uint64 amount = 1;
-}
-
+  
 // QueryOwnerRequest is the request type for the Query/Owner RPC method
 message QueryOwnerRequest {
 string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];

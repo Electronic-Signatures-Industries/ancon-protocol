@@ -4,23 +4,29 @@ import * as Long from 'long';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseQuerySupplyResponse = { amount: 0 };
-export const QuerySupplyResponse = {
+const baseQueryReadRoyaltyInfo = { cid: '', price: '' };
+export const QueryReadRoyaltyInfo = {
     encode(message, writer = Writer.create()) {
-        if (message.amount !== 0) {
-            writer.uint32(8).uint64(message.amount);
+        if (message.cid !== '') {
+            writer.uint32(10).string(message.cid);
+        }
+        if (message.price !== '') {
+            writer.uint32(18).string(message.price);
         }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseQuerySupplyResponse };
+        const message = { ...baseQueryReadRoyaltyInfo };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.amount = longToNumber(reader.uint64());
+                    message.cid = reader.string();
+                    break;
+                case 2:
+                    message.price = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -30,27 +36,110 @@ export const QuerySupplyResponse = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseQuerySupplyResponse };
-        if (object.amount !== undefined && object.amount !== null) {
-            message.amount = Number(object.amount);
+        const message = { ...baseQueryReadRoyaltyInfo };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
         }
         else {
-            message.amount = 0;
+            message.cid = '';
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = String(object.price);
+        }
+        else {
+            message.price = '';
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.amount !== undefined && (obj.amount = message.amount);
+        message.cid !== undefined && (obj.cid = message.cid);
+        message.price !== undefined && (obj.price = message.price);
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseQuerySupplyResponse };
-        if (object.amount !== undefined && object.amount !== null) {
-            message.amount = object.amount;
+        const message = { ...baseQueryReadRoyaltyInfo };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
         }
         else {
-            message.amount = 0;
+            message.cid = '';
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = object.price;
+        }
+        else {
+            message.price = '';
+        }
+        return message;
+    }
+};
+const baseQueryReadRoyaltyInfoResponse = { receiver: '', royaltyAmount: 0 };
+export const QueryReadRoyaltyInfoResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.receiver !== '') {
+            writer.uint32(10).string(message.receiver);
+        }
+        if (message.royaltyAmount !== 0) {
+            writer.uint32(16).uint64(message.royaltyAmount);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryReadRoyaltyInfoResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.receiver = reader.string();
+                    break;
+                case 2:
+                    message.royaltyAmount = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryReadRoyaltyInfoResponse };
+        if (object.receiver !== undefined && object.receiver !== null) {
+            message.receiver = String(object.receiver);
+        }
+        else {
+            message.receiver = '';
+        }
+        if (object.royaltyAmount !== undefined && object.royaltyAmount !== null) {
+            message.royaltyAmount = Number(object.royaltyAmount);
+        }
+        else {
+            message.royaltyAmount = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.receiver !== undefined && (obj.receiver = message.receiver);
+        message.royaltyAmount !== undefined && (obj.royaltyAmount = message.royaltyAmount);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryReadRoyaltyInfoResponse };
+        if (object.receiver !== undefined && object.receiver !== null) {
+            message.receiver = object.receiver;
+        }
+        else {
+            message.receiver = '';
+        }
+        if (object.royaltyAmount !== undefined && object.royaltyAmount !== null) {
+            message.royaltyAmount = object.royaltyAmount;
+        }
+        else {
+            message.royaltyAmount = 0;
         }
         return message;
     }
@@ -1194,23 +1283,13 @@ export class QueryClientImpl {
         this.rpc = rpc;
     }
     ReadRoyaltyInfo(request) {
-        const data = QueryResourceRequest.encode(request).finish();
+        const data = QueryReadRoyaltyInfo.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadRoyaltyInfo', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+        return promise.then((data) => QueryReadRoyaltyInfoResponse.decode(new Reader(data)));
     }
     ReadWithPath(request) {
         const data = QueryResourceRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
-    }
-    ReadFile(request) {
-        const data = QueryResourceRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadFile', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
-    }
-    Read(request) {
-        const data = QueryResourceRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Read', data);
         return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
     }
     IdentifyOwner(request) {

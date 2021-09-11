@@ -2,8 +2,15 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
-export interface QuerySupplyResponse {
-    amount: number;
+export interface QueryReadRoyaltyInfo {
+    cid: string;
+    /** fee % * sales amount */
+    price: string;
+}
+export interface QueryReadRoyaltyInfoResponse {
+    receiver: string;
+    /** fee % * sales amount */
+    royaltyAmount: number;
 }
 /** QueryOwnerRequest is the request type for the Query/Owner RPC method */
 export interface QueryOwnerRequest {
@@ -84,12 +91,19 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
-export declare const QuerySupplyResponse: {
-    encode(message: QuerySupplyResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QuerySupplyResponse;
-    fromJSON(object: any): QuerySupplyResponse;
-    toJSON(message: QuerySupplyResponse): unknown;
-    fromPartial(object: DeepPartial<QuerySupplyResponse>): QuerySupplyResponse;
+export declare const QueryReadRoyaltyInfo: {
+    encode(message: QueryReadRoyaltyInfo, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryReadRoyaltyInfo;
+    fromJSON(object: any): QueryReadRoyaltyInfo;
+    toJSON(message: QueryReadRoyaltyInfo): unknown;
+    fromPartial(object: DeepPartial<QueryReadRoyaltyInfo>): QueryReadRoyaltyInfo;
+};
+export declare const QueryReadRoyaltyInfoResponse: {
+    encode(message: QueryReadRoyaltyInfoResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryReadRoyaltyInfoResponse;
+    fromJSON(object: any): QueryReadRoyaltyInfoResponse;
+    toJSON(message: QueryReadRoyaltyInfoResponse): unknown;
+    fromPartial(object: DeepPartial<QueryReadRoyaltyInfoResponse>): QueryReadRoyaltyInfoResponse;
 };
 export declare const QueryOwnerRequest: {
     encode(message: QueryOwnerRequest, writer?: Writer): Writer;
@@ -241,16 +255,9 @@ export declare const QueryResourceResponse: {
 /** Query defines the gRPC querier service. */
 export interface Query {
     /** ReadRoyaltyInfo */
-    ReadRoyaltyInfo(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>;
     /** Queries a list of resource items. */
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    /**
-     * additional handler that uses ReadFile
-     * Queries a list of resource items.
-     */
-    ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    /** Queries a list of resource items. */
-    Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of owners items. */
     IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
     /** Queries a list of Attributes items. */
@@ -273,10 +280,8 @@ export interface Query {
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
-    ReadRoyaltyInfo(request: QueryResourceRequest): Promise<QueryResourceResponse>;
+    ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>;
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    ReadFile(request: QueryResourceRequest): Promise<QueryResourceResponse>;
-    Read(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
     GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
     Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;

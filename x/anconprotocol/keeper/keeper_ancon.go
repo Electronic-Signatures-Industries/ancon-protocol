@@ -20,6 +20,23 @@ import (
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
+func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (string, error) {
+	return "", nil
+}
+func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
+	return "", nil
+}
+func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
+	return "", nil
+}
+
+func (k Keeper) InitiateSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
+	return "", nil
+}
+
+func (k Keeper) ClaimSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
+	return "", nil
+}
 func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	lsys := cidlink.DefaultLinkSystem()
 

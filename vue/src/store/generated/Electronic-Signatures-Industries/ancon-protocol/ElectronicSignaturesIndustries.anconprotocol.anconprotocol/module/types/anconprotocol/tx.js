@@ -2,6 +2,286 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+const baseMsgMintTrustedContent = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgMintTrustedContent = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintTrustedContent };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgMintTrustedContent };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgMintTrustedContent };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgMintTrustedContentResponse = {};
+export const MsgMintTrustedContentResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintTrustedContentResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgMintTrustedContentResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgMintTrustedContentResponse };
+        return message;
+    }
+};
+const baseMsgMintTrustedResource = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgMintTrustedResource = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintTrustedResource };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgMintTrustedResource };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgMintTrustedResource };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgMintTrustedResourceResponse = {};
+export const MsgMintTrustedResourceResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintTrustedResourceResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgMintTrustedResourceResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgMintTrustedResourceResponse };
+        return message;
+    }
+};
 const baseMsgRoyaltyInfo = { creator: '', receiver: '', royaltyFeePercentage: 0, metadataUri: '', denomId: '' };
 export const MsgRoyaltyInfo = {
     encode(message, writer = Writer.create()) {
@@ -3095,6 +3375,16 @@ export class MsgClientImpl {
     MintTrustedResource(request) {
         const data = MsgMintTrustedResource.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data);
+        return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
+    }
+    InitiateSwap(request) {
+        const data = MsgMintTrustedResource.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data);
+        return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
+    }
+    ClaimSwap(request) {
+        const data = MsgMintTrustedResource.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ClaimSwap', data);
         return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
     }
 }

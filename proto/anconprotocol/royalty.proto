@@ -1,0 +1,18 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
+
+import "gogoproto/gogo.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
+
+
+
+message RoyaltyInfo {
+    uint64 updateCount = 1;    
+    string receiver = 2;
+    uint64 royaltyFeePercentage =3;  
+    string metadataUri = 4;
+    string denomId = 5;  
+}

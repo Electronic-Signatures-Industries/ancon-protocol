@@ -4,6 +4,24 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+export interface MsgMintTrustedContent {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgMintTrustedContentResponse {}
+
+export interface MsgMintTrustedResource {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgMintTrustedResourceResponse {}
+
 /** MsgRoyaltyInfo */
 export interface MsgRoyaltyInfo {
   creator: string
@@ -217,6 +235,294 @@ export interface MsgFile {
 
 export interface MsgFileResponse {
   hash: string
+}
+
+const baseMsgMintTrustedContent: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgMintTrustedContent = {
+  encode(message: MsgMintTrustedContent, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContent {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintTrustedContent } as MsgMintTrustedContent
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgMintTrustedContent {
+    const message = { ...baseMsgMintTrustedContent } as MsgMintTrustedContent
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgMintTrustedContent): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgMintTrustedContent>): MsgMintTrustedContent {
+    const message = { ...baseMsgMintTrustedContent } as MsgMintTrustedContent
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgMintTrustedContentResponse: object = {}
+
+export const MsgMintTrustedContentResponse = {
+  encode(_: MsgMintTrustedContentResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContentResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgMintTrustedContentResponse {
+    const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    return message
+  },
+
+  toJSON(_: MsgMintTrustedContentResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
+    const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    return message
+  }
+}
+
+const baseMsgMintTrustedResource: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgMintTrustedResource = {
+  encode(message: MsgMintTrustedResource, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResource {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgMintTrustedResource {
+    const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgMintTrustedResource): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource {
+    const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgMintTrustedResourceResponse: object = {}
+
+export const MsgMintTrustedResourceResponse = {
+  encode(_: MsgMintTrustedResourceResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResourceResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintTrustedResourceResponse } as MsgMintTrustedResourceResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgMintTrustedResourceResponse {
+    const message = { ...baseMsgMintTrustedResourceResponse } as MsgMintTrustedResourceResponse
+    return message
+  },
+
+  toJSON(_: MsgMintTrustedResourceResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse {
+    const message = { ...baseMsgMintTrustedResourceResponse } as MsgMintTrustedResourceResponse
+    return message
+  }
 }
 
 const baseMsgRoyaltyInfo: object = { creator: '', receiver: '', royaltyFeePercentage: 0, metadataUri: '', denomId: '' }
@@ -3235,17 +3541,26 @@ export const MsgFileResponse = {
 export interface Msg {
   /** RoyaltyInfo defines a metadata CID royalty info */
   RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>
+  /** ChangeOwer TODO */
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
-  /** rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse); */
+  /**
+   * rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
+   * RevokeDelegate TODO
+   */
   RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>
+  /** GrantDelegate TODO */
   GrantDelegate(request: MsgGrantDelegate): Promise<MsgGrantDelegateResponse>
+  /** GrantAttribute TODO */
   GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>
-  /** rpc SetAttribute(MsgSetAttribute) returns (MsgSetAttributeResponse); */
+  /** RevokeAttribute TODO */
   RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>
+  /** Metadata TODO */
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
-  /** rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse) */
   File(request: MsgFile): Promise<MsgFileResponse>
-  /** IssueDenom defines a method for issue a denom. */
+  /**
+   * rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
+   * IssueDenom defines a method for issue a denom.
+   */
   IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>
   /** MintNFT defines a method for mint a new nft */
   MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>
@@ -3261,6 +3576,10 @@ export interface Msg {
   MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
+  /** InitiateSwap adds a metadata and creates signed voucher */
+  InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
+  /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
+  ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -3361,6 +3680,18 @@ export class MsgClientImpl implements Msg {
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse> {
     const data = MsgMintTrustedResource.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data)
+    return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
+  }
+
+  InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse> {
+    const data = MsgMintTrustedResource.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data)
+    return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
+  }
+
+  ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse> {
+    const data = MsgMintTrustedResource.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ClaimSwap', data)
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
   }
 }

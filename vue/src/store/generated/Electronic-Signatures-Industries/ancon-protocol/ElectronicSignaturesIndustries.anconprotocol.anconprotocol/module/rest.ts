@@ -178,6 +178,13 @@ export interface AnconprotocolQueryOwnerResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface AnconprotocolQueryReadRoyaltyInfoResponse {
+  receiver?: string;
+
+  /** @format uint64 */
+  royaltyAmount?: string;
+}
+
 export interface AnconprotocolQueryResourceResponse {
   data?: string;
 }
@@ -607,23 +614,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     });
 
   /**
- * No description
- * 
- * @tags Query
- * @name QueryReadFile
- * @summary additional handler that uses ReadFile
-Queries a list of resource items.
- * @request GET:/ancon/file/{cid}/{path}
- */
-  queryReadFile = (cid: string, path: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/file/${cid}/${path}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
    * No description
    *
    * @tags Query
@@ -756,30 +746,12 @@ Queries a list of resource items.
    * @tags Query
    * @name QueryReadRoyaltyInfo
    * @summary ReadRoyaltyInfo
-   * @request GET:/ancon/royalty/{cid}/info
+   * @request GET:/ancon/royalty/{cid}/{price}
    */
-  queryReadRoyaltyInfo = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/royalty/${cid}/info`,
+  queryReadRoyaltyInfo = (cid: string, price: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>({
+      path: `/ancon/royalty/${cid}/${price}`,
       method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryRead
-   * @summary Queries a list of resource items.
-   * @request GET:/ancon/{cid}
-   */
-  queryRead = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/${cid}`,
-      method: "GET",
-      query: query,
       format: "json",
       ...params,
     });

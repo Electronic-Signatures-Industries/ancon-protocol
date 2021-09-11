@@ -57,7 +57,7 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 	return k.GetObject(ctx, req)
 }
 
-func request_Query_ReadWithPath_0(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QueryResourceRequest
 	var metadata runtime.ServerMetadata
 
@@ -112,7 +112,7 @@ func RegisterQueryAnconHandler(ctx context.Context, mux *runtime.ServeMux, clien
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ReadWithPath_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := requestReadWithPath(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

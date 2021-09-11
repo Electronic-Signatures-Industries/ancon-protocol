@@ -133,6 +133,11 @@ export interface AnconprotocolQueryOwnerResponse {
      */
     pagination?: V1Beta1PageResponse;
 }
+export interface AnconprotocolQueryReadRoyaltyInfoResponse {
+    receiver?: string;
+    /** @format uint64 */
+    royaltyAmount?: string;
+}
 export interface AnconprotocolQueryResourceResponse {
     data?: string;
 }
@@ -394,16 +399,6 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      */
     queryGetAttributes: (address: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
     /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryReadFile
-   * @summary additional handler that uses ReadFile
-  Queries a list of resource items.
-   * @request GET:/ancon/file/{cid}/{path}
-   */
-    queryReadFile: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
-    /**
      * No description
      *
      * @tags Query
@@ -482,22 +477,9 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryReadRoyaltyInfo
      * @summary ReadRoyaltyInfo
-     * @request GET:/ancon/royalty/{cid}/info
+     * @request GET:/ancon/royalty/{cid}/{price}
      */
-    queryReadRoyaltyInfo: (cid: string, query?: {
-        path?: string;
-    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
-    /**
-     * No description
-     *
-     * @tags Query
-     * @name QueryRead
-     * @summary Queries a list of resource items.
-     * @request GET:/ancon/{cid}
-     */
-    queryRead: (cid: string, query?: {
-        path?: string;
-    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    queryReadRoyaltyInfo: (cid: string, price: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>>;
     /**
      * No description
      *

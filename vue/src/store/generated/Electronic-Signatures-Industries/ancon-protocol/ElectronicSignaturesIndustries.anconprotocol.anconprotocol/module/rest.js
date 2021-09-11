@@ -179,21 +179,6 @@ export class Api extends HttpClient {
             ...params,
         });
         /**
-       * No description
-       *
-       * @tags Query
-       * @name QueryReadFile
-       * @summary additional handler that uses ReadFile
-      Queries a list of resource items.
-       * @request GET:/ancon/file/{cid}/{path}
-       */
-        this.queryReadFile = (cid, path, params = {}) => this.request({
-            path: `/ancon/file/${cid}/${path}`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
          * No description
          *
          * @tags Query
@@ -287,27 +272,11 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryReadRoyaltyInfo
          * @summary ReadRoyaltyInfo
-         * @request GET:/ancon/royalty/{cid}/info
+         * @request GET:/ancon/royalty/{cid}/{price}
          */
-        this.queryReadRoyaltyInfo = (cid, query, params = {}) => this.request({
-            path: `/ancon/royalty/${cid}/info`,
+        this.queryReadRoyaltyInfo = (cid, price, params = {}) => this.request({
+            path: `/ancon/royalty/${cid}/${price}`,
             method: "GET",
-            query: query,
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryRead
-         * @summary Queries a list of resource items.
-         * @request GET:/ancon/{cid}
-         */
-        this.queryRead = (cid, query, params = {}) => this.request({
-            path: `/ancon/${cid}`,
-            method: "GET",
-            query: query,
             format: "json",
             ...params,
         });
