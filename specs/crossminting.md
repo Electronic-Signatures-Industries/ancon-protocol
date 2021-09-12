@@ -55,4 +55,40 @@ This verifiable and consensus based metadata approach is another layer of privac
 
 ### API
 
+**NFT with Immutable Metadata Resources**
+![NFTs](https://user-images.githubusercontent.com/1248071/132988470-c610b4c0-c9f9-47a3-bb30-2ec4c6b7b6d5.png)
+
+#### Messages
+
+- **MsgMintTrustedContent**: Mints NFT with Ancon CID as MetadataURI
+- **MsgMintTrustedResource**: Mints NFT with Ancon CID as MetadataURI and access control list ACL defined by DID ownership
+
+#### Query
+
+TODO
+
+**Universal Royalty Info**
+
+![Royalty](https://user-images.githubusercontent.com/1248071/132988471-f7b4f68f-7b7c-4901-adf3-4fdc599119a1.png)
+
+
+#### Messages
+
+- **MsgRoyaltyInfo**: Sets or updates royalty
+
+#### Query
+
+- **QueryReadRoyaltyInfo**
+
+**Cross swap metadata**
+
+![Swap](https://user-images.githubusercontent.com/1248071/132988472-803fe8c0-14ed-4696-85cb-014ab8dbc4b2.png)
+
+#### Messages
+
+- **MsgInitiateSwap**
+- **MsgClaimSwap**
+
+#### Query
+
 TODO
