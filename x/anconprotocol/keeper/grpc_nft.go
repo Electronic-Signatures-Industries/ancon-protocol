@@ -2,9 +2,6 @@ package keeper
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/json"
-	"net/http"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/fxamacker/cbor/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
 
@@ -32,55 +28,12 @@ var (
 
 func RegisterQueryNFTHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient) error {
 
-	mux.Handle("GET", ReadWithPathQuery, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := requestReadWithPath(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		// 1) From json.data base64 to CBOR
-		cborPayload, errdecode := base64.RawStdEncoding.DecodeString(resp.(*types.QueryResourceResponse).Data)
-
-		if errdecode != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, errdecode)
-			return
-		}
-
-		// 2) From CBOR to STRUCT with json mapping to json bytes
-		var instance types.IPLDMetadataStore
-		_ = cbor.Unmarshal(cborPayload, &instance)
-
-		if instance.Kind == "file" {
-			var instance types.IPLDFileStore
-			_ = cbor.Unmarshal(cborPayload, &instance)
-			jsonbytes, err := json.Marshal(instance)
-			if err != nil {
-				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbytes)
-		} else {
-			jsonbytes, err := json.Marshal(instance)
-			if err != nil {
-				runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonbytes)
-		}
-	})
+	// TODO: handlers
+	mux.Handle("GET", ReadOwnerQuery, wrapJsonResult(ctx, mux, client, readIdentifyOwner))
+	mux.Handle("GET", ReadCollectionQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
+	mux.Handle("GET", ReadDenomQuery, wrapJsonResult(ctx, mux, client, readDelegate))
+	mux.Handle("GET", ReadDenomsQuery, wrapJsonResult(ctx, mux, client, readDelegate))
+	mux.Handle("GET", ReadGetNftQuery, wrapJsonResult(ctx, mux, client, readDelegate))
 
 	return nil
 }
