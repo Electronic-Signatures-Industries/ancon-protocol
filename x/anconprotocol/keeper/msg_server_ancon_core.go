@@ -7,6 +7,37 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (k msgServer) InitiateSwap(goCtx context.Context, msg *types.MsgInitiateSwap) (*types.MsgInitiateSwapResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	k.AddInitiateSwap(
+		ctx,
+		msg,
+	)
+
+	return &types.MsgInitiateSwapResponse{}, nil
+}
+
+func (k msgServer) ClaimSwap(goCtx context.Context, msg *types.MsgClaimSwap) (*types.MsgClaimSwapResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	k.AddClaimSwap(
+		ctx,
+		msg,
+	)
+
+	return &types.MsgClaimSwapResponse{}, nil
+}
 func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*types.MsgMetadataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -33,7 +64,7 @@ func (k msgServer) RoyaltyInfo(goCtx context.Context, msg *types.MsgRoyaltyInfo)
 		return nil, err
 	}
 
-	lnk, _ := k.AddRoyaltyInfo(
+	k.AddRoyaltyInfo(
 		ctx,
 		msg,
 	)
@@ -49,7 +80,7 @@ func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintT
 		return nil, err
 	}
 
-	lnk, _ := k.AddTrustedContent(
+	k.AddTrustedContent(
 		ctx,
 		msg,
 	)
@@ -65,7 +96,7 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 		return nil, err
 	}
 
-	lnk, _ := k.AddTrustedResource(
+	k.AddTrustedResource(
 		ctx,
 		msg,
 	)

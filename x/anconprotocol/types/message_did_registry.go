@@ -62,7 +62,7 @@ func (msg *MsgGrantAttribute) Route() string {
 }
 
 func (msg *MsgGrantAttribute) Type() string {
-	return "SetAttribute"
+	return "GrantAttribute"
 }
 
 func (msg *MsgGrantAttribute) GetSigners() []sdk.AccAddress {
@@ -97,7 +97,7 @@ func (msg *MsgGrantDelegate) Route() string {
 }
 
 func (msg *MsgGrantDelegate) Type() string {
-	return "AddDelegate"
+	return "GrantDelegate"
 }
 
 func (msg *MsgGrantDelegate) GetSigners() []sdk.AccAddress {
@@ -167,7 +167,7 @@ func (msg *MsgRevokeAttribute) Route() string {
 }
 
 func (msg *MsgRevokeAttribute) Type() string {
-	return "RevokeDelegate"
+	return "RevokeAttribute"
 }
 
 func (msg *MsgRevokeAttribute) GetSigners() []sdk.AccAddress {

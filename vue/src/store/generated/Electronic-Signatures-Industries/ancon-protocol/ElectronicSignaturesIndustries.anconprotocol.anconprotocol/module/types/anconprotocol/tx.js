@@ -142,6 +142,286 @@ export const MsgMintTrustedContentResponse = {
         return message;
     }
 };
+const baseMsgInitiateSwap = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgInitiateSwap = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgInitiateSwap };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgInitiateSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgInitiateSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgInitiateSwapResponse = {};
+export const MsgInitiateSwapResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgInitiateSwapResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgInitiateSwapResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgInitiateSwapResponse };
+        return message;
+    }
+};
+const baseMsgClaimSwap = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgClaimSwap = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgClaimSwap };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgClaimSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgClaimSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgClaimSwapResponse = {};
+export const MsgClaimSwapResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgClaimSwapResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgClaimSwapResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgClaimSwapResponse };
+        return message;
+    }
+};
 const baseMsgMintTrustedResource = { creator: '', did: '', metadata: '', cid: '' };
 export const MsgMintTrustedResource = {
     encode(message, writer = Writer.create()) {
@@ -3378,14 +3658,14 @@ export class MsgClientImpl {
         return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
     }
     InitiateSwap(request) {
-        const data = MsgMintTrustedResource.encode(request).finish();
+        const data = MsgInitiateSwap.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data);
-        return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
+        return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)));
     }
     ClaimSwap(request) {
-        const data = MsgMintTrustedResource.encode(request).finish();
+        const data = MsgClaimSwap.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ClaimSwap', data);
-        return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
+        return promise.then((data) => MsgClaimSwapResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {

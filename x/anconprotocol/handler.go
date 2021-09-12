@@ -35,8 +35,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		// Metadata = stored in metadata anconprotocol
 		// NFT Token = mint nft cosmos
 		// DID = create DID Owner
+		case *types.MsgClaimSwap:
+			res, err := msgServer.ClaimSwap(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgInitiateSwap:
+			res, err := msgServer.InitiateSwap(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgRoyaltyInfo:
-			res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.RoyaltyInfo(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgMintTrustedContent:
 			res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)

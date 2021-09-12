@@ -20,6 +20,12 @@ import (
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
+func (k Keeper) AddClaimSwap(ctx sdk.Context, msg *types.MsgClaimSwap) (string, error) {
+	return "", nil
+}
+func (k Keeper) AddInitiateSwap(ctx sdk.Context, msg *types.MsgInitiateSwap) (string, error) {
+	return "", nil
+}
 func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (string, error) {
 	return "", nil
 }

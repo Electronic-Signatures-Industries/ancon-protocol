@@ -8,6 +8,22 @@ export interface MsgMintTrustedContent {
 }
 export interface MsgMintTrustedContentResponse {
 }
+export interface MsgInitiateSwap {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgInitiateSwapResponse {
+}
+export interface MsgClaimSwap {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgClaimSwapResponse {
+}
 export interface MsgMintTrustedResource {
     creator: string;
     did: string;
@@ -218,6 +234,34 @@ export declare const MsgMintTrustedContentResponse: {
     fromJSON(_: any): MsgMintTrustedContentResponse;
     toJSON(_: MsgMintTrustedContentResponse): unknown;
     fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
+};
+export declare const MsgInitiateSwap: {
+    encode(message: MsgInitiateSwap, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgInitiateSwap;
+    fromJSON(object: any): MsgInitiateSwap;
+    toJSON(message: MsgInitiateSwap): unknown;
+    fromPartial(object: DeepPartial<MsgInitiateSwap>): MsgInitiateSwap;
+};
+export declare const MsgInitiateSwapResponse: {
+    encode(_: MsgInitiateSwapResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgInitiateSwapResponse;
+    fromJSON(_: any): MsgInitiateSwapResponse;
+    toJSON(_: MsgInitiateSwapResponse): unknown;
+    fromPartial(_: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse;
+};
+export declare const MsgClaimSwap: {
+    encode(message: MsgClaimSwap, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgClaimSwap;
+    fromJSON(object: any): MsgClaimSwap;
+    toJSON(message: MsgClaimSwap): unknown;
+    fromPartial(object: DeepPartial<MsgClaimSwap>): MsgClaimSwap;
+};
+export declare const MsgClaimSwapResponse: {
+    encode(_: MsgClaimSwapResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgClaimSwapResponse;
+    fromJSON(_: any): MsgClaimSwapResponse;
+    toJSON(_: MsgClaimSwapResponse): unknown;
+    fromPartial(_: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse;
 };
 export declare const MsgMintTrustedResource: {
     encode(message: MsgMintTrustedResource, writer?: Writer): Writer;
@@ -504,9 +548,9 @@ export interface Msg {
     /** MintTrustedResource defines a method for minting a resource. */
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
     /** InitiateSwap adds a metadata and creates signed voucher */
-    InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
     /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-    ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -527,8 +571,8 @@ export declare class MsgClientImpl implements Msg {
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
+    ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

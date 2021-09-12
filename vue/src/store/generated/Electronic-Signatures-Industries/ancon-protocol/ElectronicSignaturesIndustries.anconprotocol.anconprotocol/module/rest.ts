@@ -50,6 +50,8 @@ export interface AnconprotocolMsgChangeOwnerResponse {
   previousChange?: string;
 }
 
+export type AnconprotocolMsgClaimSwapResponse = object;
+
 /**
  * MsgEditNFTResponse defines the Msg/EditNFT response type.
  */
@@ -67,6 +69,8 @@ export interface AnconprotocolMsgGrantDelegateResponse {
   /** @format byte */
   hash?: string;
 }
+
+export type AnconprotocolMsgInitiateSwapResponse = object;
 
 /**
  * MsgIssueDenomResponse defines the Msg/IssueDenom response type.

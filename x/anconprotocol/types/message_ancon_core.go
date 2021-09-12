@@ -10,6 +10,8 @@ var _ sdk.Msg = &MsgMetadata{}
 var _ sdk.Msg = &MsgRoyaltyInfo{}
 var _ sdk.Msg = &MsgMintTrustedContent{}
 var _ sdk.Msg = &MsgMintTrustedResource{}
+var _ sdk.Msg = &MsgClaimSwap{}
+var _ sdk.Msg = &MsgInitiateSwap{}
 
 func NewMsgMintTrustedResource(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgMintTrustedResource {
 	return &MsgMintTrustedResource{
@@ -24,7 +26,7 @@ func (msg *MsgMintTrustedResource) Route() string {
 }
 
 func (msg *MsgMintTrustedResource) Type() string {
-	return "File"
+	return "TrustedResource"
 }
 
 func (msg *MsgMintTrustedResource) GetSigners() []sdk.AccAddress {
@@ -48,6 +50,79 @@ func (msg *MsgMintTrustedResource) ValidateBasic() error {
 	return nil
 }
 
+func NewMsgInitiateSwap(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgInitiateSwap {
+	return &MsgInitiateSwap{
+		Did:      did,
+		Metadata: "",
+		Cid:      "",
+	}
+}
+
+func (msg *MsgInitiateSwap) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgInitiateSwap) Type() string {
+	return "InitiateSwap"
+}
+
+func (msg *MsgInitiateSwap) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgInitiateSwap) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgInitiateSwap) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
+func NewMsgClaimSwap(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgClaimSwap {
+	return &MsgClaimSwap{
+		Did:      did,
+		Metadata: "",
+		Cid:      "",
+	}
+}
+
+func (msg *MsgClaimSwap) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgClaimSwap) Type() string {
+	return "ClaimSwap"
+}
+
+func (msg *MsgClaimSwap) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgClaimSwap) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgClaimSwap) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
 func NewMsgRoyaltyInfo(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgRoyaltyInfo {
 	return &MsgRoyaltyInfo{
 		Creator:              creator,
@@ -63,7 +138,7 @@ func (msg *MsgRoyaltyInfo) Route() string {
 }
 
 func (msg *MsgRoyaltyInfo) Type() string {
-	return "File"
+	return "RoyaltyInfo"
 }
 
 func (msg *MsgRoyaltyInfo) GetSigners() []sdk.AccAddress {
@@ -101,7 +176,7 @@ func (msg *MsgMintTrustedContent) Route() string {
 }
 
 func (msg *MsgMintTrustedContent) Type() string {
-	return "File"
+	return "TrustedContent"
 }
 
 func (msg *MsgMintTrustedContent) GetSigners() []sdk.AccAddress {

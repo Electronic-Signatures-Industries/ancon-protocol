@@ -47,9 +47,9 @@ service Msg {
     // MintTrustedResource defines a method for minting a resource.
     rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
     // InitiateSwap adds a metadata and creates signed voucher
-    rpc InitiateSwap(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
+    rpc InitiateSwap(MsgInitiateSwap) returns (MsgInitiateSwapResponse);
     // ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata
-    rpc ClaimSwap(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);        
+    rpc ClaimSwap(MsgClaimSwap) returns (MsgClaimSwapResponse);        
 }
 
 message MsgMintTrustedContent {
@@ -63,6 +63,27 @@ message MsgMintTrustedContentResponse {
 
 }
 
+message MsgInitiateSwap {
+  string creator = 1;
+  string did = 2;
+  string metadata = 3;
+  string cid = 4;
+}
+
+message MsgInitiateSwapResponse {
+
+}
+
+message MsgClaimSwap {
+  string creator = 1;
+  string did = 2;
+  string metadata = 3;
+  string cid = 4;
+}
+
+message MsgClaimSwapResponse {
+
+}
 message MsgMintTrustedResource {
   string creator = 1;
   string did = 2;

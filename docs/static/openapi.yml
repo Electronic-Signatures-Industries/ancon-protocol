@@ -32382,6 +32382,8 @@ definitions:
       previousChange:
         type: string
         format: uint64
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgClaimSwapResponse:
+    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgEditNFTResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
@@ -32401,6 +32403,8 @@ definitions:
       hash:
         type: string
         format: byte
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgInitiateSwapResponse:
+    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgIssueDenomResponse:
     type: object
     description: MsgIssueDenomResponse defines the Msg/IssueDenom response type.

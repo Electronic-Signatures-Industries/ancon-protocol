@@ -13,6 +13,24 @@ export interface MsgMintTrustedContent {
 
 export interface MsgMintTrustedContentResponse {}
 
+export interface MsgInitiateSwap {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgInitiateSwapResponse {}
+
+export interface MsgClaimSwap {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgClaimSwapResponse {}
+
 export interface MsgMintTrustedResource {
   creator: string
   did: string
@@ -377,6 +395,294 @@ export const MsgMintTrustedContentResponse = {
 
   fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
     const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    return message
+  }
+}
+
+const baseMsgInitiateSwap: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgInitiateSwap = {
+  encode(message: MsgInitiateSwap, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgInitiateSwap {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgInitiateSwap } as MsgInitiateSwap
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgInitiateSwap {
+    const message = { ...baseMsgInitiateSwap } as MsgInitiateSwap
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgInitiateSwap): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgInitiateSwap>): MsgInitiateSwap {
+    const message = { ...baseMsgInitiateSwap } as MsgInitiateSwap
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgInitiateSwapResponse: object = {}
+
+export const MsgInitiateSwapResponse = {
+  encode(_: MsgInitiateSwapResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgInitiateSwapResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgInitiateSwapResponse } as MsgInitiateSwapResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgInitiateSwapResponse {
+    const message = { ...baseMsgInitiateSwapResponse } as MsgInitiateSwapResponse
+    return message
+  },
+
+  toJSON(_: MsgInitiateSwapResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse {
+    const message = { ...baseMsgInitiateSwapResponse } as MsgInitiateSwapResponse
+    return message
+  }
+}
+
+const baseMsgClaimSwap: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgClaimSwap = {
+  encode(message: MsgClaimSwap, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgClaimSwap {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgClaimSwap } as MsgClaimSwap
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgClaimSwap {
+    const message = { ...baseMsgClaimSwap } as MsgClaimSwap
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgClaimSwap): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgClaimSwap>): MsgClaimSwap {
+    const message = { ...baseMsgClaimSwap } as MsgClaimSwap
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgClaimSwapResponse: object = {}
+
+export const MsgClaimSwapResponse = {
+  encode(_: MsgClaimSwapResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgClaimSwapResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgClaimSwapResponse } as MsgClaimSwapResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgClaimSwapResponse {
+    const message = { ...baseMsgClaimSwapResponse } as MsgClaimSwapResponse
+    return message
+  },
+
+  toJSON(_: MsgClaimSwapResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse {
+    const message = { ...baseMsgClaimSwapResponse } as MsgClaimSwapResponse
     return message
   }
 }
@@ -3577,9 +3883,9 @@ export interface Msg {
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
   /** InitiateSwap adds a metadata and creates signed voucher */
-  InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
+  InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>
   /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-  ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
+  ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -3683,16 +3989,16 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
   }
 
-  InitiateSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse> {
-    const data = MsgMintTrustedResource.encode(request).finish()
+  InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse> {
+    const data = MsgInitiateSwap.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data)
-    return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
+    return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)))
   }
 
-  ClaimSwap(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse> {
-    const data = MsgMintTrustedResource.encode(request).finish()
+  ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse> {
+    const data = MsgClaimSwap.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ClaimSwap', data)
-    return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
+    return promise.then((data) => MsgClaimSwapResponse.decode(new Reader(data)))
   }
 }
 
