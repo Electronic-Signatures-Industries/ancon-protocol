@@ -2,6 +2,407 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+const baseMsgCreateDid = { creator: '' };
+export const MsgCreateDid = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgCreateDid };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgCreateDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgCreateDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        return message;
+    }
+};
+const baseMsgCreateDidResponse = { cid: '', did: '' };
+export const MsgCreateDidResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.cid !== '') {
+            writer.uint32(10).string(message.cid);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgCreateDidResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgCreateDidResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.cid !== undefined && (obj.cid = message.cid);
+        message.did !== undefined && (obj.did = message.did);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgCreateDidResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        return message;
+    }
+};
+const baseMsgUpdateDid = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgUpdateDid = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgUpdateDid };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgUpdateDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgUpdateDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgUpdateDidResponse = {};
+export const MsgUpdateDidResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgUpdateDidResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgUpdateDidResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgUpdateDidResponse };
+        return message;
+    }
+};
+const baseMsgRevokeDid = { creator: '', did: '', metadata: '', cid: '' };
+export const MsgRevokeDid = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
+        }
+        if (message.metadata !== '') {
+            writer.uint32(26).string(message.metadata);
+        }
+        if (message.cid !== '') {
+            writer.uint32(34).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeDid };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.did = reader.string();
+                    break;
+                case 3:
+                    message.metadata = reader.string();
+                    break;
+                case 4:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRevokeDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = String(object.metadata);
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.did !== undefined && (obj.did = message.did);
+        message.metadata !== undefined && (obj.metadata = message.metadata);
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRevokeDid };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.metadata !== undefined && object.metadata !== null) {
+            message.metadata = object.metadata;
+        }
+        else {
+            message.metadata = '';
+        }
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
+const baseMsgRevokeDidResponse = {};
+export const MsgRevokeDidResponse = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRevokeDidResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseMsgRevokeDidResponse };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseMsgRevokeDidResponse };
+        return message;
+    }
+};
 const baseMsgMintTrustedContent = { creator: '', did: '', metadata: '', cid: '' };
 export const MsgMintTrustedContent = {
     encode(message, writer = Writer.create()) {
@@ -3576,6 +3977,21 @@ export const MsgFileResponse = {
 export class MsgClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
+    }
+    CreateDid(request) {
+        const data = MsgCreateDid.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'CreateDid', data);
+        return promise.then((data) => MsgCreateDidResponse.decode(new Reader(data)));
+    }
+    UpdateDid(request) {
+        const data = MsgUpdateDid.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'UpdateDid', data);
+        return promise.then((data) => MsgUpdateDidResponse.decode(new Reader(data)));
+    }
+    RevokeDid(request) {
+        const data = MsgRevokeDid.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RevokeDid', data);
+        return promise.then((data) => MsgRevokeDidResponse.decode(new Reader(data)));
     }
     RoyaltyInfo(request) {
         const data = MsgRoyaltyInfo.encode(request).finish();

@@ -2,7 +2,7 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseDIDOwner = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '' };
+const baseDIDOwner = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '', didWebDeactivated: '', vanityName: '' };
 export const DIDOwner = {
     encode(message, writer = Writer.create()) {
         if (message.identity !== '') {
@@ -19,6 +19,12 @@ export const DIDOwner = {
         }
         if (message.didWeb !== '') {
             writer.uint32(42).string(message.didWeb);
+        }
+        if (message.didWebDeactivated !== '') {
+            writer.uint32(50).string(message.didWebDeactivated);
+        }
+        if (message.vanityName !== '') {
+            writer.uint32(58).string(message.vanityName);
         }
         return writer;
     },
@@ -43,6 +49,12 @@ export const DIDOwner = {
                     break;
                 case 5:
                     message.didWeb = reader.string();
+                    break;
+                case 6:
+                    message.didWebDeactivated = reader.string();
+                    break;
+                case 7:
+                    message.vanityName = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -83,6 +95,18 @@ export const DIDOwner = {
         else {
             message.didWeb = '';
         }
+        if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
+            message.didWebDeactivated = String(object.didWebDeactivated);
+        }
+        else {
+            message.didWebDeactivated = '';
+        }
+        if (object.vanityName !== undefined && object.vanityName !== null) {
+            message.vanityName = String(object.vanityName);
+        }
+        else {
+            message.vanityName = '';
+        }
         return message;
     },
     toJSON(message) {
@@ -92,6 +116,8 @@ export const DIDOwner = {
         message.didAncon !== undefined && (obj.didAncon = message.didAncon);
         message.didKey !== undefined && (obj.didKey = message.didKey);
         message.didWeb !== undefined && (obj.didWeb = message.didWeb);
+        message.didWebDeactivated !== undefined && (obj.didWebDeactivated = message.didWebDeactivated);
+        message.vanityName !== undefined && (obj.vanityName = message.vanityName);
         return obj;
     },
     fromPartial(object) {
@@ -125,6 +151,18 @@ export const DIDOwner = {
         }
         else {
             message.didWeb = '';
+        }
+        if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
+            message.didWebDeactivated = object.didWebDeactivated;
+        }
+        else {
+            message.didWebDeactivated = '';
+        }
+        if (object.vanityName !== undefined && object.vanityName !== null) {
+            message.vanityName = object.vanityName;
+        }
+        else {
+            message.vanityName = '';
         }
         return message;
     }

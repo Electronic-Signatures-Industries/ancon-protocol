@@ -1,5 +1,29 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+/** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
+export interface MsgCreateDid {
+    creator: string;
+}
+export interface MsgCreateDidResponse {
+    cid: string;
+    did: string;
+}
+export interface MsgUpdateDid {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgUpdateDidResponse {
+}
+export interface MsgRevokeDid {
+    creator: string;
+    did: string;
+    metadata: string;
+    cid: string;
+}
+export interface MsgRevokeDidResponse {
+}
 export interface MsgMintTrustedContent {
     creator: string;
     did: string;
@@ -221,6 +245,48 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgCreateDid: {
+    encode(message: MsgCreateDid, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateDid;
+    fromJSON(object: any): MsgCreateDid;
+    toJSON(message: MsgCreateDid): unknown;
+    fromPartial(object: DeepPartial<MsgCreateDid>): MsgCreateDid;
+};
+export declare const MsgCreateDidResponse: {
+    encode(message: MsgCreateDidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateDidResponse;
+    fromJSON(object: any): MsgCreateDidResponse;
+    toJSON(message: MsgCreateDidResponse): unknown;
+    fromPartial(object: DeepPartial<MsgCreateDidResponse>): MsgCreateDidResponse;
+};
+export declare const MsgUpdateDid: {
+    encode(message: MsgUpdateDid, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgUpdateDid;
+    fromJSON(object: any): MsgUpdateDid;
+    toJSON(message: MsgUpdateDid): unknown;
+    fromPartial(object: DeepPartial<MsgUpdateDid>): MsgUpdateDid;
+};
+export declare const MsgUpdateDidResponse: {
+    encode(_: MsgUpdateDidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgUpdateDidResponse;
+    fromJSON(_: any): MsgUpdateDidResponse;
+    toJSON(_: MsgUpdateDidResponse): unknown;
+    fromPartial(_: DeepPartial<MsgUpdateDidResponse>): MsgUpdateDidResponse;
+};
+export declare const MsgRevokeDid: {
+    encode(message: MsgRevokeDid, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeDid;
+    fromJSON(object: any): MsgRevokeDid;
+    toJSON(message: MsgRevokeDid): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeDid>): MsgRevokeDid;
+};
+export declare const MsgRevokeDidResponse: {
+    encode(_: MsgRevokeDidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRevokeDidResponse;
+    fromJSON(_: any): MsgRevokeDidResponse;
+    toJSON(_: MsgRevokeDidResponse): unknown;
+    fromPartial(_: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse;
+};
 export declare const MsgMintTrustedContent: {
     encode(message: MsgMintTrustedContent, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContent;
@@ -510,6 +576,12 @@ export declare const MsgFileResponse: {
 };
 /** Msg defines the Msg service. */
 export interface Msg {
+    /** CreateDid */
+    CreateDid(request: MsgCreateDid): Promise<MsgCreateDidResponse>;
+    /** UpdateDid */
+    UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse>;
+    /** RevokeDid */
+    RevokeDid(request: MsgRevokeDid): Promise<MsgRevokeDidResponse>;
     /** RoyaltyInfo defines a metadata CID royalty info */
     RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     /** ChangeOwer TODO */
@@ -528,10 +600,7 @@ export interface Msg {
     /** Metadata TODO */
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
     File(request: MsgFile): Promise<MsgFileResponse>;
-    /**
-     * rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
-     * IssueDenom defines a method for issue a denom.
-     */
+    /** IssueDenom defines a method for issue a denom. */
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     /** MintNFT defines a method for mint a new nft */
     MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
@@ -555,6 +624,9 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    CreateDid(request: MsgCreateDid): Promise<MsgCreateDidResponse>;
+    UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse>;
+    RevokeDid(request: MsgRevokeDid): Promise<MsgRevokeDidResponse>;
     RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>;
     ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>;
     RevokeDelegate(request: MsgRevokeDelegate): Promise<MsgRevokeDelegateResponse>;

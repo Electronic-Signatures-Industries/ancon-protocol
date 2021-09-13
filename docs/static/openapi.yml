@@ -32384,6 +32384,13 @@ definitions:
         format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgClaimSwapResponse:
     type: object
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgCreateDidResponse:
+    type: object
+    properties:
+      cid:
+        type: string
+      did:
+        type: string
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgEditNFTResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
@@ -32432,6 +32439,8 @@ definitions:
       hash:
         type: string
         format: byte
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRevokeDidResponse:
+    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRoyaltyInfoResponse:
     type: object
     properties:
@@ -32449,6 +32458,8 @@ definitions:
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgTransferNFTResponse:
     type: object
     description: MsgTransferNFTResponse defines the Msg/TransferNFT response type.
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgUpdateDidResponse:
+    type: object
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Owner:
     type: object
     properties:

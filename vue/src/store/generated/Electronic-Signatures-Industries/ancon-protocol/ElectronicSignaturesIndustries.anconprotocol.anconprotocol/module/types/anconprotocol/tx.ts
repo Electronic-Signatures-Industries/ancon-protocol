@@ -4,6 +4,34 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+/** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
+export interface MsgCreateDid {
+  creator: string
+}
+
+export interface MsgCreateDidResponse {
+  cid: string
+  did: string
+}
+
+export interface MsgUpdateDid {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgUpdateDidResponse {}
+
+export interface MsgRevokeDid {
+  creator: string
+  did: string
+  metadata: string
+  cid: string
+}
+
+export interface MsgRevokeDidResponse {}
+
 export interface MsgMintTrustedContent {
   creator: string
   did: string
@@ -253,6 +281,421 @@ export interface MsgFile {
 
 export interface MsgFileResponse {
   hash: string
+}
+
+const baseMsgCreateDid: object = { creator: '' }
+
+export const MsgCreateDid = {
+  encode(message: MsgCreateDid, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateDid {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgCreateDid } as MsgCreateDid
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgCreateDid {
+    const message = { ...baseMsgCreateDid } as MsgCreateDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgCreateDid): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateDid>): MsgCreateDid {
+    const message = { ...baseMsgCreateDid } as MsgCreateDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    return message
+  }
+}
+
+const baseMsgCreateDidResponse: object = { cid: '', did: '' }
+
+export const MsgCreateDidResponse = {
+  encode(message: MsgCreateDidResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateDidResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgCreateDidResponse } as MsgCreateDidResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgCreateDidResponse {
+    const message = { ...baseMsgCreateDidResponse } as MsgCreateDidResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgCreateDidResponse): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    message.did !== undefined && (obj.did = message.did)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateDidResponse>): MsgCreateDidResponse {
+    const message = { ...baseMsgCreateDidResponse } as MsgCreateDidResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    return message
+  }
+}
+
+const baseMsgUpdateDid: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgUpdateDid = {
+  encode(message: MsgUpdateDid, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgUpdateDid {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgUpdateDid } as MsgUpdateDid
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgUpdateDid {
+    const message = { ...baseMsgUpdateDid } as MsgUpdateDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgUpdateDid): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgUpdateDid>): MsgUpdateDid {
+    const message = { ...baseMsgUpdateDid } as MsgUpdateDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgUpdateDidResponse: object = {}
+
+export const MsgUpdateDidResponse = {
+  encode(_: MsgUpdateDidResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgUpdateDidResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgUpdateDidResponse } as MsgUpdateDidResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgUpdateDidResponse {
+    const message = { ...baseMsgUpdateDidResponse } as MsgUpdateDidResponse
+    return message
+  },
+
+  toJSON(_: MsgUpdateDidResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgUpdateDidResponse>): MsgUpdateDidResponse {
+    const message = { ...baseMsgUpdateDidResponse } as MsgUpdateDidResponse
+    return message
+  }
+}
+
+const baseMsgRevokeDid: object = { creator: '', did: '', metadata: '', cid: '' }
+
+export const MsgRevokeDid = {
+  encode(message: MsgRevokeDid, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.metadata !== '') {
+      writer.uint32(26).string(message.metadata)
+    }
+    if (message.cid !== '') {
+      writer.uint32(34).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRevokeDid {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRevokeDid } as MsgRevokeDid
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.metadata = reader.string()
+          break
+        case 4:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgRevokeDid {
+    const message = { ...baseMsgRevokeDid } as MsgRevokeDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata)
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgRevokeDid): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.metadata !== undefined && (obj.metadata = message.metadata)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgRevokeDid>): MsgRevokeDid {
+    const message = { ...baseMsgRevokeDid } as MsgRevokeDid
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata
+    } else {
+      message.metadata = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgRevokeDidResponse: object = {}
+
+export const MsgRevokeDidResponse = {
+  encode(_: MsgRevokeDidResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRevokeDidResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRevokeDidResponse } as MsgRevokeDidResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgRevokeDidResponse {
+    const message = { ...baseMsgRevokeDidResponse } as MsgRevokeDidResponse
+    return message
+  },
+
+  toJSON(_: MsgRevokeDidResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse {
+    const message = { ...baseMsgRevokeDidResponse } as MsgRevokeDidResponse
+    return message
+  }
 }
 
 const baseMsgMintTrustedContent: object = { creator: '', did: '', metadata: '', cid: '' }
@@ -3845,6 +4288,12 @@ export const MsgFileResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
+  /** CreateDid */
+  CreateDid(request: MsgCreateDid): Promise<MsgCreateDidResponse>
+  /** UpdateDid */
+  UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse>
+  /** RevokeDid */
+  RevokeDid(request: MsgRevokeDid): Promise<MsgRevokeDidResponse>
   /** RoyaltyInfo defines a metadata CID royalty info */
   RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>
   /** ChangeOwer TODO */
@@ -3863,10 +4312,7 @@ export interface Msg {
   /** Metadata TODO */
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
   File(request: MsgFile): Promise<MsgFileResponse>
-  /**
-   * rpc CreateDid (MsgCreateDid) returns (MsgCreateDidResponse)
-   * IssueDenom defines a method for issue a denom.
-   */
+  /** IssueDenom defines a method for issue a denom. */
   IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>
   /** MintNFT defines a method for mint a new nft */
   MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>
@@ -3893,6 +4339,24 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  CreateDid(request: MsgCreateDid): Promise<MsgCreateDidResponse> {
+    const data = MsgCreateDid.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'CreateDid', data)
+    return promise.then((data) => MsgCreateDidResponse.decode(new Reader(data)))
+  }
+
+  UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse> {
+    const data = MsgUpdateDid.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'UpdateDid', data)
+    return promise.then((data) => MsgUpdateDidResponse.decode(new Reader(data)))
+  }
+
+  RevokeDid(request: MsgRevokeDid): Promise<MsgRevokeDidResponse> {
+    const data = MsgRevokeDid.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RevokeDid', data)
+    return promise.then((data) => MsgRevokeDidResponse.decode(new Reader(data)))
+  }
+
   RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse> {
     const data = MsgRoyaltyInfo.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RoyaltyInfo', data)

@@ -60,6 +60,7 @@ service Msg {
 //  https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164
 message MsgCreateDid {
   string creator = 1;
+  string vanity_name = 2;
 }
 
 message MsgCreateDidResponse {

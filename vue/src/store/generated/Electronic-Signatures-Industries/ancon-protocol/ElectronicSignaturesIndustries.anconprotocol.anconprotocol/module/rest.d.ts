@@ -33,6 +33,10 @@ export interface AnconprotocolMsgChangeOwnerResponse {
     previousChange?: string;
 }
 export declare type AnconprotocolMsgClaimSwapResponse = object;
+export interface AnconprotocolMsgCreateDidResponse {
+    cid?: string;
+    did?: string;
+}
 /**
  * MsgEditNFTResponse defines the Msg/EditNFT response type.
  */
@@ -69,6 +73,7 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
     /** @format byte */
     hash?: string;
 }
+export declare type AnconprotocolMsgRevokeDidResponse = object;
 export interface AnconprotocolMsgRoyaltyInfoResponse {
     receiver?: string;
     /** @format uint64 */
@@ -83,6 +88,7 @@ export declare type AnconprotocolMsgTransferDenomResponse = object;
  * MsgTransferNFTResponse defines the Msg/TransferNFT response type.
  */
 export declare type AnconprotocolMsgTransferNFTResponse = object;
+export declare type AnconprotocolMsgUpdateDidResponse = object;
 export interface AnconprotocolOwner {
     address?: string;
     idCollections?: AnconprotocolIDCollection[];

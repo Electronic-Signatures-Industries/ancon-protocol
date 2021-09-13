@@ -11,7 +11,9 @@ require (
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
+	github.com/hyperledger/aries-framework-go v0.1.6
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/irisnet/irismod v1.4.0
