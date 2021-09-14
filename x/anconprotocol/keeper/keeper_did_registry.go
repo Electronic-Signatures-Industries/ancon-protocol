@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
+	"github.com/itchyny/base58-go"
 )
 
 type Delegate struct {
@@ -149,7 +150,7 @@ func (k Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwne
 }
 
 // BuildDidWeb ....
-func BuildDidWeb(ctx sdk.Context, creator string) *did.Doc {
+func BuildDidWeb(ctx sdk.Context, creator string) (*did.Doc, error) {
 
 	// impl read checks
 	//
@@ -159,9 +160,19 @@ func BuildDidWeb(ctx sdk.Context, creator string) *did.Doc {
 	// 2. Get ChainID and http host
 	// 3. Send to read/validation query for  DID
 	// 4. any use case, replace chainid with http host
+	encoding := base58.FlickrEncoding
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	acc, _ := sdk.AccAddressFromBech32(creator)
+	encoded, err := encoding.Encode([]byte(acc.String()))
+
+	if err != nil {
+		return nil, err
+	}
+
 	// public
-	pub := acc.Bytes() // for did:key base58
+	pub := encoded // for did:key base58
 	ti := time.Now()
 	// did web
 	base := append([]byte("did:web:"), []byte(ctx.ChainID())...)
@@ -172,7 +183,7 @@ func BuildDidWeb(ctx sdk.Context, creator string) *did.Doc {
 		string(id),
 		"Secp256k1VerificationKey2018",
 		string(base),
-		pub,
+		[]byte(pub),
 	)
 
 	ver := []did.VerificationMethod{
