@@ -14,6 +14,10 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
 
+	cdc.RegisterConcrete(&MsgCreateDid{}, "anconprotocol/CreateDid", nil)
+	cdc.RegisterConcrete(&MsgUpdateDid{}, "anconprotocol/UpdateDid", nil)
+	cdc.RegisterConcrete(&MsgRevokeDid{}, "anconprotocol/RevokeDid", nil)
+
 	cdc.RegisterConcrete(&MsgChangeOwner{}, "anconprotocol/ChangeOwner", nil)
 	cdc.RegisterConcrete(&MsgGrantDelegate{}, "anconprotocol/GrantDelegate", nil)
 	cdc.RegisterConcrete(&MsgGrantAttribute{}, "anconprotocol/GrantAttribute", nil)
