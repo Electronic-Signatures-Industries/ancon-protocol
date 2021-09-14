@@ -11,7 +11,7 @@ export interface DIDOwner {
   didAncon: string
   didKey: string
   didWeb: string
-  didWebDeactivated: string
+  didWebDeactivated: boolean
   vanityName: string
 }
 
@@ -35,7 +35,7 @@ export interface Attribute {
   value: Uint8Array
 }
 
-const baseDIDOwner: object = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '', didWebDeactivated: '', vanityName: '' }
+const baseDIDOwner: object = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '', didWebDeactivated: false, vanityName: '' }
 
 export const DIDOwner = {
   encode(message: DIDOwner, writer: Writer = Writer.create()): Writer {
@@ -54,8 +54,8 @@ export const DIDOwner = {
     if (message.didWeb !== '') {
       writer.uint32(42).string(message.didWeb)
     }
-    if (message.didWebDeactivated !== '') {
-      writer.uint32(50).string(message.didWebDeactivated)
+    if (message.didWebDeactivated === true) {
+      writer.uint32(48).bool(message.didWebDeactivated)
     }
     if (message.vanityName !== '') {
       writer.uint32(58).string(message.vanityName)
@@ -86,7 +86,7 @@ export const DIDOwner = {
           message.didWeb = reader.string()
           break
         case 6:
-          message.didWebDeactivated = reader.string()
+          message.didWebDeactivated = reader.bool()
           break
         case 7:
           message.vanityName = reader.string()
@@ -127,9 +127,9 @@ export const DIDOwner = {
       message.didWeb = ''
     }
     if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
-      message.didWebDeactivated = String(object.didWebDeactivated)
+      message.didWebDeactivated = Boolean(object.didWebDeactivated)
     } else {
-      message.didWebDeactivated = ''
+      message.didWebDeactivated = false
     }
     if (object.vanityName !== undefined && object.vanityName !== null) {
       message.vanityName = String(object.vanityName)
@@ -181,7 +181,7 @@ export const DIDOwner = {
     if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
       message.didWebDeactivated = object.didWebDeactivated
     } else {
-      message.didWebDeactivated = ''
+      message.didWebDeactivated = false
     }
     if (object.vanityName !== undefined && object.vanityName !== null) {
       message.vanityName = object.vanityName

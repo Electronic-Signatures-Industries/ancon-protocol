@@ -95,6 +95,12 @@ func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDel
 func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*types.MsgCreateDidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	did, err := k.AddDid(ctx, msg)
 	//Revoke DID relationship / acces
 
 	// owners[identity] = newOwner;

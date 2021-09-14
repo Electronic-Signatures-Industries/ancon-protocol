@@ -43,6 +43,8 @@ const (
 
 	AttributeKey = "did_attribute"
 
+	DidAnconKey = "did:ancon:"
+
 	// this line is used by starport scaffolding # ibc/keys/name
 )
 

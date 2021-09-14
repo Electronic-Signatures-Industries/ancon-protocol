@@ -7,7 +7,7 @@ export interface DIDOwner {
     didAncon: string;
     didKey: string;
     didWeb: string;
-    didWebDeactivated: string;
+    didWebDeactivated: boolean;
     vanityName: string;
 }
 export interface Delegate {

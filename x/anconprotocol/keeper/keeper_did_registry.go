@@ -1,9 +1,12 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 )
 
 type Delegate struct {
@@ -116,6 +119,106 @@ func (k Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) (typ
 
 	k.SetChange(ctx, change)
 	return change, nil
+}
+
+func (k Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwner, error) {
+	chainDID, err := BuildDidAncon(ctx, msg.Creator)
+
+	if err != nil {
+		return nil, err
+	}
+
+	didOwner := types.DIDOwner{
+		Identity: msg.Creator,
+		Owner:    msg.Creator,
+		DidAncon: string(chainDID),
+	}
+
+	if msg.DidType == "web" {
+		didWeb := BuildDidWeb(ctx, msg)
+		didOwner.DidWeb = didWeb.ID
+		didOwner.DidWebDeactivated = false
+		k.SetDid(didWeb)
+	} else if msg.DidType == "key" {
+		didKey := BuildDidKey(ctx, msg)
+		didOwner.DidKey = didKey.ID
+		k.SetDid(didKey)
+	}
+
+	return &didOwner, nil
+}
+
+// BuildDidWeb ....
+func BuildDidWeb(ctx sdk.Context, creator string) *did.Doc {
+
+	// impl read checks
+	//
+	//		sdkCtx := sdk.UnwrapSDKContext(ctx)
+	//	sdkCtx.ChainID()
+	// 1. Get SDK context
+	// 2. Get ChainID and http host
+	// 3. Send to read/validation query for  DID
+	// 4. any use case, replace chainid with http host
+	acc, _ := sdk.AccAddressFromBech32(creator)
+	// public
+	pub := acc.Bytes() // for did:key base58
+	ti := time.Now()
+	// did web
+	base := append([]byte("did:web:"), []byte(ctx.ChainID())...)
+	// did web # id
+	id := append(base, []byte("#12345")...)
+
+	didWebVer := did.NewVerificationMethodFromBytes(
+		string(id),
+		"Secp256k1VerificationKey2018",
+		string(base),
+		pub,
+	)
+
+	ver := []did.VerificationMethod{
+		{},
+	}
+	ver = append(ver, *didWebVer)
+	serv := []did.Service{{}, {}}
+
+	// Secp256k1SignatureAuthentication2018
+	auth := []did.Verification{{}}
+
+	doc := did.BuildDoc(
+		did.WithVerificationMethod(ver),
+		did.WithService(serv),
+		did.WithAuthentication(auth),
+		did.WithCreatedTime(ti),
+		did.WithUpdatedTime(ti),
+	)
+
+	return doc
+}
+
+// BuildDidKey ....
+func BuildDidKey(ctx sdk.Context, creator string) ([]byte, error) {
+	prefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
+	addr, err := sdk.GetFromBech32(creator, prefix)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return append([]byte(types.DidAnconKey), addr...), nil
+}
+
+// BuildDidAncon ....
+func BuildDidAncon(ctx sdk.Context, creator string) ([]byte, error) {
+	prefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
+	addr, err := sdk.GetFromBech32(creator, prefix)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return append([]byte(types.DidAnconKey), addr...), nil
 }
 
 func (k Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgGrantAttribute) (types.Change, error) {

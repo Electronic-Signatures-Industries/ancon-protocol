@@ -14,7 +14,7 @@ message DIDOwner {
   string did_ancon = 3;  // internal use eg. did:ancon:{hex-bech32}
   string did_key = 4[ (gogoproto.nullable) = true ];
   string did_web = 5[ (gogoproto.nullable) = true ];
-  string did_web_deactivated = 6[ (gogoproto.nullable) = true];
+  bool did_web_deactivated = 6[ (gogoproto.nullable) = true];
   string vanity_name = 7;
 }
 

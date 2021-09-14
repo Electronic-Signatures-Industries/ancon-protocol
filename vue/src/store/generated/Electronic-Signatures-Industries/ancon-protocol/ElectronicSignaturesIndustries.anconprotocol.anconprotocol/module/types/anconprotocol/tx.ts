@@ -8,6 +8,7 @@ export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anc
 export interface MsgCreateDid {
   creator: string
   vanityName: string
+  didType: string
 }
 
 export interface MsgCreateDidResponse {
@@ -287,7 +288,7 @@ export interface MsgFileResponse {
   hash: string
 }
 
-const baseMsgCreateDid: object = { creator: '', vanityName: '' }
+const baseMsgCreateDid: object = { creator: '', vanityName: '', didType: '' }
 
 export const MsgCreateDid = {
   encode(message: MsgCreateDid, writer: Writer = Writer.create()): Writer {
@@ -296,6 +297,9 @@ export const MsgCreateDid = {
     }
     if (message.vanityName !== '') {
       writer.uint32(18).string(message.vanityName)
+    }
+    if (message.didType !== '') {
+      writer.uint32(26).string(message.didType)
     }
     return writer
   },
@@ -312,6 +316,9 @@ export const MsgCreateDid = {
           break
         case 2:
           message.vanityName = reader.string()
+          break
+        case 3:
+          message.didType = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -333,6 +340,11 @@ export const MsgCreateDid = {
     } else {
       message.vanityName = ''
     }
+    if (object.didType !== undefined && object.didType !== null) {
+      message.didType = String(object.didType)
+    } else {
+      message.didType = ''
+    }
     return message
   },
 
@@ -340,6 +352,7 @@ export const MsgCreateDid = {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
     message.vanityName !== undefined && (obj.vanityName = message.vanityName)
+    message.didType !== undefined && (obj.didType = message.didType)
     return obj
   },
 
@@ -354,6 +367,11 @@ export const MsgCreateDid = {
       message.vanityName = object.vanityName
     } else {
       message.vanityName = ''
+    }
+    if (object.didType !== undefined && object.didType !== null) {
+      message.didType = object.didType
+    } else {
+      message.didType = ''
     }
     return message
   }

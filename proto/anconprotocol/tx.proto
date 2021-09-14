@@ -61,6 +61,7 @@ service Msg {
 message MsgCreateDid {
   string creator = 1;
   string vanity_name = 2;
+  string did_type = 3;
 }
 
 message MsgCreateDidResponse {

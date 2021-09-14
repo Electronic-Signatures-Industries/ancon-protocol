@@ -4,6 +4,7 @@ export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprot
 export interface MsgCreateDid {
     creator: string;
     vanityName: string;
+    didType: string;
 }
 export interface MsgCreateDidResponse {
     cid: string;

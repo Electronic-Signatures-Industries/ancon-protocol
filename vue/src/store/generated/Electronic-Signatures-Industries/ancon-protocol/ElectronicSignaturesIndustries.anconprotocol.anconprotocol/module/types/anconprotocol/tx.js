@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseMsgCreateDid = { creator: '', vanityName: '' };
+const baseMsgCreateDid = { creator: '', vanityName: '', didType: '' };
 export const MsgCreateDid = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -10,6 +10,9 @@ export const MsgCreateDid = {
         }
         if (message.vanityName !== '') {
             writer.uint32(18).string(message.vanityName);
+        }
+        if (message.didType !== '') {
+            writer.uint32(26).string(message.didType);
         }
         return writer;
     },
@@ -25,6 +28,9 @@ export const MsgCreateDid = {
                     break;
                 case 2:
                     message.vanityName = reader.string();
+                    break;
+                case 3:
+                    message.didType = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -47,12 +53,19 @@ export const MsgCreateDid = {
         else {
             message.vanityName = '';
         }
+        if (object.didType !== undefined && object.didType !== null) {
+            message.didType = String(object.didType);
+        }
+        else {
+            message.didType = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.creator !== undefined && (obj.creator = message.creator);
         message.vanityName !== undefined && (obj.vanityName = message.vanityName);
+        message.didType !== undefined && (obj.didType = message.didType);
         return obj;
     },
     fromPartial(object) {
@@ -68,6 +81,12 @@ export const MsgCreateDid = {
         }
         else {
             message.vanityName = '';
+        }
+        if (object.didType !== undefined && object.didType !== null) {
+            message.didType = object.didType;
+        }
+        else {
+            message.didType = '';
         }
         return message;
     }
