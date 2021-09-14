@@ -203,7 +203,7 @@ func BuildDidWeb(ctx sdk.Context, creator string) (*did.Doc, error) {
 		did.WithUpdatedTime(ti),
 	)
 
-	return doc
+	return doc, nil
 }
 
 // BuildDidKey ....
