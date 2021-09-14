@@ -114,6 +114,38 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 	}, err
 }
 
+func (k msgServer) UpdateDid(goCtx context.Context, msg *types.MsgUpdateDid) (*types.MsgUpdateDidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	//Revoke DID relationship / acces
+
+	// owners[identity] = newOwner;
+	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
+	//   changed[identity] = block.number;
+	// TODO: Handling the message
+	_ = ctx
+
+	// Did := res.did
+
+	return &types.MsgUpdateDidResponse{}, nil
+}
+
+func (k msgServer) RevokeDid(goCtx context.Context, msg *types.MsgRevokeDid) (*types.MsgRevokeDidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	//Revoke DID relationship / acces
+
+	// owners[identity] = newOwner;
+	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
+	//   changed[identity] = block.number;
+	// TODO: Handling the message
+	_ = ctx
+
+	// Did := res.did
+
+	return &types.MsgRevokeDidResponse{}, nil
+}
+
 // Example 1: Example did:web DID document
 
 // {

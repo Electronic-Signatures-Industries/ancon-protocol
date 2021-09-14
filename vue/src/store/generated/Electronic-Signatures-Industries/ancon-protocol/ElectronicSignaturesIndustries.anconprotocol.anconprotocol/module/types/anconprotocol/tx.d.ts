@@ -3,6 +3,7 @@ export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprot
 /** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
 export interface MsgCreateDid {
     creator: string;
+    vanityName: string;
 }
 export interface MsgCreateDidResponse {
     cid: string;
@@ -219,12 +220,15 @@ export interface MsgMetadata {
     image: string;
     /** did owner*eg. did:ancon:{hex-bech32} */
     owner: string;
-    /** change/diff , ancestor is parent */
+    /** change/diff , ancestor is parent, version */
     parent: string;
+    /** data sources */
     sources: string;
+    /** reference links */
     links: string;
+    /** mutate */
     verifiedCredentialRef: string;
-    /** did doc* */
+    /** did doc* #my_document */
     did: string;
     /** reserved */
     from: string;

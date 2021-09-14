@@ -46,6 +46,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgTransferDenom{},
 		&MsgBurnNFT{},
 		&MsgEditNFT{},
+		&MsgCreateDid{},
+		&MsgUpdateDid{},
+		&MsgRevokeDid{},
+		&MsgClaimSwap{},
+		&MsgInitiateSwap{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

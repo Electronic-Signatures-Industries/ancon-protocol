@@ -366,11 +366,11 @@ message MsgMetadata {
   string description = 3;
   string image = 4;
   string owner = 5;   // did owner*eg. did:ancon:{hex-bech32}
-  string parent = 6;  // change/diff , ancestor is parent
-  string sources = 7;
-  string links = 8;
-  string verified_credential_ref = 9;
-  string did = 10;    // did doc*
+  string parent = 6;  // change/diff , ancestor is parent, version
+  string sources = 7; // data sources
+  string links = 8;   // reference links
+  string verified_credential_ref = 9; // mutate
+  string did = 10;    // did doc* #my_document
   string from = 11;   // reserved
 }
 

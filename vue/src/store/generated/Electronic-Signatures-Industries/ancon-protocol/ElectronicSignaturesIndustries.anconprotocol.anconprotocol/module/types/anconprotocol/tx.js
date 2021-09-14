@@ -2,11 +2,14 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseMsgCreateDid = { creator: '' };
+const baseMsgCreateDid = { creator: '', vanityName: '' };
 export const MsgCreateDid = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
             writer.uint32(10).string(message.creator);
+        }
+        if (message.vanityName !== '') {
+            writer.uint32(18).string(message.vanityName);
         }
         return writer;
     },
@@ -19,6 +22,9 @@ export const MsgCreateDid = {
             switch (tag >>> 3) {
                 case 1:
                     message.creator = reader.string();
+                    break;
+                case 2:
+                    message.vanityName = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -35,11 +41,18 @@ export const MsgCreateDid = {
         else {
             message.creator = '';
         }
+        if (object.vanityName !== undefined && object.vanityName !== null) {
+            message.vanityName = String(object.vanityName);
+        }
+        else {
+            message.vanityName = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.creator !== undefined && (obj.creator = message.creator);
+        message.vanityName !== undefined && (obj.vanityName = message.vanityName);
         return obj;
     },
     fromPartial(object) {
@@ -49,6 +62,12 @@ export const MsgCreateDid = {
         }
         else {
             message.creator = '';
+        }
+        if (object.vanityName !== undefined && object.vanityName !== null) {
+            message.vanityName = object.vanityName;
+        }
+        else {
+            message.vanityName = '';
         }
         return message;
     }

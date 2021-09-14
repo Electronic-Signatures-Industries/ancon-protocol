@@ -7,6 +7,7 @@ export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anc
 /** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
 export interface MsgCreateDid {
   creator: string
+  vanityName: string
 }
 
 export interface MsgCreateDidResponse {
@@ -253,12 +254,15 @@ export interface MsgMetadata {
   image: string
   /** did owner*eg. did:ancon:{hex-bech32} */
   owner: string
-  /** change/diff , ancestor is parent */
+  /** change/diff , ancestor is parent, version */
   parent: string
+  /** data sources */
   sources: string
+  /** reference links */
   links: string
+  /** mutate */
   verifiedCredentialRef: string
-  /** did doc* */
+  /** did doc* #my_document */
   did: string
   /** reserved */
   from: string
@@ -283,12 +287,15 @@ export interface MsgFileResponse {
   hash: string
 }
 
-const baseMsgCreateDid: object = { creator: '' }
+const baseMsgCreateDid: object = { creator: '', vanityName: '' }
 
 export const MsgCreateDid = {
   encode(message: MsgCreateDid, writer: Writer = Writer.create()): Writer {
     if (message.creator !== '') {
       writer.uint32(10).string(message.creator)
+    }
+    if (message.vanityName !== '') {
+      writer.uint32(18).string(message.vanityName)
     }
     return writer
   },
@@ -302,6 +309,9 @@ export const MsgCreateDid = {
       switch (tag >>> 3) {
         case 1:
           message.creator = reader.string()
+          break
+        case 2:
+          message.vanityName = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -318,12 +328,18 @@ export const MsgCreateDid = {
     } else {
       message.creator = ''
     }
+    if (object.vanityName !== undefined && object.vanityName !== null) {
+      message.vanityName = String(object.vanityName)
+    } else {
+      message.vanityName = ''
+    }
     return message
   },
 
   toJSON(message: MsgCreateDid): unknown {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
+    message.vanityName !== undefined && (obj.vanityName = message.vanityName)
     return obj
   },
 
@@ -333,6 +349,11 @@ export const MsgCreateDid = {
       message.creator = object.creator
     } else {
       message.creator = ''
+    }
+    if (object.vanityName !== undefined && object.vanityName !== null) {
+      message.vanityName = object.vanityName
+    } else {
+      message.vanityName = ''
     }
     return message
   }

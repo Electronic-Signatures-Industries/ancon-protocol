@@ -16,6 +16,113 @@ var _ sdk.Msg = &MsgEditNFT{}
 var _ sdk.Msg = &MsgTransferNFT{}
 var _ sdk.Msg = &MsgMintNFT{}
 
+var _ sdk.Msg = &MsgCreateDid{}
+var _ sdk.Msg = &MsgUpdateDid{}
+var _ sdk.Msg = &MsgRevokeDid{}
+
+func NewMsgCreateDid(creator string) *MsgCreateDid {
+	return &MsgCreateDid{
+		Creator: creator,
+	}
+}
+
+func (msg *MsgCreateDid) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgCreateDid) Type() string {
+	return "CreateDid"
+}
+
+func (msg *MsgCreateDid) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgCreateDid) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgCreateDid) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+func NewMsgRevokeDid(creator string) *MsgRevokeDid {
+	return &MsgRevokeDid{
+		Creator: creator,
+	}
+}
+
+func (msg *MsgRevokeDid) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgRevokeDid) Type() string {
+	return "RevokeDid"
+}
+
+func (msg *MsgRevokeDid) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgRevokeDid) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgRevokeDid) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+func NewMsgUpdateDid(creator string) *MsgUpdateDid {
+	return &MsgUpdateDid{
+		Creator: creator,
+	}
+}
+
+func (msg *MsgUpdateDid) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgUpdateDid) Type() string {
+	return "UpdateDid"
+}
+
+func (msg *MsgUpdateDid) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgUpdateDid) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgUpdateDid) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
 func NewMsgChangeOwner(creator string) *MsgChangeOwner {
 	return &MsgChangeOwner{
 		Creator: creator,
