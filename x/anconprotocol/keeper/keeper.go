@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/ipfs/go-cid"
@@ -12,7 +14,6 @@ import (
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/spf13/cast"
-	"io"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -252,7 +253,9 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 }
 
 func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didOwner *types.DIDOwner, cid string) {
-
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	res := k.cdc.MustMarshalBinaryBare(didOwner)
+	store.Set([]byte(didOwner.DidWeb), res)
 }
 
 func (k *Keeper) toIpldStringList(items []string) func(fluent.ListAssembler) {
