@@ -4,6 +4,7 @@ export interface AnconprotocolBaseNFT {
     uri?: string;
     data?: string;
     owner?: string;
+    didOwner?: string;
 }
 export interface AnconprotocolCollection {
     denom?: AnconprotocolDenom;
@@ -32,7 +33,10 @@ export interface AnconprotocolMsgChangeOwnerResponse {
     /** @format uint64 */
     previousChange?: string;
 }
-export declare type AnconprotocolMsgClaimSwapResponse = object;
+export interface AnconprotocolMsgClaimSwapResponse {
+    /** @format uint64 */
+    id?: string;
+}
 export interface AnconprotocolMsgCreateDidResponse {
     cid?: string;
     did?: string;
@@ -51,7 +55,10 @@ export interface AnconprotocolMsgGrantDelegateResponse {
     /** @format byte */
     hash?: string;
 }
-export declare type AnconprotocolMsgInitiateSwapResponse = object;
+export interface AnconprotocolMsgInitiateSwapResponse {
+    /** @format uint64 */
+    id?: string;
+}
 /**
  * MsgIssueDenomResponse defines the Msg/IssueDenom response type.
  */
@@ -63,8 +70,14 @@ export interface AnconprotocolMsgMetadataResponse {
  * MsgMintNFTResponse defines the Msg/MintNFT response type.
  */
 export declare type AnconprotocolMsgMintNFTResponse = object;
-export declare type AnconprotocolMsgMintTrustedContentResponse = object;
-export declare type AnconprotocolMsgMintTrustedResourceResponse = object;
+export interface AnconprotocolMsgMintTrustedContentResponse {
+    /** @format uint64 */
+    id?: string;
+}
+export interface AnconprotocolMsgMintTrustedResourceResponse {
+    /** @format uint64 */
+    id?: string;
+}
 export interface AnconprotocolMsgRevokeAttributeResponse {
     /** @format byte */
     hash?: string;
@@ -73,12 +86,15 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
     /** @format byte */
     hash?: string;
 }
-export declare type AnconprotocolMsgRevokeDidResponse = object;
+export interface AnconprotocolMsgRevokeDidResponse {
+    /** @format uint64 */
+    id?: string;
+}
 export interface AnconprotocolMsgRoyaltyInfoResponse {
     receiver?: string;
     /** @format uint64 */
     royaltyFeePercentage?: string;
-    metadataUri?: string;
+    metadataRef?: string;
 }
 /**
  * MsgTransferDenomResponse defines the Msg/TransferDenom response type.

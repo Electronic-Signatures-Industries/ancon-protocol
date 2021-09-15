@@ -25,23 +25,31 @@ export interface MsgRevokeDid {
     cid: string;
 }
 export interface MsgRevokeDidResponse {
+    id: number;
 }
 export interface MsgMintTrustedContent {
     creator: string;
-    did: string;
-    metadata: string;
-    cid: string;
-    durin: string;
+    /** metadata */
+    metadataRef: string;
+    /** denom id */
+    denomId: string;
+    /** nft name */
+    name: string;
+    /** recipient */
+    recipient: string;
+    /** did owner */
+    didOwner: string;
+    /** lazy mint */
+    lazyMint: boolean;
 }
 export interface MsgMintTrustedContentResponse {
+    id: number;
 }
 export interface MsgInitiateSwap {
     creator: string;
-    did: string;
-    metadata: string;
-    cid: string;
 }
 export interface MsgInitiateSwapResponse {
+    id: number;
 }
 export interface MsgClaimSwap {
     creator: string;
@@ -50,28 +58,43 @@ export interface MsgClaimSwap {
     cid: string;
 }
 export interface MsgClaimSwapResponse {
+    id: number;
 }
 export interface MsgMintTrustedResource {
     creator: string;
-    did: string;
-    metadata: string;
-    cid: string;
+    /** metadata */
+    metadataRef: string;
+    /** did owner */
+    didOwner: string;
+    /** denom id */
+    denomId: string;
+    /** nft name */
+    name: string;
+    /** recipient */
+    recipient: string;
+    /** private whitelist */
+    resourceWhitelistAccess: string[];
+    /** resource location */
+    resourceLocation: string;
+    /** lazy mint */
+    lazyMint: boolean;
 }
 export interface MsgMintTrustedResourceResponse {
+    id: number;
 }
 /** MsgRoyaltyInfo */
 export interface MsgRoyaltyInfo {
     creator: string;
     receiver: string;
     royaltyFeePercentage: number;
-    metadataUri: string;
+    metadataRef: string;
     denomId: string;
 }
 /** MsgRoyaltyInfoResponse */
 export interface MsgRoyaltyInfoResponse {
     receiver: string;
     royaltyFeePercentage: number;
-    metadataUri: string;
+    metadataRef: string;
 }
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
 export interface MsgIssueDenom {
@@ -234,6 +257,10 @@ export interface MsgMetadata {
     did: string;
     /** reserved */
     from: string;
+    /** ipld forest access */
+    enableIpldForestAccess: boolean;
+    /** fact metadata */
+    factRef: string;
 }
 export interface MsgMetadataResponse {
     cid: string;
@@ -287,11 +314,11 @@ export declare const MsgRevokeDid: {
     fromPartial(object: DeepPartial<MsgRevokeDid>): MsgRevokeDid;
 };
 export declare const MsgRevokeDidResponse: {
-    encode(_: MsgRevokeDidResponse, writer?: Writer): Writer;
+    encode(message: MsgRevokeDidResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgRevokeDidResponse;
-    fromJSON(_: any): MsgRevokeDidResponse;
-    toJSON(_: MsgRevokeDidResponse): unknown;
-    fromPartial(_: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse;
+    fromJSON(object: any): MsgRevokeDidResponse;
+    toJSON(message: MsgRevokeDidResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse;
 };
 export declare const MsgMintTrustedContent: {
     encode(message: MsgMintTrustedContent, writer?: Writer): Writer;
@@ -301,11 +328,11 @@ export declare const MsgMintTrustedContent: {
     fromPartial(object: DeepPartial<MsgMintTrustedContent>): MsgMintTrustedContent;
 };
 export declare const MsgMintTrustedContentResponse: {
-    encode(_: MsgMintTrustedContentResponse, writer?: Writer): Writer;
+    encode(message: MsgMintTrustedContentResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedContentResponse;
-    fromJSON(_: any): MsgMintTrustedContentResponse;
-    toJSON(_: MsgMintTrustedContentResponse): unknown;
-    fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
+    fromJSON(object: any): MsgMintTrustedContentResponse;
+    toJSON(message: MsgMintTrustedContentResponse): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
 };
 export declare const MsgInitiateSwap: {
     encode(message: MsgInitiateSwap, writer?: Writer): Writer;
@@ -315,11 +342,11 @@ export declare const MsgInitiateSwap: {
     fromPartial(object: DeepPartial<MsgInitiateSwap>): MsgInitiateSwap;
 };
 export declare const MsgInitiateSwapResponse: {
-    encode(_: MsgInitiateSwapResponse, writer?: Writer): Writer;
+    encode(message: MsgInitiateSwapResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgInitiateSwapResponse;
-    fromJSON(_: any): MsgInitiateSwapResponse;
-    toJSON(_: MsgInitiateSwapResponse): unknown;
-    fromPartial(_: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse;
+    fromJSON(object: any): MsgInitiateSwapResponse;
+    toJSON(message: MsgInitiateSwapResponse): unknown;
+    fromPartial(object: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse;
 };
 export declare const MsgClaimSwap: {
     encode(message: MsgClaimSwap, writer?: Writer): Writer;
@@ -329,11 +356,11 @@ export declare const MsgClaimSwap: {
     fromPartial(object: DeepPartial<MsgClaimSwap>): MsgClaimSwap;
 };
 export declare const MsgClaimSwapResponse: {
-    encode(_: MsgClaimSwapResponse, writer?: Writer): Writer;
+    encode(message: MsgClaimSwapResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgClaimSwapResponse;
-    fromJSON(_: any): MsgClaimSwapResponse;
-    toJSON(_: MsgClaimSwapResponse): unknown;
-    fromPartial(_: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse;
+    fromJSON(object: any): MsgClaimSwapResponse;
+    toJSON(message: MsgClaimSwapResponse): unknown;
+    fromPartial(object: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse;
 };
 export declare const MsgMintTrustedResource: {
     encode(message: MsgMintTrustedResource, writer?: Writer): Writer;
@@ -343,11 +370,11 @@ export declare const MsgMintTrustedResource: {
     fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource;
 };
 export declare const MsgMintTrustedResourceResponse: {
-    encode(_: MsgMintTrustedResourceResponse, writer?: Writer): Writer;
+    encode(message: MsgMintTrustedResourceResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMintTrustedResourceResponse;
-    fromJSON(_: any): MsgMintTrustedResourceResponse;
-    toJSON(_: MsgMintTrustedResourceResponse): unknown;
-    fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse;
+    fromJSON(object: any): MsgMintTrustedResourceResponse;
+    toJSON(message: MsgMintTrustedResourceResponse): unknown;
+    fromPartial(object: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse;
 };
 export declare const MsgRoyaltyInfo: {
     encode(message: MsgRoyaltyInfo, writer?: Writer): Writer;

@@ -87,30 +87,36 @@ message MsgRevokeDid {
 }
 
 message MsgRevokeDidResponse {
-
+  uint64 id = 1;
 }
 
 message MsgMintTrustedContent {
   string creator = 1;
-  string did = 2;
-  string metadata = 3;
-  string cid = 4;
-  string durin = 5;
+  // metadata
+  string metadata_ref = 2;
+  // denom id
+  string denom_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+  // nft name
+  string name = 4;
+  // recipient 
+  string recipient = 5;
+  // did owner
+  string did_owner = 6;  
+  // lazy mint
+  bool lazy_mint = 7;
 }
 
 message MsgMintTrustedContentResponse {
-
+  uint64 id = 1;
 }
 
 message MsgInitiateSwap {
   string creator = 1;
-  string did = 2;
-  string metadata = 3;
-  string cid = 4;
+  ;
 }
 
 message MsgInitiateSwapResponse {
-
+  uint64 id = 1;
 }
 
 message MsgClaimSwap {
@@ -121,17 +127,31 @@ message MsgClaimSwap {
 }
 
 message MsgClaimSwapResponse {
-
+  uint64 id = 1;
 }
+
 message MsgMintTrustedResource {
   string creator = 1;
-  string did = 2;
-  string metadata = 3;
-  string cid = 4;
+  // metadata
+  string metadata_ref = 2;
+  // did owner
+  string did_owner = 3;
+  // denom id
+  string denom_id = 4 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+  // nft name
+  string name = 5;
+  // recipient 
+  string recipient = 6;  
+  // private whitelist
+  repeated string resource_whitelist_access = 7;
+  // resource location
+  string resource_location = 8; // public or private
+  // lazy mint
+  bool lazy_mint = 9;  
 }
 
 message MsgMintTrustedResourceResponse {
-
+  uint64 id = 1;
 }
 
 // MsgRoyaltyInfo
@@ -140,31 +160,19 @@ message MsgRoyaltyInfo {
 
   string creator = 1;
   string receiver = 2;
-  uint64 royaltyFeePercentage =3;  
-  string metadataUri = 4;
-  string denomId = 5;  
+  uint64 royalty_fee_percentage =3;  
+  string metadata_ref = 4;
+  string denom_id = 5;  
 }
 
-/*
-message RoyaltyInfo {
-  ...
-  uint64 updates
-  uint64 lastUpdated  
-}
-message QueryReadRoyaltyInfoResponse {
-  string receiver = 1;
-  uint64 royaltyAmount = 2; // fee % * sales amount
-}
-*/
 
 // MsgRoyaltyInfoResponse
 message MsgRoyaltyInfoResponse {
   option (gogoproto.equal) = true;
 
   string receiver = 1;
-  uint64 royaltyFeePercentage = 2;
-  string metadataUri = 3;
-
+  uint64 royalty_fee_percentage = 2;  
+  string metadata_ref = 3;
 }
 // MsgIssueDenom defines an SDK message for creating a new denom.
 message MsgIssueDenom {
@@ -374,6 +382,10 @@ message MsgMetadata {
   string verified_credential_ref = 9; // mutate
   string did = 10;    // did doc* #my_document
   string from = 11;   // reserved
+  // ipld forest access
+  bool enable_ipld_forest_access = 12;
+  // fact metadata
+  string fact_ref = 13;  
 }
 
 message MsgMetadataResponse {
