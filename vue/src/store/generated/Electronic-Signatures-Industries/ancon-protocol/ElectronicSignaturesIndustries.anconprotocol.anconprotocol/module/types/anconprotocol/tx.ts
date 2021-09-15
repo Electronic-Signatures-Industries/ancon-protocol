@@ -39,6 +39,7 @@ export interface MsgMintTrustedContent {
   did: string
   metadata: string
   cid: string
+  durin: string
 }
 
 export interface MsgMintTrustedContentResponse {}
@@ -737,7 +738,7 @@ export const MsgRevokeDidResponse = {
   }
 }
 
-const baseMsgMintTrustedContent: object = { creator: '', did: '', metadata: '', cid: '' }
+const baseMsgMintTrustedContent: object = { creator: '', did: '', metadata: '', cid: '', durin: '' }
 
 export const MsgMintTrustedContent = {
   encode(message: MsgMintTrustedContent, writer: Writer = Writer.create()): Writer {
@@ -752,6 +753,9 @@ export const MsgMintTrustedContent = {
     }
     if (message.cid !== '') {
       writer.uint32(34).string(message.cid)
+    }
+    if (message.durin !== '') {
+      writer.uint32(42).string(message.durin)
     }
     return writer
   },
@@ -774,6 +778,9 @@ export const MsgMintTrustedContent = {
           break
         case 4:
           message.cid = reader.string()
+          break
+        case 5:
+          message.durin = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -805,6 +812,11 @@ export const MsgMintTrustedContent = {
     } else {
       message.cid = ''
     }
+    if (object.durin !== undefined && object.durin !== null) {
+      message.durin = String(object.durin)
+    } else {
+      message.durin = ''
+    }
     return message
   },
 
@@ -814,6 +826,7 @@ export const MsgMintTrustedContent = {
     message.did !== undefined && (obj.did = message.did)
     message.metadata !== undefined && (obj.metadata = message.metadata)
     message.cid !== undefined && (obj.cid = message.cid)
+    message.durin !== undefined && (obj.durin = message.durin)
     return obj
   },
 
@@ -838,6 +851,11 @@ export const MsgMintTrustedContent = {
       message.cid = object.cid
     } else {
       message.cid = ''
+    }
+    if (object.durin !== undefined && object.durin !== null) {
+      message.durin = object.durin
+    } else {
+      message.durin = ''
     }
     return message
   }

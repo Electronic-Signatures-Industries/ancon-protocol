@@ -10,6 +10,11 @@ export interface DIDOwner {
     didWebDeactivated: boolean;
     vanityName: string;
 }
+export interface DIDWebRoute {
+    name: string;
+    route: string;
+    cid: string;
+}
 export interface Delegate {
     delegate: string;
     delegateType: string;
@@ -33,6 +38,13 @@ export declare const DIDOwner: {
     fromJSON(object: any): DIDOwner;
     toJSON(message: DIDOwner): unknown;
     fromPartial(object: DeepPartial<DIDOwner>): DIDOwner;
+};
+export declare const DIDWebRoute: {
+    encode(message: DIDWebRoute, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): DIDWebRoute;
+    fromJSON(object: any): DIDWebRoute;
+    toJSON(message: DIDWebRoute): unknown;
+    fromPartial(object: DeepPartial<DIDWebRoute>): DIDWebRoute;
 };
 export declare const Delegate: {
     encode(message: Delegate, writer?: Writer): Writer;

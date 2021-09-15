@@ -95,6 +95,7 @@ message MsgMintTrustedContent {
   string did = 2;
   string metadata = 3;
   string cid = 4;
+  string durin = 5;
 }
 
 message MsgMintTrustedContentResponse {

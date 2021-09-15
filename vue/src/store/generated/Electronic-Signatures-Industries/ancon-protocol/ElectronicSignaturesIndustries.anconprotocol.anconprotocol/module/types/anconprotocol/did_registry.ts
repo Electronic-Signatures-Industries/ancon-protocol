@@ -15,6 +15,12 @@ export interface DIDOwner {
   vanityName: string
 }
 
+export interface DIDWebRoute {
+  name: string
+  route: string
+  cid: string
+}
+
 export interface Delegate {
   delegate: string
   delegateType: string
@@ -187,6 +193,95 @@ export const DIDOwner = {
       message.vanityName = object.vanityName
     } else {
       message.vanityName = ''
+    }
+    return message
+  }
+}
+
+const baseDIDWebRoute: object = { name: '', route: '', cid: '' }
+
+export const DIDWebRoute = {
+  encode(message: DIDWebRoute, writer: Writer = Writer.create()): Writer {
+    if (message.name !== '') {
+      writer.uint32(10).string(message.name)
+    }
+    if (message.route !== '') {
+      writer.uint32(18).string(message.route)
+    }
+    if (message.cid !== '') {
+      writer.uint32(26).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): DIDWebRoute {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseDIDWebRoute } as DIDWebRoute
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string()
+          break
+        case 2:
+          message.route = reader.string()
+          break
+        case 3:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): DIDWebRoute {
+    const message = { ...baseDIDWebRoute } as DIDWebRoute
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.route !== undefined && object.route !== null) {
+      message.route = String(object.route)
+    } else {
+      message.route = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: DIDWebRoute): unknown {
+    const obj: any = {}
+    message.name !== undefined && (obj.name = message.name)
+    message.route !== undefined && (obj.route = message.route)
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<DIDWebRoute>): DIDWebRoute {
+    const message = { ...baseDIDWebRoute } as DIDWebRoute
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.route !== undefined && object.route !== null) {
+      message.route = object.route
+    } else {
+      message.route = ''
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
     }
     return message
   }

@@ -17,8 +17,8 @@ require (
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/irisnet/irismod v1.4.0
 	github.com/itchyny/base58-go v0.2.0
-	github.com/multiformats/go-multibase v0.0.3 // indirect
-	github.com/multiformats/go-multicodec v0.3.0 // indirect
+	github.com/multiformats/go-multibase v0.0.3
+	github.com/multiformats/go-multicodec v0.3.0
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3

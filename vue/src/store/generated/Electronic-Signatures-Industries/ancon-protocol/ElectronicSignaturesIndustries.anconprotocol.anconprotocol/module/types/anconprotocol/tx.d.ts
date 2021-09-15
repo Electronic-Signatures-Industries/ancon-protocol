@@ -31,6 +31,7 @@ export interface MsgMintTrustedContent {
     did: string;
     metadata: string;
     cid: string;
+    durin: string;
 }
 export interface MsgMintTrustedContentResponse {
 }
