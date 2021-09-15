@@ -100,8 +100,8 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 		return nil, err
 	}
 
-	did, err := k.AddDid(ctx, msg)
-	//Revoke DID relationship / acces
+	didOwner, err := k.AddDid(ctx, msg)
+	//Revoke DID relationship / access
 
 	// owners[identity] = newOwner;
 	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
@@ -109,14 +109,14 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 	// TODO: Handling the message
 	_ = ctx
 
-	creator := msg.Creator
-	addr, did, err := parseDIDWeb(creator, false)
+	//creator := msg.Creator
+	addr, host, err := parseDIDWeb(didOwner.Owner, false)
 
-	// Did := res.did
+	// Did := res.addDid
 
 	return &types.MsgCreateDidResponse{
 		Cid: addr,
-		Did: did,
+		Did: host,
 	}, err
 }
 
