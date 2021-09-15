@@ -15,6 +15,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	cid "github.com/ipfs/go-cid"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
@@ -30,9 +31,93 @@ func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (stri
 	return "", nil
 }
 func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
-	return "", nil
+
+	// Add Metadata Cid to NFT
+	tokenID := string(k.GetTotalSupply(ctx, msg.DenomId))
+	denom, found := k.GetDenom(ctx, msg.DenomId)
+	if !found {
+		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
+	}
+
+	if denom.MintRestricted && denom.Creator != msg.Creator {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
+	}
+
+	if k.HasNFT(ctx, msg.DenomId, tokenID) {
+		return "", sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, msg.DenomId)
+	}
+
+	k.setNFT(
+		ctx, msg.DenomId,
+		types.NewBaseNFT(
+			tokenID,
+			msg.Name,
+			sdk.AccAddress(msg.Creator),
+			msg.MetadataRef,
+			msg.DidOwner,
+		),
+	)
+	k.setOwner(ctx, msg.DenomId, tokenID, sdk.AccAddress(msg.Creator))
+	k.increaseSupply(ctx, msg.DenomId)
+
+	return tokenID, nil
 }
+
 func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
+
+	// Add Metadata Cid to NFT
+	tokenID := string(k.GetTotalSupply(ctx, msg.DenomId))
+	denom, found := k.GetDenom(ctx, msg.DenomId)
+	if !found {
+		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
+	}
+
+	if denom.MintRestricted && denom.Creator != msg.Creator {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
+	}
+
+	if k.HasNFT(ctx, msg.DenomId, tokenID) {
+		return "", sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, msg.DenomId)
+	}
+
+	if msg.GetLazyMint() {
+		voucherID, _ := k.setMintVoucher(ctx, msg.DenomId,
+			types.NewBaseNFT(
+				tokenID,
+				msg.Name,
+				sdk.AccAddress(msg.Creator),
+				msg.MetadataRef,
+				msg.DidOwner,
+			))
+		return voucherID, nil
+	} else {
+		k.setNFT(
+			ctx, msg.DenomId,
+			types.NewBaseNFT(
+				tokenID,
+				msg.Name,
+				sdk.AccAddress(msg.Creator),
+				msg.MetadataRef,
+				msg.DidOwner,
+			),
+		)
+		k.setOwner(ctx, msg.DenomId, tokenID, sdk.AccAddress(msg.Creator))
+		k.increaseSupply(ctx, msg.DenomId)
+		return tokenID, nil
+	}
+
+}
+
+func (k Keeper) setMintVoucher(ctx sdk.Context, denomID string, nft types.BaseNFT) (string, error) {
+	// TODO: Get voucher id
+	// k.getMintVoucher
+	// TODO: Set did owner as voucher owner
+	// key = k.getMintVoucher + nft.Owner
+	// TODO: Store in NFTMintVoucherKey in MintVoucher store
+	// Set(key, types.MintVoucher{})
+
+	// Register
+
 	return "", nil
 }
 

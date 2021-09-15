@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseBaseNFT = { id: '', name: '', uri: '', data: '', owner: '' };
+const baseBaseNFT = { id: '', name: '', uri: '', data: '', owner: '', didOwner: '' };
 export const BaseNFT = {
     encode(message, writer = Writer.create()) {
         if (message.id !== '') {
@@ -18,6 +18,9 @@ export const BaseNFT = {
         }
         if (message.owner !== '') {
             writer.uint32(42).string(message.owner);
+        }
+        if (message.didOwner !== '') {
+            writer.uint32(50).string(message.didOwner);
         }
         return writer;
     },
@@ -42,6 +45,9 @@ export const BaseNFT = {
                     break;
                 case 5:
                     message.owner = reader.string();
+                    break;
+                case 6:
+                    message.didOwner = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -82,6 +88,12 @@ export const BaseNFT = {
         else {
             message.owner = '';
         }
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = String(object.didOwner);
+        }
+        else {
+            message.didOwner = '';
+        }
         return message;
     },
     toJSON(message) {
@@ -91,6 +103,7 @@ export const BaseNFT = {
         message.uri !== undefined && (obj.uri = message.uri);
         message.data !== undefined && (obj.data = message.data);
         message.owner !== undefined && (obj.owner = message.owner);
+        message.didOwner !== undefined && (obj.didOwner = message.didOwner);
         return obj;
     },
     fromPartial(object) {
@@ -124,6 +137,12 @@ export const BaseNFT = {
         }
         else {
             message.owner = '';
+        }
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = object.didOwner;
+        }
+        else {
+            message.didOwner = '';
         }
         return message;
     }
