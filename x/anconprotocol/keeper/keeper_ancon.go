@@ -116,12 +116,24 @@ func (k Keeper) setMintVoucher(ctx sdk.Context, denomID string, nft types.BaseNF
 	// TODO: Store in NFTMintVoucherKey in MintVoucher store
 	// Set(key, types.MintVoucher{})
 
+	// sig(pub,abi(erc721,  uri=ancon))
+	// IAnconSwap
+
 	// Register
 
 	return "", nil
 }
 
+// offchain
 func (k Keeper) InitiateSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
+	// TODO: voucher id + height + did owner
+	// {uri, prefix,}
+	return "", nil
+}
+
+func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
+	// TODO: voucher id + height + did owner
+	// {uri, prefix,}
 	return "", nil
 }
 
