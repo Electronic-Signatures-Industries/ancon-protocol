@@ -71,6 +71,14 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 	return k.GetObject(ctx, req)
 }
 
+//TODO: implement
+func (k Keeper) GetVoucher(goCtx context.Context, voucherID string) (map[string]string, error) {
+	m := make(map[string]string)
+	m["voucher"] = ""
+	m["prefix"] = ""
+	return m, nil
+}
+
 func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QueryResourceRequest
 	var metadata runtime.ServerMetadata

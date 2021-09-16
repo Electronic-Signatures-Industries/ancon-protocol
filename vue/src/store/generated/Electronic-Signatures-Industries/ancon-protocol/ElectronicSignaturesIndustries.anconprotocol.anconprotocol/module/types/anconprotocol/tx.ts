@@ -32,25 +32,40 @@ export interface MsgRevokeDid {
   cid: string
 }
 
-export interface MsgRevokeDidResponse {}
+export interface MsgRevokeDidResponse {
+  id: number
+}
 
 export interface MsgMintTrustedContent {
   creator: string
-  did: string
-  metadata: string
-  cid: string
+  /** metadata */
+  metadataRef: string
+  /** denom id */
+  denomId: string
+  /** nft name */
+  name: string
+  /** recipient */
+  recipient: string
+  /** did owner */
+  didOwner: string
+  /** lazy mint */
+  lazyMint: boolean
+  r: string
+  s: string
+  v: number
 }
 
-export interface MsgMintTrustedContentResponse {}
+export interface MsgMintTrustedContentResponse {
+  id: number
+}
 
 export interface MsgInitiateSwap {
   creator: string
-  did: string
-  metadata: string
-  cid: string
 }
 
-export interface MsgInitiateSwapResponse {}
+export interface MsgInitiateSwapResponse {
+  id: number
+}
 
 export interface MsgClaimSwap {
   creator: string
@@ -59,23 +74,43 @@ export interface MsgClaimSwap {
   cid: string
 }
 
-export interface MsgClaimSwapResponse {}
+export interface MsgClaimSwapResponse {
+  id: number
+}
 
 export interface MsgMintTrustedResource {
   creator: string
-  did: string
-  metadata: string
-  cid: string
+  /** metadata */
+  metadataRef: string
+  /** did owner */
+  didOwner: string
+  /** denom id */
+  denomId: string
+  /** nft name */
+  name: string
+  /** recipient */
+  recipient: string
+  /** private whitelist */
+  resourceWhitelistAccess: string[]
+  /** resource location */
+  resourceLocation: string
+  /** lazy mint */
+  lazyMint: boolean
+  r: string
+  s: string
+  v: number
 }
 
-export interface MsgMintTrustedResourceResponse {}
+export interface MsgMintTrustedResourceResponse {
+  id: number
+}
 
 /** MsgRoyaltyInfo */
 export interface MsgRoyaltyInfo {
   creator: string
   receiver: string
   royaltyFeePercentage: number
-  metadataUri: string
+  metadataRef: string
   denomId: string
 }
 
@@ -83,7 +118,7 @@ export interface MsgRoyaltyInfo {
 export interface MsgRoyaltyInfoResponse {
   receiver: string
   royaltyFeePercentage: number
-  metadataUri: string
+  metadataRef: string
 }
 
 /** MsgIssueDenom defines an SDK message for creating a new denom. */
@@ -267,6 +302,10 @@ export interface MsgMetadata {
   did: string
   /** reserved */
   from: string
+  /** ipld forest access */
+  enableIpldForestAccess: boolean
+  /** fact metadata */
+  factRef: string
 }
 
 export interface MsgMetadataResponse {
@@ -699,10 +738,13 @@ export const MsgRevokeDid = {
   }
 }
 
-const baseMsgRevokeDidResponse: object = {}
+const baseMsgRevokeDidResponse: object = { id: 0 }
 
 export const MsgRevokeDidResponse = {
-  encode(_: MsgRevokeDidResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgRevokeDidResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
     return writer
   },
 
@@ -713,6 +755,9 @@ export const MsgRevokeDidResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -721,37 +766,77 @@ export const MsgRevokeDidResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgRevokeDidResponse {
+  fromJSON(object: any): MsgRevokeDidResponse {
     const message = { ...baseMsgRevokeDidResponse } as MsgRevokeDidResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
-  toJSON(_: MsgRevokeDidResponse): unknown {
+  toJSON(message: MsgRevokeDidResponse): unknown {
     const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse {
+  fromPartial(object: DeepPartial<MsgRevokeDidResponse>): MsgRevokeDidResponse {
     const message = { ...baseMsgRevokeDidResponse } as MsgRevokeDidResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
     return message
   }
 }
 
-const baseMsgMintTrustedContent: object = { creator: '', did: '', metadata: '', cid: '' }
+const baseMsgMintTrustedContent: object = {
+  creator: '',
+  metadataRef: '',
+  denomId: '',
+  name: '',
+  recipient: '',
+  didOwner: '',
+  lazyMint: false,
+  r: '',
+  s: '',
+  v: 0
+}
 
 export const MsgMintTrustedContent = {
   encode(message: MsgMintTrustedContent, writer: Writer = Writer.create()): Writer {
     if (message.creator !== '') {
       writer.uint32(10).string(message.creator)
     }
-    if (message.did !== '') {
-      writer.uint32(18).string(message.did)
+    if (message.metadataRef !== '') {
+      writer.uint32(18).string(message.metadataRef)
     }
-    if (message.metadata !== '') {
-      writer.uint32(26).string(message.metadata)
+    if (message.denomId !== '') {
+      writer.uint32(26).string(message.denomId)
     }
-    if (message.cid !== '') {
-      writer.uint32(34).string(message.cid)
+    if (message.name !== '') {
+      writer.uint32(34).string(message.name)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(42).string(message.recipient)
+    }
+    if (message.didOwner !== '') {
+      writer.uint32(50).string(message.didOwner)
+    }
+    if (message.lazyMint === true) {
+      writer.uint32(56).bool(message.lazyMint)
+    }
+    if (message.r !== '') {
+      writer.uint32(66).string(message.r)
+    }
+    if (message.s !== '') {
+      writer.uint32(74).string(message.s)
+    }
+    if (message.v !== 0) {
+      writer.uint32(80).uint64(message.v)
     }
     return writer
   },
@@ -767,13 +852,31 @@ export const MsgMintTrustedContent = {
           message.creator = reader.string()
           break
         case 2:
-          message.did = reader.string()
+          message.metadataRef = reader.string()
           break
         case 3:
-          message.metadata = reader.string()
+          message.denomId = reader.string()
           break
         case 4:
-          message.cid = reader.string()
+          message.name = reader.string()
+          break
+        case 5:
+          message.recipient = reader.string()
+          break
+        case 6:
+          message.didOwner = reader.string()
+          break
+        case 7:
+          message.lazyMint = reader.bool()
+          break
+        case 8:
+          message.r = reader.string()
+          break
+        case 9:
+          message.s = reader.string()
+          break
+        case 10:
+          message.v = longToNumber(reader.uint64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -790,20 +893,50 @@ export const MsgMintTrustedContent = {
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = String(object.did)
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = String(object.metadataRef)
     } else {
-      message.did = ''
+      message.metadataRef = ''
     }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = String(object.metadata)
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
     } else {
-      message.metadata = ''
+      message.denomId = ''
     }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = String(object.cid)
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
     } else {
-      message.cid = ''
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = String(object.didOwner)
+    } else {
+      message.didOwner = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = Boolean(object.lazyMint)
+    } else {
+      message.lazyMint = false
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = String(object.r)
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = String(object.s)
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = Number(object.v)
+    } else {
+      message.v = 0
     }
     return message
   },
@@ -811,9 +944,15 @@ export const MsgMintTrustedContent = {
   toJSON(message: MsgMintTrustedContent): unknown {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
-    message.did !== undefined && (obj.did = message.did)
-    message.metadata !== undefined && (obj.metadata = message.metadata)
-    message.cid !== undefined && (obj.cid = message.cid)
+    message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    message.didOwner !== undefined && (obj.didOwner = message.didOwner)
+    message.lazyMint !== undefined && (obj.lazyMint = message.lazyMint)
+    message.r !== undefined && (obj.r = message.r)
+    message.s !== undefined && (obj.s = message.s)
+    message.v !== undefined && (obj.v = message.v)
     return obj
   },
 
@@ -824,29 +963,62 @@ export const MsgMintTrustedContent = {
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = object.did
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = object.metadataRef
     } else {
-      message.did = ''
+      message.metadataRef = ''
     }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = object.metadata
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
     } else {
-      message.metadata = ''
+      message.denomId = ''
     }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = object.cid
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
     } else {
-      message.cid = ''
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
+    }
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = object.didOwner
+    } else {
+      message.didOwner = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = object.lazyMint
+    } else {
+      message.lazyMint = false
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = object.r
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = object.s
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = object.v
+    } else {
+      message.v = 0
     }
     return message
   }
 }
 
-const baseMsgMintTrustedContentResponse: object = {}
+const baseMsgMintTrustedContentResponse: object = { id: 0 }
 
 export const MsgMintTrustedContentResponse = {
-  encode(_: MsgMintTrustedContentResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgMintTrustedContentResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
     return writer
   },
 
@@ -857,6 +1029,9 @@ export const MsgMintTrustedContentResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -865,37 +1040,39 @@ export const MsgMintTrustedContentResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgMintTrustedContentResponse {
+  fromJSON(object: any): MsgMintTrustedContentResponse {
     const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
-  toJSON(_: MsgMintTrustedContentResponse): unknown {
+  toJSON(message: MsgMintTrustedContentResponse): unknown {
     const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
+  fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
     const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
     return message
   }
 }
 
-const baseMsgInitiateSwap: object = { creator: '', did: '', metadata: '', cid: '' }
+const baseMsgInitiateSwap: object = { creator: '' }
 
 export const MsgInitiateSwap = {
   encode(message: MsgInitiateSwap, writer: Writer = Writer.create()): Writer {
     if (message.creator !== '') {
       writer.uint32(10).string(message.creator)
-    }
-    if (message.did !== '') {
-      writer.uint32(18).string(message.did)
-    }
-    if (message.metadata !== '') {
-      writer.uint32(26).string(message.metadata)
-    }
-    if (message.cid !== '') {
-      writer.uint32(34).string(message.cid)
     }
     return writer
   },
@@ -909,15 +1086,6 @@ export const MsgInitiateSwap = {
       switch (tag >>> 3) {
         case 1:
           message.creator = reader.string()
-          break
-        case 2:
-          message.did = reader.string()
-          break
-        case 3:
-          message.metadata = reader.string()
-          break
-        case 4:
-          message.cid = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -934,30 +1102,12 @@ export const MsgInitiateSwap = {
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = String(object.did)
-    } else {
-      message.did = ''
-    }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = String(object.metadata)
-    } else {
-      message.metadata = ''
-    }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = String(object.cid)
-    } else {
-      message.cid = ''
-    }
     return message
   },
 
   toJSON(message: MsgInitiateSwap): unknown {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
-    message.did !== undefined && (obj.did = message.did)
-    message.metadata !== undefined && (obj.metadata = message.metadata)
-    message.cid !== undefined && (obj.cid = message.cid)
     return obj
   },
 
@@ -968,29 +1118,17 @@ export const MsgInitiateSwap = {
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = object.did
-    } else {
-      message.did = ''
-    }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = object.metadata
-    } else {
-      message.metadata = ''
-    }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = object.cid
-    } else {
-      message.cid = ''
-    }
     return message
   }
 }
 
-const baseMsgInitiateSwapResponse: object = {}
+const baseMsgInitiateSwapResponse: object = { id: 0 }
 
 export const MsgInitiateSwapResponse = {
-  encode(_: MsgInitiateSwapResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgInitiateSwapResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
     return writer
   },
 
@@ -1001,6 +1139,9 @@ export const MsgInitiateSwapResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -1009,18 +1150,29 @@ export const MsgInitiateSwapResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgInitiateSwapResponse {
+  fromJSON(object: any): MsgInitiateSwapResponse {
     const message = { ...baseMsgInitiateSwapResponse } as MsgInitiateSwapResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
-  toJSON(_: MsgInitiateSwapResponse): unknown {
+  toJSON(message: MsgInitiateSwapResponse): unknown {
     const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse {
+  fromPartial(object: DeepPartial<MsgInitiateSwapResponse>): MsgInitiateSwapResponse {
     const message = { ...baseMsgInitiateSwapResponse } as MsgInitiateSwapResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
     return message
   }
 }
@@ -1131,10 +1283,13 @@ export const MsgClaimSwap = {
   }
 }
 
-const baseMsgClaimSwapResponse: object = {}
+const baseMsgClaimSwapResponse: object = { id: 0 }
 
 export const MsgClaimSwapResponse = {
-  encode(_: MsgClaimSwapResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgClaimSwapResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
     return writer
   },
 
@@ -1145,6 +1300,9 @@ export const MsgClaimSwapResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -1153,37 +1311,85 @@ export const MsgClaimSwapResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgClaimSwapResponse {
+  fromJSON(object: any): MsgClaimSwapResponse {
     const message = { ...baseMsgClaimSwapResponse } as MsgClaimSwapResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
-  toJSON(_: MsgClaimSwapResponse): unknown {
+  toJSON(message: MsgClaimSwapResponse): unknown {
     const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse {
+  fromPartial(object: DeepPartial<MsgClaimSwapResponse>): MsgClaimSwapResponse {
     const message = { ...baseMsgClaimSwapResponse } as MsgClaimSwapResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
     return message
   }
 }
 
-const baseMsgMintTrustedResource: object = { creator: '', did: '', metadata: '', cid: '' }
+const baseMsgMintTrustedResource: object = {
+  creator: '',
+  metadataRef: '',
+  didOwner: '',
+  denomId: '',
+  name: '',
+  recipient: '',
+  resourceWhitelistAccess: '',
+  resourceLocation: '',
+  lazyMint: false,
+  r: '',
+  s: '',
+  v: 0
+}
 
 export const MsgMintTrustedResource = {
   encode(message: MsgMintTrustedResource, writer: Writer = Writer.create()): Writer {
     if (message.creator !== '') {
       writer.uint32(10).string(message.creator)
     }
-    if (message.did !== '') {
-      writer.uint32(18).string(message.did)
+    if (message.metadataRef !== '') {
+      writer.uint32(18).string(message.metadataRef)
     }
-    if (message.metadata !== '') {
-      writer.uint32(26).string(message.metadata)
+    if (message.didOwner !== '') {
+      writer.uint32(26).string(message.didOwner)
     }
-    if (message.cid !== '') {
-      writer.uint32(34).string(message.cid)
+    if (message.denomId !== '') {
+      writer.uint32(34).string(message.denomId)
+    }
+    if (message.name !== '') {
+      writer.uint32(42).string(message.name)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(50).string(message.recipient)
+    }
+    for (const v of message.resourceWhitelistAccess) {
+      writer.uint32(58).string(v!)
+    }
+    if (message.resourceLocation !== '') {
+      writer.uint32(66).string(message.resourceLocation)
+    }
+    if (message.lazyMint === true) {
+      writer.uint32(72).bool(message.lazyMint)
+    }
+    if (message.r !== '') {
+      writer.uint32(82).string(message.r)
+    }
+    if (message.s !== '') {
+      writer.uint32(90).string(message.s)
+    }
+    if (message.v !== 0) {
+      writer.uint32(96).uint64(message.v)
     }
     return writer
   },
@@ -1192,6 +1398,7 @@ export const MsgMintTrustedResource = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
     const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    message.resourceWhitelistAccess = []
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -1199,13 +1406,37 @@ export const MsgMintTrustedResource = {
           message.creator = reader.string()
           break
         case 2:
-          message.did = reader.string()
+          message.metadataRef = reader.string()
           break
         case 3:
-          message.metadata = reader.string()
+          message.didOwner = reader.string()
           break
         case 4:
-          message.cid = reader.string()
+          message.denomId = reader.string()
+          break
+        case 5:
+          message.name = reader.string()
+          break
+        case 6:
+          message.recipient = reader.string()
+          break
+        case 7:
+          message.resourceWhitelistAccess.push(reader.string())
+          break
+        case 8:
+          message.resourceLocation = reader.string()
+          break
+        case 9:
+          message.lazyMint = reader.bool()
+          break
+        case 10:
+          message.r = reader.string()
+          break
+        case 11:
+          message.s = reader.string()
+          break
+        case 12:
+          message.v = longToNumber(reader.uint64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -1217,25 +1448,66 @@ export const MsgMintTrustedResource = {
 
   fromJSON(object: any): MsgMintTrustedResource {
     const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    message.resourceWhitelistAccess = []
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator)
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = String(object.did)
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = String(object.metadataRef)
     } else {
-      message.did = ''
+      message.metadataRef = ''
     }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = String(object.metadata)
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = String(object.didOwner)
     } else {
-      message.metadata = ''
+      message.didOwner = ''
     }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = String(object.cid)
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
     } else {
-      message.cid = ''
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    if (object.resourceWhitelistAccess !== undefined && object.resourceWhitelistAccess !== null) {
+      for (const e of object.resourceWhitelistAccess) {
+        message.resourceWhitelistAccess.push(String(e))
+      }
+    }
+    if (object.resourceLocation !== undefined && object.resourceLocation !== null) {
+      message.resourceLocation = String(object.resourceLocation)
+    } else {
+      message.resourceLocation = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = Boolean(object.lazyMint)
+    } else {
+      message.lazyMint = false
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = String(object.r)
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = String(object.s)
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = Number(object.v)
+    } else {
+      message.v = 0
     }
     return message
   },
@@ -1243,42 +1515,98 @@ export const MsgMintTrustedResource = {
   toJSON(message: MsgMintTrustedResource): unknown {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
-    message.did !== undefined && (obj.did = message.did)
-    message.metadata !== undefined && (obj.metadata = message.metadata)
-    message.cid !== undefined && (obj.cid = message.cid)
+    message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef)
+    message.didOwner !== undefined && (obj.didOwner = message.didOwner)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    if (message.resourceWhitelistAccess) {
+      obj.resourceWhitelistAccess = message.resourceWhitelistAccess.map((e) => e)
+    } else {
+      obj.resourceWhitelistAccess = []
+    }
+    message.resourceLocation !== undefined && (obj.resourceLocation = message.resourceLocation)
+    message.lazyMint !== undefined && (obj.lazyMint = message.lazyMint)
+    message.r !== undefined && (obj.r = message.r)
+    message.s !== undefined && (obj.s = message.s)
+    message.v !== undefined && (obj.v = message.v)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgMintTrustedResource>): MsgMintTrustedResource {
     const message = { ...baseMsgMintTrustedResource } as MsgMintTrustedResource
+    message.resourceWhitelistAccess = []
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator
     } else {
       message.creator = ''
     }
-    if (object.did !== undefined && object.did !== null) {
-      message.did = object.did
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = object.metadataRef
     } else {
-      message.did = ''
+      message.metadataRef = ''
     }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = object.metadata
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = object.didOwner
     } else {
-      message.metadata = ''
+      message.didOwner = ''
     }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = object.cid
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
     } else {
-      message.cid = ''
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
+    }
+    if (object.resourceWhitelistAccess !== undefined && object.resourceWhitelistAccess !== null) {
+      for (const e of object.resourceWhitelistAccess) {
+        message.resourceWhitelistAccess.push(e)
+      }
+    }
+    if (object.resourceLocation !== undefined && object.resourceLocation !== null) {
+      message.resourceLocation = object.resourceLocation
+    } else {
+      message.resourceLocation = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = object.lazyMint
+    } else {
+      message.lazyMint = false
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = object.r
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = object.s
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = object.v
+    } else {
+      message.v = 0
     }
     return message
   }
 }
 
-const baseMsgMintTrustedResourceResponse: object = {}
+const baseMsgMintTrustedResourceResponse: object = { id: 0 }
 
 export const MsgMintTrustedResourceResponse = {
-  encode(_: MsgMintTrustedResourceResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgMintTrustedResourceResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
     return writer
   },
 
@@ -1289,6 +1617,9 @@ export const MsgMintTrustedResourceResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -1297,23 +1628,34 @@ export const MsgMintTrustedResourceResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgMintTrustedResourceResponse {
+  fromJSON(object: any): MsgMintTrustedResourceResponse {
     const message = { ...baseMsgMintTrustedResourceResponse } as MsgMintTrustedResourceResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
-  toJSON(_: MsgMintTrustedResourceResponse): unknown {
+  toJSON(message: MsgMintTrustedResourceResponse): unknown {
     const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse {
+  fromPartial(object: DeepPartial<MsgMintTrustedResourceResponse>): MsgMintTrustedResourceResponse {
     const message = { ...baseMsgMintTrustedResourceResponse } as MsgMintTrustedResourceResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
     return message
   }
 }
 
-const baseMsgRoyaltyInfo: object = { creator: '', receiver: '', royaltyFeePercentage: 0, metadataUri: '', denomId: '' }
+const baseMsgRoyaltyInfo: object = { creator: '', receiver: '', royaltyFeePercentage: 0, metadataRef: '', denomId: '' }
 
 export const MsgRoyaltyInfo = {
   encode(message: MsgRoyaltyInfo, writer: Writer = Writer.create()): Writer {
@@ -1326,8 +1668,8 @@ export const MsgRoyaltyInfo = {
     if (message.royaltyFeePercentage !== 0) {
       writer.uint32(24).uint64(message.royaltyFeePercentage)
     }
-    if (message.metadataUri !== '') {
-      writer.uint32(34).string(message.metadataUri)
+    if (message.metadataRef !== '') {
+      writer.uint32(34).string(message.metadataRef)
     }
     if (message.denomId !== '') {
       writer.uint32(42).string(message.denomId)
@@ -1352,7 +1694,7 @@ export const MsgRoyaltyInfo = {
           message.royaltyFeePercentage = longToNumber(reader.uint64() as Long)
           break
         case 4:
-          message.metadataUri = reader.string()
+          message.metadataRef = reader.string()
           break
         case 5:
           message.denomId = reader.string()
@@ -1382,10 +1724,10 @@ export const MsgRoyaltyInfo = {
     } else {
       message.royaltyFeePercentage = 0
     }
-    if (object.metadataUri !== undefined && object.metadataUri !== null) {
-      message.metadataUri = String(object.metadataUri)
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = String(object.metadataRef)
     } else {
-      message.metadataUri = ''
+      message.metadataRef = ''
     }
     if (object.denomId !== undefined && object.denomId !== null) {
       message.denomId = String(object.denomId)
@@ -1400,7 +1742,7 @@ export const MsgRoyaltyInfo = {
     message.creator !== undefined && (obj.creator = message.creator)
     message.receiver !== undefined && (obj.receiver = message.receiver)
     message.royaltyFeePercentage !== undefined && (obj.royaltyFeePercentage = message.royaltyFeePercentage)
-    message.metadataUri !== undefined && (obj.metadataUri = message.metadataUri)
+    message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef)
     message.denomId !== undefined && (obj.denomId = message.denomId)
     return obj
   },
@@ -1422,10 +1764,10 @@ export const MsgRoyaltyInfo = {
     } else {
       message.royaltyFeePercentage = 0
     }
-    if (object.metadataUri !== undefined && object.metadataUri !== null) {
-      message.metadataUri = object.metadataUri
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = object.metadataRef
     } else {
-      message.metadataUri = ''
+      message.metadataRef = ''
     }
     if (object.denomId !== undefined && object.denomId !== null) {
       message.denomId = object.denomId
@@ -1436,7 +1778,7 @@ export const MsgRoyaltyInfo = {
   }
 }
 
-const baseMsgRoyaltyInfoResponse: object = { receiver: '', royaltyFeePercentage: 0, metadataUri: '' }
+const baseMsgRoyaltyInfoResponse: object = { receiver: '', royaltyFeePercentage: 0, metadataRef: '' }
 
 export const MsgRoyaltyInfoResponse = {
   encode(message: MsgRoyaltyInfoResponse, writer: Writer = Writer.create()): Writer {
@@ -1446,8 +1788,8 @@ export const MsgRoyaltyInfoResponse = {
     if (message.royaltyFeePercentage !== 0) {
       writer.uint32(16).uint64(message.royaltyFeePercentage)
     }
-    if (message.metadataUri !== '') {
-      writer.uint32(26).string(message.metadataUri)
+    if (message.metadataRef !== '') {
+      writer.uint32(26).string(message.metadataRef)
     }
     return writer
   },
@@ -1466,7 +1808,7 @@ export const MsgRoyaltyInfoResponse = {
           message.royaltyFeePercentage = longToNumber(reader.uint64() as Long)
           break
         case 3:
-          message.metadataUri = reader.string()
+          message.metadataRef = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -1488,10 +1830,10 @@ export const MsgRoyaltyInfoResponse = {
     } else {
       message.royaltyFeePercentage = 0
     }
-    if (object.metadataUri !== undefined && object.metadataUri !== null) {
-      message.metadataUri = String(object.metadataUri)
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = String(object.metadataRef)
     } else {
-      message.metadataUri = ''
+      message.metadataRef = ''
     }
     return message
   },
@@ -1500,7 +1842,7 @@ export const MsgRoyaltyInfoResponse = {
     const obj: any = {}
     message.receiver !== undefined && (obj.receiver = message.receiver)
     message.royaltyFeePercentage !== undefined && (obj.royaltyFeePercentage = message.royaltyFeePercentage)
-    message.metadataUri !== undefined && (obj.metadataUri = message.metadataUri)
+    message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef)
     return obj
   },
 
@@ -1516,10 +1858,10 @@ export const MsgRoyaltyInfoResponse = {
     } else {
       message.royaltyFeePercentage = 0
     }
-    if (object.metadataUri !== undefined && object.metadataUri !== null) {
-      message.metadataUri = object.metadataUri
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = object.metadataRef
     } else {
-      message.metadataUri = ''
+      message.metadataRef = ''
     }
     return message
   }
@@ -3815,7 +4157,9 @@ const baseMsgMetadata: object = {
   links: '',
   verifiedCredentialRef: '',
   did: '',
-  from: ''
+  from: '',
+  enableIpldForestAccess: false,
+  factRef: ''
 }
 
 export const MsgMetadata = {
@@ -3852,6 +4196,12 @@ export const MsgMetadata = {
     }
     if (message.from !== '') {
       writer.uint32(90).string(message.from)
+    }
+    if (message.enableIpldForestAccess === true) {
+      writer.uint32(96).bool(message.enableIpldForestAccess)
+    }
+    if (message.factRef !== '') {
+      writer.uint32(106).string(message.factRef)
     }
     return writer
   },
@@ -3895,6 +4245,12 @@ export const MsgMetadata = {
           break
         case 11:
           message.from = reader.string()
+          break
+        case 12:
+          message.enableIpldForestAccess = reader.bool()
+          break
+        case 13:
+          message.factRef = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -3961,6 +4317,16 @@ export const MsgMetadata = {
     } else {
       message.from = ''
     }
+    if (object.enableIpldForestAccess !== undefined && object.enableIpldForestAccess !== null) {
+      message.enableIpldForestAccess = Boolean(object.enableIpldForestAccess)
+    } else {
+      message.enableIpldForestAccess = false
+    }
+    if (object.factRef !== undefined && object.factRef !== null) {
+      message.factRef = String(object.factRef)
+    } else {
+      message.factRef = ''
+    }
     return message
   },
 
@@ -3977,6 +4343,8 @@ export const MsgMetadata = {
     message.verifiedCredentialRef !== undefined && (obj.verifiedCredentialRef = message.verifiedCredentialRef)
     message.did !== undefined && (obj.did = message.did)
     message.from !== undefined && (obj.from = message.from)
+    message.enableIpldForestAccess !== undefined && (obj.enableIpldForestAccess = message.enableIpldForestAccess)
+    message.factRef !== undefined && (obj.factRef = message.factRef)
     return obj
   },
 
@@ -4036,6 +4404,16 @@ export const MsgMetadata = {
       message.from = object.from
     } else {
       message.from = ''
+    }
+    if (object.enableIpldForestAccess !== undefined && object.enableIpldForestAccess !== null) {
+      message.enableIpldForestAccess = object.enableIpldForestAccess
+    } else {
+      message.enableIpldForestAccess = false
+    }
+    if (object.factRef !== undefined && object.factRef !== null) {
+      message.factRef = object.factRef
+    } else {
+      message.factRef = ''
     }
     return message
   }

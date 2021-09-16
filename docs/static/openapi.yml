@@ -11008,6 +11008,8 @@ paths:
                           type: string
                         owner:
                           type: string
+                        didOwner:
+                          type: string
                       title: BaseNFT defines a non-fungible token
                 title: Collection defines a type of collection
               pagination:
@@ -12119,6 +12121,8 @@ paths:
                   data:
                     type: string
                   owner:
+                    type: string
+                  didOwner:
                     type: string
                 title: BaseNFT defines a non-fungible token
             title: QueryNFTResponse is the response type for the Query/NFT RPC method
@@ -32302,6 +32306,8 @@ definitions:
         type: string
       owner:
         type: string
+      didOwner:
+        type: string
     title: BaseNFT defines a non-fungible token
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Collection:
     type: object
@@ -32338,6 +32344,8 @@ definitions:
             data:
               type: string
             owner:
+              type: string
+            didOwner:
               type: string
           title: BaseNFT defines a non-fungible token
     title: Collection defines a type of collection
@@ -32384,6 +32392,10 @@ definitions:
         format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgClaimSwapResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgCreateDidResponse:
     type: object
     properties:
@@ -32412,6 +32424,10 @@ definitions:
         format: byte
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgInitiateSwapResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgIssueDenomResponse:
     type: object
     description: MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -32425,8 +32441,16 @@ definitions:
     description: MsgMintNFTResponse defines the Msg/MintNFT response type.
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintTrustedContentResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintTrustedResourceResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRevokeAttributeResponse:
     type: object
     properties:
@@ -32441,6 +32465,10 @@ definitions:
         format: byte
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRevokeDidResponse:
     type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgRoyaltyInfoResponse:
     type: object
     properties:
@@ -32449,7 +32477,7 @@ definitions:
       royaltyFeePercentage:
         type: string
         format: uint64
-      metadataUri:
+      metadataRef:
         type: string
     title: MsgRoyaltyInfoResponse
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgTransferDenomResponse:
@@ -32516,6 +32544,8 @@ definitions:
                 data:
                   type: string
                 owner:
+                  type: string
+                didOwner:
                   type: string
               title: BaseNFT defines a non-fungible token
         title: Collection defines a type of collection
@@ -32639,6 +32669,8 @@ definitions:
           data:
             type: string
           owner:
+            type: string
+          didOwner:
             type: string
         title: BaseNFT defines a non-fungible token
     title: QueryNFTResponse is the response type for the Query/NFT RPC method

@@ -15,6 +15,7 @@ export interface AnconprotocolBaseNFT {
   uri?: string;
   data?: string;
   owner?: string;
+  didOwner?: string;
 }
 
 export interface AnconprotocolCollection {
@@ -50,7 +51,10 @@ export interface AnconprotocolMsgChangeOwnerResponse {
   previousChange?: string;
 }
 
-export type AnconprotocolMsgClaimSwapResponse = object;
+export interface AnconprotocolMsgClaimSwapResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 export interface AnconprotocolMsgCreateDidResponse {
   cid?: string;
@@ -75,7 +79,10 @@ export interface AnconprotocolMsgGrantDelegateResponse {
   hash?: string;
 }
 
-export type AnconprotocolMsgInitiateSwapResponse = object;
+export interface AnconprotocolMsgInitiateSwapResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 /**
  * MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -91,9 +98,15 @@ export interface AnconprotocolMsgMetadataResponse {
  */
 export type AnconprotocolMsgMintNFTResponse = object;
 
-export type AnconprotocolMsgMintTrustedContentResponse = object;
+export interface AnconprotocolMsgMintTrustedContentResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
-export type AnconprotocolMsgMintTrustedResourceResponse = object;
+export interface AnconprotocolMsgMintTrustedResourceResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 export interface AnconprotocolMsgRevokeAttributeResponse {
   /** @format byte */
@@ -105,14 +118,17 @@ export interface AnconprotocolMsgRevokeDelegateResponse {
   hash?: string;
 }
 
-export type AnconprotocolMsgRevokeDidResponse = object;
+export interface AnconprotocolMsgRevokeDidResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 export interface AnconprotocolMsgRoyaltyInfoResponse {
   receiver?: string;
 
   /** @format uint64 */
   royaltyFeePercentage?: string;
-  metadataUri?: string;
+  metadataRef?: string;
 }
 
 /**

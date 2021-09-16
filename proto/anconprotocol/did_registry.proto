@@ -18,6 +18,12 @@ message DIDOwner {
   string vanity_name = 7;
 }
 
+message DIDWebRoute {
+  string name = 1;
+  string route = 2;
+  string cid = 3;
+}
+
 message Delegate {
   string delegate = 1;
   string delegateType = 2;

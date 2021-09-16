@@ -127,3 +127,160 @@ func TestTrustedContent(t *testing.T) {
 	require.Equal(t, lnk, items[0].GetURI())
 	// require.Equal(t, output, res)
 }
+
+func TestTrustedContent_CrossMint(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
+	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	tokenName := "nftToken"
+
+	err := keeper.IssueDenom(ctx, tokenName, tokenName, "", "ancon",
+		sdk.AccAddress("cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"), false, false)
+
+	if err != nil {
+		t.Error("TestTrustedContent_CrossMint could not issue token")
+	}
+
+	tokenID, _ := keeper.AddTrustedContent(
+		ctx,
+		&types.MsgMintTrustedContent{
+			Creator:     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			MetadataRef: lnk,
+			DenomId:     tokenName,
+			Name:        tokenName,
+			Recipient:   "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			DidOwner:    "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
+			LazyMint:    false,
+		},
+	)
+
+	if len(tokenID) == 0 {
+		t.Error("TestTrustedContent_CrossMint could not add trusted content")
+	}
+
+	if !keeper.HasNFT(ctx, tokenName, tokenID) {
+		t.Error("TestTrustedContent_CrossMint could not find NFT")
+	}
+
+}
+
+func TestTrustedContent_Voucher(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
+	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	tokenName := "nftToken"
+
+	err := keeper.IssueDenom(ctx, tokenName, tokenName, "", "ancon",
+		sdk.AccAddress("cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"), false, false)
+
+	if err != nil {
+		t.Error("TestTrustedContent_Voucher could not issue token")
+	}
+
+	voucher, _ := keeper.AddTrustedContent(
+		ctx,
+		&types.MsgMintTrustedContent{
+			Creator:     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			MetadataRef: lnk,
+			DenomId:     tokenName,
+			Name:        tokenName,
+			Recipient:   "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			DidOwner:    "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
+			LazyMint:    true,
+		},
+	)
+
+	if len(voucher) == 0 {
+		t.Error("TestTrustedContent_Voucher could not add trusted content [voucher]")
+	}
+
+	// if !keeper.HasNFT(ctx, tokenName, voucher) {
+	// 	t.Error("TestTrustedContent_Voucher could not find NFT")
+	// }
+
+}
+
+func TestTrustedContent_VoucherQuery(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
+	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	tokenName := "nftToken"
+
+	err := keeper.IssueDenom(ctx, tokenName, tokenName, "", "ancon",
+		sdk.AccAddress("cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"), false, false)
+
+	if err != nil {
+		t.Error("TestTrustedContent_VoucherQuery could not issue token")
+	}
+
+	voucherID, _ := keeper.AddTrustedContent(
+		ctx,
+		&types.MsgMintTrustedContent{
+			Creator:     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			MetadataRef: lnk,
+			DenomId:     tokenName,
+			Name:        tokenName,
+			Recipient:   "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			DidOwner:    "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
+			LazyMint:    true,
+			R:           "", //metadata-ref + DenomID + Name + Recipient
+			S:           "",
+			V:           0,
+		},
+	)
+
+	if len(voucherID) == 0 {
+		t.Error("TestTrustedContent_VoucherQuery could not add trusted content [voucher]")
+	}
+
+	// GetVoucher should be offchain
+	voucher, err := keeper.GetVoucher(ctx.Context(), voucherID)
+	if err != nil {
+		t.Error("TestTrustedContent_VoucherQuery could not find voucher")
+	}
+
+	_ = voucher
+
+	_ = keeper.AddTrustedContentWithProof(ctx, voucher["GetVoucher"], voucher["voucher"])
+
+	// if !keeper.HasNFT(ctx, tokenName, tokenID) {
+	// 	t.Error("TestTrustedContent_VoucherQuery could not find NFT")
+	// }
+
+}

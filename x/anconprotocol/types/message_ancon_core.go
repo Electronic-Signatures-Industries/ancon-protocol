@@ -15,9 +15,14 @@ var _ sdk.Msg = &MsgInitiateSwap{}
 
 func NewMsgMintTrustedResource(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgMintTrustedResource {
 	return &MsgMintTrustedResource{
-		Did:      did,
-		Metadata: "",
-		Cid:      "",
+		Creator:                 creator,
+		MetadataRef:             "",
+		DidOwner:                did,
+		DenomId:                 did,
+		Name:                    "",
+		Recipient:               "",
+		ResourceWhitelistAccess: []string{},
+		ResourceLocation:        "",
 	}
 }
 
@@ -52,9 +57,7 @@ func (msg *MsgMintTrustedResource) ValidateBasic() error {
 
 func NewMsgInitiateSwap(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgInitiateSwap {
 	return &MsgInitiateSwap{
-		Did:      did,
-		Metadata: "",
-		Cid:      "",
+		Creator: creator,
 	}
 }
 
@@ -128,7 +131,7 @@ func NewMsgRoyaltyInfo(creator string, path string, content string, mode string,
 		Creator:              creator,
 		Receiver:             "",
 		RoyaltyFeePercentage: 0,
-		MetadataUri:          "",
+		MetadataRef:          "",
 		DenomId:              did,
 	}
 }
@@ -164,10 +167,12 @@ func (msg *MsgRoyaltyInfo) ValidateBasic() error {
 
 func NewMsgMintTrustedContent(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgMintTrustedContent {
 	return &MsgMintTrustedContent{
-		Creator:  creator,
-		Did:      did,
-		Metadata: "",
-		Cid:      "",
+		Creator:     creator,
+		MetadataRef: "",
+		DidOwner:    did,
+		DenomId:     did,
+		Name:        "",
+		Recipient:   "",
 	}
 }
 

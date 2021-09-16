@@ -7,6 +7,7 @@ export interface BaseNFT {
     uri: string;
     data: string;
     owner: string;
+    didOwner: string;
 }
 /** Denom defines a type of NFT */
 export interface Denom {
