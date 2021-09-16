@@ -235,7 +235,12 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 		didOwner.DidWebDeactivated = false
 		k.SetOwner(ctx, didOwner)
 		cid, err := k.SetDid(ctx, didDoc)
-		k.SetDidWebRoute(ctx, &didOwner, cid)
+		didWebRoute := &types.DIDWebRoute{
+			Name:  didOwner.VanityName,
+			Route: "optional",
+			Cid:   cid,
+		}
+		k.SetDidWebRoute(ctx, didWebRoute)
 
 	} else if msg.DidType == "key" {
 		didDoc, err := BuildDidKey(ctx, msg.Creator)
@@ -252,10 +257,10 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 	return &didOwner, nil
 }
 
-func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didOwner *types.DIDOwner, cid string) {
+func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	res := k.cdc.MustMarshalBinaryBare(didOwner)
-	store.Set([]byte(didOwner.DidWeb), res)
+	res := k.cdc.MustMarshalBinaryBare(didWebRoute)
+	store.Set([]byte(didWebRoute.Name), res)
 }
 
 func (k *Keeper) toIpldStringList(items []string) func(fluent.ListAssembler) {
@@ -276,7 +281,7 @@ func (k *Keeper) toIpldVerMethodList(methods []did.VerificationMethod) func(flue
 			if err != nil {
 				continue
 			}
-			assembler.AssembleValue().AssignString(string(jsonByte))
+			assembler.AssembleValue().AssignBytes(jsonByte)
 		}
 	}
 }
@@ -288,7 +293,7 @@ func (k *Keeper) toIpldServiceList(services []did.Service) func(fluent.ListAssem
 			if err != nil {
 				continue
 			}
-			assembler.AssembleValue().AssignString(string(jsonByte))
+			assembler.AssembleValue().AssignBytes(jsonByte)
 		}
 	}
 }
@@ -300,7 +305,7 @@ func (k *Keeper) toIpldVerificationList(authentications []did.Verification) func
 			if err != nil {
 				continue
 			}
-			assembler.AssembleValue().AssignString(string(jsonByte))
+			assembler.AssembleValue().AssignBytes(jsonByte)
 		}
 	}
 }
@@ -312,7 +317,7 @@ func (k *Keeper) toIpldProofList(proofs []did.Proof) func(fluent.ListAssembler) 
 			if err != nil {
 				continue
 			}
-			assembler.AssembleValue().AssignString(string(jsonByte))
+			assembler.AssembleValue().AssignBytes(jsonByte)
 		}
 	}
 }
@@ -332,7 +337,7 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/xml/index.html
 			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy
 			//id := append([]byte(lnk.String()), path...)
-			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidAnconKey))
+			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidIPLDStoreKey))
 			store.Set([]byte(msg.ID), buf.Bytes())
 			return nil
 		}, nil
@@ -365,7 +370,7 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 		na.AssembleEntry("capabilityDelegation").CreateList(cast.ToInt64(len(msg.CapabilityDelegation)), k.toIpldVerificationList(msg.CapabilityDelegation))
 		na.AssembleEntry("capabilityInvocation").CreateList(cast.ToInt64(len(msg.CapabilityInvocation)), k.toIpldVerificationList(msg.CapabilityInvocation))
 		na.AssembleEntry("keyAgreement").CreateList(cast.ToInt64(len(msg.KeyAgreement)), k.toIpldVerificationList(msg.KeyAgreement))
-		na.AssembleEntry("created").AssignString((msg.Created.String()))
+		na.AssembleEntry("created").AssignString(msg.Created.String())
 		na.AssembleEntry("updated").AssignString(msg.Updated.String())
 		na.AssembleEntry("proof").CreateList(cast.ToInt64(len(msg.Proof)), k.toIpldProofList(msg.Proof))
 

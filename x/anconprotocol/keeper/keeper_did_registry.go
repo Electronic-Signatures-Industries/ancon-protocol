@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	cosmosed25519 "github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/itchyny/base58-go"
@@ -79,10 +80,8 @@ func BuildDidKey(ctx sdk.Context, creator string) (*did.Doc, error) {
 
 	encoding := base58.BitcoinEncoding
 
-	// sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	acc, _ := sdk.AccAddressFromBech32(creator)
-	encoded, err := encoding.Encode(acc.Bytes())
+	acc := cosmosed25519.GenPrivKey()
+	encoded, err := encoding.Encode(acc.PubKey().Bytes())
 
 	if err != nil {
 		return nil, err

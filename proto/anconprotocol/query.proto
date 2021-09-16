@@ -70,6 +70,28 @@ service Query {
 	rpc GetNft(QueryNFTRequest) returns (QueryNFTResponse) {
 		option (google.api.http).get = "/ancon/nft/nfts/{denom_id}/{token_id}";
 	}
+
+	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryDidWebResponse) {
+		option (google.api.http).get = "/user/{name}/did.json";
+	}
+
+	rpc GetDidKey(QueryGetDidRequest) returns (QueryGetDidResponse) {
+		option (google.api.http).get = "/ancon/didregistry/{id}";
+	}
+}
+
+message QueryDidWebRequest {
+	string name = 1;
+}
+
+message QueryDidWebResponse {
+}
+
+message QueryGetDidRequest {
+	string name = 1;
+}
+
+message QueryGetDidResponse {
 }
 
 message QueryReadRoyaltyInfo {
