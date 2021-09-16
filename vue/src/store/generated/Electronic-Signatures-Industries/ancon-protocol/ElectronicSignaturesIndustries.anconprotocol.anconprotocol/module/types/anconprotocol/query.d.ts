@@ -2,6 +2,21 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+export interface QueryDidWebRequest {
+    name: string;
+}
+export interface QueryDidWebResponse {
+}
+export interface QueryGetDidRequest {
+    name: string;
+}
+export interface QueryGetDidResponse {
+}
+export interface QueryReadDidKeyRequest {
+    name: string;
+}
+export interface QueryReadDidKeyResponse {
+}
 export interface QueryReadRoyaltyInfo {
     cid: string;
     /** fee % * sales amount */
@@ -91,6 +106,48 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
+export declare const QueryDidWebRequest: {
+    encode(message: QueryDidWebRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryDidWebRequest;
+    fromJSON(object: any): QueryDidWebRequest;
+    toJSON(message: QueryDidWebRequest): unknown;
+    fromPartial(object: DeepPartial<QueryDidWebRequest>): QueryDidWebRequest;
+};
+export declare const QueryDidWebResponse: {
+    encode(_: QueryDidWebResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryDidWebResponse;
+    fromJSON(_: any): QueryDidWebResponse;
+    toJSON(_: QueryDidWebResponse): unknown;
+    fromPartial(_: DeepPartial<QueryDidWebResponse>): QueryDidWebResponse;
+};
+export declare const QueryGetDidRequest: {
+    encode(message: QueryGetDidRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetDidRequest;
+    fromJSON(object: any): QueryGetDidRequest;
+    toJSON(message: QueryGetDidRequest): unknown;
+    fromPartial(object: DeepPartial<QueryGetDidRequest>): QueryGetDidRequest;
+};
+export declare const QueryGetDidResponse: {
+    encode(_: QueryGetDidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetDidResponse;
+    fromJSON(_: any): QueryGetDidResponse;
+    toJSON(_: QueryGetDidResponse): unknown;
+    fromPartial(_: DeepPartial<QueryGetDidResponse>): QueryGetDidResponse;
+};
+export declare const QueryReadDidKeyRequest: {
+    encode(message: QueryReadDidKeyRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryReadDidKeyRequest;
+    fromJSON(object: any): QueryReadDidKeyRequest;
+    toJSON(message: QueryReadDidKeyRequest): unknown;
+    fromPartial(object: DeepPartial<QueryReadDidKeyRequest>): QueryReadDidKeyRequest;
+};
+export declare const QueryReadDidKeyResponse: {
+    encode(_: QueryReadDidKeyResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryReadDidKeyResponse;
+    fromJSON(_: any): QueryReadDidKeyResponse;
+    toJSON(_: QueryReadDidKeyResponse): unknown;
+    fromPartial(_: DeepPartial<QueryReadDidKeyResponse>): QueryReadDidKeyResponse;
+};
 export declare const QueryReadRoyaltyInfo: {
     encode(message: QueryReadRoyaltyInfo, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryReadRoyaltyInfo;
@@ -276,6 +333,8 @@ export interface Query {
     Denoms(request: QueryDenomsRequest): Promise<QueryDenomsResponse>;
     /** NFT queries the NFT for the given denom and token ID */
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
+    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidWebResponse>;
+    GetDidKey(request: QueryGetDidRequest): Promise<QueryGetDidResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
@@ -291,6 +350,8 @@ export declare class QueryClientImpl implements Query {
     Denom(request: QueryDenomRequest): Promise<QueryDenomResponse>;
     Denoms(request: QueryDenomsRequest): Promise<QueryDenomsResponse>;
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
+    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidWebResponse>;
+    GetDidKey(request: QueryGetDidRequest): Promise<QueryGetDidResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

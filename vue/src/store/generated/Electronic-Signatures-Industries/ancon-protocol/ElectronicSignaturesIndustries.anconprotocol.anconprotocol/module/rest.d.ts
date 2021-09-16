@@ -138,8 +138,10 @@ export interface AnconprotocolQueryDenomsResponse {
      */
     pagination?: V1Beta1PageResponse;
 }
+export declare type AnconprotocolQueryDidWebResponse = object;
 export declare type AnconprotocolQueryGetAttributesResponse = object;
 export declare type AnconprotocolQueryGetDelegateResponse = object;
+export declare type AnconprotocolQueryGetDidResponse = object;
 export declare type AnconprotocolQueryIdentifyOwnerResponse = object;
 export interface AnconprotocolQueryNFTResponse {
     nft?: AnconprotocolBaseNFT;
@@ -426,6 +428,14 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * No description
      *
      * @tags Query
+     * @name QueryGetDidKey
+     * @request GET:/ancon/didregistry/{name}
+     */
+    queryGetDidKey: (name: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
      * @name QueryCollection
      * @summary Collection queries the NFTs of the specified denom
      * @request GET:/ancon/nft/collections/{denomId}
@@ -513,5 +523,13 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @request GET:/ancon/{cid}/{path}
      */
     queryReadWithPath: (cid: string, path: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryResolveDidWeb
+     * @request GET:/user/{name}/did.json
+     */
+    queryResolveDidWeb: (name: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
 }
 export {};
