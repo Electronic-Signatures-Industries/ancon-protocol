@@ -277,6 +277,7 @@ func TestTrustedContent_VoucherQuery(t *testing.T) {
 
 	_ = voucher
 
+	// this step should be a smart contract
 	_ = keeper.AddTrustedContentWithProof(ctx, voucher["GetVoucher"], voucher["voucher"])
 
 	// if !keeper.HasNFT(ctx, tokenName, tokenID) {
