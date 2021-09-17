@@ -1,15 +1,15 @@
 package keeper
 
 import (
-	"time"
-
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	cosmosed25519 "github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ethcrypto "github.com/ethersphere/bee/pkg/crypto"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/itchyny/base58-go"
 	"github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-multicodec"
+	"time"
 )
 
 type Delegate struct {
