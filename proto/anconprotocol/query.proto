@@ -76,7 +76,7 @@ service Query {
 	}
 
 	rpc GetDidKey(QueryGetDidRequest) returns (QueryGetDidResponse) {
-		option (google.api.http).get = "/ancon/didregistry/{id}";
+		option (google.api.http).get = "/ancon/didregistry/{name}";
 	}
 }
 
@@ -92,6 +92,13 @@ message QueryGetDidRequest {
 }
 
 message QueryGetDidResponse {
+}
+
+message QueryReadDidKeyRequest {
+	string name = 1;
+}
+
+message QueryReadDidKeyResponse {
 }
 
 message QueryReadRoyaltyInfo {

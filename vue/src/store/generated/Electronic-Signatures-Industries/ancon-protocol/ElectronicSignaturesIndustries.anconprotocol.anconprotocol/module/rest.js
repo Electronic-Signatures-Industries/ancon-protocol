@@ -182,6 +182,19 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryGetDidKey
+         * @request GET:/ancon/didregistry/{name}
+         */
+        this.queryGetDidKey = (name, params = {}) => this.request({
+            path: `/ancon/didregistry/${name}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryCollection
          * @summary Collection queries the NFTs of the specified denom
          * @request GET:/ancon/nft/collections/{denomId}
@@ -290,6 +303,19 @@ export class Api extends HttpClient {
          */
         this.queryReadWithPath = (cid, path, params = {}) => this.request({
             path: `/ancon/${cid}/${path}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryResolveDidWeb
+         * @request GET:/user/{name}/did.json
+         */
+        this.queryResolveDidWeb = (name, params = {}) => this.request({
+            path: `/user/${name}/did.json`,
             method: "GET",
             format: "json",
             ...params,

@@ -146,6 +146,14 @@ func (k *Keeper) GetDelegates(ctx sdk.Context, delegate string, delegateType str
 	return found
 }
 
+func (k *Keeper) GetDidWebRoute(ctx sdk.Context, route string) types.DIDWebRoute {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	var found types.DIDWebRoute
+	id := []byte(route)
+	k.cdc.UnmarshalBinaryBare(store.Get(id), &found)
+	return found
+}
+
 func (k *Keeper) SetOwner(ctx sdk.Context, o types.DIDOwner) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
 	res := k.cdc.MustMarshalBinaryBare(&o)
@@ -427,4 +435,9 @@ func (k *Keeper) HasOwner(ctx sdk.Context, o string) bool {
 func (k *Keeper) HasDidWebName(ctx sdk.Context, vn string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
 	return store.Has([]byte(vn))
+}
+
+func (k *Keeper) HasDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	return store.Has([]byte(didWebRoute.Route))
 }
