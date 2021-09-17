@@ -48,3 +48,7 @@ type File struct {
 type JSONArrayOfString struct {
 	Items []string
 }
+
+type OffchainLookup struct {
+	Signature string
+}

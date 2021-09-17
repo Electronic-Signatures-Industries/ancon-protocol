@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -131,15 +130,15 @@ func (k Keeper) setMintVoucher(ctx sdk.Context, denomID string, nft types.BaseNF
 // InitiateSwap - offchain lookup error
 func (k Keeper) InitiateSwap(ctx sdk.Context, voucher string) (*types.OffchainLookup, error) {
 
-	if k.HasClaimedSwap(ctx, voucher) {
-		return &types.OffchainLookup{Ok: true}, nil
-	}
+	// if k.HasClaimedSwap(ctx, voucher) {
+	// 	return &types.OffchainLookup{Ok: true}, nil
+	// }
 	return &types.OffchainLookup{
-		signature: "", // TODO: Relayer account signing
+		Signature: "", // TODO: Relayer account signing
 	}, nil
 }
 
-func (k Keeper) verifyProof(ctx context.Context, creator string, proof string) bool {
+func (k Keeper) verifyProof(ctx sdk.Context, creator string, proof string) bool {
 	// TODO:
 	// Validates register public key from gateway (trusted)
 	// Validates creator signature
@@ -150,32 +149,32 @@ func (k Keeper) parseVoucherProof(proof string) (interface{}, error) {
 	// TODO:
 	// Validates register public key from gateway (trusted)
 	// Validates creator signature
-	return true
+	return nil, nil
 }
 
 // InitiateSwapWithProof - onchain
 func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, creator string, voucher string, proof string) (string, error) {
 
-	if k.verifyProof(ctx, creator, proof) {
-		// Parse nft voucher
-		nftVoucher, err := k.parseVoucherProof(proof)
-		// get next token id
-		tokenID := fmt.Sprint(k.GetTotalSupply(ctx, nftVoucher.DenomId))
-		k.setNFT(
-			ctx, nftVoucher.DenomId,
-			types.NewBaseNFT(
-				tokenID,
-				nftVoucher.Name,
-				sdk.AccAddress(nftVoucher.Creator),
-				nftVoucher.MetadataRef,
-				nftVoucher.DidOwner,
-			),
-		)
-		k.setOwner(ctx, nftVoucher.DenomId, tokenID, sdk.AccAddress(nftVoucher.Creator))
-		k.increaseSupply(ctx, nftVoucher.DenomId)
-		k.nftClaimed() // o ClaimSwap
-		return tokenID, nil
-	}
+	// if k.verifyProof(ctx, creator, proof) {
+	// 	// Parse nft voucher
+	// 	nftVoucher, err := k.parseVoucherProof(proof)
+	// 	// get next token id
+	// 	tokenID := fmt.Sprint(k.GetTotalSupply(ctx, nftVoucher.DenomId))
+	// 	k.setNFT(
+	// 		ctx, nftVoucher.DenomId,
+	// 		types.NewBaseNFT(
+	// 			tokenID,
+	// 			nftVoucher.Name,
+	// 			sdk.AccAddress(nftVoucher.Creator),
+	// 			nftVoucher.MetadataRef,
+	// 			nftVoucher.DidOwner,
+	// 		),
+	// 	)
+	// 	k.setOwner(ctx, nftVoucher.DenomId, tokenID, sdk.AccAddress(nftVoucher.Creator))
+	// 	k.increaseSupply(ctx, nftVoucher.DenomId)
+	// 	k.nftClaimed() // o ClaimSwap
+	// 	return tokenID, nil
+	// }
 	return "", nil
 }
 
