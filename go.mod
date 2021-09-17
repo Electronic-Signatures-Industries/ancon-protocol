@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
-	github.com/hyperledger/aries-framework-go v0.1.6
+	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/irisnet/irismod v1.4.0
@@ -32,7 +32,6 @@ require (
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
