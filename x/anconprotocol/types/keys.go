@@ -49,6 +49,10 @@ const (
 
 	DidWebStoreKey = "did_web_store_key"
 
+	VoucherStoreKey = "voucher_store_key"
+
+	VoucherRecipientStoreKey = "voucher_recipient_store_key"
+
 	// this line is used by starport scaffolding # ibc/keys/name
 )
 

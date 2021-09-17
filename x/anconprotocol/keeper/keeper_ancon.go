@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"bytes"
-	"crypto/rand"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -53,7 +53,7 @@ func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedRes
 
 	k.setNFT(
 		ctx, msg.DenomId,
-		types.NewBaseNFT(
+		types.NewAnconNFT(
 			tokenID,
 			msg.Name,
 			sdk.AccAddress(msg.Creator),
@@ -85,15 +85,16 @@ func (k Keeper) RequestLazyMint(ctx sdk.Context, msg *types.MsgMintTrustedConten
 	id, err := k.setMintVoucher(
 		ctx,
 		msg.DidOwner, // whitelist recipient
-		msg.DenomId,
-		types.NewBaseNFT(
-			"",
-			msg.Name,
-			sdk.AccAddress(msg.Creator),
-			msg.MetadataRef,
-			msg.DidOwner,
-			msg.Price,
-		),
+		types.Voucher{
+			Name:         msg.Name,
+			URI:          msg.MetadataRef,
+			Owner:        msg.Creator,
+			DidRecipient: msg.DidOwner,
+			Price:        msg.Price,
+			R:            msg.R,
+			S:            msg.S,
+			V:            msg.V,
+		},
 	)
 
 	return id, err
@@ -118,7 +119,7 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 
 	k.setNFT(
 		ctx, msg.DenomId,
-		types.NewBaseNFT(
+		types.NewAnconNFT(
 			tokenID,
 			msg.Name,
 			sdk.AccAddress(msg.Creator),
@@ -133,19 +134,19 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 
 }
 
+// setMintVoucher
 func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.Voucher) (string, error) {
-	index := rand.Seed(time.Now().UnixNano())
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherKey))
+	index := sha256.Sum256(append([]byte(time.Now().String()), byte(ctx.BlockHeight())))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
 	res := k.cdc.MustMarshalBinaryBare(&voucher)
-	store.Set([]byte(index), res)
 
-	// sig(pub,abi(erc721,  uri=ancon))
-	// IAnconSwap
+	i := append([]byte{0, 0, 0, 0, 0, 0, 0}, []byte(fmt.Sprint("%s", index))...)
+	store.Set(i, res)
 
-	// Register recipient
-	// separate store
+	store = prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherRecipientStoreKey))
+	store.Set(i, []byte(recipient))
 
-	return index, nil
+	return fmt.Sprint(i), nil
 }
 
 func (k Keeper) verifyProof(ctx sdk.Context, creator string, proof string) bool {

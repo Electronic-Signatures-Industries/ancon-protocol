@@ -2,7 +2,6 @@ import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 /** BaseNFT defines a non-fungible token */
 export interface Voucher {
-    id: string;
     /** ---------------------- */
     name: string;
     uri: string;
@@ -12,7 +11,7 @@ export interface Voucher {
     /** ---------------------- */
     r: string;
     s: string;
-    v: string;
+    v: number;
 }
 export interface DIDOwner {
     identity: string;
