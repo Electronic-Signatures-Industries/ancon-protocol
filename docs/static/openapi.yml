@@ -11210,6 +11210,9 @@ paths:
                           type: string
                         didOwner:
                           type: string
+                        price:
+                          type: string
+                          format: uint64
                       title: BaseNFT defines a non-fungible token
                 title: Collection defines a type of collection
               pagination:
@@ -12324,6 +12327,9 @@ paths:
                     type: string
                   didOwner:
                     type: string
+                  price:
+                    type: string
+                    format: uint64
                 title: BaseNFT defines a non-fungible token
             title: QueryNFTResponse is the response type for the Query/NFT RPC method
         default:
@@ -32708,6 +32714,9 @@ definitions:
         type: string
       didOwner:
         type: string
+      price:
+        type: string
+        format: uint64
     title: BaseNFT defines a non-fungible token
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Collection:
     type: object
@@ -32747,6 +32756,9 @@ definitions:
               type: string
             didOwner:
               type: string
+            price:
+              type: string
+              format: uint64
           title: BaseNFT defines a non-fungible token
     title: Collection defines a type of collection
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Denom:
@@ -32947,6 +32959,9 @@ definitions:
                   type: string
                 didOwner:
                   type: string
+                price:
+                  type: string
+                  format: uint64
               title: BaseNFT defines a non-fungible token
         title: Collection defines a type of collection
       pagination:
@@ -33076,6 +33091,9 @@ definitions:
             type: string
           didOwner:
             type: string
+          price:
+            type: string
+            format: uint64
         title: BaseNFT defines a non-fungible token
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.QueryOwnerResponse:

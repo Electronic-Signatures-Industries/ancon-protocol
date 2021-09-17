@@ -41,6 +41,7 @@ export interface MsgMintTrustedContent {
     didOwner: string;
     /** lazy mint */
     lazyMint: boolean;
+    price: number;
     r: string;
     s: string;
     v: number;
@@ -81,6 +82,7 @@ export interface MsgMintTrustedResource {
     resourceLocation: string;
     /** lazy mint */
     lazyMint: boolean;
+    price: number;
     r: string;
     s: string;
     v: number;

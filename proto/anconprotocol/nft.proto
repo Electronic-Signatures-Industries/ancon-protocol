@@ -17,6 +17,7 @@ message BaseNFT {
     string data = 4;
     string owner = 5;
     string did_owner = 6;
+    uint64 price = 7;
 }
 
 // Denom defines a type of NFT

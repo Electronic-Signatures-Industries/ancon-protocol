@@ -172,3 +172,16 @@ func (k Keeper) ReadDelegate(goCtx context.Context, req *types.QueryGetDelegateR
 
 	return &types.QueryGetDelegateResponse{}, nil
 }
+
+func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDelegateRequest) (*types.QueryGetDelegateResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Process the query
+	_ = ctx
+
+	return &types.QueryGetDelegateResponse{}, nil
+}

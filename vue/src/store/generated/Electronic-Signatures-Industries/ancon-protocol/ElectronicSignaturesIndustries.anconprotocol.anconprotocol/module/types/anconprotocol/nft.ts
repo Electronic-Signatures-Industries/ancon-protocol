@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { Writer, Reader } from 'protobufjs/minimal'
+import * as Long from 'long'
+import { util, configure, Writer, Reader } from 'protobufjs/minimal'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
@@ -11,6 +12,7 @@ export interface BaseNFT {
   data: string
   owner: string
   didOwner: string
+  price: number
 }
 
 /** Denom defines a type of NFT */
@@ -42,7 +44,7 @@ export interface Collection {
   nfts: BaseNFT[]
 }
 
-const baseBaseNFT: object = { id: '', name: '', uri: '', data: '', owner: '', didOwner: '' }
+const baseBaseNFT: object = { id: '', name: '', uri: '', data: '', owner: '', didOwner: '', price: 0 }
 
 export const BaseNFT = {
   encode(message: BaseNFT, writer: Writer = Writer.create()): Writer {
@@ -63,6 +65,9 @@ export const BaseNFT = {
     }
     if (message.didOwner !== '') {
       writer.uint32(50).string(message.didOwner)
+    }
+    if (message.price !== 0) {
+      writer.uint32(56).uint64(message.price)
     }
     return writer
   },
@@ -91,6 +96,9 @@ export const BaseNFT = {
           break
         case 6:
           message.didOwner = reader.string()
+          break
+        case 7:
+          message.price = longToNumber(reader.uint64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -132,6 +140,11 @@ export const BaseNFT = {
     } else {
       message.didOwner = ''
     }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = Number(object.price)
+    } else {
+      message.price = 0
+    }
     return message
   },
 
@@ -143,6 +156,7 @@ export const BaseNFT = {
     message.data !== undefined && (obj.data = message.data)
     message.owner !== undefined && (obj.owner = message.owner)
     message.didOwner !== undefined && (obj.didOwner = message.didOwner)
+    message.price !== undefined && (obj.price = message.price)
     return obj
   },
 
@@ -177,6 +191,11 @@ export const BaseNFT = {
       message.didOwner = object.didOwner
     } else {
       message.didOwner = ''
+    }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = object.price
+    } else {
+      message.price = 0
     }
     return message
   }
@@ -576,6 +595,16 @@ export const Collection = {
   }
 }
 
+declare var self: any | undefined
+declare var window: any | undefined
+var globalThis: any = (() => {
+  if (typeof globalThis !== 'undefined') return globalThis
+  if (typeof self !== 'undefined') return self
+  if (typeof window !== 'undefined') return window
+  if (typeof global !== 'undefined') return global
+  throw 'Unable to locate global object'
+})()
+
 type Builtin = Date | Function | Uint8Array | string | number | undefined
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -586,3 +615,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER')
+  }
+  return long.toNumber()
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any
+  configure()
+}

@@ -468,6 +468,7 @@ const baseMsgMintTrustedContent = {
     recipient: '',
     didOwner: '',
     lazyMint: false,
+    price: 0,
     r: '',
     s: '',
     v: 0
@@ -495,14 +496,17 @@ export const MsgMintTrustedContent = {
         if (message.lazyMint === true) {
             writer.uint32(56).bool(message.lazyMint);
         }
+        if (message.price !== 0) {
+            writer.uint32(64).uint64(message.price);
+        }
         if (message.r !== '') {
-            writer.uint32(66).string(message.r);
+            writer.uint32(74).string(message.r);
         }
         if (message.s !== '') {
-            writer.uint32(74).string(message.s);
+            writer.uint32(82).string(message.s);
         }
         if (message.v !== 0) {
-            writer.uint32(80).uint64(message.v);
+            writer.uint32(88).uint64(message.v);
         }
         return writer;
     },
@@ -535,12 +539,15 @@ export const MsgMintTrustedContent = {
                     message.lazyMint = reader.bool();
                     break;
                 case 8:
-                    message.r = reader.string();
+                    message.price = longToNumber(reader.uint64());
                     break;
                 case 9:
-                    message.s = reader.string();
+                    message.r = reader.string();
                     break;
                 case 10:
+                    message.s = reader.string();
+                    break;
+                case 11:
                     message.v = longToNumber(reader.uint64());
                     break;
                 default:
@@ -594,6 +601,12 @@ export const MsgMintTrustedContent = {
         else {
             message.lazyMint = false;
         }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = Number(object.price);
+        }
+        else {
+            message.price = 0;
+        }
         if (object.r !== undefined && object.r !== null) {
             message.r = String(object.r);
         }
@@ -623,6 +636,7 @@ export const MsgMintTrustedContent = {
         message.recipient !== undefined && (obj.recipient = message.recipient);
         message.didOwner !== undefined && (obj.didOwner = message.didOwner);
         message.lazyMint !== undefined && (obj.lazyMint = message.lazyMint);
+        message.price !== undefined && (obj.price = message.price);
         message.r !== undefined && (obj.r = message.r);
         message.s !== undefined && (obj.s = message.s);
         message.v !== undefined && (obj.v = message.v);
@@ -671,6 +685,12 @@ export const MsgMintTrustedContent = {
         }
         else {
             message.lazyMint = false;
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = object.price;
+        }
+        else {
+            message.price = 0;
         }
         if (object.r !== undefined && object.r !== null) {
             message.r = object.r;
@@ -1015,6 +1035,7 @@ const baseMsgMintTrustedResource = {
     resourceWhitelistAccess: '',
     resourceLocation: '',
     lazyMint: false,
+    price: 0,
     r: '',
     s: '',
     v: 0
@@ -1048,14 +1069,17 @@ export const MsgMintTrustedResource = {
         if (message.lazyMint === true) {
             writer.uint32(72).bool(message.lazyMint);
         }
+        if (message.price !== 0) {
+            writer.uint32(80).uint64(message.price);
+        }
         if (message.r !== '') {
-            writer.uint32(82).string(message.r);
+            writer.uint32(90).string(message.r);
         }
         if (message.s !== '') {
-            writer.uint32(90).string(message.s);
+            writer.uint32(98).string(message.s);
         }
         if (message.v !== 0) {
-            writer.uint32(96).uint64(message.v);
+            writer.uint32(104).uint64(message.v);
         }
         return writer;
     },
@@ -1095,12 +1119,15 @@ export const MsgMintTrustedResource = {
                     message.lazyMint = reader.bool();
                     break;
                 case 10:
-                    message.r = reader.string();
+                    message.price = longToNumber(reader.uint64());
                     break;
                 case 11:
-                    message.s = reader.string();
+                    message.r = reader.string();
                     break;
                 case 12:
+                    message.s = reader.string();
+                    break;
+                case 13:
                     message.v = longToNumber(reader.uint64());
                     break;
                 default:
@@ -1166,6 +1193,12 @@ export const MsgMintTrustedResource = {
         else {
             message.lazyMint = false;
         }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = Number(object.price);
+        }
+        else {
+            message.price = 0;
+        }
         if (object.r !== undefined && object.r !== null) {
             message.r = String(object.r);
         }
@@ -1202,6 +1235,7 @@ export const MsgMintTrustedResource = {
         }
         message.resourceLocation !== undefined && (obj.resourceLocation = message.resourceLocation);
         message.lazyMint !== undefined && (obj.lazyMint = message.lazyMint);
+        message.price !== undefined && (obj.price = message.price);
         message.r !== undefined && (obj.r = message.r);
         message.s !== undefined && (obj.s = message.s);
         message.v !== undefined && (obj.v = message.v);
@@ -1262,6 +1296,12 @@ export const MsgMintTrustedResource = {
         }
         else {
             message.lazyMint = false;
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = object.price;
+        }
+        else {
+            message.price = 0;
         }
         if (object.r !== undefined && object.r !== null) {
             message.r = object.r;

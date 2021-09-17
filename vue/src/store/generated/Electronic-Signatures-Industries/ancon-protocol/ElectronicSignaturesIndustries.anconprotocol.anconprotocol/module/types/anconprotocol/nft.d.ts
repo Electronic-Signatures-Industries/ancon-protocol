@@ -8,6 +8,7 @@ export interface BaseNFT {
     data: string;
     owner: string;
     didOwner: string;
+    price: number;
 }
 /** Denom defines a type of NFT */
 export interface Denom {

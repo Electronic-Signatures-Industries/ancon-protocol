@@ -16,6 +16,9 @@ export interface AnconprotocolBaseNFT {
   data?: string;
   owner?: string;
   didOwner?: string;
+
+  /** @format uint64 */
+  price?: string;
 }
 
 export interface AnconprotocolCollection {

@@ -50,5 +50,6 @@ type JSONArrayOfString struct {
 }
 
 type OffchainLookup struct {
-	Signature string
+	Uri    string
+	Prefix string
 }

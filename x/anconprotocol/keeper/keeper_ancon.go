@@ -2,13 +2,16 @@ package keeper
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
 
 	// This package is needed so that all the preloaded plugins are loaded automatically
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -56,12 +59,44 @@ func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedRes
 			sdk.AccAddress(msg.Creator),
 			msg.MetadataRef,
 			msg.DidOwner,
+			msg.Price,
 		),
 	)
 	k.setOwner(ctx, msg.DenomId, tokenID, sdk.AccAddress(msg.Creator))
 	k.increaseSupply(ctx, msg.DenomId)
 
 	return tokenID, nil
+}
+
+// RequestLazyMint -- actor is NFT Creator, can be assigned to marketplace -- onchain origin
+func (k Keeper) RequestLazyMint(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
+
+	// Add Metadata Cid to NFT
+	denom, found := k.GetDenom(ctx, msg.DenomId)
+	if !found {
+		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
+	}
+
+	if denom.MintRestricted && denom.Creator != msg.Creator {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
+	}
+
+	// get
+	id, err := k.setMintVoucher(
+		ctx,
+		msg.DidOwner, // whitelist recipient
+		msg.DenomId,
+		types.NewBaseNFT(
+			"",
+			msg.Name,
+			sdk.AccAddress(msg.Creator),
+			msg.MetadataRef,
+			msg.DidOwner,
+			msg.Price,
+		),
+	)
+
+	return id, err
 }
 
 func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
@@ -81,100 +116,138 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 		return "", sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, msg.DenomId)
 	}
 
-	if !msg.LazyMint {
-		k.setNFT(
-			ctx, msg.DenomId,
-			types.NewBaseNFT(
-				tokenID,
-				msg.Name,
-				sdk.AccAddress(msg.Creator),
-				msg.MetadataRef,
-				msg.DidOwner,
-			),
-		)
-		k.setOwner(ctx, msg.DenomId, tokenID, sdk.AccAddress(msg.Creator))
-		k.increaseSupply(ctx, msg.DenomId)
-		return tokenID, nil
-	} else {
-		// same as setNFT but need to store signature
-		return k.setMintVoucher(
-			ctx,
-			msg.DenomId,
-			types.NewBaseNFT(
-				tokenID,
-				msg.Name,
-				sdk.AccAddress(msg.Creator),
-				msg.MetadataRef,
-				msg.DidOwner,
-			),
-		)
-	}
+	k.setNFT(
+		ctx, msg.DenomId,
+		types.NewBaseNFT(
+			tokenID,
+			msg.Name,
+			sdk.AccAddress(msg.Creator),
+			msg.MetadataRef,
+			msg.DidOwner,
+			msg.Price,
+		),
+	)
+	k.setOwner(ctx, msg.DenomId, tokenID, sdk.AccAddress(msg.Creator))
+	k.increaseSupply(ctx, msg.DenomId)
+	return tokenID, nil
+
 }
 
-func (k Keeper) setMintVoucher(ctx sdk.Context, denomID string, nft types.BaseNFT) (string, error) {
-	// TODO: Get voucher id
-	// k.getMintVoucher
-	// TODO: Set did owner as voucher owner
-	// key = k.getMintVoucher + nft.Owner
-	// TODO: Store in NFTMintVoucherKey in MintVoucher store
-	// Set(key, types.MintVoucher{})
+func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.Voucher) (string, error) {
+	index := rand.Seed(time.Now().UnixNano())
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherKey))
+	res := k.cdc.MustMarshalBinaryBare(&voucher)
+	store.Set([]byte(index), res)
 
 	// sig(pub,abi(erc721,  uri=ancon))
 	// IAnconSwap
 
-	// Register
+	// Register recipient
+	// separate store
 
-	return "12345", nil
-}
-
-// InitiateSwap - offchain lookup error
-func (k Keeper) InitiateSwap(ctx sdk.Context, voucher string) (*types.OffchainLookup, error) {
-
-	// if k.HasClaimedSwap(ctx, voucher) {
-	// 	return &types.OffchainLookup{Ok: true}, nil
-	// }
-	return &types.OffchainLookup{
-		Signature: "", // TODO: Relayer account signing
-	}, nil
+	return index, nil
 }
 
 func (k Keeper) verifyProof(ctx sdk.Context, creator string, proof string) bool {
 	// TODO:
 	// Validates register public key from gateway (trusted)
-	// Validates creator signature
+	// Validates durin signature
 	return true
 }
 
-func (k Keeper) parseVoucherProof(proof string) (interface{}, error) {
+func (k Keeper) parseVoucherProof(proof string) (types.BaseNFT, error) {
 	// TODO:
 	// Validates register public key from gateway (trusted)
 	// Validates creator signature
-	return nil, nil
+	return types.BaseNFT{}, nil
+}
+
+// InitiateSwap -- actor is NFT Minter -- onchain recipient
+func (k Keeper) HasClaimedSwap(ctx sdk.Context, voucher string) bool {
+	return false
+}
+
+// InitiateSwap -- actor is NFT Minter -- onchain recipient
+func (k Keeper) InitiateSwap(ctx sdk.Context, voucher string) (*types.OffchainLookup, error) {
+	if k.HasClaimedSwap(ctx, voucher) {
+		return &types.OffchainLookup{}, nil
+	}
+
+	// prefix with abi
+	methodSig := abi.NewMethod(
+		"InitiateSwap",
+		"InitiateSwap",
+		abi.Function,
+		"nonpayable",
+		false,
+		false,
+		abi.Arguments{
+			{
+				Name:    "voucherId",
+				Type:    abi.Type{},
+				Indexed: false,
+			},
+		},
+		abi.Arguments{},
+	)
+
+	return &types.OffchainLookup{
+		Uri:    "http://localhost:3000/",
+		Prefix: methodSig.Sig, // sha256(creator, sig)
+	}, nil
+}
+
+// InitiateSwap -- actor is NFT Minter -- onchain recipient
+func (k Keeper) HasVoucherPermit(ctx sdk.Context, voucher string, prefix string) bool {
+	// get db - ancon-protocol
+
+	// eip712
+	v := k.GetVoucher(voucher)
+	// voucher
+	// verify prefix == InitiateSwap
+
+	return true
+}
+
+// InitiateSwap -- actor is NFT Minter -- gateway
+func (k Keeper) InitiateSwap_offchain(ctx sdk.Context, voucher string, prefix string) (*types.InitiateSwapPermit, error) {
+	if k.HasVoucherPermit(ctx, voucher, prefix) {
+		// verify signed by user
+		// ecrecover(sig, addr)
+
+		// voucher = sig(priv, voucher)
+		// eip712 durinSig
+		return &types.InitiateSwapPermit{}, nil
+	} else {
+		return nil, fmt.Errorf("unauthorized")
+	}
 }
 
 // InitiateSwapWithProof - onchain
 func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, creator string, voucher string, proof string) (string, error) {
 
-	// if k.verifyProof(ctx, creator, proof) {
-	// 	// Parse nft voucher
-	// 	nftVoucher, err := k.parseVoucherProof(proof)
-	// 	// get next token id
-	// 	tokenID := fmt.Sprint(k.GetTotalSupply(ctx, nftVoucher.DenomId))
-	// 	k.setNFT(
-	// 		ctx, nftVoucher.DenomId,
-	// 		types.NewBaseNFT(
-	// 			tokenID,
-	// 			nftVoucher.Name,
-	// 			sdk.AccAddress(nftVoucher.Creator),
-	// 			nftVoucher.MetadataRef,
-	// 			nftVoucher.DidOwner,
-	// 		),
-	// 	)
-	// 	k.setOwner(ctx, nftVoucher.DenomId, tokenID, sdk.AccAddress(nftVoucher.Creator))
-	// 	k.increaseSupply(ctx, nftVoucher.DenomId)
-	// 	k.nftClaimed() // o ClaimSwap
-	// 	return tokenID, nil
-	// }
+	// gateway previously registered
+	if k.verifyProof(ctx, creator, proof) {
+		// Parse nft voucher
+		nftVoucher, _ := k.parseVoucherProof(proof)
+		// get next token id
+		tokenID := fmt.Sprint(k.GetTotalSupply(ctx, nftVoucher.DenomId))
+		k.setNFT(
+			ctx,
+			nftVoucher.DenomId,
+			types.NewBaseNFT(
+				tokenID,
+				nftVoucher.Name,
+				sdk.AccAddress(nftVoucher.Creator),
+				nftVoucher.MetadataRef,
+				nftVoucher.DidOwner,
+			),
+		)
+		k.setOwner(ctx, nftVoucher.DenomId, tokenID, sdk.AccAddress(nftVoucher.Creator))
+		k.increaseSupply(ctx, nftVoucher.DenomId)
+		k.nftClaimed() // o ClaimSwap
+		return tokenID, nil
+	}
 	return "", nil
 }
 

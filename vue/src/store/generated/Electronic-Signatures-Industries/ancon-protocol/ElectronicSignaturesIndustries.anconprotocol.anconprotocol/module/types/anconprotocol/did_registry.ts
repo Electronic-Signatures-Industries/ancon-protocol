@@ -4,6 +4,21 @@ import { util, configure, Writer, Reader } from 'protobufjs/minimal'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+/** BaseNFT defines a non-fungible token */
+export interface Voucher {
+  id: string
+  /** ---------------------- */
+  name: string
+  uri: string
+  owner: string
+  didRecipient: string
+  price: number
+  /** ---------------------- */
+  r: string
+  s: string
+  v: string
+}
+
 export interface DIDOwner {
   identity: string
   owner: string
@@ -39,6 +54,197 @@ export interface Attribute {
   identity: string
   name: Uint8Array
   value: Uint8Array
+}
+
+const baseVoucher: object = { id: '', name: '', uri: '', owner: '', didRecipient: '', price: 0, r: '', s: '', v: '' }
+
+export const Voucher = {
+  encode(message: Voucher, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.name !== '') {
+      writer.uint32(18).string(message.name)
+    }
+    if (message.uri !== '') {
+      writer.uint32(26).string(message.uri)
+    }
+    if (message.owner !== '') {
+      writer.uint32(34).string(message.owner)
+    }
+    if (message.didRecipient !== '') {
+      writer.uint32(42).string(message.didRecipient)
+    }
+    if (message.price !== 0) {
+      writer.uint32(48).uint64(message.price)
+    }
+    if (message.r !== '') {
+      writer.uint32(58).string(message.r)
+    }
+    if (message.s !== '') {
+      writer.uint32(66).string(message.s)
+    }
+    if (message.v !== '') {
+      writer.uint32(74).string(message.v)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): Voucher {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseVoucher } as Voucher
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        case 2:
+          message.name = reader.string()
+          break
+        case 3:
+          message.uri = reader.string()
+          break
+        case 4:
+          message.owner = reader.string()
+          break
+        case 5:
+          message.didRecipient = reader.string()
+          break
+        case 6:
+          message.price = longToNumber(reader.uint64() as Long)
+          break
+        case 7:
+          message.r = reader.string()
+          break
+        case 8:
+          message.s = reader.string()
+          break
+        case 9:
+          message.v = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): Voucher {
+    const message = { ...baseVoucher } as Voucher
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = String(object.uri)
+    } else {
+      message.uri = ''
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner)
+    } else {
+      message.owner = ''
+    }
+    if (object.didRecipient !== undefined && object.didRecipient !== null) {
+      message.didRecipient = String(object.didRecipient)
+    } else {
+      message.didRecipient = ''
+    }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = Number(object.price)
+    } else {
+      message.price = 0
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = String(object.r)
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = String(object.s)
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = String(object.v)
+    } else {
+      message.v = ''
+    }
+    return message
+  },
+
+  toJSON(message: Voucher): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    message.name !== undefined && (obj.name = message.name)
+    message.uri !== undefined && (obj.uri = message.uri)
+    message.owner !== undefined && (obj.owner = message.owner)
+    message.didRecipient !== undefined && (obj.didRecipient = message.didRecipient)
+    message.price !== undefined && (obj.price = message.price)
+    message.r !== undefined && (obj.r = message.r)
+    message.s !== undefined && (obj.s = message.s)
+    message.v !== undefined && (obj.v = message.v)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<Voucher>): Voucher {
+    const message = { ...baseVoucher } as Voucher
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.uri !== undefined && object.uri !== null) {
+      message.uri = object.uri
+    } else {
+      message.uri = ''
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner
+    } else {
+      message.owner = ''
+    }
+    if (object.didRecipient !== undefined && object.didRecipient !== null) {
+      message.didRecipient = object.didRecipient
+    } else {
+      message.didRecipient = ''
+    }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = object.price
+    } else {
+      message.price = 0
+    }
+    if (object.r !== undefined && object.r !== null) {
+      message.r = object.r
+    } else {
+      message.r = ''
+    }
+    if (object.s !== undefined && object.s !== null) {
+      message.s = object.s
+    } else {
+      message.s = ''
+    }
+    if (object.v !== undefined && object.v !== null) {
+      message.v = object.v
+    } else {
+      message.v = ''
+    }
+    return message
+  }
 }
 
 const baseDIDOwner: object = { identity: '', owner: '', didAncon: '', didKey: '', didWeb: '', didWebDeactivated: false, vanityName: '' }

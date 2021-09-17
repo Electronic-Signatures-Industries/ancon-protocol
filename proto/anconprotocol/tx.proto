@@ -104,9 +104,10 @@ message MsgMintTrustedContent {
   string did_owner = 6;  
   // lazy mint
   bool lazy_mint = 7;
-  string r = 8;
-  string s = 9;
-  uint64 v = 10;
+  uint64 price = 8;
+  string r = 9;
+  string s = 10;
+  uint64 v = 11;
 }
 
 message MsgMintTrustedContentResponse {
@@ -151,9 +152,10 @@ message MsgMintTrustedResource {
   string resource_location = 8; // public or private
   // lazy mint
   bool lazy_mint = 9;
-  string r = 10;
-  string s = 11;
-  uint64 v = 12;
+  uint64 price = 10;
+  string r = 11;
+  string s = 12;
+  uint64 v = 13;
 }
 
 message MsgMintTrustedResourceResponse {
