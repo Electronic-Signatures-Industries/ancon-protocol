@@ -12,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/tendermint/tendermint/rpc/client"
 )
 
 var (
@@ -26,7 +27,7 @@ var (
 	ReadGetNftQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"ancon", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
-func RegisterQueryNFTHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient) error {
+func RegisterQueryNFTHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, abci client.ABCIClient) error {
 
 	// TODO: handlers
 	mux.Handle("GET", ReadOwnerQuery, wrapJsonResult(ctx, mux, client, readIdentifyOwner))

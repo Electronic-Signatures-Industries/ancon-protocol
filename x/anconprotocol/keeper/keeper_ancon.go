@@ -201,18 +201,6 @@ func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string) (*types.RelayMes
 	}, nil
 }
 
-// InitiateSwap -- actor is NFT Minter -- onchain recipient
-func (k Keeper) HasVoucherPermit(ctx sdk.Context, voucher string, prefix string) bool {
-	// get db - ancon-protocol
-
-	// eip712
-	v := k.GetVoucher(voucher)
-	// voucher
-	// verify prefix == InitiateSwap
-
-	return true
-}
-
 // InitiateSwap -- actor is NFT Minter -- gateway
 func (k Keeper) InitiateSwap_offchain(ctx sdk.Context, voucher string, prefix string) (*types.InitiateSwapPermit, error) {
 	if k.HasVoucherPermit(ctx, voucher, prefix) {

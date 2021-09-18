@@ -8,8 +8,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/exported"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-	"github.com/cosmos/cosmos-sdk/client"
+	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/fxamacker/cbor/v2"
@@ -84,21 +85,17 @@ func (k Keeper) GetVoucher(ctx sdk.Context, voucherID string) (*types.Voucher, e
 }
 
 // GetVoucherProof returns stored voucher proof
-func (k Keeper) GetVoucherProof(ctx sdk.Context, voucherID string) (*types.Voucher, error) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
-
-	buf := store.Get([]byte(voucherID))
-	var voucher types.Voucher
-	k.cdc.MustUnmarshalBinaryBare(buf, &voucher)
-
+func (k Keeper) GetVoucherProof(ctx sdk.Context, abci rpcclient.ABCIClient, voucherID string) (*ics23.ExistenceProof, error) {
 	opts := rpcclient.ABCIQueryOptions{
 		Height: ctx.BlockHeight(),
 		Prove:  true,
 	}
 
-	// buf, proofA, proofB, err := exported.GetProofsByKey(client.Context{}, []byte(voucherID), opts, true)
-	// exported.CreateMembershipProof(tree.GetImmutable(ctx.BlockHeight()), []byte(voucherID))
-	return &voucher, nil
+	_, proofA, _, err := exported.GetProofsByKey(abci, "", []byte(voucherID), opts, true)
+	if err != nil {
+		return nil, err
+	}
+	return proofA, nil
 }
 
 func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -144,7 +141,7 @@ func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, clien
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "QueryClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "QueryClient" to call the correct interceptors.
-func RegisterQueryAnconHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient) error {
+func RegisterQueryAnconHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, abci rpcclient.ABCIClient) error {
 
 	mux.Handle("GET", ReadWithPathQuery, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 

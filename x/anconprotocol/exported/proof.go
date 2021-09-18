@@ -5,15 +5,14 @@ import (
 	"fmt"
 
 	ics23 "github.com/confio/ics23/go"
-	"github.com/cosmos/cosmos-sdk/client"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
-func GetProofsByKey(ctx client.Context, key []byte, queryOptions rpcclient.ABCIQueryOptions, getMultiStoreEp bool) ([]byte, *ics23.ExistenceProof, *ics23.ExistenceProof, error) {
-	resp, err := ctx.Client.ABCIQueryWithOptions(
+func GetProofsByKey(abci rpcclient.ABCIClient, path string, key []byte, queryOptions rpcclient.ABCIQueryOptions, getMultiStoreEp bool) ([]byte, *ics23.ExistenceProof, *ics23.ExistenceProof, error) {
+	resp, err := abci.ABCIQueryWithOptions(
 		context.Background(),
-		"/store/oracle/key",
+		path,
 		key,
 		queryOptions,
 	)

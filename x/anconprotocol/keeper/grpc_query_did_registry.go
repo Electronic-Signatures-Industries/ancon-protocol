@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,7 +22,7 @@ var (
 	ReadDelegateQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "didregistry", "delegates", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
-func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient) error {
+func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, abci client.ABCIClient) error {
 
 	mux.Handle("GET", ReadIdentifyOwnerQuery, wrapJsonResult(ctx, mux, client, readIdentifyOwner))
 	mux.Handle("GET", ReadGetAttributesQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
