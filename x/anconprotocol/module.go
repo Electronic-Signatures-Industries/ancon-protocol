@@ -81,6 +81,8 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	// TODO: need to send abci
+	// abci := clientCtx.Client
 	keeper.RegisterQueryAnconHandler(context.Background(), mux, types.NewQueryClient(clientCtx))
 	keeper.RegisterQueryDidRegistryHandler(context.Background(), mux, types.NewQueryClient(clientCtx))
 	keeper.RegisterQueryNFTHandler(context.Background(), mux, types.NewQueryClient(clientCtx))

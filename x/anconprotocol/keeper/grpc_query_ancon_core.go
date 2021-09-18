@@ -8,9 +8,8 @@ import (
 	"io"
 	"net/http"
 
-	"google.golang.org/grpc"
-
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/fxamacker/cbor/v2"
@@ -22,6 +21,8 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -71,12 +72,33 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 	return k.GetObject(ctx, req)
 }
 
-//TODO: implement
-func (k Keeper) GetVoucher(goCtx context.Context, voucherID string) (map[string]string, error) {
-	m := make(map[string]string)
-	m["voucher"] = ""
-	m["prefix"] = ""
-	return m, nil
+// GetVoucher returns stored voucher
+func (k Keeper) GetVoucher(ctx sdk.Context, voucherID string) (*types.Voucher, error) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
+
+	buf := store.Get([]byte(voucherID))
+	var voucher types.Voucher
+	k.cdc.MustUnmarshalBinaryBare(buf, &voucher)
+
+	return &voucher, nil
+}
+
+// GetVoucherProof returns stored voucher proof
+func (k Keeper) GetVoucherProof(ctx sdk.Context, voucherID string) (*types.Voucher, error) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
+
+	buf := store.Get([]byte(voucherID))
+	var voucher types.Voucher
+	k.cdc.MustUnmarshalBinaryBare(buf, &voucher)
+
+	opts := rpcclient.ABCIQueryOptions{
+		Height: ctx.BlockHeight(),
+		Prove:  true,
+	}
+
+	// buf, proofA, proofB, err := exported.GetProofsByKey(client.Context{}, []byte(voucherID), opts, true)
+	// exported.CreateMembershipProof(tree.GetImmutable(ctx.BlockHeight()), []byte(voucherID))
+	return &voucher, nil
 }
 
 func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {

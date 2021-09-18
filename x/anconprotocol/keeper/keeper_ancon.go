@@ -168,12 +168,8 @@ func (k Keeper) HasClaimedSwap(ctx sdk.Context, voucher string) bool {
 	return false
 }
 
-// InitiateSwap -- actor is NFT Minter -- onchain recipient
-func (k Keeper) InitiateSwap(ctx sdk.Context, voucher string) (*types.OffchainLookup, error) {
-	if k.HasClaimedSwap(ctx, voucher) {
-		return &types.OffchainLookup{}, nil
-	}
-
+// InitiateSwap starts swap to Chain B, sends a voucher, prefix and proof
+func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string) (*types.RelayMessageNFTMintSwap, error) {
 	// prefix with abi
 	methodSig := abi.NewMethod(
 		"InitiateSwap",
@@ -192,9 +188,16 @@ func (k Keeper) InitiateSwap(ctx sdk.Context, voucher string) (*types.OffchainLo
 		abi.Arguments{},
 	)
 
-	return &types.OffchainLookup{
-		Uri:    "http://localhost:3000/",
-		Prefix: methodSig.Sig, // sha256(creator, sig)
+	voucher, err := k.GetVoucher(ctx, voucherId)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: Get abci client
+	proof := k.GetVoucherProof(ctx, voucherId)
+	return &types.RelayMessageNFTMintSwap{
+		Voucher: voucher,
+		Proof:   proof,
+		Prefix:  methodSig.Sig, // sha256(creator, sig)
 	}, nil
 }
 

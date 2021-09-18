@@ -1,5 +1,9 @@
 package types
 
+import (
+	ics23 "github.com/confio/ics23/go"
+)
+
 type IPLDMetadataStore struct {
 	Name                  string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description           string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -52,4 +56,10 @@ type JSONArrayOfString struct {
 type OffchainLookup struct {
 	Uri    string
 	Prefix string
+}
+
+type RelayMessageNFTMintSwap struct {
+	Prefix  string
+	Proof   ics23.CommitmentProof
+	Voucher interface{}
 }
