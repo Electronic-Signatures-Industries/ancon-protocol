@@ -6,13 +6,14 @@ export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anc
 
 /** BaseNFT defines a non-fungible token */
 export interface Voucher {
-  /** ---------------------- */
-  name: string
+  /** details */
+  tokenName: string
+  tokenSymbol: string
   uri: string
   owner: string
   didRecipient: string
   price: number
-  /** ---------------------- */
+  /** sig(details) */
   r: string
   s: string
   v: number
@@ -55,33 +56,36 @@ export interface Attribute {
   value: Uint8Array
 }
 
-const baseVoucher: object = { name: '', uri: '', owner: '', didRecipient: '', price: 0, r: '', s: '', v: 0 }
+const baseVoucher: object = { tokenName: '', tokenSymbol: '', uri: '', owner: '', didRecipient: '', price: 0, r: '', s: '', v: 0 }
 
 export const Voucher = {
   encode(message: Voucher, writer: Writer = Writer.create()): Writer {
-    if (message.name !== '') {
-      writer.uint32(10).string(message.name)
+    if (message.tokenName !== '') {
+      writer.uint32(10).string(message.tokenName)
+    }
+    if (message.tokenSymbol !== '') {
+      writer.uint32(18).string(message.tokenSymbol)
     }
     if (message.uri !== '') {
-      writer.uint32(18).string(message.uri)
+      writer.uint32(26).string(message.uri)
     }
     if (message.owner !== '') {
-      writer.uint32(26).string(message.owner)
+      writer.uint32(34).string(message.owner)
     }
     if (message.didRecipient !== '') {
-      writer.uint32(34).string(message.didRecipient)
+      writer.uint32(42).string(message.didRecipient)
     }
     if (message.price !== 0) {
-      writer.uint32(40).uint64(message.price)
+      writer.uint32(48).uint64(message.price)
     }
     if (message.r !== '') {
-      writer.uint32(50).string(message.r)
+      writer.uint32(58).string(message.r)
     }
     if (message.s !== '') {
-      writer.uint32(58).string(message.s)
+      writer.uint32(66).string(message.s)
     }
     if (message.v !== 0) {
-      writer.uint32(64).uint64(message.v)
+      writer.uint32(72).uint64(message.v)
     }
     return writer
   },
@@ -94,27 +98,30 @@ export const Voucher = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.name = reader.string()
+          message.tokenName = reader.string()
           break
         case 2:
-          message.uri = reader.string()
+          message.tokenSymbol = reader.string()
           break
         case 3:
-          message.owner = reader.string()
+          message.uri = reader.string()
           break
         case 4:
-          message.didRecipient = reader.string()
+          message.owner = reader.string()
           break
         case 5:
-          message.price = longToNumber(reader.uint64() as Long)
+          message.didRecipient = reader.string()
           break
         case 6:
-          message.r = reader.string()
+          message.price = longToNumber(reader.uint64() as Long)
           break
         case 7:
-          message.s = reader.string()
+          message.r = reader.string()
           break
         case 8:
+          message.s = reader.string()
+          break
+        case 9:
           message.v = longToNumber(reader.uint64() as Long)
           break
         default:
@@ -127,10 +134,15 @@ export const Voucher = {
 
   fromJSON(object: any): Voucher {
     const message = { ...baseVoucher } as Voucher
-    if (object.name !== undefined && object.name !== null) {
-      message.name = String(object.name)
+    if (object.tokenName !== undefined && object.tokenName !== null) {
+      message.tokenName = String(object.tokenName)
     } else {
-      message.name = ''
+      message.tokenName = ''
+    }
+    if (object.tokenSymbol !== undefined && object.tokenSymbol !== null) {
+      message.tokenSymbol = String(object.tokenSymbol)
+    } else {
+      message.tokenSymbol = ''
     }
     if (object.uri !== undefined && object.uri !== null) {
       message.uri = String(object.uri)
@@ -172,7 +184,8 @@ export const Voucher = {
 
   toJSON(message: Voucher): unknown {
     const obj: any = {}
-    message.name !== undefined && (obj.name = message.name)
+    message.tokenName !== undefined && (obj.tokenName = message.tokenName)
+    message.tokenSymbol !== undefined && (obj.tokenSymbol = message.tokenSymbol)
     message.uri !== undefined && (obj.uri = message.uri)
     message.owner !== undefined && (obj.owner = message.owner)
     message.didRecipient !== undefined && (obj.didRecipient = message.didRecipient)
@@ -185,10 +198,15 @@ export const Voucher = {
 
   fromPartial(object: DeepPartial<Voucher>): Voucher {
     const message = { ...baseVoucher } as Voucher
-    if (object.name !== undefined && object.name !== null) {
-      message.name = object.name
+    if (object.tokenName !== undefined && object.tokenName !== null) {
+      message.tokenName = object.tokenName
     } else {
-      message.name = ''
+      message.tokenName = ''
+    }
+    if (object.tokenSymbol !== undefined && object.tokenSymbol !== null) {
+      message.tokenSymbol = object.tokenSymbol
+    } else {
+      message.tokenSymbol = ''
     }
     if (object.uri !== undefined && object.uri !== null) {
       message.uri = object.uri

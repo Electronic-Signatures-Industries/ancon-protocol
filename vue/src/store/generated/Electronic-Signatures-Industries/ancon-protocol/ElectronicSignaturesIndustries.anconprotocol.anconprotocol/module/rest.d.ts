@@ -35,10 +35,6 @@ export interface AnconprotocolMsgChangeOwnerResponse {
     /** @format uint64 */
     previousChange?: string;
 }
-export interface AnconprotocolMsgClaimSwapResponse {
-    /** @format uint64 */
-    id?: string;
-}
 export interface AnconprotocolMsgCreateDidResponse {
     cid?: string;
     did?: string;
@@ -59,7 +55,9 @@ export interface AnconprotocolMsgGrantDelegateResponse {
 }
 export interface AnconprotocolMsgInitiateSwapResponse {
     /** @format uint64 */
-    id?: string;
+    relayTo?: string;
+    voucher?: string;
+    key?: string;
 }
 /**
  * MsgIssueDenomResponse defines the Msg/IssueDenom response type.

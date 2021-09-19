@@ -764,6 +764,259 @@ export const MsgMintTrustedContentResponse = {
         return message;
     }
 };
+const baseMsgMintSwap = {
+    creator: '',
+    metadataRef: '',
+    denomId: '',
+    name: '',
+    recipient: '',
+    didOwner: '',
+    destinationDenomId: '',
+    price: 0,
+    r: '',
+    s: '',
+    v: 0
+};
+export const MsgMintSwap = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.metadataRef !== '') {
+            writer.uint32(18).string(message.metadataRef);
+        }
+        if (message.denomId !== '') {
+            writer.uint32(26).string(message.denomId);
+        }
+        if (message.name !== '') {
+            writer.uint32(34).string(message.name);
+        }
+        if (message.recipient !== '') {
+            writer.uint32(42).string(message.recipient);
+        }
+        if (message.didOwner !== '') {
+            writer.uint32(50).string(message.didOwner);
+        }
+        if (message.destinationDenomId !== '') {
+            writer.uint32(58).string(message.destinationDenomId);
+        }
+        if (message.price !== 0) {
+            writer.uint32(64).uint64(message.price);
+        }
+        if (message.r !== '') {
+            writer.uint32(74).string(message.r);
+        }
+        if (message.s !== '') {
+            writer.uint32(82).string(message.s);
+        }
+        if (message.v !== 0) {
+            writer.uint32(88).uint64(message.v);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintSwap };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.metadataRef = reader.string();
+                    break;
+                case 3:
+                    message.denomId = reader.string();
+                    break;
+                case 4:
+                    message.name = reader.string();
+                    break;
+                case 5:
+                    message.recipient = reader.string();
+                    break;
+                case 6:
+                    message.didOwner = reader.string();
+                    break;
+                case 7:
+                    message.destinationDenomId = reader.string();
+                    break;
+                case 8:
+                    message.price = longToNumber(reader.uint64());
+                    break;
+                case 9:
+                    message.r = reader.string();
+                    break;
+                case 10:
+                    message.s = reader.string();
+                    break;
+                case 11:
+                    message.v = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgMintSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.metadataRef !== undefined && object.metadataRef !== null) {
+            message.metadataRef = String(object.metadataRef);
+        }
+        else {
+            message.metadataRef = '';
+        }
+        if (object.denomId !== undefined && object.denomId !== null) {
+            message.denomId = String(object.denomId);
+        }
+        else {
+            message.denomId = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = String(object.name);
+        }
+        else {
+            message.name = '';
+        }
+        if (object.recipient !== undefined && object.recipient !== null) {
+            message.recipient = String(object.recipient);
+        }
+        else {
+            message.recipient = '';
+        }
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = String(object.didOwner);
+        }
+        else {
+            message.didOwner = '';
+        }
+        if (object.destinationDenomId !== undefined && object.destinationDenomId !== null) {
+            message.destinationDenomId = String(object.destinationDenomId);
+        }
+        else {
+            message.destinationDenomId = '';
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = Number(object.price);
+        }
+        else {
+            message.price = 0;
+        }
+        if (object.r !== undefined && object.r !== null) {
+            message.r = String(object.r);
+        }
+        else {
+            message.r = '';
+        }
+        if (object.s !== undefined && object.s !== null) {
+            message.s = String(object.s);
+        }
+        else {
+            message.s = '';
+        }
+        if (object.v !== undefined && object.v !== null) {
+            message.v = Number(object.v);
+        }
+        else {
+            message.v = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef);
+        message.denomId !== undefined && (obj.denomId = message.denomId);
+        message.name !== undefined && (obj.name = message.name);
+        message.recipient !== undefined && (obj.recipient = message.recipient);
+        message.didOwner !== undefined && (obj.didOwner = message.didOwner);
+        message.destinationDenomId !== undefined && (obj.destinationDenomId = message.destinationDenomId);
+        message.price !== undefined && (obj.price = message.price);
+        message.r !== undefined && (obj.r = message.r);
+        message.s !== undefined && (obj.s = message.s);
+        message.v !== undefined && (obj.v = message.v);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgMintSwap };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.metadataRef !== undefined && object.metadataRef !== null) {
+            message.metadataRef = object.metadataRef;
+        }
+        else {
+            message.metadataRef = '';
+        }
+        if (object.denomId !== undefined && object.denomId !== null) {
+            message.denomId = object.denomId;
+        }
+        else {
+            message.denomId = '';
+        }
+        if (object.name !== undefined && object.name !== null) {
+            message.name = object.name;
+        }
+        else {
+            message.name = '';
+        }
+        if (object.recipient !== undefined && object.recipient !== null) {
+            message.recipient = object.recipient;
+        }
+        else {
+            message.recipient = '';
+        }
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = object.didOwner;
+        }
+        else {
+            message.didOwner = '';
+        }
+        if (object.destinationDenomId !== undefined && object.destinationDenomId !== null) {
+            message.destinationDenomId = object.destinationDenomId;
+        }
+        else {
+            message.destinationDenomId = '';
+        }
+        if (object.price !== undefined && object.price !== null) {
+            message.price = object.price;
+        }
+        else {
+            message.price = 0;
+        }
+        if (object.r !== undefined && object.r !== null) {
+            message.r = object.r;
+        }
+        else {
+            message.r = '';
+        }
+        if (object.s !== undefined && object.s !== null) {
+            message.s = object.s;
+        }
+        else {
+            message.s = '';
+        }
+        if (object.v !== undefined && object.v !== null) {
+            message.v = object.v;
+        }
+        else {
+            message.v = 0;
+        }
+        return message;
+    }
+};
 const baseMsgInitiateSwap = { creator: '' };
 export const MsgInitiateSwap = {
     encode(message, writer = Writer.create()) {
@@ -815,11 +1068,17 @@ export const MsgInitiateSwap = {
         return message;
     }
 };
-const baseMsgInitiateSwapResponse = { id: 0 };
+const baseMsgInitiateSwapResponse = { relayTo: 0, voucher: '', key: '' };
 export const MsgInitiateSwapResponse = {
     encode(message, writer = Writer.create()) {
-        if (message.id !== 0) {
-            writer.uint32(8).uint64(message.id);
+        if (message.relayTo !== 0) {
+            writer.uint32(8).uint64(message.relayTo);
+        }
+        if (message.voucher !== '') {
+            writer.uint32(18).string(message.voucher);
+        }
+        if (message.key !== '') {
+            writer.uint32(26).string(message.key);
         }
         return writer;
     },
@@ -831,7 +1090,13 @@ export const MsgInitiateSwapResponse = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.id = longToNumber(reader.uint64());
+                    message.relayTo = longToNumber(reader.uint64());
+                    break;
+                case 2:
+                    message.voucher = reader.string();
+                    break;
+                case 3:
+                    message.key = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -842,26 +1107,52 @@ export const MsgInitiateSwapResponse = {
     },
     fromJSON(object) {
         const message = { ...baseMsgInitiateSwapResponse };
-        if (object.id !== undefined && object.id !== null) {
-            message.id = Number(object.id);
+        if (object.relayTo !== undefined && object.relayTo !== null) {
+            message.relayTo = Number(object.relayTo);
         }
         else {
-            message.id = 0;
+            message.relayTo = 0;
+        }
+        if (object.voucher !== undefined && object.voucher !== null) {
+            message.voucher = String(object.voucher);
+        }
+        else {
+            message.voucher = '';
+        }
+        if (object.key !== undefined && object.key !== null) {
+            message.key = String(object.key);
+        }
+        else {
+            message.key = '';
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
-        message.id !== undefined && (obj.id = message.id);
+        message.relayTo !== undefined && (obj.relayTo = message.relayTo);
+        message.voucher !== undefined && (obj.voucher = message.voucher);
+        message.key !== undefined && (obj.key = message.key);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgInitiateSwapResponse };
-        if (object.id !== undefined && object.id !== null) {
-            message.id = object.id;
+        if (object.relayTo !== undefined && object.relayTo !== null) {
+            message.relayTo = object.relayTo;
         }
         else {
-            message.id = 0;
+            message.relayTo = 0;
+        }
+        if (object.voucher !== undefined && object.voucher !== null) {
+            message.voucher = object.voucher;
+        }
+        else {
+            message.voucher = '';
+        }
+        if (object.key !== undefined && object.key !== null) {
+            message.key = object.key;
+        }
+        else {
+            message.key = '';
         }
         return message;
     }
@@ -4530,10 +4821,10 @@ export class MsgClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data);
         return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)));
     }
-    ClaimSwap(request) {
-        const data = MsgClaimSwap.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ClaimSwap', data);
-        return promise.then((data) => MsgClaimSwapResponse.decode(new Reader(data)));
+    MintSwap(request) {
+        const data = MsgMintTrustedContent.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data);
+        return promise.then((data) => MsgMintTrustedContentResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {

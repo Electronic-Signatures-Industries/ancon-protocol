@@ -11,6 +11,8 @@ import (
 	// This package is needed so that all the preloaded plugins are loaded automatically
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	ics23 "github.com/confio/ics23/go"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -86,7 +88,7 @@ func (k Keeper) RequestLazyMint(ctx sdk.Context, msg *types.MsgMintTrustedConten
 		ctx,
 		msg.DidOwner, // whitelist recipient
 		types.Voucher{
-			Name:         msg.Name,
+			TokenName:    msg.Name,
 			URI:          msg.MetadataRef,
 			Owner:        msg.Creator,
 			DidRecipient: msg.DidOwner,
@@ -138,7 +140,7 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.Voucher) (string, error) {
 	index := sha256.Sum256(append([]byte(time.Now().String()), byte(ctx.BlockHeight())))
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
-	res := k.cdc.MustMarshalBinaryBare(&voucher)
+	res := k.cdc.MustMarshalJSON(&voucher) // JSON
 
 	i := append([]byte{0, 0, 0, 0, 0, 0, 0}, []byte(fmt.Sprint("%s", index))...)
 	store.Set(i, res)
@@ -149,18 +151,42 @@ func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.
 	return fmt.Sprint(i), nil
 }
 
-func (k Keeper) verifyProof(ctx sdk.Context, creator string, proof string) bool {
-	// TODO:
-	// Validates register public key from gateway (trusted)
-	// Validates durin signature
-	return true
+func (k Keeper) verifySenderIAVLProof(ctx sdk.Context, key string, value string, proof ics23.ExistenceProof) bool {
+
+	// TODO: Previously stored root
+	root := []byte{0, 0, 0, 0}
+	proofCommitment := ics23.CommitmentProof_Exist{
+		Exist: &proof,
+	}
+	voucherProof := ics23.CommitmentProof{
+		Proof: &proofCommitment,
+	}
+	// Cosmos IAVL
+	spec := ics23.IavlSpec
+	res := ics23.VerifyMembership(spec, root, &voucherProof, []byte(key), []byte(value))
+	return res
 }
 
-func (k Keeper) parseVoucherProof(proof string) (types.BaseNFT, error) {
-	// TODO:
-	// Validates register public key from gateway (trusted)
-	// Validates creator signature
-	return types.BaseNFT{}, nil
+func (k Keeper) hasRelayPermit(ctx sdk.Context, creator string, prefix string) bool {
+	// prefix with abi
+	methodSig := abi.NewMethod(
+		"InitiateSwap",
+		"InitiateSwap",
+		abi.Function,
+		"nonpayable",
+		false,
+		false,
+		abi.Arguments{
+			{
+				Name:    "voucherId",
+				Type:    abi.Type{},
+				Indexed: false,
+			},
+		},
+		abi.Arguments{},
+	)
+	hash := append([]byte(methodSig.Sig), []byte(creator)...)
+	return fmt.Sprint(hash) == prefix
 }
 
 // InitiateSwap -- actor is NFT Minter -- onchain recipient
@@ -169,7 +195,7 @@ func (k Keeper) HasClaimedSwap(ctx sdk.Context, voucher string) bool {
 }
 
 // InitiateSwap starts swap to Chain B, sends a voucher, prefix and proof
-func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string) (*types.RelayMessageNFTMintSwap, error) {
+func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string, creator string) (*types.RelayMessageNFTMintSwap, error) {
 	// prefix with abi
 	methodSig := abi.NewMethod(
 		"InitiateSwap",
@@ -192,55 +218,88 @@ func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string) (*types.RelayMes
 	if err != nil {
 		return nil, err
 	}
-	// TODO: Get abci client
-	proof := k.GetVoucherProof(ctx, voucherId)
+	value := k.cdc.MustMarshalJSON(voucher)
+	hash := append([]byte(methodSig.Sig), []byte(creator)...)
 	return &types.RelayMessageNFTMintSwap{
-		Voucher: voucher,
-		Proof:   proof,
-		Prefix:  methodSig.Sig, // sha256(creator, sig)
+		Value:  string(value),
+		Key:    voucherId,
+		Prefix: fmt.Sprint(hash),
 	}, nil
+
 }
 
-// InitiateSwap -- actor is NFT Minter -- gateway
-func (k Keeper) InitiateSwap_offchain(ctx sdk.Context, voucher string, prefix string) (*types.InitiateSwapPermit, error) {
-	if k.HasVoucherPermit(ctx, voucher, prefix) {
-		// verify signed by user
-		// ecrecover(sig, addr)
+func (k Keeper) getRelayer(ctx sdk.Context, prefix string) (uint64, error) {
+	return 1, nil
+}
 
-		// voucher = sig(priv, voucher)
-		// eip712 durinSig
-		return &types.InitiateSwapPermit{}, nil
+func (k Keeper) InitiateSwap_offchain(ctx sdk.Context, creator string, value string, key string, prefix string) (*types.MsgInitiateSwapResponse, error) {
+	if k.hasRelayPermit(ctx, creator, prefix) {
+		relayTo, err := k.getRelayer(ctx, prefix)
+		if err != nil {
+			return nil, err
+		}
+		return &types.MsgInitiateSwapResponse{
+			RelayTo: relayTo,
+			Voucher: value,
+			Key:     key,
+		}, nil
 	} else {
 		return nil, fmt.Errorf("unauthorized")
 	}
 }
 
 // InitiateSwapWithProof - onchain
-func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, creator string, voucher string, proof string) (string, error) {
+func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, alg string, ownerPub []byte, key string, value string, proof ics23.ExistenceProof) (*types.InitiateSwapWithProofResponse, error) {
 
-	// gateway previously registered
-	if k.verifyProof(ctx, creator, proof) {
-		// Parse nft voucher
-		nftVoucher, _ := k.parseVoucherProof(proof)
+	var voucher types.Voucher
+	k.cdc.MustUnmarshalJSON([]byte(value), &voucher)
+	if k.verifySenderIAVLProof(ctx, key, value, proof) {
 		// get next token id
-		tokenID := fmt.Sprint(k.GetTotalSupply(ctx, nftVoucher.DenomId))
+		tokenID := fmt.Sprint(k.GetTotalSupply(ctx, voucher.TokenSymbol))
+		// verify signature, should send did-web pub key
+		if alg == "secp256k1" {
+			pub := secp256k1.PubKey{
+				Key: ownerPub,
+			}
+			list := make([][]byte, 6)
+			list[0] = []byte(voucher.TokenName)
+			list[1] = []byte(voucher.TokenSymbol)
+			list[2] = []byte(voucher.URI)
+			list[3] = []byte(voucher.Owner)
+			list[4] = []byte(voucher.DidRecipient)
+			list[5] = []byte(cast.ToString(voucher.Price))
+			var digest []byte
+			for i := range list {
+				digest = append(digest, list[i]...)
+			}
+			res := pub.VerifySignature(
+				digest,
+				append([]byte(voucher.R), []byte(voucher.S)...),
+			)
+			if !res {
+				return nil, fmt.Errorf("invalid owner signature")
+			}
+		}
+
 		k.setNFT(
 			ctx,
-			nftVoucher.DenomId,
+			voucher.TokenSymbol,
 			types.NewBaseNFT(
 				tokenID,
-				nftVoucher.Name,
-				sdk.AccAddress(nftVoucher.Creator),
-				nftVoucher.MetadataRef,
-				nftVoucher.DidOwner,
+				voucher.TokenName,
+				sdk.AccAddress(voucher.DidRecipient),
+				voucher.URI,
+				voucher.DidRecipient,
 			),
 		)
-		k.setOwner(ctx, nftVoucher.DenomId, tokenID, sdk.AccAddress(nftVoucher.Creator))
-		k.increaseSupply(ctx, nftVoucher.DenomId)
-		k.nftClaimed() // o ClaimSwap
-		return tokenID, nil
+		k.setOwner(ctx, voucher.TokenSymbol, tokenID, sdk.AccAddress(voucher.DidRecipient))
+		// TODO: transfer
+		k.increaseSupply(ctx, voucher.TokenSymbol)
+		return &types.InitiateSwapWithProofResponse{
+			TokenID: tokenID,
+		}, nil
 	}
-	return "", nil
+	return &types.InitiateSwapWithProofResponse{}, nil
 }
 
 func (k Keeper) ClaimSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {

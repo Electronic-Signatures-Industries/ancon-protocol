@@ -49,11 +49,31 @@ export interface MsgMintTrustedContent {
 export interface MsgMintTrustedContentResponse {
     id: number;
 }
+export interface MsgMintSwap {
+    creator: string;
+    /** metadata */
+    metadataRef: string;
+    /** denom id */
+    denomId: string;
+    /** nft name */
+    name: string;
+    /** recipient */
+    recipient: string;
+    /** did owner */
+    didOwner: string;
+    destinationDenomId: string;
+    price: number;
+    r: string;
+    s: string;
+    v: number;
+}
 export interface MsgInitiateSwap {
     creator: string;
 }
 export interface MsgInitiateSwapResponse {
-    id: number;
+    relayTo: number;
+    voucher: string;
+    key: string;
 }
 export interface MsgClaimSwap {
     creator: string;
@@ -341,6 +361,13 @@ export declare const MsgMintTrustedContentResponse: {
     fromJSON(object: any): MsgMintTrustedContentResponse;
     toJSON(message: MsgMintTrustedContentResponse): unknown;
     fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
+};
+export declare const MsgMintSwap: {
+    encode(message: MsgMintSwap, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintSwap;
+    fromJSON(object: any): MsgMintSwap;
+    toJSON(message: MsgMintSwap): unknown;
+    fromPartial(object: DeepPartial<MsgMintSwap>): MsgMintSwap;
 };
 export declare const MsgInitiateSwap: {
     encode(message: MsgInitiateSwap, writer?: Writer): Writer;
@@ -660,7 +687,7 @@ export interface Msg {
     /** InitiateSwap adds a metadata and creates signed voucher */
     InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
     /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-    ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse>;
+    MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -685,7 +712,7 @@ export declare class MsgClientImpl implements Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
     InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
-    ClaimSwap(request: MsgClaimSwap): Promise<MsgClaimSwapResponse>;
+    MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

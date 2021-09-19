@@ -54,11 +54,6 @@ export interface AnconprotocolMsgChangeOwnerResponse {
   previousChange?: string;
 }
 
-export interface AnconprotocolMsgClaimSwapResponse {
-  /** @format uint64 */
-  id?: string;
-}
-
 export interface AnconprotocolMsgCreateDidResponse {
   cid?: string;
   did?: string;
@@ -84,7 +79,9 @@ export interface AnconprotocolMsgGrantDelegateResponse {
 
 export interface AnconprotocolMsgInitiateSwapResponse {
   /** @format uint64 */
-  id?: string;
+  relayTo?: string;
+  voucher?: string;
+  key?: string;
 }
 
 /**

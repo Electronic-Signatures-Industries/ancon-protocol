@@ -32802,12 +32802,6 @@ definitions:
       previousChange:
         type: string
         format: uint64
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgClaimSwapResponse:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgCreateDidResponse:
     type: object
     properties:
@@ -32837,9 +32831,13 @@ definitions:
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgInitiateSwapResponse:
     type: object
     properties:
-      id:
+      relayTo:
         type: string
         format: uint64
+      voucher:
+        type: string
+      key:
+        type: string
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgIssueDenomResponse:
     type: object
     description: MsgIssueDenomResponse defines the Msg/IssueDenom response type.

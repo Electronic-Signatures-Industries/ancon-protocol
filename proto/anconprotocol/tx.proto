@@ -54,7 +54,7 @@ service Msg {
   // InitiateSwap adds a metadata and creates signed voucher
   rpc InitiateSwap(MsgInitiateSwap) returns (MsgInitiateSwapResponse);
   // ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata
-  rpc ClaimSwap(MsgClaimSwap) returns (MsgClaimSwapResponse);        
+  rpc MintSwap(MsgMintTrustedContent) returns (MsgMintTrustedContentResponse);        
 }
 
 //  https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164
@@ -114,13 +114,33 @@ message MsgMintTrustedContentResponse {
   uint64 id = 1;
 }
 
+message MsgMintSwap {
+  string creator = 1;
+  // metadata
+  string metadata_ref = 2;
+  // denom id
+  string denom_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+  // nft name
+  string name = 4;
+  // recipient 
+  string recipient = 5;
+  // did owner
+  string did_owner = 6;  
+  string destination_denom_id = 7;
+  uint64 price = 8;
+  string r = 9;
+  string s = 10;
+  uint64 v = 11;
+}
+
 message MsgInitiateSwap {
   string creator = 1;
-  ;
 }
 
 message MsgInitiateSwapResponse {
-  uint64 id = 1;
+  uint64 relayTo = 1;
+  string voucher = 2;
+  string key = 3;
 }
 
 message MsgClaimSwap {

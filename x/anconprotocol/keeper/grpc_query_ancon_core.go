@@ -79,19 +79,19 @@ func (k Keeper) GetVoucher(ctx sdk.Context, voucherID string) (*types.Voucher, e
 
 	buf := store.Get([]byte(voucherID))
 	var voucher types.Voucher
-	k.cdc.MustUnmarshalBinaryBare(buf, &voucher)
+	k.cdc.MustUnmarshalJSON(buf, &voucher)
 
 	return &voucher, nil
 }
 
 // GetVoucherProof returns stored voucher proof
-func (k Keeper) GetVoucherProof(ctx sdk.Context, abci rpcclient.ABCIClient, voucherID string) (*ics23.ExistenceProof, error) {
+func (k Keeper) GetVoucherProof(ctx sdk.Context, path string, abci rpcclient.ABCIClient, voucherID string) (*ics23.ExistenceProof, error) {
 	opts := rpcclient.ABCIQueryOptions{
 		Height: ctx.BlockHeight(),
 		Prove:  true,
 	}
 
-	_, proofA, _, err := exported.GetProofsByKey(abci, "", []byte(voucherID), opts, true)
+	_, proofA, _, err := exported.GetProofsByKey(abci, path, []byte(voucherID), opts, true)
 	if err != nil {
 		return nil, err
 	}

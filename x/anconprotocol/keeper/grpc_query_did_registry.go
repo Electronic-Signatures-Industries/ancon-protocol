@@ -174,7 +174,7 @@ func (k Keeper) ReadDelegate(goCtx context.Context, req *types.QueryGetDelegateR
 	return &types.QueryGetDelegateResponse{}, nil
 }
 
-func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDelegateRequest) (*types.QueryGetDelegateResponse, error) {
+func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryGetDidResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -184,5 +184,18 @@ func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDelegateRequ
 	// TODO: Process the query
 	_ = ctx
 
-	return &types.QueryGetDelegateResponse{}, nil
+	return &types.QueryGetDidResponse{}, nil
+}
+
+func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryDidWebResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Process the query
+	_ = ctx
+
+	return &types.QueryDidWebResponse{}, nil
 }

@@ -9,6 +9,54 @@ Protocol for proof and verified decentralized content using IPLD multihash
 </td></tr></table>
 
 
+#### Milestone 2 - Cross Mint/Swap for NFT with Metadata in Ancon
+
+#### Notes
+
+**NFT Creator**
+
+- Creates on behalf of a recipient, for lazy mint use cases
+
+**NFT Owner**
+
+- Both creator and did owner / recipient needs to be the same
+
+**Cross Mint/Swap**
+
+In this scenario, we just want to create an NFT token clone. For swap, we assume NFT owner to burn origin token, but not metadata.
+
+#### How it works
+
+
+**From Chain A - either smart contract or protocol**
+
+- NFT Creator/Owner Signs Voucher message offchain with `did-web` or `did-key` using `Ed25519` or `secp256k1` algorithms
+- Calls `MintSwap`, in Ancon, `MintSwap` calls internal `RequestLazyMint` and stores the voucher as JSON, then calls `InitiateSwap`. Requires creator/owner has mint role.
+- Returns the Relay message
+
+**Relay**
+
+- Verifies Chain A is whitelisted (prefix)
+- Trusted to send voucher and proof to Chain B
+- Client then calls `ancon-relayer` , which verifies prefix and calls next destination
+
+
+**To Chain B - either smart contract or protocol**
+
+- Verifies relayer
+- Verifies `ics23 commitment proof`
+- Verifies sender voucher signatures
+- Mint
+
+**Burn**
+
+Relay can listen for  events to handle burn requests
+
+
+
+
+
+
 #### Wave 8 Filecoin Foundation grant recipient
 
 ## Documentation (WIP)
