@@ -687,7 +687,7 @@ export interface Msg {
     /** InitiateSwap adds a metadata and creates signed voucher */
     InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
     /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-    MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -712,7 +712,7 @@ export declare class MsgClientImpl implements Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
     InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
-    MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

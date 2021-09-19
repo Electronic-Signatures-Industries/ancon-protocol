@@ -32,7 +32,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgEditNFT{}, "anconprotocol/EditNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "anconprotocol/BurnNFT", nil)
 	cdc.RegisterConcrete(&MsgTransferDenom{}, "anconprotocol/TransferDenom", nil)
-
+	cdc.RegisterConcrete(&MsgMintSwap{}, "anconprotocol/MintSwap", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -53,7 +53,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateDid{},
 		&MsgUpdateDid{},
 		&MsgRevokeDid{},
-		&MsgClaimSwap{},
+		&MsgMintSwap{},
 		&MsgInitiateSwap{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),

@@ -12,6 +12,52 @@ var _ sdk.Msg = &MsgMintTrustedContent{}
 var _ sdk.Msg = &MsgMintTrustedResource{}
 var _ sdk.Msg = &MsgClaimSwap{}
 var _ sdk.Msg = &MsgInitiateSwap{}
+var _ sdk.Msg = &MsgMintSwap{}
+
+func NewMsgMintSwap(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgMintSwap {
+	return &MsgMintSwap{
+		Creator:            creator,
+		MetadataRef:        "",
+		DenomId:            did,
+		Name:               "",
+		Recipient:          "",
+		DidOwner:           did,
+		DestinationDenomId: did,
+		Price:              0,
+		R:                  "",
+		S:                  "",
+		V:                  0,
+	}
+}
+
+func (msg *MsgMintSwap) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgMintSwap) Type() string {
+	return "TrustedResource"
+}
+
+func (msg *MsgMintSwap) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgMintSwap) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgMintSwap) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
 
 func NewMsgMintTrustedResource(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgMintTrustedResource {
 	return &MsgMintTrustedResource{

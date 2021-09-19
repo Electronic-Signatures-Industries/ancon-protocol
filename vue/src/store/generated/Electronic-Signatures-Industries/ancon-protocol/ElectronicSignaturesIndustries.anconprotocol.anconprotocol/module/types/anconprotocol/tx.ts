@@ -5078,7 +5078,7 @@ export interface Msg {
   /** InitiateSwap adds a metadata and creates signed voucher */
   InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>
   /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-  MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
+  MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -5206,8 +5206,8 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)))
   }
 
-  MintSwap(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse> {
-    const data = MsgMintTrustedContent.encode(request).finish()
+  MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse> {
+    const data = MsgMintSwap.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data)
     return promise.then((data) => MsgMintTrustedContentResponse.decode(new Reader(data)))
   }

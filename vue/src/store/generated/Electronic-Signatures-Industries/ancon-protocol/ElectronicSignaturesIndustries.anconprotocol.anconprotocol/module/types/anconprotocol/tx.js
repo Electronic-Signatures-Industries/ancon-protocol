@@ -4822,7 +4822,7 @@ export class MsgClientImpl {
         return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)));
     }
     MintSwap(request) {
-        const data = MsgMintTrustedContent.encode(request).finish();
+        const data = MsgMintSwap.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data);
         return promise.then((data) => MsgMintTrustedContentResponse.decode(new Reader(data)));
     }
