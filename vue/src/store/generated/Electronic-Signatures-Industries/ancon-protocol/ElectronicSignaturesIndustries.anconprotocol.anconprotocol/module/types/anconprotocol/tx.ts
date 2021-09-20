@@ -60,6 +60,10 @@ export interface MsgMintTrustedContentResponse {
   id: number
 }
 
+export interface MsgMintSwapResponse {
+  id: number
+}
+
 export interface MsgMintSwap {
   creator: string
   /** metadata */
@@ -1099,6 +1103,61 @@ export const MsgMintTrustedContentResponse = {
 
   fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
     const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
+    return message
+  }
+}
+
+const baseMsgMintSwapResponse: object = { id: 0 }
+
+export const MsgMintSwapResponse = {
+  encode(message: MsgMintSwapResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgMintSwapResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgMintSwapResponse } as MsgMintSwapResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgMintSwapResponse {
+    const message = { ...baseMsgMintSwapResponse } as MsgMintSwapResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgMintSwapResponse): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgMintSwapResponse>): MsgMintSwapResponse {
+    const message = { ...baseMsgMintSwapResponse } as MsgMintSwapResponse
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id
     } else {
@@ -5058,12 +5117,11 @@ export interface Msg {
   RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>
   /** Metadata TODO */
   Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>
-  File(request: MsgFile): Promise<MsgFileResponse>
   /** IssueDenom defines a method for issue a denom. */
   IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>
   /** MintNFT defines a method for mint a new nft */
   MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>
-  /** RefundHTLC defines a method for editing a nft. */
+  /** EditNFT defines a method for editing a nft. */
   EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>
   /** TransferNFT defines a method for transferring a nft. */
   TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>
@@ -5075,10 +5133,8 @@ export interface Msg {
   MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
-  /** InitiateSwap adds a metadata and creates signed voucher */
-  InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>
-  /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-  MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>
+  /** MintSwap */
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -5146,12 +5202,6 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgMetadataResponse.decode(new Reader(data)))
   }
 
-  File(request: MsgFile): Promise<MsgFileResponse> {
-    const data = MsgFile.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'File', data)
-    return promise.then((data) => MsgFileResponse.decode(new Reader(data)))
-  }
-
   IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse> {
     const data = MsgIssueDenom.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'IssueDenom', data)
@@ -5200,16 +5250,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
   }
 
-  InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse> {
-    const data = MsgInitiateSwap.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data)
-    return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)))
-  }
-
-  MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse> {
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse> {
     const data = MsgMintSwap.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data)
-    return promise.then((data) => MsgMintTrustedContentResponse.decode(new Reader(data)))
+    return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)))
   }
 }
 

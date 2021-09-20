@@ -64,10 +64,6 @@ export interface AnconprotocolMsgCreateDidResponse {
  */
 export type AnconprotocolMsgEditNFTResponse = object;
 
-export interface AnconprotocolMsgFileResponse {
-  hash?: string;
-}
-
 export interface AnconprotocolMsgGrantAttributeResponse {
   ok?: boolean;
 }
@@ -75,13 +71,6 @@ export interface AnconprotocolMsgGrantAttributeResponse {
 export interface AnconprotocolMsgGrantDelegateResponse {
   /** @format byte */
   hash?: string;
-}
-
-export interface AnconprotocolMsgInitiateSwapResponse {
-  /** @format uint64 */
-  relayTo?: string;
-  voucher?: string;
-  key?: string;
 }
 
 /**
@@ -97,6 +86,11 @@ export interface AnconprotocolMsgMetadataResponse {
  * MsgMintNFTResponse defines the Msg/MintNFT response type.
  */
 export type AnconprotocolMsgMintNFTResponse = object;
+
+export interface AnconprotocolMsgMintSwapResponse {
+  /** @format uint64 */
+  id?: string;
+}
 
 export interface AnconprotocolMsgMintTrustedContentResponse {
   /** @format uint64 */

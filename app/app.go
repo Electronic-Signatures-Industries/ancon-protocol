@@ -89,6 +89,9 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol"
 	anconprotocolkeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	anconprotocoltypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	mintswapmodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap"
+	mintswapmodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/keeper"
+	mintswapmoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types"
 )
 
 const Name = "ancon-protocol"
@@ -135,6 +138,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		mintswapmodule.AppModuleBasic{},
 		anconprotocol.AppModuleBasic{},
 	)
 
@@ -202,6 +206,8 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
+	ScopedMintswapKeeper capabilitykeeper.ScopedKeeper
+	MintswapKeeper       mintswapmodulekeeper.Keeper
 
 	AnconprotocolKeeper anconprotocolkeeper.Keeper
 
@@ -233,6 +239,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		mintswapmoduletypes.StoreKey,
 		anconprotocoltypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -324,6 +331,18 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
+	scopedMintswapKeeper := app.CapabilityKeeper.ScopeToModule(mintswapmoduletypes.ModuleName)
+	app.ScopedMintswapKeeper = scopedMintswapKeeper
+	app.MintswapKeeper = *mintswapmodulekeeper.NewKeeper(
+		appCodec,
+		keys[mintswapmoduletypes.StoreKey],
+		keys[mintswapmoduletypes.MemStoreKey],
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedMintswapKeeper,
+	)
+	mintswapModule := mintswapmodule.NewAppModule(appCodec, app.MintswapKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
@@ -346,6 +365,7 @@ func New(
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
 	// this line is used by starport scaffolding # ibc/app/router
+	ibcRouter.AddRoute(mintswapmoduletypes.ModuleName, mintswapModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	/****  Module Options ****/
@@ -378,6 +398,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
+		mintswapModule,
 		anconprotocolModule,
 	)
 
@@ -412,6 +433,7 @@ func New(
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
+		mintswapmoduletypes.ModuleName,
 		anconprotocoltypes.ModuleName,
 	)
 
@@ -600,6 +622,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
+	paramsKeeper.Subspace(mintswapmoduletypes.ModuleName)
 	paramsKeeper.Subspace(anconprotocoltypes.ModuleName)
 
 	return paramsKeeper

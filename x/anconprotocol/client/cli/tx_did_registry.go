@@ -1,13 +1,13 @@
 package cli
 
 import (
-    _ "github.com/spf13/cobra"
+	_ "github.com/spf13/cobra"
 	"strconv"
 
-_	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-_	"github.com/cosmos/cosmos-sdk/client"
-_	"github.com/cosmos/cosmos-sdk/client/flags"
-_	"github.com/cosmos/cosmos-sdk/client/tx"
+	_ "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	_ "github.com/cosmos/cosmos-sdk/client"
+	_ "github.com/cosmos/cosmos-sdk/client/flags"
+	_ "github.com/cosmos/cosmos-sdk/client/tx"
 )
 
 var _ = strconv.Itoa(0)

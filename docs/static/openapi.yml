@@ -32812,11 +32812,6 @@ definitions:
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgEditNFTResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgFileResponse:
-    type: object
-    properties:
-      hash:
-        type: string
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgGrantAttributeResponse:
     type: object
     properties:
@@ -32828,16 +32823,6 @@ definitions:
       hash:
         type: string
         format: byte
-  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgInitiateSwapResponse:
-    type: object
-    properties:
-      relayTo:
-        type: string
-        format: uint64
-      voucher:
-        type: string
-      key:
-        type: string
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgIssueDenomResponse:
     type: object
     description: MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -32849,6 +32834,12 @@ definitions:
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintNFTResponse:
     type: object
     description: MsgMintNFTResponse defines the Msg/MintNFT response type.
+  ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintSwapResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
   ElectronicSignaturesIndustries.anconprotocol.anconprotocol.MsgMintTrustedContentResponse:
     type: object
     properties:

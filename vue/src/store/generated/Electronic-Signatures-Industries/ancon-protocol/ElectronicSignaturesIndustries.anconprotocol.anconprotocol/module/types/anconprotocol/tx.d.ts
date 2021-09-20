@@ -49,6 +49,9 @@ export interface MsgMintTrustedContent {
 export interface MsgMintTrustedContentResponse {
     id: number;
 }
+export interface MsgMintSwapResponse {
+    id: number;
+}
 export interface MsgMintSwap {
     creator: string;
     /** metadata */
@@ -362,6 +365,13 @@ export declare const MsgMintTrustedContentResponse: {
     toJSON(message: MsgMintTrustedContentResponse): unknown;
     fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse;
 };
+export declare const MsgMintSwapResponse: {
+    encode(message: MsgMintSwapResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgMintSwapResponse;
+    fromJSON(object: any): MsgMintSwapResponse;
+    toJSON(message: MsgMintSwapResponse): unknown;
+    fromPartial(object: DeepPartial<MsgMintSwapResponse>): MsgMintSwapResponse;
+};
 export declare const MsgMintSwap: {
     encode(message: MsgMintSwap, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgMintSwap;
@@ -667,12 +677,11 @@ export interface Msg {
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     /** Metadata TODO */
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
-    File(request: MsgFile): Promise<MsgFileResponse>;
     /** IssueDenom defines a method for issue a denom. */
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     /** MintNFT defines a method for mint a new nft */
     MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
-    /** RefundHTLC defines a method for editing a nft. */
+    /** EditNFT defines a method for editing a nft. */
     EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>;
     /** TransferNFT defines a method for transferring a nft. */
     TransferNFT(request: MsgTransferNFT): Promise<MsgTransferNFTResponse>;
@@ -684,10 +693,8 @@ export interface Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     /** MintTrustedResource defines a method for minting a resource. */
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    /** InitiateSwap adds a metadata and creates signed voucher */
-    InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
-    /** ClaimSwap acknowledges signed voucher lazy minted NFT with trusted metadata */
-    MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>;
+    /** MintSwap */
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -702,7 +709,6 @@ export declare class MsgClientImpl implements Msg {
     GrantAttribute(request: MsgGrantAttribute): Promise<MsgGrantAttributeResponse>;
     RevokeAttribute(request: MsgRevokeAttribute): Promise<MsgRevokeAttributeResponse>;
     Metadata(request: MsgMetadata): Promise<MsgMetadataResponse>;
-    File(request: MsgFile): Promise<MsgFileResponse>;
     IssueDenom(request: MsgIssueDenom): Promise<MsgIssueDenomResponse>;
     MintNFT(request: MsgMintNFT): Promise<MsgMintNFTResponse>;
     EditNFT(request: MsgEditNFT): Promise<MsgEditNFTResponse>;
@@ -711,8 +717,7 @@ export declare class MsgClientImpl implements Msg {
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    InitiateSwap(request: MsgInitiateSwap): Promise<MsgInitiateSwapResponse>;
-    MintSwap(request: MsgMintSwap): Promise<MsgMintTrustedContentResponse>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

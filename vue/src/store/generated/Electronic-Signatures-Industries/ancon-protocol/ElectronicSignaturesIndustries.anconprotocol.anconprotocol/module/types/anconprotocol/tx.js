@@ -764,6 +764,57 @@ export const MsgMintTrustedContentResponse = {
         return message;
     }
 };
+const baseMsgMintSwapResponse = { id: 0 };
+export const MsgMintSwapResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.id !== 0) {
+            writer.uint32(8).uint64(message.id);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgMintSwapResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.id = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgMintSwapResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgMintSwapResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    }
+};
 const baseMsgMintSwap = {
     creator: '',
     metadataRef: '',
@@ -4771,11 +4822,6 @@ export class MsgClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'Metadata', data);
         return promise.then((data) => MsgMetadataResponse.decode(new Reader(data)));
     }
-    File(request) {
-        const data = MsgFile.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'File', data);
-        return promise.then((data) => MsgFileResponse.decode(new Reader(data)));
-    }
     IssueDenom(request) {
         const data = MsgIssueDenom.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'IssueDenom', data);
@@ -4816,15 +4862,10 @@ export class MsgClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data);
         return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
     }
-    InitiateSwap(request) {
-        const data = MsgInitiateSwap.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'InitiateSwap', data);
-        return promise.then((data) => MsgInitiateSwapResponse.decode(new Reader(data)));
-    }
     MintSwap(request) {
         const data = MsgMintSwap.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data);
-        return promise.then((data) => MsgMintTrustedContentResponse.decode(new Reader(data)));
+        return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {
