@@ -5,12 +5,24 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 message MintswapPacketData {
     oneof packet {
-        NoData noData = 1;
+        MintSwapData data = 1;
         // this line is used by starport scaffolding # ibc/packet/proto/field
     }
 }
 
-message NoData {
+message MintSwapData {
+    string sender = 1;
+    // metadata
+    string metadata_ref = 2;
+    // token name
+    string token_name = 3;
+    // token symbol/id
+    string token_symbol = 4;
+    // recipient
+    string recipient = 5;
+    // did owner
+    string did_owner = 6;  
+    uint64 price = 7;
 }
 
 // this line is used by starport scaffolding # ibc/packet/proto/message
