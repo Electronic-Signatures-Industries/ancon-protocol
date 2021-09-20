@@ -1,13 +1,49 @@
 syntax = "proto3";
 package ElectronicSignaturesIndustries.anconprotocol.mintswap;
 
+import "gogoproto/gogo.proto";
+
+import "ibc/core/client/v1/client.proto";
+
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types";
-
-// Msg defines the Msg service.
+// Msg defines the ibc/transfer Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
-}
-
-// this line is used by starport scaffolding # proto/tx/message
+    // MintSwap defines a rpc handler method for MsgMintSwap.
+    rpc MintSwap(MsgMintSwap) returns (MsgMintSwap);
+  }
+  
+  message MsgMintSwap {
+    option (gogoproto.equal)           = false;
+    option (gogoproto.goproto_getters) = false;
+  
+    // the port on which the packet will be sent
+    string source_port = 1 [(gogoproto.moretags) = "yaml:\"source_port\""];
+    // the channel by which the packet will be sent
+    string source_channel = 2 [(gogoproto.moretags) = "yaml:\"source_channel\""];
+    // the tokens to be transferred
+    string metadata_ref = 3;
+    // the sender address
+    string sender = 4;
+    // the recipient address on the destination chain
+    string receiver = 5;
+    // token name
+    string token_name = 6;
+    // token symbol/id
+    string token_symbol = 7;
+    // did owner
+    string did_owner = 8;  
+    uint64 price = 9;    
+    // Timeout height relative to the current block height.
+    // The timeout is disabled when set to 0.
+    ibc.core.client.v1.Height timeout_height = 10
+        [(gogoproto.moretags) = "yaml:\"timeout_height\"", (gogoproto.nullable) = false];
+    // Timeout timestamp (in nanoseconds) relative to the current block timestamp.
+    // The timeout is disabled when set to 0.
+    uint64 timeout_timestamp = 11 [(gogoproto.moretags) = "yaml:\"timeout_timestamp\""];
+  }
+  
+  // MsgMintSwap defines the Msg/Transfer response type.
+  message MsgMintSwapResponse {}
+  

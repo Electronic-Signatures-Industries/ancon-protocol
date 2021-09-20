@@ -1,7 +1,9 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 import ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolAnconprotocol from './Electronic-Signatures-Industries/ancon-protocol/ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+import ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolMintswap from './Electronic-Signatures-Industries/ancon-protocol/ElectronicSignaturesIndustries.anconprotocol.mintswap';
 export default {
     ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolAnconprotocol: load(ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolAnconprotocol, 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'),
+    ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolMintswap: load(ElectronicSignaturesIndustriesAnconProtocolElectronicSignaturesIndustriesAnconprotocolMintswap, 'ElectronicSignaturesIndustries.anconprotocol.mintswap'),
 };
 function load(mod, fullns) {
     return function init(store) {

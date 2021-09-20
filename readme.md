@@ -34,7 +34,7 @@ In this scenario, we just want to create an NFT token clone. For swap, we assume
 - Calls `MintSwap`, in Ancon, `MintSwap` calls internal `RequestLazyMint` and stores the voucher as JSON, then calls `InitiateSwap`. Requires creator/owner has mint role.
 - Returns the Relay message
 
-**Relay**
+**IBC Relay**
 
 - Verifies Chain A is whitelisted (prefix)
 - Trusted to send voucher and proof to Chain B

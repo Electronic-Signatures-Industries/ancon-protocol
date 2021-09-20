@@ -3,6 +3,7 @@ module github.com/Electronic-Signatures-Industries/ancon-protocol
 go 1.16
 
 require (
+	github.com/armon/go-metrics v0.3.8
 	github.com/confio/ics23/go v0.6.6
 	github.com/cosmos/cosmos-sdk v0.42.9
 	github.com/cosmos/iavl v0.17.1

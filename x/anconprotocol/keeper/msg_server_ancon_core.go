@@ -72,22 +72,6 @@ func (k msgServer) RoyaltyInfo(goCtx context.Context, msg *types.MsgRoyaltyInfo)
 	return &types.MsgRoyaltyInfoResponse{}, nil
 }
 
-func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*types.MsgMintTrustedContentResponse, error) {
-	// ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// err := msg.ValidateBasic()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// k.AddTrustedContent(
-	// 	ctx,
-	// 	msg,
-	// )
-
-	return &types.MsgMintTrustedContentResponse{}, nil
-}
-
 func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintTrustedContent) (*types.MsgMintTrustedContentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

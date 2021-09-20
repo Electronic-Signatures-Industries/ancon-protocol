@@ -33139,6 +33139,96 @@ definitions:
     properties:
       data:
         type: string
+  ElectronicSignaturesIndustries.anconprotocol.mintswap.MsgMintSwap:
+    type: object
+    properties:
+      sourcePort:
+        type: string
+        title: the port on which the packet will be sent
+      sourceChannel:
+        type: string
+        title: the channel by which the packet will be sent
+      metadataRef:
+        type: string
+        title: the tokens to be transferred
+      sender:
+        type: string
+        title: the sender address
+      receiver:
+        type: string
+        title: the recipient address on the destination chain
+      tokenName:
+        type: string
+        title: token name
+      tokenSymbol:
+        type: string
+        title: token symbol/id
+      didOwner:
+        type: string
+        title: did owner
+      price:
+        type: string
+        format: uint64
+      timeoutHeight:
+        description: |-
+          Timeout height relative to the current block height.
+          The timeout is disabled when set to 0.
+        type: object
+        properties:
+          revisionNumber:
+            type: string
+            format: uint64
+            title: the revision that the client is currently on
+          revisionHeight:
+            type: string
+            format: uint64
+            title: the height within the given revision
+        title: >-
+          Height is a monotonically increasing data type
+
+          that can be compared against another Height for the purposes of
+          updating and
+
+          freezing clients
+      timeoutTimestamp:
+        type: string
+        format: uint64
+        description: >-
+          Timeout timestamp (in nanoseconds) relative to the current block
+          timestamp.
+
+          The timeout is disabled when set to 0.
+  ibc.core.client.v1.Height:
+    type: object
+    properties:
+      revisionNumber:
+        type: string
+        format: uint64
+        title: the revision that the client is currently on
+      revisionHeight:
+        type: string
+        format: uint64
+        title: the height within the given revision
+    description: >-
+      Normally the RevisionHeight is incremented at each height while keeping
+      RevisionNumber
+
+      the same. However some consensus algorithms may choose to reset the
+
+      height in certain conditions e.g. hard forks, state-machine breaking
+      changes
+
+      In these cases, the RevisionNumber is incremented so that height continues
+      to
+
+      be monitonically increasing even as the RevisionHeight gets reset
+    title: >-
+      Height is a monotonically increasing data type
+
+      that can be compared against another Height for the purposes of updating
+      and
+
+      freezing clients
   ibc.applications.transfer.v1.DenomTrace:
     type: object
     properties:
@@ -33279,37 +33369,6 @@ definitions:
 
               chain.
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
-  ibc.core.client.v1.Height:
-    type: object
-    properties:
-      revisionNumber:
-        type: string
-        format: uint64
-        title: the revision that the client is currently on
-      revisionHeight:
-        type: string
-        format: uint64
-        title: the height within the given revision
-    description: >-
-      Normally the RevisionHeight is incremented at each height while keeping
-      RevisionNumber
-
-      the same. However some consensus algorithms may choose to reset the
-
-      height in certain conditions e.g. hard forks, state-machine breaking
-      changes
-
-      In these cases, the RevisionNumber is incremented so that height continues
-      to
-
-      be monitonically increasing even as the RevisionHeight gets reset
-    title: >-
-      Height is a monotonically increasing data type
-
-      that can be compared against another Height for the purposes of updating
-      and
-
-      freezing clients
   ibc.core.channel.v1.Channel:
     type: object
     properties:
