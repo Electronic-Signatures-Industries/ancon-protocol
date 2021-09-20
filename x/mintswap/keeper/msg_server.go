@@ -42,6 +42,7 @@ func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*typ
 	}
 
 	//TODO: if token cloning or swap (if swap it must be burned)
+	//TODO: validate if metadata ref is the same as the token metadata ref (optional)
 
 	if err := k.SendMintSwap(
 		ctx, msg.SourcePort, msg.SourceChannel, msg.MetadataRef, msg.TokenName, msg.TokenSymbol,

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	anconTypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types"
 	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -10,6 +11,7 @@ import (
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
 	coretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
+	"github.com/spf13/cast"
 )
 
 func (k Keeper) SendMintSwap(
@@ -71,32 +73,32 @@ func (k Keeper) SendMintSwap(
 	// XDVNFT = ETH = true
 	// XDVNFT = Cosmos = false
 	// types.SenderChainIsSource(sourcePort, sourceChannel, fullDenomPath)
-	if true {
+	if types.SenderChainIsSource(sourcePort, sourceChannel, tokenSymbol) {
+		_, err := k.anconKeeper.GetObject(ctx, &anconTypes.QueryResourceRequest{Cid: metadataRef})
 		// if MetadataUri Ancon
 		// MintTrustedContent / Metadata
 		// cid
+		if err != nil {
+			return sdkerrors.Wrap(anconTypes.ErrInvalidTokenURI, "Metadata must be stored in ancon protocol")
+		} else {
+
+		}
 	} else {
 		// Burn NFTs
 		// labels = append(labels, telemetry.NewLabel(coretypes.LabelSource, "false"))
 
 		// // transfer the coins to the module account and burn them
-		// if err := k.bankKeeper.SendCoinsFromAccountToModule(
-		// 	ctx, sender, types.ModuleName, sdk.NewCoins(token),
-		// ); err != nil {
-		// 	return err
-		// }
-
-		// if err := k.bankKeeper.BurnCoins(
-		// 	ctx, types.ModuleName, sdk.NewCoins(token),
-		// ); err != nil {
-		// 	// NOTE: should not happen as the module account was
-		// 	// retrieved on the step above and it has enough balace
-		// 	// to burn.
-		// 	panic(fmt.Sprintf("cannot burn coins after a successful send to a module account: %v", err))
-		// }
 	}
 
-	packetData := types.NewMintSwapData("", "", "", "")
+	packetData := types.MintSwapData{
+		Sender:      string(sender),
+		MetadataRef: metadataRef,
+		TokenName:   tokeName,
+		TokenSymbol: tokenSymbol,
+		Recipient:   receiver,
+		DidOwner:    didOwner,
+		Price:       cast.ToUint64(price),
+	}
 
 	packet := channeltypes.NewPacket(
 		packetData.GetBytes(),
@@ -125,18 +127,18 @@ func (k Keeper) SendMintSwap(
 }
 
 // OnRecvPacket
-func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data types.MsgMintSwap) error {
+func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data types.MintswapPacketData) error {
 	// validate packet data upon receiving
-	if err := data.ValidateBasic(); err != nil {
-		return err
-	}
-
+	// if err := data.ValidateBasic(); err != nil {
+	// 	return err
+	// }
 	// if !k.GetReceiveEnabled(ctx) {
 	// 	return types.ErrReceiveDisabled
 	// }
 
 	// decode the receiver address
-	_, err := sdk.AccAddressFromBech32(data.Receiver)
+	res := data.GetData()
+	_, err := sdk.AccAddressFromBech32(res.Recipient)
 	if err != nil {
 		return err
 	}
@@ -155,7 +157,7 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data t
 	// receiving this coin as seen in the "sender chain is the source" condition.
 
 	// Implement ReceiverChainIsSource
-	if true {
+	if types.ReceiverChainIsSource(packet.SourcePort, packet.SourceChannel, res.TokenSymbol) {
 		// sender chain is not the source, unescrow tokens
 		defer func() {
 			telemetry.IncrCounterWithLabels(
@@ -171,7 +173,7 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data t
 	}
 
 	// sender chain is the source, mint vouchers/nfts
-
+	k.anconKeeper.MintNFT(ctx, res.TokenSymbol, "1", "", res.MetadataRef, "", sdk.AccAddress(res.Recipient))
 	// ctx.EventManager().EmitEvent(
 	// 	sdk.NewEvent(
 	// 		types.EventTypeDenomTrace,
@@ -179,40 +181,8 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data t
 	// 		sdk.NewAttribute(types.AttributeKeyDenom, voucherDenom),
 	// 	),
 	// )
-	// voucher := sdk.NewCoin(voucherDenom, transferAmount)
 
-	// // mint new tokens if the source of the transfer is the same chain
-	// if err := k.bankKeeper.MintCoins(
-	// 	ctx, types.ModuleName, sdk.NewCoins(voucher),
-	// ); err != nil {
-	// 	return err
-	// }
-
-	// // send to receiver
-	// if err := k.bankKeeper.SendCoinsFromModuleToAccount(
-	// 	ctx, types.ModuleName, receiver, sdk.NewCoins(voucher),
-	// ); err != nil {
-	// 	return err
-	// }
-
-	// defer func() {
-	// 	if transferAmount.IsInt64() {
-	// 		telemetry.SetGaugeWithLabels(
-	// 			[]string{"ibc", types.ModuleName, "packet", "receive"},
-	// 			float32(transferAmount.Int64()),
-	// 			[]metrics.Label{telemetry.NewLabel(coretypes.LabelDenom, data.Denom)},
-	// 		)
-	// 	}
-
-	// 	telemetry.IncrCounterWithLabels(
-	// 		[]string{"ibc", types.ModuleName, "receive"},
-	// 		1,
-	// 		append(
-	// 			labels, telemetry.NewLabel(coretypes.LabelSource, "false"),
-	// 		),
-	// 	)
-	// }()
-
+	//after emiting the event, transfer the recipient
 	return nil
 }
 

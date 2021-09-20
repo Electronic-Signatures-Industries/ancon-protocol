@@ -20,20 +20,6 @@ var (
 )
 
 // MintSwapData contructs a new MintSwapData instance
-func NewMintSwapData(
-	denom string, amount string,
-	sender, receiver string,
-) MintSwapData {
-	return MintSwapData{
-		Sender:      sender,
-		MetadataRef: "",
-		TokenName:   "",
-		TokenSymbol: "",
-		Recipient:   "",
-		DidOwner:    "",
-		Price:       0,
-	}
-}
 
 // ValidateBasic is used for validating the token transfer.
 // NOTE: The addresses formats are not validated as the sender and recipient can have different
