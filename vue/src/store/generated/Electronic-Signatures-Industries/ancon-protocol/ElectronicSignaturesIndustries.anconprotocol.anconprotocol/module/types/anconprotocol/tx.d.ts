@@ -693,8 +693,6 @@ export interface Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     /** MintTrustedResource defines a method for minting a resource. */
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    /** MintSwap */
-    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -717,7 +715,6 @@ export declare class MsgClientImpl implements Msg {
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
-    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

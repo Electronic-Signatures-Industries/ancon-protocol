@@ -87,11 +87,6 @@ export interface AnconprotocolMsgMetadataResponse {
  */
 export type AnconprotocolMsgMintNFTResponse = object;
 
-export interface AnconprotocolMsgMintSwapResponse {
-  /** @format uint64 */
-  id?: string;
-}
-
 export interface AnconprotocolMsgMintTrustedContentResponse {
   /** @format uint64 */
   id?: string;

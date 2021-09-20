@@ -33,8 +33,6 @@ service Msg {
   rpc RevokeAttribute(MsgRevokeAttribute) returns (MsgRevokeAttributeResponse);
   // Metadata TODO
   rpc Metadata(MsgMetadata) returns (MsgMetadataResponse);
-//  rpc File(MsgFile) returns (MsgFileResponse);
-
   // IssueDenom defines a method for issue a denom.
   rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
   // MintNFT defines a method for mint a new nft
@@ -51,8 +49,6 @@ service Msg {
   rpc MintTrustedContent(MsgMintTrustedContent) returns (MsgMintTrustedContentResponse);
   // MintTrustedResource defines a method for minting a resource.
   rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
-  // MintSwap
-  rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);        
   // RegisterRelay
 }
 

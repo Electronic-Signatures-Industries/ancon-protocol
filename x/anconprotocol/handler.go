@@ -35,12 +35,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		// Metadata = stored in metadata anconprotocol
 		// NFT Token = mint nft cosmos
 		// DID = create DID Owner
-		case *types.MsgMintSwap:
-			res, err := msgServer.MintSwap(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgInitiateSwap:
-			res, err := msgServer.InitiateSwap(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgRoyaltyInfo:
 			res, err := msgServer.RoyaltyInfo(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -91,10 +85,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		case *types.MsgMetadata:
 			res, err := msgServer.Metadata(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-
-		case *types.MsgFile:
-			res, err := msgServer.File(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:

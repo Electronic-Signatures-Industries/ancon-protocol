@@ -5133,8 +5133,6 @@ export interface Msg {
   MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
-  /** MintSwap */
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -5248,12 +5246,6 @@ export class MsgClientImpl implements Msg {
     const data = MsgMintTrustedResource.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data)
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
-  }
-
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse> {
-    const data = MsgMintSwap.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data)
-    return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)))
   }
 }
 

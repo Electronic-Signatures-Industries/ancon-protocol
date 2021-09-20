@@ -4862,11 +4862,6 @@ export class MsgClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data);
         return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
     }
-    MintSwap(request) {
-        const data = MsgMintSwap.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data);
-        return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)));
-    }
 }
 var globalThis = (() => {
     if (typeof globalThis !== 'undefined')
