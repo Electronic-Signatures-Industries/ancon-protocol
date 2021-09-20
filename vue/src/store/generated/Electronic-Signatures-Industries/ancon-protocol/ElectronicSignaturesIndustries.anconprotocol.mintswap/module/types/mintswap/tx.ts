@@ -315,7 +315,7 @@ export const MsgMintSwapResponse = {
 /** Msg defines the ibc/transfer Msg service. */
 export interface Msg {
   /** MintSwap defines a rpc handler method for MsgMintSwap. */
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwap>
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -323,10 +323,10 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwap> {
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse> {
     const data = MsgMintSwap.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.mintswap.Msg', 'MintSwap', data)
-    return promise.then((data) => MsgMintSwap.decode(new Reader(data)))
+    return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)))
   }
 }
 

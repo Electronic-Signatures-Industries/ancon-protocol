@@ -16,7 +16,11 @@ func (k Keeper) SendMintSwap(
 	ctx sdk.Context,
 	sourcePort,
 	sourceChannel string,
-	token sdk.Coin, // TODO: NFT props
+	metadataRef string,
+	tokeName string,
+	tokenSymbol string,
+	didOwner string,
+	price string, // TODO: NFT props
 	sender sdk.AccAddress,
 	receiver string,
 	timeoutHeight clienttypes.Height,

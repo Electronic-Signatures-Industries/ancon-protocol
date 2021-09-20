@@ -59,3 +59,8 @@ func NewMintSwapData(
 func (ftpd MintSwapData) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&ftpd))
 }
+
+// func () mintNftInEth nil {
+
+// 	return nil
+// }

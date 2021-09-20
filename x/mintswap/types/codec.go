@@ -11,7 +11,7 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgMintSwap{}, "anconprotocol/MintSwap", nil)
+	cdc.RegisterConcrete(&MsgMintSwap{}, "mintswap/MintSwap", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

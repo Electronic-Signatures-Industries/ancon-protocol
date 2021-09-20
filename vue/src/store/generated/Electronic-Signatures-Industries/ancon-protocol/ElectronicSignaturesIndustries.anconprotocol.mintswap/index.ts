@@ -4,10 +4,9 @@ import { SpVuexError } from '@starport/vuex'
 
 import { MintswapPacketData } from "./module/types/mintswap/packet"
 import { MintSwapData } from "./module/types/mintswap/packet"
-import { MsgMintSwapResponse } from "./module/types/mintswap/tx"
 
 
-export { MintswapPacketData, MintSwapData, MsgMintSwapResponse };
+export { MintswapPacketData, MintSwapData };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -49,7 +48,6 @@ const getDefaultState = () => {
 				_Structure: {
 						MintswapPacketData: getStructure(MintswapPacketData.fromPartial({})),
 						MintSwapData: getStructure(MintSwapData.fromPartial({})),
-						MsgMintSwapResponse: getStructure(MsgMintSwapResponse.fromPartial({})),
 						
 		},
 		_Subscriptions: new Set(),

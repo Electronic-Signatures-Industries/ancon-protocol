@@ -1,10 +1,7 @@
 package keeper
 
 import (
-	"fmt"
-
-	"github.com/tendermint/tendermint/libs/log"
-
+	anconKeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,6 +16,7 @@ type (
 		channelKeeper types.ChannelKeeper
 		portKeeper    types.PortKeeper
 		scopedKeeper  types.ScopedKeeper
+		anconKeeper   anconKeeper.Keeper
 	}
 )
 
@@ -29,6 +27,7 @@ func NewKeeper(
 	channelKeeper types.ChannelKeeper,
 	portKeeper types.PortKeeper,
 	scopedKeeper types.ScopedKeeper,
+	anconkeeper anconKeeper.Keeper,
 
 ) *Keeper {
 	return &Keeper{
@@ -38,13 +37,6 @@ func NewKeeper(
 		channelKeeper: channelKeeper,
 		portKeeper:    portKeeper,
 		scopedKeeper:  scopedKeeper,
+		anconKeeper:   anconkeeper,
 	}
-}
-
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
-}
-
-func (k *Keeper) MintSwap(ctx sdk.Context, MintSwapData data) {
-
 }

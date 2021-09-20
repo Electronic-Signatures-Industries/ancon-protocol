@@ -294,7 +294,7 @@ export class MsgClientImpl {
     MintSwap(request) {
         const data = MsgMintSwap.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.mintswap.Msg', 'MintSwap', data);
-        return promise.then((data) => MsgMintSwap.decode(new Reader(data)));
+        return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {

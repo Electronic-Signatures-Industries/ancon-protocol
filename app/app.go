@@ -331,18 +331,6 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	scopedMintswapKeeper := app.CapabilityKeeper.ScopeToModule(mintswapmoduletypes.ModuleName)
-	app.ScopedMintswapKeeper = scopedMintswapKeeper
-	app.MintswapKeeper = *mintswapmodulekeeper.NewKeeper(
-		appCodec,
-		keys[mintswapmoduletypes.StoreKey],
-		keys[mintswapmoduletypes.MemStoreKey],
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedMintswapKeeper,
-	)
-	mintswapModule := mintswapmodule.NewAppModule(appCodec, app.MintswapKeeper)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
@@ -355,6 +343,19 @@ func New(
 		app.ModuleAccountAddrs(),
 	)
 	anconprotocolModule := anconprotocol.NewAppModule(appCodec, app.AnconprotocolKeeper, app.AccountKeeper, app.BankKeeper)
+
+	scopedMintswapKeeper := app.CapabilityKeeper.ScopeToModule(mintswapmoduletypes.ModuleName)
+	app.ScopedMintswapKeeper = scopedMintswapKeeper
+	app.MintswapKeeper = *mintswapmodulekeeper.NewKeeper(
+		appCodec,
+		keys[mintswapmoduletypes.StoreKey],
+		keys[mintswapmoduletypes.MemStoreKey],
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedMintswapKeeper,
+		app.AnconprotocolKeeper,
+	)
+	mintswapModule := mintswapmodule.NewAppModule(appCodec, app.MintswapKeeper)
 
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,

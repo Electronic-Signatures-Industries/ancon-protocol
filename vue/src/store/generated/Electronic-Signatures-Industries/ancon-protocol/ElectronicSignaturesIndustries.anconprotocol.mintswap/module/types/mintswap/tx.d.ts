@@ -50,12 +50,12 @@ export declare const MsgMintSwapResponse: {
 /** Msg defines the ibc/transfer Msg service. */
 export interface Msg {
     /** MintSwap defines a rpc handler method for MsgMintSwap. */
-    MintSwap(request: MsgMintSwap): Promise<MsgMintSwap>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
-    MintSwap(request: MsgMintSwap): Promise<MsgMintSwap>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

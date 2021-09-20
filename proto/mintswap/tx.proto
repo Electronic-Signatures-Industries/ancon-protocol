@@ -11,7 +11,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 // Msg defines the ibc/transfer Msg service.
 service Msg {
     // MintSwap defines a rpc handler method for MsgMintSwap.
-    rpc MintSwap(MsgMintSwap) returns (MsgMintSwap);
+    rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);
   }
   
   message MsgMintSwap {

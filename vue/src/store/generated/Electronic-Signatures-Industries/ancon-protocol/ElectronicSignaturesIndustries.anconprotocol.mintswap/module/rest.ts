@@ -9,32 +9,10 @@
  * ---------------------------------------------------------------
  */
 
-export interface MintswapMsgMintSwap {
-  sourcePort?: string;
-  sourceChannel?: string;
-  metadataRef?: string;
-  sender?: string;
-  receiver?: string;
-  tokenName?: string;
-  tokenSymbol?: string;
-  didOwner?: string;
-
-  /** @format uint64 */
-  price?: string;
-
-  /**
-   * Timeout height relative to the current block height.
-   * The timeout is disabled when set to 0.
-   */
-  timeoutHeight?: V1Height;
-
-  /**
-   * Timeout timestamp (in nanoseconds) relative to the current block timestamp.
-   * The timeout is disabled when set to 0.
-   * @format uint64
-   */
-  timeoutTimestamp?: string;
-}
+/**
+ * MsgMintSwap defines the Msg/Transfer response type.
+ */
+export type MintswapMsgMintSwapResponse = object;
 
 /**
 * `Any` contains an arbitrary serialized protocol buffer message along with a
