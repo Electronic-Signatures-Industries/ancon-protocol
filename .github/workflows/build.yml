@@ -26,10 +26,15 @@ jobs:
           GOOS: ${{ matrix.targetos }}
           GOARCH: ${{ matrix.arch }}
 
-      - name: Test
+      - name: Test Ancon
         run: |
+          cd x/anconprotocol/keeper
           go test
 
+      - name: Test Mintswap
+        run: |
+          cd x/mintswap/keeper
+          go test
       # - uses: actions/upload-artifact@v2
       #   with:
       #     name: anconprotocold ${{ matrix.targetos }} ${{ matrix.arch }}
