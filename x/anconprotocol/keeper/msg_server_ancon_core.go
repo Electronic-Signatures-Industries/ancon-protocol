@@ -7,23 +7,23 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) InitiateSwap(goCtx context.Context, msg *types.MsgInitiateSwap) (*types.MsgInitiateSwapResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k msgServer) RegisterRelay(goCtx context.Context, msg *types.MsgRegisterRelay) (*types.MsgRegisterRelayResponse, error) {
+	//	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
+	// err := msg.ValidateBasic()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	k.AddInitiateSwap(
-		ctx,
-		msg,
-	)
+	// k.AddInitiateSwap(
+	// 	ctx,
+	// 	msg,
+	// )
 
-	return &types.MsgInitiateSwapResponse{}, nil
+	return &types.MsgRegisterRelayResponse{}, nil
 }
 
-func (k msgServer) ClaimSwap(goCtx context.Context, msg *types.MsgClaimSwap) (*types.MsgClaimSwapResponse, error) {
+func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*types.MsgMintSwapResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
@@ -31,12 +31,14 @@ func (k msgServer) ClaimSwap(goCtx context.Context, msg *types.MsgClaimSwap) (*t
 		return nil, err
 	}
 
-	k.AddClaimSwap(
+	k.RequestLazyMint(
 		ctx,
-		msg,
+		&types.MsgMintTrustedContent{},
 	)
 
-	return &types.MsgClaimSwapResponse{}, nil
+	k.AddInitiateSwap(ctx, &types.MsgInitiateSwap{})
+
+	return &types.MsgMintSwapResponse{}, nil
 }
 func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*types.MsgMetadataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)

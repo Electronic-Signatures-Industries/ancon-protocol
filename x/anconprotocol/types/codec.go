@@ -33,12 +33,14 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "anconprotocol/BurnNFT", nil)
 	cdc.RegisterConcrete(&MsgTransferDenom{}, "anconprotocol/TransferDenom", nil)
 	cdc.RegisterConcrete(&MsgMintSwap{}, "anconprotocol/MintSwap", nil)
+	cdc.RegisterConcrete(&MsgRegisterRelay{}, "anconprotocol/RegisterRelay", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgGrantDelegate{},
+		&MsgRegisterRelay{},
 		&MsgGrantAttribute{},
 		&MsgRevokeDelegate{},
 		&MsgRevokeAttribute{},
