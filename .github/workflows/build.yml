@@ -26,14 +26,12 @@ jobs:
           GOOS: ${{ matrix.targetos }}
           GOARCH: ${{ matrix.arch }}
 
-      - name: Compile
+      - name: Test
         run: |
-          go mod download
-          cd cmd/anconprotocold
-          go build .
+          go test
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: anconprotocold ${{ matrix.targetos }} ${{ matrix.arch }}
-          path: cmd/anconprotocold/anconprotocold
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: anconprotocold ${{ matrix.targetos }} ${{ matrix.arch }}
+      #     path: cmd/anconprotocold/anconprotocold
 
