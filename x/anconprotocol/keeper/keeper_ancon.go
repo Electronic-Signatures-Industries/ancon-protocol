@@ -152,7 +152,6 @@ func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.
 }
 
 func (k Keeper) verifySenderIAVLProof(ctx sdk.Context, key string, value string, proof ics23.ExistenceProof) bool {
-
 	// TODO: Previously stored root
 	root := []byte{0, 0, 0, 0}
 	proofCommitment := ics23.CommitmentProof_Exist{
@@ -187,11 +186,6 @@ func (k Keeper) hasRelayPermit(ctx sdk.Context, creator string, prefix string) b
 	)
 	hash := append([]byte(methodSig.Sig), []byte(creator)...)
 	return fmt.Sprint(hash) == prefix
-}
-
-// InitiateSwap -- actor is NFT Minter -- onchain recipient
-func (k Keeper) HasClaimedSwap(ctx sdk.Context, voucher string) bool {
-	return false
 }
 
 // InitiateSwap starts swap to Chain B, sends a voucher, prefix and proof

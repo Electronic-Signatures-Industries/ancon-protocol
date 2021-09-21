@@ -14,6 +14,11 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Query defines the gRPC querier service.
 service Query {
+	// // ReadRoyaltyInfo
+	// rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
+	// 	option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
+	// }
+
 	// ReadRoyaltyInfo
 	rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
 		option (google.api.http).get = "/ancon/royalty/{cid}/{price}";

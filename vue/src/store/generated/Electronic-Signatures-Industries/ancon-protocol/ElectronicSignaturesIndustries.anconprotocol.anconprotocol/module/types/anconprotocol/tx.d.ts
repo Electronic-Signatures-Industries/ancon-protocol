@@ -1,5 +1,14 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
+export interface MsgRegisterRelay {
+    sender: string;
+    chain: string;
+    alg: string;
+    pub: string;
+}
+export interface MsgRegisterRelayResponse {
+    id: string;
+}
 /** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
 export interface MsgCreateDid {
     creator: string;
@@ -309,6 +318,20 @@ export interface MsgFile {
 export interface MsgFileResponse {
     hash: string;
 }
+export declare const MsgRegisterRelay: {
+    encode(message: MsgRegisterRelay, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRegisterRelay;
+    fromJSON(object: any): MsgRegisterRelay;
+    toJSON(message: MsgRegisterRelay): unknown;
+    fromPartial(object: DeepPartial<MsgRegisterRelay>): MsgRegisterRelay;
+};
+export declare const MsgRegisterRelayResponse: {
+    encode(message: MsgRegisterRelayResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgRegisterRelayResponse;
+    fromJSON(object: any): MsgRegisterRelayResponse;
+    toJSON(message: MsgRegisterRelayResponse): unknown;
+    fromPartial(object: DeepPartial<MsgRegisterRelayResponse>): MsgRegisterRelayResponse;
+};
 export declare const MsgCreateDid: {
     encode(message: MsgCreateDid, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgCreateDid;
@@ -693,6 +716,10 @@ export interface Msg {
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     /** MintTrustedResource defines a method for minting a resource. */
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    /** RegisterRelay */
+    RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse>;
+    /** MintSwap */
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -715,6 +742,8 @@ export declare class MsgClientImpl implements Msg {
     TransferDenom(request: MsgTransferDenom): Promise<MsgTransferDenomResponse>;
     MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>;
     MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>;
+    RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse>;
+    MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

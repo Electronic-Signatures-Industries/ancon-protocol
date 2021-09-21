@@ -50,6 +50,20 @@ service Msg {
   // MintTrustedResource defines a method for minting a resource.
   rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
   // RegisterRelay
+  rpc RegisterRelay(MsgRegisterRelay) returns (MsgRegisterRelayResponse);
+  // MintSwap
+  rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);
+}
+
+message MsgRegisterRelay {
+  string sender = 1;
+  string chain = 2;
+  string alg = 3;
+  string pub = 4;
+}
+
+message MsgRegisterRelayResponse {
+  string id = 1;
 }
 
 //  https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164

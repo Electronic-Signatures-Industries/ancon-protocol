@@ -4,6 +4,17 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+export interface MsgRegisterRelay {
+  sender: string
+  chain: string
+  alg: string
+  pub: string
+}
+
+export interface MsgRegisterRelayResponse {
+  id: string
+}
+
 /** https://github.com/hyperledger/aries-framework-go/blob/5e24fee3adbaf5a462c8951f0e92cada81cd288b/pkg/doc/did/doc_test.go#L1164 */
 export interface MsgCreateDid {
   creator: string
@@ -352,6 +363,167 @@ export interface MsgFile {
 
 export interface MsgFileResponse {
   hash: string
+}
+
+const baseMsgRegisterRelay: object = { sender: '', chain: '', alg: '', pub: '' }
+
+export const MsgRegisterRelay = {
+  encode(message: MsgRegisterRelay, writer: Writer = Writer.create()): Writer {
+    if (message.sender !== '') {
+      writer.uint32(10).string(message.sender)
+    }
+    if (message.chain !== '') {
+      writer.uint32(18).string(message.chain)
+    }
+    if (message.alg !== '') {
+      writer.uint32(26).string(message.alg)
+    }
+    if (message.pub !== '') {
+      writer.uint32(34).string(message.pub)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRegisterRelay {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRegisterRelay } as MsgRegisterRelay
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string()
+          break
+        case 2:
+          message.chain = reader.string()
+          break
+        case 3:
+          message.alg = reader.string()
+          break
+        case 4:
+          message.pub = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgRegisterRelay {
+    const message = { ...baseMsgRegisterRelay } as MsgRegisterRelay
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    if (object.chain !== undefined && object.chain !== null) {
+      message.chain = String(object.chain)
+    } else {
+      message.chain = ''
+    }
+    if (object.alg !== undefined && object.alg !== null) {
+      message.alg = String(object.alg)
+    } else {
+      message.alg = ''
+    }
+    if (object.pub !== undefined && object.pub !== null) {
+      message.pub = String(object.pub)
+    } else {
+      message.pub = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgRegisterRelay): unknown {
+    const obj: any = {}
+    message.sender !== undefined && (obj.sender = message.sender)
+    message.chain !== undefined && (obj.chain = message.chain)
+    message.alg !== undefined && (obj.alg = message.alg)
+    message.pub !== undefined && (obj.pub = message.pub)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgRegisterRelay>): MsgRegisterRelay {
+    const message = { ...baseMsgRegisterRelay } as MsgRegisterRelay
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    if (object.chain !== undefined && object.chain !== null) {
+      message.chain = object.chain
+    } else {
+      message.chain = ''
+    }
+    if (object.alg !== undefined && object.alg !== null) {
+      message.alg = object.alg
+    } else {
+      message.alg = ''
+    }
+    if (object.pub !== undefined && object.pub !== null) {
+      message.pub = object.pub
+    } else {
+      message.pub = ''
+    }
+    return message
+  }
+}
+
+const baseMsgRegisterRelayResponse: object = { id: '' }
+
+export const MsgRegisterRelayResponse = {
+  encode(message: MsgRegisterRelayResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRegisterRelayResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgRegisterRelayResponse } as MsgRegisterRelayResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgRegisterRelayResponse {
+    const message = { ...baseMsgRegisterRelayResponse } as MsgRegisterRelayResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id)
+    } else {
+      message.id = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgRegisterRelayResponse): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgRegisterRelayResponse>): MsgRegisterRelayResponse {
+    const message = { ...baseMsgRegisterRelayResponse } as MsgRegisterRelayResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = ''
+    }
+    return message
+  }
 }
 
 const baseMsgCreateDid: object = { creator: '', vanityName: '', didType: '' }
@@ -5133,6 +5305,10 @@ export interface Msg {
   MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
+  /** RegisterRelay */
+  RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse>
+  /** MintSwap */
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -5246,6 +5422,18 @@ export class MsgClientImpl implements Msg {
     const data = MsgMintTrustedResource.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data)
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
+  }
+
+  RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse> {
+    const data = MsgRegisterRelay.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RegisterRelay', data)
+    return promise.then((data) => MsgRegisterRelayResponse.decode(new Reader(data)))
+  }
+
+  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse> {
+    const data = MsgMintSwap.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data)
+    return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)))
   }
 }
 

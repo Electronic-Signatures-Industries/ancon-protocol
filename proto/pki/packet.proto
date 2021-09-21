@@ -1,0 +1,16 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.pki;
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/pki/types";
+
+message PkiPacketData {
+    oneof packet {
+        NoData noData = 1;
+        // this line is used by starport scaffolding # ibc/packet/proto/field
+    }
+}
+
+message NoData {
+}
+
+// this line is used by starport scaffolding # ibc/packet/proto/message

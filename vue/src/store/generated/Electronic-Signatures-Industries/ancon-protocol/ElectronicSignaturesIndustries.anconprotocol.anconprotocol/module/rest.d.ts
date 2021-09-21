@@ -61,12 +61,19 @@ export interface AnconprotocolMsgMetadataResponse {
  * MsgMintNFTResponse defines the Msg/MintNFT response type.
  */
 export declare type AnconprotocolMsgMintNFTResponse = object;
+export interface AnconprotocolMsgMintSwapResponse {
+    /** @format uint64 */
+    id?: string;
+}
 export interface AnconprotocolMsgMintTrustedContentResponse {
     /** @format uint64 */
     id?: string;
 }
 export interface AnconprotocolMsgMintTrustedResourceResponse {
     /** @format uint64 */
+    id?: string;
+}
+export interface AnconprotocolMsgRegisterRelayResponse {
     id?: string;
 }
 export interface AnconprotocolMsgRevokeAttributeResponse {

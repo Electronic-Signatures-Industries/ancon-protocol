@@ -2,6 +2,165 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
+const baseMsgRegisterRelay = { sender: '', chain: '', alg: '', pub: '' };
+export const MsgRegisterRelay = {
+    encode(message, writer = Writer.create()) {
+        if (message.sender !== '') {
+            writer.uint32(10).string(message.sender);
+        }
+        if (message.chain !== '') {
+            writer.uint32(18).string(message.chain);
+        }
+        if (message.alg !== '') {
+            writer.uint32(26).string(message.alg);
+        }
+        if (message.pub !== '') {
+            writer.uint32(34).string(message.pub);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRegisterRelay };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.sender = reader.string();
+                    break;
+                case 2:
+                    message.chain = reader.string();
+                    break;
+                case 3:
+                    message.alg = reader.string();
+                    break;
+                case 4:
+                    message.pub = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRegisterRelay };
+        if (object.sender !== undefined && object.sender !== null) {
+            message.sender = String(object.sender);
+        }
+        else {
+            message.sender = '';
+        }
+        if (object.chain !== undefined && object.chain !== null) {
+            message.chain = String(object.chain);
+        }
+        else {
+            message.chain = '';
+        }
+        if (object.alg !== undefined && object.alg !== null) {
+            message.alg = String(object.alg);
+        }
+        else {
+            message.alg = '';
+        }
+        if (object.pub !== undefined && object.pub !== null) {
+            message.pub = String(object.pub);
+        }
+        else {
+            message.pub = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.sender !== undefined && (obj.sender = message.sender);
+        message.chain !== undefined && (obj.chain = message.chain);
+        message.alg !== undefined && (obj.alg = message.alg);
+        message.pub !== undefined && (obj.pub = message.pub);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRegisterRelay };
+        if (object.sender !== undefined && object.sender !== null) {
+            message.sender = object.sender;
+        }
+        else {
+            message.sender = '';
+        }
+        if (object.chain !== undefined && object.chain !== null) {
+            message.chain = object.chain;
+        }
+        else {
+            message.chain = '';
+        }
+        if (object.alg !== undefined && object.alg !== null) {
+            message.alg = object.alg;
+        }
+        else {
+            message.alg = '';
+        }
+        if (object.pub !== undefined && object.pub !== null) {
+            message.pub = object.pub;
+        }
+        else {
+            message.pub = '';
+        }
+        return message;
+    }
+};
+const baseMsgRegisterRelayResponse = { id: '' };
+export const MsgRegisterRelayResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.id !== '') {
+            writer.uint32(10).string(message.id);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgRegisterRelayResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgRegisterRelayResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = String(object.id);
+        }
+        else {
+            message.id = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgRegisterRelayResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = '';
+        }
+        return message;
+    }
+};
 const baseMsgCreateDid = { creator: '', vanityName: '', didType: '' };
 export const MsgCreateDid = {
     encode(message, writer = Writer.create()) {
@@ -4861,6 +5020,16 @@ export class MsgClientImpl {
         const data = MsgMintTrustedResource.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintTrustedResource', data);
         return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)));
+    }
+    RegisterRelay(request) {
+        const data = MsgRegisterRelay.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RegisterRelay', data);
+        return promise.then((data) => MsgRegisterRelayResponse.decode(new Reader(data)));
+    }
+    MintSwap(request) {
+        const data = MsgMintSwap.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data);
+        return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {
