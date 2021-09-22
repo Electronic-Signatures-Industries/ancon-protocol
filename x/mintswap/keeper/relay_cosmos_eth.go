@@ -7,10 +7,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	clienttypes "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
-	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
-	coretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
+	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
+	coretypes "github.com/cosmos/ibc-go/modules/core/types"
 	"github.com/spf13/cast"
 )
 
@@ -33,6 +33,9 @@ func (k Keeper) SendMintSwap(
 	// if !k.GetSendEnabled(ctx) {
 	// 	return types.ErrSendDisabled
 	// }
+
+	sourcePort = types.PortID
+	sourceChannel = "channel-0"
 
 	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, sourceChannel)
 	if !found {

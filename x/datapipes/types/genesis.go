@@ -2,7 +2,7 @@ package types
 
 import (
 	// this line is used by starport scaffolding # genesis/types/import
-	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
 )
 
 // DefaultIndex is the default capability global index

@@ -3,13 +3,15 @@ package mintswap
 import (
 	"fmt"
 
+	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
+
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
-	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/core/05-port/types"
-	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
 )
 
 // OnChanOpenInit implements the IBCModule interface
@@ -128,14 +130,14 @@ func (am AppModule) OnChanCloseConfirm(
 func (am AppModule) OnRecvPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
-) (*sdk.Result, []byte, error) {
+	relayer sdk.AccAddress,
+) ibcexported.Acknowledgement {
 	var ack channeltypes.Acknowledgement
-
 	// this line is used by starport scaffolding # oracle/packet/module/recv
 
 	var modulePacketData types.MintswapPacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error()).Error())
 	}
 
 	// Dispatch packet
@@ -143,13 +145,11 @@ func (am AppModule) OnRecvPacket(
 	// this line is used by starport scaffolding # ibc/packet/module/recv
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-		return nil, []byte{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+		return channeltypes.NewErrorAcknowledgement(errMsg)
 	}
 
 	// NOTE: acknowledgement will be written synchronously during IBC handler execution.
-	return &sdk.Result{
-		Events: ctx.EventManager().Events().ToABCIEvents(),
-	}, ack.GetBytes(), nil
+	return ack
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface

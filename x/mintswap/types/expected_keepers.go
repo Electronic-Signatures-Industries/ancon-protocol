@@ -3,7 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	types "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
+	types "github.com/cosmos/ibc-go/modules/core/02-client/types"
 )
 
 var _ sdk.Msg = &MsgMintSwap{}

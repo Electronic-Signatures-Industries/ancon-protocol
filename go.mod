@@ -3,19 +3,21 @@ module github.com/Electronic-Signatures-Industries/ancon-protocol
 go 1.16
 
 require (
-	github.com/armon/go-metrics v0.3.8
+	github.com/armon/go-metrics v0.3.9
 	github.com/confio/ics23/go v0.6.6
-	github.com/cosmos/cosmos-sdk v0.42.9
+	github.com/cosmos/cosmos-sdk v0.44.0
 	github.com/cosmos/iavl v0.17.1
+	github.com/cosmos/ibc-go v1.2.0
+	github.com/cosmos/ibc-go/v2 v2.0.0-20210922114230-46a1224354d5
 	github.com/ethereum/go-ethereum v1.10.7
 	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipld/go-ipld-prime v0.12.0
@@ -23,15 +25,13 @@ require (
 	github.com/itchyny/base58-go v0.2.0
 	github.com/klauspost/cpuid/v2 v2.0.8 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/multiformats/go-multibase v0.0.3
 	github.com/multiformats/go-multicodec v0.3.0
-	github.com/prometheus/common v0.29.0 // indirect
 	github.com/prometheus/procfs v0.7.0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/smartystreets/assertions v1.1.1 // indirect
-	github.com/spf13/cast v1.3.1
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cast v1.4.1
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/spm v0.0.0-20210524110815-6d7452d2dc4a

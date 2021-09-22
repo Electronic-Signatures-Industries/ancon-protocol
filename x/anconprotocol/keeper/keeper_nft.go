@@ -181,7 +181,7 @@ func (k Keeper) Get_NFT(ctx sdk.Context, denomID, tokenID string) (nft exported.
 	}
 
 	var baseNFT types.BaseNFT
-	k.cdc.MustUnmarshalBinaryBare(bz, &baseNFT)
+	k.cdc.MustUnmarshal(bz, &baseNFT)
 
 	return baseNFT, nil
 }
@@ -194,7 +194,7 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var baseNFT types.BaseNFT
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &baseNFT)
+		k.cdc.MustUnmarshal(iterator.Value(), &baseNFT)
 		nfts = append(nfts, baseNFT)
 	}
 
@@ -225,7 +225,7 @@ func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
 func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := k.cdc.MustMarshalBinaryBare(&nft)
+	bz := k.cdc.MustMarshal(&nft)
 	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
 }
 
@@ -275,7 +275,7 @@ func (k Keeper) GetPaginateCollection(ctx sdk.Context, request *types.QueryColle
 	nftStore := prefix.NewStore(store, types.KeyNFT(denomID, ""))
 	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
 		var baseNFT types.BaseNFT
-		k.cdc.MustUnmarshalBinaryBare(value, &baseNFT)
+		k.cdc.MustUnmarshal(value, &baseNFT)
 		nfts = append(nfts, baseNFT)
 		return nil
 	})
@@ -351,7 +351,7 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryBare(&denom)
+	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
 	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Id))
 	return nil
@@ -366,7 +366,7 @@ func (k Keeper) GetDenom(ctx sdk.Context, id string) (denom types.Denom, found b
 		return denom, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(bz, &denom)
+	k.cdc.MustUnmarshal(bz, &denom)
 	return denom, true
 }
 
@@ -378,7 +378,7 @@ func (k Keeper) GetDenoms(ctx sdk.Context) (denoms []types.Denom) {
 
 	for ; iterator.Valid(); iterator.Next() {
 		var denom types.Denom
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &denom)
+		k.cdc.MustUnmarshal(iterator.Value(), &denom)
 		denoms = append(denoms, denom)
 	}
 	return denoms
@@ -391,7 +391,7 @@ func (k Keeper) UpdateDenom(ctx sdk.Context, denom types.Denom) error {
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryBare(&denom)
+	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
 	return nil
 }
