@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
-import { Height } from '../ibc/core/client/v1/client'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.mintswap'
 
@@ -27,7 +26,7 @@ export interface MsgMintSwap {
    * Timeout height relative to the current block height.
    * The timeout is disabled when set to 0.
    */
-  timeoutHeight: Height | undefined
+  timeoutHeight: number
   /**
    * Timeout timestamp (in nanoseconds) relative to the current block timestamp.
    * The timeout is disabled when set to 0.
@@ -48,6 +47,7 @@ const baseMsgMintSwap: object = {
   tokenSymbol: '',
   didOwner: '',
   price: 0,
+  timeoutHeight: 0,
   timeoutTimestamp: 0
 }
 
@@ -80,8 +80,8 @@ export const MsgMintSwap = {
     if (message.price !== 0) {
       writer.uint32(72).uint64(message.price)
     }
-    if (message.timeoutHeight !== undefined) {
-      Height.encode(message.timeoutHeight, writer.uint32(82).fork()).ldelim()
+    if (message.timeoutHeight !== 0) {
+      writer.uint32(80).uint64(message.timeoutHeight)
     }
     if (message.timeoutTimestamp !== 0) {
       writer.uint32(88).uint64(message.timeoutTimestamp)
@@ -124,7 +124,7 @@ export const MsgMintSwap = {
           message.price = longToNumber(reader.uint64() as Long)
           break
         case 10:
-          message.timeoutHeight = Height.decode(reader, reader.uint32())
+          message.timeoutHeight = longToNumber(reader.uint64() as Long)
           break
         case 11:
           message.timeoutTimestamp = longToNumber(reader.uint64() as Long)
@@ -185,9 +185,9 @@ export const MsgMintSwap = {
       message.price = 0
     }
     if (object.timeoutHeight !== undefined && object.timeoutHeight !== null) {
-      message.timeoutHeight = Height.fromJSON(object.timeoutHeight)
+      message.timeoutHeight = Number(object.timeoutHeight)
     } else {
-      message.timeoutHeight = undefined
+      message.timeoutHeight = 0
     }
     if (object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null) {
       message.timeoutTimestamp = Number(object.timeoutTimestamp)
@@ -208,7 +208,7 @@ export const MsgMintSwap = {
     message.tokenSymbol !== undefined && (obj.tokenSymbol = message.tokenSymbol)
     message.didOwner !== undefined && (obj.didOwner = message.didOwner)
     message.price !== undefined && (obj.price = message.price)
-    message.timeoutHeight !== undefined && (obj.timeoutHeight = message.timeoutHeight ? Height.toJSON(message.timeoutHeight) : undefined)
+    message.timeoutHeight !== undefined && (obj.timeoutHeight = message.timeoutHeight)
     message.timeoutTimestamp !== undefined && (obj.timeoutTimestamp = message.timeoutTimestamp)
     return obj
   },
@@ -261,9 +261,9 @@ export const MsgMintSwap = {
       message.price = 0
     }
     if (object.timeoutHeight !== undefined && object.timeoutHeight !== null) {
-      message.timeoutHeight = Height.fromPartial(object.timeoutHeight)
+      message.timeoutHeight = object.timeoutHeight
     } else {
-      message.timeoutHeight = undefined
+      message.timeoutHeight = 0
     }
     if (object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null) {
       message.timeoutTimestamp = object.timeoutTimestamp

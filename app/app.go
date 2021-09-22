@@ -91,18 +91,6 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol"
 	anconprotocolkeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	anconprotocoltypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-	datapipesmodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/datapipes"
-	datapipesmodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/datapipes/keeper"
-	datapipesmoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/datapipes/types"
-	mintswapmodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap"
-	mintswapmodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/keeper"
-	mintswapmoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/mintswap/types"
-	pkimodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/pki"
-	pkimodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/pki/keeper"
-	pkimoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/pki/types"
-	royaltymodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/royalty"
-	royaltymodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/royalty/keeper"
-	royaltymoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/royalty/types"
 )
 
 const Name = "ancon-protocol"
@@ -150,10 +138,6 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		pkimodule.AppModuleBasic{},
-		datapipesmodule.AppModuleBasic{},
-		royaltymodule.AppModuleBasic{},
-		mintswapmodule.AppModuleBasic{},
 		anconprotocol.AppModuleBasic{},
 	)
 
@@ -222,14 +206,6 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
-	ScopedPkiKeeper       capabilitykeeper.ScopedKeeper
-	PkiKeeper             pkimodulekeeper.Keeper
-	ScopedDatapipesKeeper capabilitykeeper.ScopedKeeper
-	DatapipesKeeper       datapipesmodulekeeper.Keeper
-	ScopedRoyaltyKeeper   capabilitykeeper.ScopedKeeper
-	RoyaltyKeeper         royaltymodulekeeper.Keeper
-	ScopedMintswapKeeper  capabilitykeeper.ScopedKeeper
-	MintswapKeeper        mintswapmodulekeeper.Keeper
 
 	AnconprotocolKeeper anconprotocolkeeper.Keeper
 
@@ -261,11 +237,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		// this line is used by starport scaffolding # stargate/app/storeKey
-		pkimoduletypes.StoreKey,
-		datapipesmoduletypes.StoreKey,
-		royaltymoduletypes.StoreKey,
-		mintswapmoduletypes.StoreKey,
+		// this line is used by starport scaffolding # stargate/app/storeKey,
 		anconprotocoltypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -350,6 +322,9 @@ func New(
 		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
+	app.BankKeeper = bankkeeper.NewBaseKeeper(
+		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.ModuleAccountAddrs(),
+	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
@@ -358,43 +333,6 @@ func New(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-
-	scopedRoyaltyKeeper := app.CapabilityKeeper.ScopeToModule(royaltymoduletypes.ModuleName)
-	app.ScopedRoyaltyKeeper = scopedRoyaltyKeeper
-	app.RoyaltyKeeper = *royaltymodulekeeper.NewKeeper(
-		appCodec,
-		keys[royaltymoduletypes.StoreKey],
-		keys[royaltymoduletypes.MemStoreKey],
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedRoyaltyKeeper,
-	)
-	royaltyModule := royaltymodule.NewAppModule(appCodec, app.RoyaltyKeeper)
-
-	scopedDatapipesKeeper := app.CapabilityKeeper.ScopeToModule(datapipesmoduletypes.ModuleName)
-	app.ScopedDatapipesKeeper = scopedDatapipesKeeper
-	app.DatapipesKeeper = *datapipesmodulekeeper.NewKeeper(
-		appCodec,
-		keys[datapipesmoduletypes.StoreKey],
-		keys[datapipesmoduletypes.MemStoreKey],
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedDatapipesKeeper,
-	)
-	datapipesModule := datapipesmodule.NewAppModule(appCodec, app.DatapipesKeeper)
-
-	scopedPkiKeeper := app.CapabilityKeeper.ScopeToModule(pkimoduletypes.ModuleName)
-	app.ScopedPkiKeeper = scopedPkiKeeper
-	app.PkiKeeper = *pkimodulekeeper.NewKeeper(
-		appCodec,
-		keys[pkimoduletypes.StoreKey],
-		keys[pkimoduletypes.MemStoreKey],
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedPkiKeeper,
-	)
-	pkiModule := pkimodule.NewAppModule(appCodec, app.PkiKeeper)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
@@ -408,19 +346,6 @@ func New(
 	)
 	anconprotocolModule := anconprotocol.NewAppModule(appCodec, app.AnconprotocolKeeper, app.AccountKeeper, app.BankKeeper)
 
-	scopedMintswapKeeper := app.CapabilityKeeper.ScopeToModule(mintswapmoduletypes.ModuleName)
-	app.ScopedMintswapKeeper = scopedMintswapKeeper
-	app.MintswapKeeper = *mintswapmodulekeeper.NewKeeper(
-		appCodec,
-		keys[mintswapmoduletypes.StoreKey],
-		keys[mintswapmoduletypes.MemStoreKey],
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedMintswapKeeper,
-		app.AnconprotocolKeeper,
-	)
-	mintswapModule := mintswapmodule.NewAppModule(appCodec, app.MintswapKeeper)
-
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -430,10 +355,7 @@ func New(
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
 	// this line is used by starport scaffolding # ibc/app/router
-	ibcRouter.AddRoute(pkimoduletypes.ModuleName, pkiModule)
-	ibcRouter.AddRoute(datapipesmoduletypes.ModuleName, datapipesModule)
-	ibcRouter.AddRoute(royaltymoduletypes.ModuleName, royaltyModule)
-	ibcRouter.AddRoute(mintswapmoduletypes.ModuleName, mintswapModule)
+
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	/****  Module Options ****/
@@ -468,10 +390,6 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
-		pkiModule,
-		datapipesModule,
-		royaltyModule,
-		mintswapModule,
 		anconprotocolModule,
 	)
 
@@ -508,10 +426,6 @@ func New(
 		feegrant.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
-		pkimoduletypes.ModuleName,
-		datapipesmoduletypes.ModuleName,
-		royaltymoduletypes.ModuleName,
-		mintswapmoduletypes.ModuleName,
 		anconprotocoltypes.ModuleName,
 	)
 
@@ -700,10 +614,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(pkimoduletypes.ModuleName)
-	paramsKeeper.Subspace(datapipesmoduletypes.ModuleName)
-	paramsKeeper.Subspace(royaltymoduletypes.ModuleName)
-	paramsKeeper.Subspace(mintswapmoduletypes.ModuleName)
+
 	paramsKeeper.Subspace(anconprotocoltypes.ModuleName)
 
 	return paramsKeeper

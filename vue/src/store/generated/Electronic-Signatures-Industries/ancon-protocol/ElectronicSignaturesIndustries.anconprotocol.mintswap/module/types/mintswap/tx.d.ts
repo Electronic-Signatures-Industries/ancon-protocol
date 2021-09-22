@@ -1,5 +1,4 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-import { Height } from '../ibc/core/client/v1/client';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.mintswap";
 export interface MsgMintSwap {
     /** the port on which the packet will be sent */
@@ -23,7 +22,7 @@ export interface MsgMintSwap {
      * Timeout height relative to the current block height.
      * The timeout is disabled when set to 0.
      */
-    timeoutHeight: Height | undefined;
+    timeoutHeight: number;
     /**
      * Timeout timestamp (in nanoseconds) relative to the current block timestamp.
      * The timeout is disabled when set to 0.
