@@ -17,6 +17,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hyperledger/aries-framework-go v0.1.7
+	github.com/improbable-eng/grpc-web v0.14.1
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/itchyny/base58-go v0.2.0
@@ -26,6 +27,7 @@ require (
 	github.com/prometheus/procfs v0.7.0 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
+	github.com/rs/cors v1.8.0
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1

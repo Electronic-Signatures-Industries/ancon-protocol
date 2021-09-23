@@ -35,10 +35,10 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-evm/client/debug"
 	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
 	"github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/server"
 	servercfg "github.com/Electronic-Signatures-Industries/ancon-evm/server/config"
 	srvflags "github.com/Electronic-Signatures-Industries/ancon-evm/server/flags"
 	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/server"
 )
 
 const EnvPrefix = "ETHERMINT"
