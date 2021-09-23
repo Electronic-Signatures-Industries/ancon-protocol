@@ -18,6 +18,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	ethermintclient "github.com/Electronic-Signatures-Industries/ancon-evm/client"
+	"github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
 	servercfg "github.com/Electronic-Signatures-Industries/ancon-evm/server/config"
 	srvflags "github.com/Electronic-Signatures-Industries/ancon-evm/server/flags"
 	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
@@ -50,7 +51,7 @@ const EnvPrefix = "ETHERMINT"
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
-	encodingConfig := app.MakeEncodingConfig()
+	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -108,7 +109,14 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		config.Cmd(),
 	)
 
-	a := appCreator{encodingConfig}
+	a := appCreator{
+		encCfg: params.EncodingConfig{
+			InterfaceRegistry: encodingConfig.InterfaceRegistry,
+			Marshaler:         encodingConfig.Marshaler,
+			TxConfig:          encodingConfig.TxConfig,
+			Amino:             encodingConfig.Amino,
+		},
+	}
 	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
@@ -123,11 +131,16 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	// add rosetta
 	rootCmd.AddCommand(server.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
 
-	return rootCmd, encodingConfig
+	return rootCmd, params.EncodingConfig{
+		InterfaceRegistry: encodingConfig.InterfaceRegistry,
+		Marshaler:         encodingConfig.Marshaler,
+		TxConfig:          encodingConfig.TxConfig,
+		Amino:             encodingConfig.Amino,
+	}
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	//authclient.Codec = encodingConfig.Marshaler
+	// authclient.Codec = encodingConfig.Marshaler
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
