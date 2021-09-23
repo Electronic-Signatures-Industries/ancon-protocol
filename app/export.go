@@ -7,11 +7,20 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
 )
+
+// NewDefaultGenesisState generates the default state for the application.
+func NewDefaultGenesisState() simapp.GenesisState {
+	encCfg := encoding.MakeConfig(ModuleBasics)
+	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
+}
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
