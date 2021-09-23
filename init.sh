@@ -20,7 +20,7 @@ rm -rf ~/.ancon-protocold*
 ~/go/bin/ancon-protocold config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
-~/go/bin/ancon-protocold keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
+~/go/bin/ancon-protocold keys unsafe-import-eth-key test 0xd1d1ef2656ea6926e28aa46da7fc98ace42810d7314f5b8
 
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 ~/go/bin/ancon-protocold init $MONIKER --chain-id $CHAINID 
@@ -85,4 +85,4 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner
+~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner --grpc-web.enable true --grpc.enable true
