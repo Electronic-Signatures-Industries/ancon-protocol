@@ -3,20 +3,19 @@ package main
 import (
 	"os"
 
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
-	commands "github.com/Electronic-Signatures-Industries/ancon-protocol/cmd/ancon-protocold/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-
-	cmdcfg "github.com/Electronic-Signatures-Industries/ancon-evm/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Electronic-Signatures-Industries/ancon-evm/app"
+	cmdcfg "github.com/Electronic-Signatures-Industries/ancon-evm/cmd/config"
 )
 
 func main() {
 	setupConfig()
 	cmdcfg.RegisterDenoms()
 
-	rootCmd, _ := commands.NewRootCmd()
+	rootCmd, _ := NewRootCmd()
 
 	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {
 		switch e := err.(type) {
