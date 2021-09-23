@@ -49,8 +49,6 @@ const EnvPrefix = "ETHERMINT"
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	// Set config for prefixes
-	app.SetConfig()
 
 	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
