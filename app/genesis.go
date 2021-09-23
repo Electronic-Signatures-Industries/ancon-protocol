@@ -19,3 +19,9 @@ type GenesisState map[string]json.RawMessage
 func NewDefaultGenesisState(cdc codec.JSONCodec) GenesisState {
 	return ModuleBasics.DefaultGenesis(cdc)
 }
+
+// // NewDefaultGenesisState generates the default state for the application.
+// func NewDefaultGenesisState() simapp.GenesisState {
+// 	encCfg := encoding.MakeConfig(ModuleBasics)
+// 	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
+// }

@@ -10,8 +10,8 @@ require (
 	github.com/ethereum/go-ethereum v1.10.7
 	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.5.2
-	github.com/google/uuid v1.2.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -20,7 +20,6 @@ require (
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/itchyny/base58-go v0.2.0
 	github.com/klauspost/cpuid/v2 v2.0.8 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/multiformats/go-multibase v0.0.3
 	github.com/multiformats/go-multicodec v0.3.0
 	github.com/prometheus/procfs v0.7.0 // indirect
@@ -34,11 +33,11 @@ require (
 	github.com/tendermint/spm v0.0.0-20210524110815-6d7452d2dc4a
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4
+	github.com/tharsis/ethermint v0.5.0
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
