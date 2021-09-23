@@ -1,3 +1,4 @@
+chain-id: anconprotocol_1-1
 accounts:
   - name: alice
     coins: ["20000token", "200000000stake"]
