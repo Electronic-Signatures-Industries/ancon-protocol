@@ -4,53 +4,8 @@
 <img src="/specs/AnconProtocoLogo.jpg" align="center" width="300" alt="Ancon Protocol Logo" />
 
 # Ancon Protocol
-Protocol for proof and verified decentralized content using IPLD multihash
-<br/>
+Authenticity and provenance data economy decentralized chain<br/>
 </td></tr></table>
-
-
-#### Milestone 2 - Cross Mint/Swap for NFT with Metadata in Ancon
-
-#### Notes
-
-**NFT Creator**
-
-- Creates on behalf of a recipient, for lazy mint use cases
-
-**NFT Owner**
-
-- Both creator and did owner / recipient needs to be the same
-
-**Cross Mint/Swap**
-
-In this scenario, we just want to create an NFT token clone. For swap, we assume NFT owner to burn origin token, but not metadata.
-
-#### How it works
-
-
-**From Chain A - either smart contract or protocol**
-
-- NFT Creator/Owner Signs Voucher message offchain with `did-web` or `did-key` using `Ed25519` or `secp256k1` algorithms
-- Calls `MintSwap`, in Ancon, `MintSwap` calls internal `RequestLazyMint` and stores the voucher as JSON, then calls `InitiateSwap`. Requires creator/owner has mint role.
-- Returns the Relay message
-
-**IBC Relay**
-
-- Verifies Chain A is whitelisted (prefix)
-- Trusted to send voucher and proof to Chain B
-- Client then calls `ancon-relayer` , which verifies prefix and calls next destination
-
-
-**To Chain B - either smart contract or protocol**
-
-- Verifies relayer
-- Verifies `ics23 commitment proof`
-- Verifies sender voucher signatures
-- Mint
-
-**Burn**
-
-Relay can listen for  events to handle burn requests
 
 
 
@@ -78,26 +33,44 @@ Relay can listen for  events to handle burn requests
 - Compile `go build cmd/ancon-protocold/main.go`
 - Join our Discord to get genesis and node id to connect to our internal testnet
 
-## Testnet and Mainnet
 
-Once M1 is QA enough we'll compile with Gaia and start prepping for Cosmos hub.
+## Roadmap to Ancon 1.0.0
 
-## Staking ATOM
+### October 2021
 
-TODO
+- EVM module
+- Celo Optics for cross chain messaging
+- Grant M2 - NFT bridges ETH-Cosmos-Flow
+- NFT Marketplaces - Use Case
+- Cleaning, fixes, tech debt
+- V0.2.0
 
-### Features and Roadmap
+### November - December 2021 
 
-- Cosmos based chain for data economy use cases like NFT, Verified credentials and Offchain data sources
-- Verified credentials ready (store VCs and DIDs)
-- File microstorage and Metadata APIs using IPLD multihashes or CIDs
-- Cross Minting metadata from any blockchain
-- IPLD data sources for offchain trusted use cases
-- Blockchain agnostic, use Ancon hashes like IPFS hashes
-- Supports IPFS and Swarm features (proxy, coming Q4)
-- Agnostic NFT Royalty mechanism (Q4)
-- Swap decentralized content ETL jobs (Q1 2022)
-- Filecoin, Chia features (Q2 2022)
+- Grant M3 - Ancon Data Pipes: Cosmos-Ethereum IPLD DAGs ETL
+- V0.3.0
+
+## Features
+
+- EVM Cross chain messaging using Celo Optics, use Ancon to distribute NFTs into other chains!
+- Built in onchain metadata
+- Metadata security and permissions using Decentralized Identities (DID)
+- EVM Smart Contracts Module
+- Native DID, NFT, Metadata modules
+- Supports Coinbase Rosetta
+- Supports Graphql
+- Supports Graphsync
+
+## Use Cases / Things we would like the community to build
+
+- A decentralized notary service where you "stake" your hardware smart card
+- A decentralized lottery service where the NFT is the lotto ticket
+- A decentralized wallet service using smard cards issued by governtment for zero KYC
+- A decentrlaized cross chain NFT marketplace
+- A decentralized invoice factoring NFT using IBC, Ancon and Terra
+
+
+
 
 ## Get started
 
