@@ -19,6 +19,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	evmkeeper "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,6 +34,7 @@ type Keeper struct {
 	paramSpace    paramstypes.Subspace
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	evmKeeper     *evmkeeper.Keeper
 	blockedAddrs  map[string]bool
 	// this line is used by starport scaffolding # ibc/keeper/attribute
 }
@@ -44,6 +46,7 @@ func NewTestKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	evmKeeper *evmkeeper.Keeper,
 	blockedAddrs map[string]bool,
 ) Keeper {
 
@@ -54,6 +57,7 @@ func NewTestKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
+		evmKeeper:     evmKeeper,
 		blockedAddrs:  blockedAddrs,
 	}
 }
@@ -64,6 +68,7 @@ func NewKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	evmKeeper *evmkeeper.Keeper,
 	blockedAddrs map[string]bool,
 ) Keeper {
 
@@ -74,6 +79,7 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
+		evmKeeper:     evmKeeper,
 		blockedAddrs:  blockedAddrs,
 	}
 }

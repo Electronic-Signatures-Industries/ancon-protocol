@@ -13,6 +13,7 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/client/cli"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -106,7 +107,9 @@ type AppModule struct {
 	AppModuleBasic
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
-	keeper        keeper.Keeper
+
+	evmKeeper evmtypes.Keeper
+	keeper    keeper.Keeper
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper) AppModule {

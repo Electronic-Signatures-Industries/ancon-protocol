@@ -395,6 +395,7 @@ func New(
 		app.GetSubspace(anconprotocoltypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.EvmKeeper,
 		app.ModuleAccountAddrs(),
 	)
 	anconprotocolModule := anconprotocol.NewAppModule(appCodec, app.AnconprotocolKeeper, app.AccountKeeper, app.BankKeeper)
