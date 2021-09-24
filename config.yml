@@ -10,13 +10,14 @@ accounts:
 validator:
   name: alice
   staked: "1000000000000000stake"
-# faucet:
-#   port: 4500
-#   name: "faucet"
-#   coins: ["1000000000000000000000000000uatom"]
-#   coins_max: ["100000000uatom"]
-# build:
-#   binary: "anconprotocold"
+  staked: "1000000000000000stake"
+  faucet:
+    port: 4500
+    name: "faucet"
+    coins: ["1000000000000000000000000000uatom"]
+    coins_max: ["100000000uatom"]
+  build:
+    binary: "anconprotocold"
 init:
   home: "$HOME/.anconprotocold"
   app:
