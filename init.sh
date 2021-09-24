@@ -9,7 +9,7 @@ LOGLEVEL="info"
 # to trace evm
 TRACE="--trace"
 # TRACE=""
-
+MNEMONIC="soda comic bachelor scheme absent embrace case toddler medal scrub obtain glad"
 # validate dependencies are installed
 command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"; exit 1; }
 
@@ -20,7 +20,7 @@ rm -rf ~/.ancon-protocold*
 ~/go/bin/ancon-protocold config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
-~/go/bin/ancon-protocold keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
+(echo $MNEMONIC)| ~/go/bin/ancon-protocold keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
 
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 ~/go/bin/ancon-protocold init $MONIKER --chain-id $CHAINID 
@@ -65,6 +65,7 @@ if [[ $1 == "pending" ]]; then
       sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
       sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
       sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
+
   fi
 fi
 
@@ -83,6 +84,12 @@ fi
 if [[ $1 == "pending" ]]; then
   echo "pending mode is on, please wait for the first block committed."
 fi
+
+# Config app.toml
+sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/swagger = false/swagger = true/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/enable = false/enable = true/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.toml
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
 ~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner
