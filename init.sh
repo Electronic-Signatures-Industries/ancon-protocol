@@ -5,7 +5,7 @@ CHAINID="anconprotocol_9000-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
-LOGLEVEL="info"
+LOGLEVEL="error"
 # to trace evm
 TRACE="--trace"
 # TRACE=""
@@ -22,7 +22,7 @@ rm -rf ~/.ancon-protocold*
 ~/go/bin/ancon-protocold config chain-id $CHAINID  --home ~/.ancon-protocold
 
 # if $KEY exists it should be deleted
-(echo $MNEMONIC)| ~/go/bin/ancon-protocold keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO --recover  --home ~/.ancon-protocold
+(echo $MNEMONICA) | ~/go/bin/ancon-protocold keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO --recover  --home ~/.ancon-protocold
 
 #(echo $MNEMONICA)| ~/go/bin/ancon-protocold keys add alice --keyring-backend $KEYRING --algo $KEYALGO --recover
 #(echo $MNEMONICB)| ~/go/bin/ancon-protocold keys add bob --keyring-backend $KEYRING --algo $KEYALGO --recover
@@ -75,10 +75,10 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-~/go/bin/ancon-protocold add-genesis-account $KEY 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 
 # Sign genesis transaction
-~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
 
 # Collect genesis tx
 ~/go/bin/ancon-protocold collect-gentxs  --home ~/.ancon-protocold
@@ -102,7 +102,7 @@ sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.to
 
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold
+ ~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING 
 
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton
