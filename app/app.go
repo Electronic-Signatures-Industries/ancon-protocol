@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -88,7 +89,6 @@ import (
 	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
-	tmjson "github.com/tendermint/tendermint/libs/json"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/Electronic-Signatures-Industries/ancon-evm/client/docs/statik"
@@ -300,6 +300,10 @@ func New(
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 
+	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
+	// their scoped modules in `NewApp` with `ScopeToModule`
+	app.CapabilityKeeper.Seal()
+
 	// add keepers
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -416,7 +420,7 @@ func New(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -496,6 +500,7 @@ func New(
 		anconprotocoltypes.ModuleName,
 		crisistypes.ModuleName,
 	)
+	// Simulator only
 	// app.sm.RegisterStoreDecoders()
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -561,9 +566,10 @@ func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Respo
 // InitChainer application update at chain initialization
 func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
-	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
+	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
