@@ -5,7 +5,7 @@ CHAINID="anconprotocol_9000-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
-LOGLEVEL="error"
+LOGLEVEL="info"
 # to trace evm
 TRACE="--trace"
 # TRACE=""
@@ -102,7 +102,7 @@ sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.to
 
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
- ~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING 
+~/go/bin/ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING 
 
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton

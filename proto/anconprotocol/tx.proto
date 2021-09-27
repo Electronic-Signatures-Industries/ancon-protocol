@@ -50,6 +50,8 @@ service Msg {
   // MintTrustedResource defines a method for minting a resource.
   rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
   // RegisterRelay
+  rpc SendCrossMintTrusted(MsgSendCrossMintTrusted) returns (MsgSendCrossMintTrustedResponse);
+  // RegisterRelay
   rpc RegisterRelay(MsgRegisterRelay) returns (MsgRegisterRelayResponse);
   // MintSwap
   rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);
@@ -119,7 +121,32 @@ message MsgMintTrustedContent {
   uint64 v = 11;
 }
 
+
 message MsgMintTrustedContentResponse {
+  uint64 id = 1;
+}
+
+message MsgSendCrossMintTrusted {
+  string creator = 1;
+  // metadata
+  string metadata_ref = 2;
+  // denom id
+  string denom_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+  // nft name
+  string name = 4;
+  // recipient 
+  string recipient = 5;
+  // did owner
+  string did_owner = 6;  
+  // lazy mint
+  bool lazy_mint = 7;
+  uint64 price = 8;
+  string meta_transaction = 9;
+
+  uint64 destination_domain = 10;
+}
+
+message MsgSendCrossMintTrustedResponse {
   uint64 id = 1;
 }
 

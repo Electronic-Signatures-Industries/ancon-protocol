@@ -2,11 +2,9 @@ package keeper
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
-	"time"
 
 	// This package is needed so that all the preloaded plugins are loaded automatically
 
@@ -70,38 +68,6 @@ func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedRes
 	return tokenID, nil
 }
 
-// RequestLazyMint -- actor is NFT Creator, can be assigned to marketplace -- onchain origin
-func (k Keeper) RequestLazyMint(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
-
-	// Add Metadata Cid to NFT
-	denom, found := k.GetDenom(ctx, msg.DenomId)
-	if !found {
-		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
-	}
-
-	if denom.MintRestricted && denom.Creator != msg.Creator {
-		return "", sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
-	}
-
-	// get
-	id, err := k.setMintVoucher(
-		ctx,
-		msg.DidOwner, // whitelist recipient
-		types.Voucher{
-			TokenName:    msg.Name,
-			URI:          msg.MetadataRef,
-			Owner:        msg.Creator,
-			DidRecipient: msg.DidOwner,
-			Price:        msg.Price,
-			R:            msg.R,
-			S:            msg.S,
-			V:            msg.V,
-		},
-	)
-
-	return id, err
-}
-
 func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedContent) (string, error) {
 
 	// Add Metadata Cid to NFT
@@ -134,21 +100,6 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 	k.increaseSupply(ctx, msg.DenomId)
 	return tokenID, nil
 
-}
-
-// setMintVoucher
-func (k Keeper) setMintVoucher(ctx sdk.Context, recipient string, voucher types.Voucher) (string, error) {
-	index := sha256.Sum256(append([]byte(time.Now().String()), byte(ctx.BlockHeight())))
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
-	res := k.cdc.MustMarshalJSON(&voucher) // JSON
-
-	i := append([]byte{0, 0, 0, 0, 0, 0, 0}, []byte(fmt.Sprint("%s", index))...)
-	store.Set(i, res)
-
-	store = prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherRecipientStoreKey))
-	store.Set(i, []byte(recipient))
-
-	return fmt.Sprint(i), nil
 }
 
 func (k Keeper) verifySenderIAVLProof(ctx sdk.Context, key string, value string, proof ics23.ExistenceProof) bool {
@@ -437,4 +388,11 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 	//	id, _ := cid.Decode(link.String())
 	return link.String(), nil
+}
+
+func (k Keeper) ApplySendCrossMintTrusted(ctx sdk.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
+
+	k.evmKeeper.ApplyNativeMessage()
+
+	return *types.MsgSendCrossMintTrustedResponse{}, nil
 }

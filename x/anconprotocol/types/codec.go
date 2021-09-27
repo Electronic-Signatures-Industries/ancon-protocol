@@ -34,6 +34,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgTransferDenom{}, "anconprotocol/TransferDenom", nil)
 	cdc.RegisterConcrete(&MsgMintSwap{}, "anconprotocol/MintSwap", nil)
 	cdc.RegisterConcrete(&MsgRegisterRelay{}, "anconprotocol/RegisterRelay", nil)
+	cdc.RegisterConcrete(&MsgSendCrossMintTrusted{}, "anconprotocol/SendCrossMintTrusted", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -57,6 +58,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgRevokeDid{},
 		&MsgMintSwap{},
 		&MsgInitiateSwap{},
+		&MsgSendCrossMintTrusted{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

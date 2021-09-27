@@ -61,6 +61,7 @@ func NewTestKeeper(
 		blockedAddrs:  blockedAddrs,
 	}
 }
+
 func NewKeeper(
 	cdc codec.Codec,
 	key sdk.StoreKey,

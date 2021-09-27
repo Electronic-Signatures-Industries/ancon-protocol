@@ -106,6 +106,24 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 	return &types.MsgMintTrustedResourceResponse{}, nil
 }
 
+func (k msgServer) SendCrossMintTrusted(goCtx context.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	//TODO: validate content & meta transaction data
+	if err != nil {
+		return nil, err
+	}
+
+	k.ApplySendCrossMintTrusted(
+		ctx,
+		msg,
+	)
+	//TODO: emit an event before return
+
+	return &types.MsgSendCrossMintTrustedResponse{}, nil
+}
+
 func (k msgServer) File(goCtx context.Context, msg *types.MsgFile) (*types.MsgFileResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

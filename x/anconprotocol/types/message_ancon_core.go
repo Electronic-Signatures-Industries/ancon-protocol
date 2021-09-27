@@ -14,6 +14,7 @@ var _ sdk.Msg = &MsgClaimSwap{}
 var _ sdk.Msg = &MsgInitiateSwap{}
 var _ sdk.Msg = &MsgMintSwap{}
 var _ sdk.Msg = &MsgRegisterRelay{}
+var _ sdk.Msg = &MsgSendCrossMintTrusted{}
 
 func NewMsgRegisterRelay(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgRegisterRelay {
 	return &MsgRegisterRelay{}
@@ -86,6 +87,49 @@ func (msg *MsgMintSwap) GetSignBytes() []byte {
 }
 
 func (msg *MsgMintSwap) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
+func NewMsgSendCrossMintTrusted(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgSendCrossMintTrusted {
+	return &MsgSendCrossMintTrusted{
+		Creator:         creator,
+		MetadataRef:     "",
+		DenomId:         did,
+		Name:            "",
+		Recipient:       "",
+		DidOwner:        did,
+		LazyMint:        false,
+		Price:           0,
+		MetaTransaction: "",
+	}
+}
+
+func (msg *MsgSendCrossMintTrusted) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgSendCrossMintTrusted) Type() string {
+	return "SendCrossMintTrusted"
+}
+
+func (msg *MsgSendCrossMintTrusted) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgSendCrossMintTrusted) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgSendCrossMintTrusted) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
