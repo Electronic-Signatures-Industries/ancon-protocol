@@ -9,9 +9,13 @@ import (
 	// This package is needed so that all the preloaded plugins are loaded automatically
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+
+	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/types"
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -391,8 +395,62 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 }
 
 func (k Keeper) ApplySendCrossMintTrusted(ctx sdk.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
+	// function dispatchTypeA(uint32 _destinationDomain, uint256 _number)
+	//     external
+	// {
 
-	k.evmKeeper.ApplyNativeMessage()
+		// cross chain
+		dispatcher := abi.NewMethod("dispatchTypeA", "dispatchTypeA", abi.Function, "", false, false, abi.Arguments{
+			{
+				Name:    "_destinationDomain",
+				Type:    abi.Type{},
+				Indexed: false,
+			},
+			{
+				Name:    "_number",
+				Type:    abi.Type{},
+				Indexed: false,
+			},			
+		}, nil)
 
-	return *types.MsgSendCrossMintTrustedResponse{}, nil
+		
+		mt := evmtypes.PackTxData(&evmtypes.LegacyTx{
+			Nonce:    0,
+			GasPrice: &sdk.Int{},
+			GasLimit: 0,
+			To:       "",
+			Amount:   &sdk.Int{},
+			Data:     []byte{},
+			V:        []byte{},
+			R:        []byte{},
+			S:        []byte{},
+		})
+		msg := &types.MsgSendCrossMintTrusted{
+			Creator:           "",
+			MetadataRef:       "",
+			DenomId:           "",
+			Name:              "",
+			Recipient:         "",
+			DidOwner:          "",
+			LazyMint:          false,
+			Price:             0,
+			MetaTransaction:   mt,
+			DestinationDomain: 0,
+		}
+
+sdk.v
+		addr := sdk.AccAddressFromBech32(msg.Creator)
+
+	meta := evmtypes.UnpackTxData(msg.MetaTransaction)
+	data := evmtypes.NewTxDataFromTx(meta)
+	msgContract := evmtypes.NewTx(
+		k.evmKeeper.ChainID(), 
+		k.evmKeeper.GetNonce(),
+		
+	))
+		k.evmKeeper.ApplyNativeMessage(msgContract)
+
+	return *types.MsgSendCrossMintTrustedResponse{
+		Id: 0,
+	}, nil
 }
