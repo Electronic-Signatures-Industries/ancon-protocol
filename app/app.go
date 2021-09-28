@@ -202,7 +202,6 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	deliverState      *baseapp.state
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
@@ -594,8 +593,8 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 	// call the hooks with the BeginBlock messages
 	for _, streamingListener := range app.streamingListeners {
-		if err := streamingListener.ListenBeginBlock(bas.ctx, req, res); err != nil {
-			app.logger.Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
+		if err := streamingListener.ListenBeginBlock(ctx, req, res); err != nil {
+			// app.logger.Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
 		}
 	}
 
@@ -604,7 +603,16 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 // EndBlocker application updates every end block
 func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+	res := app.mm.EndBlock(ctx, req)
+
+	// call the streaming service hooks with the EndBlock messages
+	for _, streamingListener := range app.streamingListeners {
+		if err := streamingListener.ListenEndBlock(ctx, req, res); err != nil {
+			// app.logger.Error("EndBlock listening hook failed", "height", req.Height, "err", err)
+		}
+	}
+
+	return res
 }
 
 // InitChainer application update at chain initialization
