@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/store"
 	"io"
 	"net/http"
 	"os"
@@ -22,6 +23,7 @@ import (
 	evmante "github.com/Electronic-Signatures-Industries/ancon-evm/app/ante"
 	appparams "github.com/Electronic-Signatures-Industries/ancon-protocol/app/params"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/docs"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/streaming"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -245,6 +247,32 @@ type App struct {
 
 	// the module manager
 	mm *module.Manager
+
+	// StreamingListener for hooking into the ABCI message processing of the BaseApp
+	// and exposing the requests and responses to external consumers
+	streamingListeners []StreamingListener
+
+	cms sdk.CommitMultiStore // Main (uncached) state
+}
+
+// SetStreamingService is used to set a streaming service into the BaseApp hooks and load the listeners into the multistore
+func (app *App) SetStreamingService(s StreamingService) {
+	// add the listeners for each StoreKey
+	for key, lis := range s.Listeners() {
+		app.cms.AddListeners(key, lis)
+	}
+}
+
+func (app *App) AnconDeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
+	result := app.BaseApp.DeliverTx(req)
+	logger := app.BaseApp.Logger()
+	var res abci.ResponseDeliverTx
+	for _, streamingListener := range app.streamingListeners {
+		if err := streamingListener.ListenDeliverTx(sdk.Context{}, req, res); err != nil {
+			logger.Error("DeliverTx listening hook failed", "err", err)
+		}
+	}
+	return result
 }
 
 // New returns a reference to an initialized Gaia.
@@ -261,6 +289,8 @@ func New(
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
+	cms := store.NewCommitMultiStore(db)
+	bApp.SetCMS(cms)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
@@ -288,6 +318,7 @@ func New(
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
+		cms:               cms,
 	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
@@ -430,7 +461,7 @@ func New(
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
-			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
+			app.AccountKeeper, app.StakingKeeper, app.AnconDeliverTx,
 			encodingConfig.TxConfig,
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
@@ -563,22 +594,21 @@ func New(
 			}
 		}
 		// get the constructor for this listener name
-		constructor, err := app.NewStreamingServiceConstructor(listenerName)
+		constructor, err := streaming.NewServiceConstructor(listenerName)
 		if err != nil {
 			tmos.Exit(err.Error()) // or continue?
 		}
 		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
-		streamingService, err := constructor(appOpts, exposeStoreKeys)
+		streamingService, err := constructor(appOpts, exposeStoreKeys, app.appCodec)
 		if err != nil {
 			tmos.Exit(err.Error())
 		}
 		// register the streaming service with the BaseApp
-		bApp.RegisterStreamingService(streamingService)
+		app.SetStreamingService(streamingService)
 		// waitgroup and quit channel for optional shutdown coordination of the streaming service
 		wg := new(sync.WaitGroup)
-		quitChan := new(chan struct{})
-		// kick off the background streaming service loop
-		streamingService.Stream(wg, quitChan) // maybe this should be done from inside BaseApp instead?
+		quitChan := make(chan struct{})
+		streamingService.Stream(wg, quitChan)
 	}
 
 	return app
