@@ -250,13 +250,13 @@ type App struct {
 
 	// StreamingListener for hooking into the ABCI message processing of the BaseApp
 	// and exposing the requests and responses to external consumers
-	streamingListeners []StreamingListener
+	streamingListeners []streaming.StreamingListener
 
 	cms sdk.CommitMultiStore // Main (uncached) state
 }
 
 // SetStreamingService is used to set a streaming service into the BaseApp hooks and load the listeners into the multistore
-func (app *App) SetStreamingService(s StreamingService) {
+func (app *App) SetStreamingService(s streaming.StreamingService) {
 	// add the listeners for each StoreKey
 	for key, lis := range s.Listeners() {
 		app.cms.AddListeners(key, lis)
@@ -794,4 +794,42 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	//	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	return paramsKeeper
+}
+
+// LoadStreamingServices is a function for loading StreamingServices onto the BaseApp using the provided AppOptions, codec, and keys
+// It returns the WaitGroup and quit channel used to synchronize with the streaming services and any error that occurs during the setup
+func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec codec.BinaryCodec, keys map[string]*sdk.KVStoreKey) (*sync.WaitGroup, chan struct{}, error) {
+	// waitgroup and quit channel for optional shutdown coordination of the streaming service(s)
+	wg := new(sync.WaitGroup)
+	quitChan := make(chan struct{})
+	// configure state listening capabilities using AppOptions
+	streamers := cast.ToStringSlice(appOpts.Get("store.streamers"))
+	for _, streamerName := range streamers {
+		// get the store keys allowed to be exposed for this streaming service
+		exposeKeyStrs := cast.ToStringSlice(appOpts.Get(fmt.Sprintf("streamers.%s.keys", streamerName)))
+		exposeStoreKeys := make([]sdk.StoreKey, 0, len(exposeKeyStrs))
+		for _, keyStr := range exposeKeyStrs {
+			if storeKey, ok := keys[keyStr]; ok {
+				exposeStoreKeys = append(exposeStoreKeys, storeKey)
+			}
+		}
+		// get the constructor for this streamer name
+		constructor, err := streaming.NewServiceConstructor(streamerName)
+		if err != nil {
+			// close the quitChan to shutdown any services we may have already spun up before hitting the error on this one
+			close(quitChan)
+			return nil, nil, err
+		}
+		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
+		streamingService, err := constructor(appOpts, exposeStoreKeys, appCodec)
+		if err != nil {
+			close(quitChan)
+			return nil, nil, err
+		}
+		// register the streaming service with the BaseApp
+		app.SetStreamingService(streamingService)
+		// kick off the background streaming service loop
+		streamingService.Stream(wg, quitChan)
+	}
+	return wg, quitChan, nil
 }

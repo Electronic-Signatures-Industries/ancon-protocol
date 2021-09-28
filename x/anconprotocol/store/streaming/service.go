@@ -1,4 +1,4 @@
-package file
+package streaming
 
 import (
 	"fmt"
@@ -10,7 +10,6 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,10 +29,10 @@ subsequent state changes are written out to this file until the next `BeginBlock
 the length-prefixed protobuf encoded `EndBlock` request is written, and the response is written at the tail.
 */
 
-var _ app.StreamingService = &StreamingService{}
+var _ StreamingService = &FileStreamingService{}
 
 // StreamingService is a concrete implementation of StreamingService that writes state changes out to files
-type StreamingService struct {
+type FileStreamingService struct {
 	listeners          map[sdk.StoreKey][]types.WriteListener // the listeners that will be initialized with BaseApp
 	srcChan            <-chan []byte                          // the channel that all of the WriteListeners write their data out to
 	filePrefix         string                                 // optional prefix for each of the generated files
@@ -65,7 +64,7 @@ func (iw *IntermediateWriter) Write(b []byte) (int, error) {
 }
 
 // NewStreamingService creates a new StreamingService for the provided writeDir, (optional) filePrefix, and storeKeys
-func NewStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*StreamingService, error) {
+func NewStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*FileStreamingService, error) {
 	listenChan := make(chan []byte)
 	iw := NewIntermediateWriter(listenChan)
 	listener := types.NewStoreKVPairWriteListener(iw, c)
@@ -79,7 +78,7 @@ func NewStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, 
 	if err := isDirWriteable(writeDir); err != nil {
 		return nil, err
 	}
-	return &StreamingService{
+	return &FileStreamingService{
 		listeners:      listeners,
 		srcChan:        listenChan,
 		filePrefix:     filePrefix,
@@ -91,14 +90,14 @@ func NewStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, 
 }
 
 // Listeners returns the StreamingService's underlying WriteListeners, use for registering them with the BaseApp
-func (fss *StreamingService) Listeners() map[sdk.StoreKey][]types.WriteListener {
+func (fss *FileStreamingService) Listeners() map[sdk.StoreKey][]types.WriteListener {
 	return fss.listeners
 }
 
 // ListenBeginBlock satisfies the Hook interface
 // It writes out the received BeginBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
-func (fss *StreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
+func (fss *FileStreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
 	// generate the new file
 	dstFile, err := fss.openBeginBlockFile(req)
 	if err != nil {
@@ -136,7 +135,7 @@ func (fss *StreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestB
 	return dstFile.Close()
 }
 
-func (fss *StreamingService) openBeginBlockFile(req abci.RequestBeginBlock) (*os.File, error) {
+func (fss *FileStreamingService) openBeginBlockFile(req abci.RequestBeginBlock) (*os.File, error) {
 	fss.currentBlockNumber = req.GetHeader().Height
 	fss.currentTxIndex = 0
 	fileName := fmt.Sprintf("block-%d-begin", fss.currentBlockNumber)
@@ -149,7 +148,7 @@ func (fss *StreamingService) openBeginBlockFile(req abci.RequestBeginBlock) (*os
 // ListenDeliverTx satisfies the Hook interface
 // It writes out the received DeliverTx request and response and the resulting state changes out to a file as described
 // in the above the naming schema
-func (fss *StreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
+func (fss *FileStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
 	// generate the new file
 	dstFile, err := fss.openDeliverTxFile()
 	if err != nil {
@@ -187,7 +186,7 @@ func (fss *StreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDe
 	return dstFile.Close()
 }
 
-func (fss *StreamingService) openDeliverTxFile() (*os.File, error) {
+func (fss *FileStreamingService) openDeliverTxFile() (*os.File, error) {
 	fileName := fmt.Sprintf("block-%d-tx-%d", fss.currentBlockNumber, fss.currentTxIndex)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
@@ -199,7 +198,7 @@ func (fss *StreamingService) openDeliverTxFile() (*os.File, error) {
 // ListenEndBlock satisfies the Hook interface
 // It writes out the received EndBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
-func (fss *StreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) error {
+func (fss *FileStreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) error {
 	// generate the new file
 	dstFile, err := fss.openEndBlockFile()
 	if err != nil {
@@ -237,7 +236,7 @@ func (fss *StreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEnd
 	return dstFile.Close()
 }
 
-func (fss *StreamingService) openEndBlockFile() (*os.File, error) {
+func (fss *FileStreamingService) openEndBlockFile() (*os.File, error) {
 	fileName := fmt.Sprintf("block-%d-end", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
@@ -248,7 +247,7 @@ func (fss *StreamingService) openEndBlockFile() (*os.File, error) {
 // Stream spins up a goroutine select loop which awaits length-prefixed binary encoded KV pairs and caches them in the order they were received
 // Do we need this and an intermediate writer? We could just write directly to the buffer on calls to Write
 // But then we don't support a Stream interface, which could be needed for other types of streamers
-func (fss *StreamingService) Stream(wg *sync.WaitGroup, quitChan <-chan struct{}) {
+func (fss *FileStreamingService) Stream(wg *sync.WaitGroup, quitChan <-chan struct{}) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

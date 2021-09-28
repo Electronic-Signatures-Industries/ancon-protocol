@@ -3,7 +3,6 @@ package streaming
 import (
 	"testing"
 
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/streaming/file"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecTypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,7 +32,7 @@ func TestStreamingServiceConstructor(t *testing.T) {
 
 	serv, err := constructor(mockOptions, mockKeys, testMarshaller)
 	require.Nil(t, err)
-	require.IsType(t, &file.StreamingService{}, serv)
+	require.IsType(t, &FileStreamingService{}, serv)
 	listeners := serv.Listeners()
 	for _, key := range mockKeys {
 		_, ok := listeners[key]
