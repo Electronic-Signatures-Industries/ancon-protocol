@@ -2,13 +2,16 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/spf13/cast"
 	"github.com/tendermint/spm/openapiconsole"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -199,6 +202,7 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
+	deliverState      *baseapp.state
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
@@ -547,6 +551,37 @@ func New(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
+	var exposeStoreKeys []storetypes.StoreKey
+	// configure state listening capabilities using AppOptions
+	listeners := cast.ToStringSlice(appOpts.Get("store.streamers"))
+	for _, listenerName := range listeners {
+		// get the store keys allowed to be exposed for this streaming service/state listeners
+		exposeKeyStrs := cast.ToStringSlice(appOpts.Get(fmt.Sprintf("streamers.%s.keys", listenerName)))
+		exposeStoreKeys = make([]storetypes.StoreKey, 0, len(exposeKeyStrs))
+		for _, keyStr := range exposeKeyStrs {
+			if storeKey, ok := keys[keyStr]; ok {
+				exposeStoreKeys = append(exposeStoreKeys, storeKey)
+			}
+		}
+		// get the constructor for this listener name
+		constructor, err := app.NewStreamingServiceConstructor(listenerName)
+		if err != nil {
+			tmos.Exit(err.Error()) // or continue?
+		}
+		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
+		streamingService, err := constructor(appOpts, exposeStoreKeys)
+		if err != nil {
+			tmos.Exit(err.Error())
+		}
+		// register the streaming service with the BaseApp
+		bApp.RegisterStreamingService(streamingService)
+		// waitgroup and quit channel for optional shutdown coordination of the streaming service
+		wg := new(sync.WaitGroup)
+		quitChan := new(chan struct{})
+		// kick off the background streaming service loop
+		streamingService.Stream(wg, quitChan) // maybe this should be done from inside BaseApp instead?
+	}
+
 	return app
 }
 
@@ -555,7 +590,16 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+	res := app.mm.BeginBlock(ctx, req)
+
+	// call the hooks with the BeginBlock messages
+	for _, streamingListener := range app.streamingListeners {
+		if err := streamingListener.ListenBeginBlock(bas.ctx, req, res); err != nil {
+			app.logger.Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
+		}
+	}
+
+	return res
 }
 
 // EndBlocker application updates every end block

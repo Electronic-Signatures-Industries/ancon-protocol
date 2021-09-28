@@ -1,10 +1,7 @@
 package keeper
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -47,27 +44,27 @@ func NewBankSendHook(anconprotocolKeeper Keeper) *MintTrustedContentHook {
 	}
 }
 
-func (h MintTrustedContentHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash, logs []*ethtypes.Log) error {
-	for _, log := range logs {
-		if len(log.Topics) == 0 || log.Topics[0] != MintTrustedContentEvent.ID {
-			continue
-		}
-		if !ContractAllowed(log.Address) {
-			// Check the contract whitelist to prevent accidental native call.
-			continue
-		}
-		unpacked, err := MintTrustedContentEvent.Inputs.Unpack(log.Data)
-		if err != nil {
-			log.Warn("log signature matches but failed to decode")
-			continue
-		}
-		contract := sdk.AccAddress(log.Address.Bytes())
-		recipient := sdk.AccAddress(unpacked[0].(common.Address).Bytes())
-		coins := sdk.NewCoins(sdk.NewCoin(unpacked[2].(string), sdk.NewIntFromBigInt(unpacked[1].(*big.Int))))
-		err = h.anconprotocolKeeper.SendCoins(ctx, contract, recipient, coins)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+// func (h MintTrustedContentHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash, logs []*ethtypes.Log) error {
+// 	for _, log := range logs {
+// 		if len(log.Topics) == 0 || log.Topics[0] != MintTrustedContentEvent.ID {
+// 			continue
+// 		}
+// 		if !ContractAllowed(log.Address) {
+// 			// Check the contract whitelist to prevent accidental native call.
+// 			continue
+// 		}
+// 		unpacked, err := MintTrustedContentEvent.Inputs.Unpack(log.Data)
+// 		if err != nil {
+// 			log.Warn("log signature matches but failed to decode")
+// 			continue
+// 		}
+// 		contract := sdk.AccAddress(log.Address.Bytes())
+// 		recipient := sdk.AccAddress(unpacked[0].(common.Address).Bytes())
+// 		coins := sdk.NewCoins(sdk.NewCoin(unpacked[2].(string), sdk.NewIntFromBigInt(unpacked[1].(*big.Int))))
+// 		err = h.anconprotocolKeeper.SendCoins(ctx, contract, recipient, coins)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }

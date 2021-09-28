@@ -31,10 +31,10 @@ func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*typ
 		return nil, err
 	}
 
-	k.RequestLazyMint(
-		ctx,
-		&types.MsgMintTrustedContent{},
-	)
+	// k.RequestLazyMint(
+	// 	ctx,
+	// 	&types.MsgMintTrustedContent{},
+	// )
 
 	k.AddInitiateSwap(ctx, &types.MsgInitiateSwap{})
 
@@ -107,7 +107,7 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 }
 
 func (k msgServer) SendCrossMintTrusted(goCtx context.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+	//	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
 	//TODO: validate content & meta transaction data
@@ -115,10 +115,10 @@ func (k msgServer) SendCrossMintTrusted(goCtx context.Context, msg *types.MsgSen
 		return nil, err
 	}
 
-	k.ApplySendCrossMintTrusted(
-		ctx,
-		msg,
-	)
+	// k.ApplySendCrossMintTrusted(
+	// 	ctx,
+	// 	msg,
+	// )
 	//TODO: emit an event before return
 
 	return &types.MsgSendCrossMintTrustedResponse{}, nil
