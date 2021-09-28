@@ -1,7 +1,10 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
 var (
@@ -34,7 +37,28 @@ func init() {
 	)
 }
 
+// Event Hooks
+// These can be utilized to customize evm transaction processing.
+
+// EvmHooks event hooks for evm tx processing
+type EvmHooks interface {
+	// Must be called after tx is processed successfully, if return an error, the whole transaction is reverted.
+	PostTxProcessing(ctx sdk.Context, txHash common.Hash, logs []*ethtypes.Log) error
+}
+
 type MintTrustedContentHook struct {
+	anconprotocolKeeper Keeper
+}
+
+type BurnTrustedContentHook struct {
+	anconprotocolKeeper Keeper
+}
+
+type EscrowTrustedContentHook struct {
+	anconprotocolKeeper Keeper
+}
+
+type ClaimTrustedContentHook struct {
 	anconprotocolKeeper Keeper
 }
 
