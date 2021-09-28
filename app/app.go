@@ -3,16 +3,16 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/store"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
 
+	"github.com/cosmos/cosmos-sdk/store"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/spf13/cast"
 	"github.com/tendermint/spm/openapiconsole"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -21,7 +21,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	evmante "github.com/Electronic-Signatures-Industries/ancon-evm/app/ante"
-	appparams "github.com/Electronic-Signatures-Industries/ancon-protocol/app/params"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/docs"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/streaming"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -31,6 +30,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	appparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -261,6 +261,8 @@ func (app *App) SetStreamingService(s streaming.StreamingService) {
 	for key, lis := range s.Listeners() {
 		app.cms.AddListeners(key, lis)
 	}
+	app.streamingListeners = append(app.streamingListeners, s)
+
 }
 
 func (app *App) AnconDeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
@@ -308,7 +310,6 @@ func New(
 	// Add the EVM transient store key
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
-
 	app := &App{
 		BaseApp:           bApp,
 		cdc:               cdc,
@@ -319,6 +320,10 @@ func New(
 		tkeys:             tkeys,
 		memKeys:           memKeys,
 		cms:               cms,
+	}
+	// configure state listening capabilities using AppOptions
+	if _, _, err := LoadStreamingServices(app, appOpts, appCodec, keys); err != nil {
+		tmos.Exit(err.Error())
 	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
@@ -581,36 +586,7 @@ func New(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
-	var exposeStoreKeys []storetypes.StoreKey
-	// configure state listening capabilities using AppOptions
-	listeners := cast.ToStringSlice(appOpts.Get("store.streamers"))
-	for _, listenerName := range listeners {
-		// get the store keys allowed to be exposed for this streaming service/state listeners
-		exposeKeyStrs := cast.ToStringSlice(appOpts.Get(fmt.Sprintf("streamers.%s.keys", listenerName)))
-		exposeStoreKeys = make([]storetypes.StoreKey, 0, len(exposeKeyStrs))
-		for _, keyStr := range exposeKeyStrs {
-			if storeKey, ok := keys[keyStr]; ok {
-				exposeStoreKeys = append(exposeStoreKeys, storeKey)
-			}
-		}
-		// get the constructor for this listener name
-		constructor, err := streaming.NewServiceConstructor(listenerName)
-		if err != nil {
-			tmos.Exit(err.Error()) // or continue?
-		}
-		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
-		streamingService, err := constructor(appOpts, exposeStoreKeys, app.appCodec)
-		if err != nil {
-			tmos.Exit(err.Error())
-		}
-		// register the streaming service with the BaseApp
-		app.SetStreamingService(streamingService)
-		// waitgroup and quit channel for optional shutdown coordination of the streaming service
-		wg := new(sync.WaitGroup)
-		quitChan := make(chan struct{})
-		streamingService.Stream(wg, quitChan)
-	}
-
+	//	LoadStreamingServices(app, appOpts, appCodec, keys)
 	return app
 }
 
@@ -624,7 +600,7 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 	// call the hooks with the BeginBlock messages
 	for _, streamingListener := range app.streamingListeners {
 		if err := streamingListener.ListenBeginBlock(ctx, req, res); err != nil {
-			// app.logger.Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
+			app.Logger().Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
 		}
 	}
 
@@ -638,7 +614,7 @@ func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Respo
 	// call the streaming service hooks with the EndBlock messages
 	for _, streamingListener := range app.streamingListeners {
 		if err := streamingListener.ListenEndBlock(ctx, req, res); err != nil {
-			// app.logger.Error("EndBlock listening hook failed", "height", req.Height, "err", err)
+			app.Logger().Error("EndBlock listening hook failed", "height", req.Height, "err", err)
 		}
 	}
 
@@ -804,6 +780,8 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 	quitChan := make(chan struct{})
 	// configure state listening capabilities using AppOptions
 	streamers := cast.ToStringSlice(appOpts.Get("store.streamers"))
+	app.Logger().Info("stream")
+
 	for _, streamerName := range streamers {
 		// get the store keys allowed to be exposed for this streaming service
 		exposeKeyStrs := cast.ToStringSlice(appOpts.Get(fmt.Sprintf("streamers.%s.keys", streamerName)))
@@ -816,14 +794,19 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 		// get the constructor for this streamer name
 		constructor, err := streaming.NewServiceConstructor(streamerName)
 		if err != nil {
+
 			// close the quitChan to shutdown any services we may have already spun up before hitting the error on this one
 			close(quitChan)
+			app.Logger().Error(err.Error())
+
 			return nil, nil, err
+
 		}
 		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
 		streamingService, err := constructor(appOpts, exposeStoreKeys, appCodec)
 		if err != nil {
 			close(quitChan)
+			app.Logger().Error(err.Error())
 			return nil, nil, err
 		}
 		// register the streaming service with the BaseApp
@@ -831,5 +814,7 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 		// kick off the background streaming service loop
 		streamingService.Stream(wg, quitChan)
 	}
+
+	app.Logger().Info("stream")
 	return wg, quitChan, nil
 }

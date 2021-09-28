@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	appparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -30,14 +30,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	"github.com/Electronic-Signatures-Industries/ancon-evm/app"
 	ethermintclient "github.com/Electronic-Signatures-Industries/ancon-evm/client"
 	"github.com/Electronic-Signatures-Industries/ancon-evm/client/debug"
 	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
+	encoding "github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
 	servercfg "github.com/Electronic-Signatures-Industries/ancon-evm/server/config"
 	srvflags "github.com/Electronic-Signatures-Industries/ancon-evm/server/flags"
 	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/server"
 )
 
@@ -187,7 +187,7 @@ func txCommand() *cobra.Command {
 }
 
 type appCreator struct {
-	encCfg params.EncodingConfig
+	encCfg appparams.EncodingConfig
 }
 
 // newApp is an appCreator
@@ -218,7 +218,7 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DB, traceStore io.Writer,
 		panic(err)
 	}
 
-	ethermintApp := app.NewEthermintApp(
+	ethermintApp := app.New(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(sdkserver.FlagInvCheckPeriod)),
@@ -246,20 +246,20 @@ func (a appCreator) appExport(
 	logger tmlog.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
-	var ethermintApp *app.EthermintApp
+	var ethermintApp *app.App
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
 	if height != -1 {
-		ethermintApp = app.NewEthermintApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		ethermintApp = app.New(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 
 		if err := ethermintApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		ethermintApp = app.NewEthermintApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
+		ethermintApp = app.New(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), a.encCfg, appOpts)
 	}
 
 	return ethermintApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)

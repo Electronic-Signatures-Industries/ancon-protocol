@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 
 	tmdb "github.com/tendermint/tm-db"
 
@@ -36,7 +37,7 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 // Setup initializes a new EthermintApp. A Nop logger is set in EthermintApp.
 func Setup(isCheckTx bool) *App {
 	db := tmdb.NewMemDB()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simapp.EmptyAppOptions{})
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeTestEncodingConfig(), simapp.EmptyAppOptions{})
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
