@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 	//"github.com/tharsis/ethermint/x/evm/keeper"
 
-	"github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/evm"
 	"github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/types"
+	//"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 )
 
 // LogRecordHook records all the logs
@@ -62,8 +62,7 @@ func (suite *KeeperTestSuite) TestEvmHooks(t require.TestingT) {
 	for _, tc := range testCases {
 		suite.DoSetupTest(t)
 		hook := tc.setupHook()
-		//suite.app.EvmKeeper.SetHooks(keeper.NewMultiEvmHooks(hook))
-
+		suite.app.EvmKeeper.SetHooks(EvmHooks(hook))
 		k := suite.app.EvmKeeper
 		txHash := common.BigToHash(big.NewInt(1))
 		k.SetTxHashTransient(txHash)
