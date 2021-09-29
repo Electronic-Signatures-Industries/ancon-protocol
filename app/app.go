@@ -780,7 +780,7 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 	quitChan := make(chan struct{})
 	// configure state listening capabilities using AppOptions
 	streamers := cast.ToStringSlice(appOpts.Get("store.streamers"))
-	app.Logger().Info("stream")
+	app.Logger().Info("Initializing stream")
 
 	for _, streamerName := range streamers {
 		// get the store keys allowed to be exposed for this streaming service
@@ -815,6 +815,6 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 		streamingService.Stream(wg, quitChan)
 	}
 
-	app.Logger().Info("stream")
+	app.Logger().Info("Streaming service started")
 	return wg, quitChan, nil
 }

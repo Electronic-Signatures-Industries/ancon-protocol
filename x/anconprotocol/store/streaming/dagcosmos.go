@@ -3,11 +3,11 @@ package streaming
 import (
 	"bytes"
 	"fmt"
-	blocks "github.com/ipfs/go-block-format"
 	"io"
-	"os"
 	"path/filepath"
 	"sync"
+
+	blocks "github.com/ipfs/go-block-format"
 
 	carv2 "github.com/ipld/go-car/v2"
 	"github.com/ipld/go-car/v2/blockstore"
@@ -21,7 +21,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	dagcosmos "github.com/vulcanize/go-codec-dagcosmos"
 	"github.com/vulcanize/go-codec-dagcosmos/header"
+	_ "github.com/vulcanize/go-codec-dagcosmos/header"
+	dagcosmosresult "github.com/vulcanize/go-codec-dagcosmos/result"
 )
 
 /*
@@ -103,17 +106,20 @@ func (fss *DagCosmosStreamingService) Listeners() map[sdk.StoreKey][]types.Write
 	return fss.listeners
 }
 
-func (fss *DagCosmosStreamingService) WriteCAR(dst string, headerBlock ipld.Node) error {
-
+func (fss *DagCosmosStreamingService) GetLinkPrototype() ipld.LinkPrototype {
 	// tip: 0x0129 dag-json
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	return cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71, // dag-cbor
 		MhType:   0x12, // sha2-256
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
 
+}
+func (fss *DagCosmosStreamingService) WriteBeginBlockCAR(dst string, headerBlock ipld.Node) error {
+
 	lsys := cidlink.DefaultLinkSystem()
+	lp := fss.GetLinkPrototype()
 	var blockList []blocks.Block
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
@@ -162,6 +168,70 @@ func (fss *DagCosmosStreamingService) WriteCAR(dst string, headerBlock ipld.Node
 	return nil
 }
 
+func (fss *DagCosmosStreamingService) WriteDeliverTxCAR(dst string, responseDeliverTxNode ipld.Node, tx ipld.Node) error {
+
+	lsys := cidlink.DefaultLinkSystem()
+	lp := fss.GetLinkPrototype()
+	var blockList []blocks.Block
+	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			if lnkCtx.LinkPath.String() == "/responseDeliverTX" {
+				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
+			} else if lnkCtx.LinkPath.String() == "/tx" {
+				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
+			}
+			return nil
+		}, nil
+	}
+	path := ipld.ParsePath("/responseDeliverTx")
+	link, err := lsys.Store(
+		ipld.LinkContext{LinkPath: path}, lp, responseDeliverTxNode,
+	)
+	if err != nil {
+		return err
+	}
+	delivertxLink, _ := cid.Decode(link.String())
+
+	txpath := ipld.ParsePath("/tx")
+	txlink, err := lsys.Store(
+		ipld.LinkContext{LinkPath: txpath}, lp, tx,
+	)
+	if err != nil {
+		return err
+	}
+	txLink, _ := cid.Decode(txlink.String())
+
+	roots := []cid.Cid{delivertxLink, txLink}
+
+	rwbs, err := blockstore.OpenReadWrite(dst, roots, carv2.UseDataPadding(1413), carv2.UseIndexPadding(42))
+	if err != nil {
+		return err
+	}
+
+	if err := rwbs.PutMany(blockList); err != nil {
+		return err
+	}
+	fmt.Printf("Successfully wrote %v blocks into the blockstore.\n", len(blockList))
+
+	// Any blocks put can be read back using the same blockstore instance.
+	/*block, err := rwbs.Get(c)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Read back block just put with raw value of `%v`.\n", string(block.RawData()))
+	*/
+
+	// Finalize the blockstore to flush out the index and make a complete CARv2.
+	if err := rwbs.Finalize(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ListenBeginBlock satisfies the Hook interface
 // It writes out the received BeginBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
@@ -170,49 +240,42 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	dstFile := fss.getBeginBlockFilePath(req)
 	// write req to file
 	var headerNode ipld.Node
-	h, err := tmtypes.HeaderFromProto(&req.Header)
+
+	head := tmtypes.Header{
+		Version: req.Header.Version,
+		ChainID: req.Header.ChainID,
+		Height:  req.Header.Height,
+		Time:    req.Header.Time,
+		LastBlockID: tmtypes.BlockID{
+			Hash: req.Header.LastBlockId.Hash,
+			PartSetHeader: tmtypes.PartSetHeader{
+				Total: req.Header.LastBlockId.PartSetHeader.Total,
+				Hash:  req.Header.LastBlockId.PartSetHeader.Hash,
+			},
+		},
+		LastCommitHash:     req.Header.LastCommitHash,
+		DataHash:           req.Header.DataHash,
+		ValidatorsHash:     req.Header.ValidatorsHash,
+		NextValidatorsHash: req.Header.NextValidatorsHash,
+		ConsensusHash:      req.Header.ConsensusHash,
+		AppHash:            req.Header.AppHash,
+		LastResultsHash:    req.Header.LastResultsHash,
+		EvidenceHash:       req.Header.EvidenceHash,
+		ProposerAddress:    req.Header.ProposerAddress,
+	}
+	err := head.ValidateBasic()
 	if err != nil {
 		return err
 	}
-	err = header.EncodeHeader(&h, headerNode)
-	if err != nil {
-		return err
+
+	lbBuilder := dagcosmos.Type.Header.NewBuilder()
+	if err := header.DecodeHeader(lbBuilder, head); err != nil {
+		fmt.Errorf("unable to decode light block into an IPLD node: %v", err)
 	}
+	headerNode = lbBuilder.Build()
 
-	// var list []ipld.Node
-	// var commit *tmtypes.EvidenceList
-	// for _, e := range req.ByzantineValidators {
-
-	// 	if e.Type == abci.EvidenceType_DUPLICATE_VOTE {
-
-	// 		// dupe := &tmtypes.DuplicateVoteEvidence{
-	// 		// 	VoteA:       e.,
-	// 		// 	VoteB:            &tmtypes.Vote{},
-	// 		// 	TotalVotingPower: 0,
-	// 		// 	ValidatorPower:   0,
-	// 		// 	Timestamp:        time.Time{},
-	// 		// }
-	// 		ev, err = tmtypes.EvidenceToProto(&e.(*tmtypes.DuplicateVoteEvidence))
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		err = evidence.EncodeLightEvidence(e.Type == tmtypes.DuplicateVoteEvidence).EncodeHeader(&h, n)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	} else if e.Type == abci.EvidenceType_LIGHT_CLIENT_ATTACK {
-
-	// 		ev, err = tmtypes.EvidenceFromProto(e)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		err = evidence.EncodeLightEvidence(e.Type == tmtypes.DuplicateVoteEvidence).EncodeHeader(&h, n)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	}
-	// }
-	return fss.WriteCAR(dstFile, headerNode)
+	// Missing evidence
+	return fss.WriteBeginBlockCAR(dstFile, headerNode)
 }
 
 func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBeginBlock) string {
@@ -231,98 +294,46 @@ func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBegi
 func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
 	// Just need to translate Tx protobuf to ipld node
 	// generate the new file
-	dstFile, err := fss.openDeliverTxFile()
+	dstFile := fss.getDeliverTxFilePath()
+
+	builder := dagcosmos.Type.ResponseDeliverTx.NewBuilder()
+	var resultNode ipld.Node
+	err := dagcosmosresult.DecodeParams(builder, res)
 	if err != nil {
 		return err
 	}
-	// write req to file
-	lengthPrefixedReqBytes, err := fss.codec.MarshalLengthPrefixed(&req)
-	if err != nil {
-		return err
-	}
-	if _, err = dstFile.Write(lengthPrefixedReqBytes); err != nil {
-		return err
-	}
-	// write all state changes cached for this stage to file
-	fss.stateCacheLock.Lock()
-	for _, stateChange := range fss.stateCache {
-		if _, err = dstFile.Write(stateChange); err != nil {
-			fss.stateCache = nil
-			fss.stateCacheLock.Unlock()
-			return err
-		}
-	}
-	// reset cache
-	fss.stateCache = nil
-	fss.stateCacheLock.Unlock()
-	// write res to file
-	lengthPrefixedResBytes, err := fss.codec.MarshalLengthPrefixed(&res)
-	if err != nil {
-		return err
-	}
-	if _, err = dstFile.Write(lengthPrefixedResBytes); err != nil {
-		return err
-	}
-	// close file
-	return dstFile.Close()
+	resultNode = builder.Build()
+
+	txb := dagcosmos.Type.Tx.NewBuilder()
+	txb.AssignBytes(req.GetTx())
+	txNode := txb.Build()
+
+	return fss.WriteDeliverTxCAR(dstFile, txNode, resultNode)
 }
 
-func (fss *DagCosmosStreamingService) openDeliverTxFile() (*os.File, error) {
+func (fss *DagCosmosStreamingService) getDeliverTxFilePath() string {
 	fileName := fmt.Sprintf("block-%d-tx-%d", fss.currentBlockNumber, fss.currentTxIndex)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
 	fss.currentTxIndex++
-	return os.OpenFile(filepath.Join(fss.writeDir, fileName), os.O_CREATE|os.O_WRONLY, 0600)
+	return filepath.Join(fss.writeDir, fileName)
 }
 
 // ListenEndBlock satisfies the Hook interface
 // It writes out the received EndBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) error {
-	// generate the new file
-	dstFile, err := fss.openEndBlockFile()
-	if err != nil {
-		return err
-	}
-	// write req to file
-	lengthPrefixedReqBytes, err := fss.codec.MarshalLengthPrefixed(&req)
-	if err != nil {
-		return err
-	}
-	if _, err = dstFile.Write(lengthPrefixedReqBytes); err != nil {
-		return err
-	}
-	// write all state changes cached for this stage to file
-	fss.stateCacheLock.Lock()
-	for _, stateChange := range fss.stateCache {
-		if _, err = dstFile.Write(stateChange); err != nil {
-			fss.stateCache = nil
-			fss.stateCacheLock.Unlock()
-			return err
-		}
-	}
-	// reset cache
-	fss.stateCache = nil
-	fss.stateCacheLock.Unlock()
-	// write res to file
-	lengthPrefixedResBytes, err := fss.codec.MarshalLengthPrefixed(&res)
-	if err != nil {
-		return err
-	}
-	if _, err = dstFile.Write(lengthPrefixedResBytes); err != nil {
-		return err
-	}
-	// close file
-	return dstFile.Close()
+	// no-op
+	return nil
 }
 
-func (fss *DagCosmosStreamingService) openEndBlockFile() (*os.File, error) {
+func (fss *DagCosmosStreamingService) getEndBlockFilePath() string {
 	fileName := fmt.Sprintf("block-%d-end", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
-	return os.OpenFile(filepath.Join(fss.writeDir, fileName), os.O_CREATE|os.O_WRONLY, 0600)
+	return filepath.Join(fss.writeDir, fileName)
 }
 
 // Stream spins up a goroutine select loop which awaits length-prefixed binary encoded KV pairs and caches them in the order they were received

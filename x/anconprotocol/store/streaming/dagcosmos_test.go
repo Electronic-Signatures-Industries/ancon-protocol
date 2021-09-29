@@ -1,11 +1,8 @@
 package streaming
 
 import (
-	"encoding/binary"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"sync"
 	"testing"
 
@@ -20,15 +17,15 @@ import (
 )
 
 var (
-	fileInterfaceRegistry        = codecTypes.NewInterfaceRegistry()
-	fileTestMarshaller           = codec.NewProtoCodec(fileInterfaceRegistry)
-	testStreamingService         *FileStreamingService
-	testListener1, testListener2 types.WriteListener
-	emptyContext                 = sdk.Context{}
+	dagcosmosInterfaceRegistry                     = codecTypes.NewInterfaceRegistry()
+	dagcosmosTestMarshaller                        = codec.NewProtoCodec(dagcosmosInterfaceRegistry)
+	testDagCosmosStreamingService                  *DagCosmosStreamingService
+	testDagCosmosListener1, testDagCosmosListener2 types.WriteListener
+	dagemptyContext                                = sdk.Context{}
 
-	// test abci message types
-	mockHash          = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	testBeginBlockReq = abci.RequestBeginBlock{
+	// testDagCosmos abci message types
+	dagmockHash                = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	testDagCosmosBeginBlockReq = abci.RequestBeginBlock{
 		Header: types1.Header{
 			Height: 1,
 		},
@@ -39,7 +36,7 @@ var (
 			Votes: []abci.VoteInfo{},
 		},
 	}
-	testBeginBlockRes = abci.ResponseBeginBlock{
+	dagtestBeginBlockRes = abci.ResponseBeginBlock{
 		Events: []abci.Event{
 			{
 				Type: "testEventType1",
@@ -49,24 +46,24 @@ var (
 			},
 		},
 	}
-	testEndBlockReq = abci.RequestEndBlock{
+	dagtestEndBlockReq = abci.RequestEndBlock{
 		Height: 1,
 	}
-	testEndBlockRes = abci.ResponseEndBlock{
+	dagtestEndBlockRes = abci.ResponseEndBlock{
 		Events:                []abci.Event{},
 		ConsensusParamUpdates: &abci.ConsensusParams{},
 		ValidatorUpdates:      []abci.ValidatorUpdate{},
 	}
-	mockTxBytes1      = []byte{9, 8, 7, 6, 5, 4, 3, 2, 1}
-	testDeliverTxReq1 = abci.RequestDeliverTx{
+	dagmockTxBytes1      = []byte{9, 8, 7, 6, 5, 4, 3, 2, 1}
+	dagtestDeliverTxReq1 = abci.RequestDeliverTx{
 		Tx: mockTxBytes1,
 	}
-	mockTxBytes2      = []byte{8, 7, 6, 5, 4, 3, 2}
-	testDeliverTxReq2 = abci.RequestDeliverTx{
+	dagmockTxBytes2      = []byte{8, 7, 6, 5, 4, 3, 2}
+	dagtestDeliverTxReq2 = abci.RequestDeliverTx{
 		Tx: mockTxBytes2,
 	}
-	mockTxResponseData1 = []byte{1, 3, 5, 7, 9}
-	testDeliverTxRes1   = abci.ResponseDeliverTx{
+	dagmockTxResponseData1 = []byte{1, 3, 5, 7, 9}
+	dagtestDeliverTxRes1   = abci.ResponseDeliverTx{
 		Events:    []abci.Event{},
 		Code:      1,
 		Codespace: "mockCodeSpace",
@@ -76,8 +73,8 @@ var (
 		Info:      "mockInfo",
 		Log:       "mockLog",
 	}
-	mockTxResponseData2 = []byte{1, 3, 5, 7, 9}
-	testDeliverTxRes2   = abci.ResponseDeliverTx{
+	dagmockTxResponseData2 = []byte{1, 3, 5, 7, 9}
+	dagtestDeliverTxRes2   = abci.ResponseDeliverTx{
 		Events:    []abci.Event{},
 		Code:      1,
 		Codespace: "mockCodeSpace",
@@ -89,23 +86,23 @@ var (
 	}
 
 	// mock store keys
-	mockStoreKey1 = sdk.NewKVStoreKey("mockStore1")
-	mockStoreKey2 = sdk.NewKVStoreKey("mockStore2")
+	dagmockStoreKey1 = sdk.NewKVStoreKey("mockStore1")
+	dagmockStoreKey2 = sdk.NewKVStoreKey("mockStore2")
 
 	// file stuff
-	testPrefix = "testPrefix"
-	testDir    = "./.test"
+	dagtestPrefix = "testPrefix"
+	dagtestDir    = "/home/rogelio/.ancon-protocold/.test"
 
 	// mock state changes
-	mockKey1   = []byte{1, 2, 3}
-	mockValue1 = []byte{3, 2, 1}
-	mockKey2   = []byte{2, 3, 4}
-	mockValue2 = []byte{4, 3, 2}
-	mockKey3   = []byte{3, 4, 5}
-	mockValue3 = []byte{5, 4, 3}
+	dagmockKey1   = []byte{1, 2, 3}
+	dagmockValue1 = []byte{3, 2, 1}
+	dagmockKey2   = []byte{2, 3, 4}
+	dagmockValue2 = []byte{4, 3, 2}
+	dagmockKey3   = []byte{3, 4, 5}
+	dagmockValue3 = []byte{5, 4, 3}
 )
 
-func TestIntermediateWriter(t *testing.T) {
+func TestDagCosmosIntermediateWriter(t *testing.T) {
 	outChan := make(chan []byte, 0)
 	iw := NewIntermediateWriter(outChan)
 	require.IsType(t, &IntermediateWriter{}, iw)
@@ -124,41 +121,41 @@ func TestIntermediateWriter(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestFileStreamingService(t *testing.T) {
-	err := os.Mkdir(testDir, 0700)
-	require.Nil(t, err)
-	defer os.RemoveAll(testDir)
+func TestDagCosmosDagCosmosStreamingService(t *testing.T) {
+	err := os.Mkdir(dagtestDir, 0700)
+	// require.Nil(t, err)
+	defer os.RemoveAll(dagtestDir)
 
 	testKeys := []sdk.StoreKey{mockStoreKey1, mockStoreKey2}
-	testStreamingService, err = NewStreamingService(testDir, testPrefix, testKeys, fileTestMarshaller)
+	testDagCosmosStreamingService, err = NewDagCosmosStreamingService(dagtestDir, testPrefix, testKeys, dagcosmosTestMarshaller)
 	require.Nil(t, err)
-	require.IsType(t, &FileStreamingService{}, testStreamingService)
-	require.Equal(t, testPrefix, testStreamingService.filePrefix)
-	require.Equal(t, testDir, testStreamingService.writeDir)
-	require.Equal(t, fileTestMarshaller, testStreamingService.codec)
-	testListener1 = testStreamingService.listeners[mockStoreKey1][0]
-	testListener2 = testStreamingService.listeners[mockStoreKey2][0]
+	require.IsType(t, &DagCosmosStreamingService{}, testDagCosmosStreamingService)
+	require.Equal(t, testPrefix, testDagCosmosStreamingService.filePrefix)
+	require.Equal(t, dagtestDir, testDagCosmosStreamingService.writeDir)
+	require.Equal(t, fileTestMarshaller, testDagCosmosStreamingService.codec)
+	testDagCosmosListener1 = testDagCosmosStreamingService.listeners[mockStoreKey1][0]
+	testDagCosmosListener2 = testDagCosmosStreamingService.listeners[mockStoreKey2][0]
 	wg := new(sync.WaitGroup)
 	quitChan := make(chan struct{})
-	testStreamingService.Stream(wg, quitChan)
-	testListenBeginBlock(t)
-	testListenDeliverTx1(t)
-	testListenDeliverTx2(t)
-	testListenEndBlock(t)
+	testDagCosmosStreamingService.Stream(wg, quitChan)
+	testDagCosmosListenBeginBlock(t)
+	testDagCosmosListenDeliverTx1(t)
+	testDagCosmosListenDeliverTx2(t)
+	testDagCosmosListenEndBlock(t)
 	close(quitChan)
 	wg.Wait()
 }
 
-func testListenBeginBlock(t *testing.T) {
+func testDagCosmosListenBeginBlock(t *testing.T) {
 	expectedBeginBlockReqBytes, err := fileTestMarshaller.Marshal(&testBeginBlockReq)
 	require.Nil(t, err)
 	expectedBeginBlockResBytes, err := fileTestMarshaller.Marshal(&testBeginBlockRes)
 	require.Nil(t, err)
 
 	// write state changes
-	testListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
-	testListener2.OnWrite(mockStoreKey2, mockKey2, mockValue2, false)
-	testListener1.OnWrite(mockStoreKey1, mockKey3, mockValue3, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
+	testDagCosmosListener2.OnWrite(mockStoreKey2, mockKey2, mockValue2, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey1, mockKey3, mockValue3, false)
 
 	// expected KV pairs
 	expectedKVPair1, err := fileTestMarshaller.Marshal(&types.StoreKVPair{
@@ -184,13 +181,13 @@ func testListenBeginBlock(t *testing.T) {
 	require.Nil(t, err)
 
 	// send the ABCI messages
-	err = testStreamingService.ListenBeginBlock(emptyContext, testBeginBlockReq, testBeginBlockRes)
+	err = testDagCosmosStreamingService.ListenBeginBlock(emptyContext, testBeginBlockReq, testBeginBlockRes)
 	require.Nil(t, err)
 
 	// load the file, checking that it was created with the expected name
 	fileName := fmt.Sprintf("%s-block-%d-begin", testPrefix, testBeginBlockReq.GetHeader().Height)
 	fileBytes, err := readInFile(fileName)
-	// require.Nil(t, err)
+	require.Nil(t, err)
 
 	// segment the file into the separate gRPC messages and check the correctness of each
 	segments, err := segmentBytes(fileBytes)
@@ -203,16 +200,16 @@ func testListenBeginBlock(t *testing.T) {
 	require.Equal(t, expectedBeginBlockResBytes, segments[4])
 }
 
-func testListenDeliverTx1(t *testing.T) {
+func testDagCosmosListenDeliverTx1(t *testing.T) {
 	expectedDeliverTxReq1Bytes, err := fileTestMarshaller.Marshal(&testDeliverTxReq1)
 	require.Nil(t, err)
 	expectedDeliverTxRes1Bytes, err := fileTestMarshaller.Marshal(&testDeliverTxRes1)
 	require.Nil(t, err)
 
 	// write state changes
-	testListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
-	testListener2.OnWrite(mockStoreKey2, mockKey2, mockValue2, false)
-	testListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
+	testDagCosmosListener2.OnWrite(mockStoreKey2, mockKey2, mockValue2, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
 
 	// expected KV pairs
 	expectedKVPair1, err := fileTestMarshaller.Marshal(&types.StoreKVPair{
@@ -238,7 +235,7 @@ func testListenDeliverTx1(t *testing.T) {
 	require.Nil(t, err)
 
 	// send the ABCI messages
-	err = testStreamingService.ListenDeliverTx(emptyContext, testDeliverTxReq1, testDeliverTxRes1)
+	err = testDagCosmosStreamingService.ListenDeliverTx(emptyContext, testDeliverTxReq1, testDeliverTxRes1)
 	require.Nil(t, err)
 
 	// load the file, checking that it was created with the expected name
@@ -257,16 +254,16 @@ func testListenDeliverTx1(t *testing.T) {
 	require.Equal(t, expectedDeliverTxRes1Bytes, segments[4])
 }
 
-func testListenDeliverTx2(t *testing.T) {
+func testDagCosmosListenDeliverTx2(t *testing.T) {
 	expectedDeliverTxReq2Bytes, err := fileTestMarshaller.Marshal(&testDeliverTxReq2)
 	require.Nil(t, err)
 	expectedDeliverTxRes2Bytes, err := fileTestMarshaller.Marshal(&testDeliverTxRes2)
 	require.Nil(t, err)
 
 	// write state changes
-	testListener1.OnWrite(mockStoreKey2, mockKey1, mockValue1, false)
-	testListener2.OnWrite(mockStoreKey1, mockKey2, mockValue2, false)
-	testListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey2, mockKey1, mockValue1, false)
+	testDagCosmosListener2.OnWrite(mockStoreKey1, mockKey2, mockValue2, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
 
 	// expected KV pairs
 	expectedKVPair1, err := fileTestMarshaller.Marshal(&types.StoreKVPair{
@@ -292,7 +289,7 @@ func testListenDeliverTx2(t *testing.T) {
 	require.Nil(t, err)
 
 	// send the ABCI messages
-	err = testStreamingService.ListenDeliverTx(emptyContext, testDeliverTxReq2, testDeliverTxRes2)
+	err = testDagCosmosStreamingService.ListenDeliverTx(emptyContext, testDeliverTxReq2, testDeliverTxRes2)
 	require.Nil(t, err)
 
 	// load the file, checking that it was created with the expected name
@@ -311,16 +308,16 @@ func testListenDeliverTx2(t *testing.T) {
 	require.Equal(t, expectedDeliverTxRes2Bytes, segments[4])
 }
 
-func testListenEndBlock(t *testing.T) {
+func testDagCosmosListenEndBlock(t *testing.T) {
 	expectedEndBlockReqBytes, err := fileTestMarshaller.Marshal(&testEndBlockReq)
 	require.Nil(t, err)
 	expectedEndBlockResBytes, err := fileTestMarshaller.Marshal(&testEndBlockRes)
 	require.Nil(t, err)
 
 	// write state changes
-	testListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
-	testListener2.OnWrite(mockStoreKey1, mockKey2, mockValue2, false)
-	testListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey1, mockKey1, mockValue1, false)
+	testDagCosmosListener2.OnWrite(mockStoreKey1, mockKey2, mockValue2, false)
+	testDagCosmosListener1.OnWrite(mockStoreKey2, mockKey3, mockValue3, false)
 
 	// expected KV pairs
 	expectedKVPair1, err := fileTestMarshaller.Marshal(&types.StoreKVPair{
@@ -346,7 +343,7 @@ func testListenEndBlock(t *testing.T) {
 	require.Nil(t, err)
 
 	// send the ABCI messages
-	err = testStreamingService.ListenEndBlock(emptyContext, testEndBlockReq, testEndBlockRes)
+	err = testDagCosmosStreamingService.ListenEndBlock(emptyContext, testEndBlockReq, testEndBlockRes)
 	require.Nil(t, err)
 
 	// load the file, checking that it was created with the expected name
@@ -363,37 +360,4 @@ func testListenEndBlock(t *testing.T) {
 	require.Equal(t, expectedKVPair2, segments[2])
 	require.Equal(t, expectedKVPair3, segments[3])
 	require.Equal(t, expectedEndBlockResBytes, segments[4])
-}
-
-func readInFile(name string) ([]byte, error) {
-	path := filepath.Join(dagtestDir, name)
-	return ioutil.ReadFile(path)
-}
-
-// Returns all of the protobuf messages contained in the byte array as an array of byte arrays
-// The messages have their length prefix removed
-func segmentBytes(bz []byte) ([][]byte, error) {
-	var err error
-	segments := make([][]byte, 0)
-	for len(bz) > 0 {
-		var segment []byte
-		segment, bz, err = getHeadSegment(bz)
-		if err != nil {
-			return nil, err
-		}
-		segments = append(segments, segment)
-	}
-	return segments, nil
-}
-
-// Returns the bytes for the leading protobuf object in the byte array (removing the length prefix) and returns the remainder of the byte array
-func getHeadSegment(bz []byte) ([]byte, []byte, error) {
-	size, prefixSize := binary.Uvarint(bz)
-	if prefixSize < 0 {
-		return nil, nil, fmt.Errorf("invalid number of bytes read from length-prefixed encoding: %d", prefixSize)
-	}
-	if size > uint64(len(bz)-prefixSize) {
-		return nil, nil, fmt.Errorf("not enough bytes to read; want: %v, got: %v", size, len(bz)-prefixSize)
-	}
-	return bz[prefixSize:(uint64(prefixSize) + size)], bz[uint64(prefixSize)+size:], nil
 }

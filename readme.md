@@ -74,11 +74,17 @@ Authenticity and provenance data economy decentralized chain<br/>
 
 ## Get started
 
-```
-starport serve
-```
+### Bootstrap origin and configs
 
-`serve` command installs dependencies, builds, initializes, and starts your blockchain in development.
+`./init.sh`
+
+>Note: Configure your local testnet mnemonic
+
+### After initializing
+
+`ancon-protocold start --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend test
+`
+
 
 ## Configure
 
