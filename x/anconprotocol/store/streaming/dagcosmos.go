@@ -3,18 +3,20 @@ package streaming
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"path/filepath"
 	"sync"
 
 	blocks "github.com/ipfs/go-block-format"
+	"github.com/ipfs/go-merkledag"
 
 	carv2 "github.com/ipld/go-car/v2"
 	"github.com/ipld/go-car/v2/blockstore"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/storage"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -24,7 +26,6 @@ import (
 	dagcosmos "github.com/vulcanize/go-codec-dagcosmos"
 	"github.com/vulcanize/go-codec-dagcosmos/header"
 	_ "github.com/vulcanize/go-codec-dagcosmos/header"
-	dagcosmosresult "github.com/vulcanize/go-codec-dagcosmos/result"
 )
 
 /*
@@ -121,24 +122,15 @@ func (fss *DagCosmosStreamingService) WriteBeginBlockCAR(dst string, headerBlock
 	lsys := cidlink.DefaultLinkSystem()
 	lp := fss.GetLinkPrototype()
 	var blockList []blocks.Block
-	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
-	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
-		// change prefix
-		buf := bytes.Buffer{}
-		return &buf, func(lnk ipld.Link) error {
-			if lnkCtx.LinkPath.String() == "/header" {
-				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
-			}
-			return nil
-		}, nil
-	}
-	path := ipld.ParsePath("/header")
-	link, err := lsys.Store(
-		ipld.LinkContext{LinkPath: path}, lp, headerBlock,
-	)
-	if err != nil {
-		return err
-	}
+
+	store := storage.Memory{}
+	lsys.StorageReadOpener = (&store).OpenRead
+	lsys.StorageWriteOpener = (&store).OpenWrite
+
+	var bufdata bytes.Buffer
+	_ = dagcbor.Encode(headerBlock, &bufdata)
+
+	link := lsys.MustComputeLink(lp, headerBlock)
 	c, _ := cid.Decode(link.String())
 	roots := []cid.Cid{c}
 
@@ -147,6 +139,7 @@ func (fss *DagCosmosStreamingService) WriteBeginBlockCAR(dst string, headerBlock
 		return err
 	}
 
+	blockList = append(blockList, merkledag.NewRawNode(bufdata.Bytes()))
 	if err := rwbs.PutMany(blockList); err != nil {
 		return err
 	}
@@ -173,20 +166,8 @@ func (fss *DagCosmosStreamingService) WriteDeliverTxCAR(dst string, responseDeli
 	lsys := cidlink.DefaultLinkSystem()
 	lp := fss.GetLinkPrototype()
 	var blockList []blocks.Block
-	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
-	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
-		// change prefix
-		buf := bytes.Buffer{}
-		return &buf, func(lnk ipld.Link) error {
-			if lnkCtx.LinkPath.String() == "/responseDeliverTX" {
-				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
-			} else if lnkCtx.LinkPath.String() == "/tx" {
-				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
-			}
-			return nil
-		}, nil
-	}
-	path := ipld.ParsePath("/responseDeliverTx")
+
+	path := ipld.ParsePath("/result")
 	link, err := lsys.Store(
 		ipld.LinkContext{LinkPath: path}, lp, responseDeliverTxNode,
 	)
@@ -265,7 +246,7 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	}
 	err := head.ValidateBasic()
 	if err != nil {
-		return err
+		///			return err
 	}
 
 	lbBuilder := dagcosmos.Type.Header.NewBuilder()
@@ -292,27 +273,29 @@ func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBegi
 // It writes out the received DeliverTx request and response and the resulting state changes out to a file as described
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
-	// Just need to translate Tx protobuf to ipld node
-	// generate the new file
-	dstFile := fss.getDeliverTxFilePath()
+	// // Just need to translate Tx protobuf to ipld node
+	// // generate the new file
+	// dstFile := fss.getDeliverTxFilePath()
 
-	builder := dagcosmos.Type.ResponseDeliverTx.NewBuilder()
-	var resultNode ipld.Node
-	err := dagcosmosresult.DecodeParams(builder, res)
-	if err != nil {
-		return err
-	}
-	resultNode = builder.Build()
+	// builder := dagcosmos.Type.ResponseDeliverTx.NewBuilder()
+	// var resultNode ipld.Node
+	// err := dagcosmosresult.DecodeParams(builder, res)
+	// if err != nil {
+	// 	return err
+	// }
+	// resultNode = builder.Build()
 
-	txb := dagcosmos.Type.Tx.NewBuilder()
-	txb.AssignBytes(req.GetTx())
-	txNode := txb.Build()
+	// txb := dagcosmos.Type.Tx.NewBuilder()
+	// txb.AssignBytes(req.GetTx())
+	// txNode := txb.Build()
 
-	return fss.WriteDeliverTxCAR(dstFile, txNode, resultNode)
+	// return fss.WriteDeliverTxCAR(dstFile, txNode, resultNode)
+
+	return nil
 }
 
 func (fss *DagCosmosStreamingService) getDeliverTxFilePath() string {
-	fileName := fmt.Sprintf("block-%d-tx-%d", fss.currentBlockNumber, fss.currentTxIndex)
+	fileName := fmt.Sprintf("block-%d-tx-%d.car", fss.currentBlockNumber, fss.currentTxIndex)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
@@ -329,7 +312,7 @@ func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.R
 }
 
 func (fss *DagCosmosStreamingService) getEndBlockFilePath() string {
-	fileName := fmt.Sprintf("block-%d-end", fss.currentBlockNumber)
+	fileName := fmt.Sprintf("block-%d-end.car", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
