@@ -19,6 +19,7 @@ require (
 	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/improbable-eng/grpc-web v0.14.1
 	github.com/ipfs/go-cid v0.1.0
+	github.com/ipld/go-car/v2 v2.0.2
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/itchyny/base58-go v0.2.0
 	github.com/klauspost/cpuid/v2 v2.0.8 // indirect
@@ -36,6 +37,7 @@ require (
 	github.com/tendermint/spm v0.0.0-20210524110815-6d7452d2dc4a
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4
+	github.com/vulcanize/go-codec-dagcosmos v0.0.0-20210804041909-7dea9565a467
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af
 	google.golang.org/grpc v1.40.0
@@ -118,7 +120,6 @@ require (
 	github.com/ipfs/go-merkledag v0.3.2 // indirect
 	github.com/ipfs/go-metrics-interface v0.0.1 // indirect
 	github.com/ipfs/go-verifcid v0.0.1 // indirect
-	github.com/ipld/go-car/v2 v2.0.2 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/goprocess v0.1.3 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
@@ -181,7 +182,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
-	github.com/vulcanize/go-codec-dagcosmos v0.0.0-20210804041909-7dea9565a467 // indirect
 	github.com/whyrusleeping/cbor v0.0.0-20171005072247-63513f603b11 // indirect
 	github.com/whyrusleeping/cbor-gen v0.0.0-20200123233031-1cdf64d27158 // indirect
 	github.com/whyrusleeping/go-logging v0.0.0-20170515211332-0457bb6b88fc // indirect

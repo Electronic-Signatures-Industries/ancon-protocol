@@ -1,13 +1,16 @@
 package streaming
 
 import (
+	"bytes"
 	"fmt"
+	blocks "github.com/ipfs/go-block-format"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
 
 	carv2 "github.com/ipld/go-car/v2"
-	blockstore "github.com/ipld/go-car/v2/blockstore"
+	"github.com/ipld/go-car/v2/blockstore"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
@@ -111,8 +114,21 @@ func (fss *DagCosmosStreamingService) WriteCAR(dst string, headerBlock ipld.Node
 	}}
 
 	lsys := cidlink.DefaultLinkSystem()
+	var blockList []blocks.Block
+	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			if lnkCtx.LinkPath.String() == "/header" {
+				blockList = append(blockList, blocks.NewBlock(buf.Bytes()))
+			}
+			return nil
+		}, nil
+	}
+	path := ipld.ParsePath("/header")
 	link, err := lsys.Store(
-		ipld.LinkContext{}, lp, headerBlock,
+		ipld.LinkContext{LinkPath: path}, lp, headerBlock,
 	)
 	if err != nil {
 		return err
@@ -125,18 +141,18 @@ func (fss *DagCosmosStreamingService) WriteCAR(dst string, headerBlock ipld.Node
 		return err
 	}
 
-	///	blocks := []blocks.Block{headerBlock.Prototype().}
-	if err := rwbs.PutMany(blocks); err != nil {
+	if err := rwbs.PutMany(blockList); err != nil {
 		return err
 	}
-	fmt.Printf("Successfully wrote %v blocks into the blockstore.\n", len(blocks))
+	fmt.Printf("Successfully wrote %v blocks into the blockstore.\n", len(blockList))
 
 	// Any blocks put can be read back using the same blockstore instance.
-	block, err := rwbs.Get(c)
+	/*block, err := rwbs.Get(c)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Read back block just put with raw value of `%v`.\n", string(block.RawData()))
+	*/
 
 	// Finalize the blockstore to flush out the index and make a complete CARv2.
 	if err := rwbs.Finalize(); err != nil {
@@ -213,6 +229,7 @@ func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBegi
 // It writes out the received DeliverTx request and response and the resulting state changes out to a file as described
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
+	// Just need to translate Tx protobuf to ipld node
 	// generate the new file
 	dstFile, err := fss.openDeliverTxFile()
 	if err != nil {
