@@ -2,10 +2,11 @@ package streaming
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	serverTypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strings"
 
 	"github.com/spf13/cast"
 )
@@ -20,11 +21,17 @@ const (
 	Unknown ServiceType = iota
 	File
 	// add more in the future
+	DagCosmos
+	DagEth
 )
 
 // NewStreamingServiceType returns the streaming.ServiceType corresponding to the provided name
 func NewStreamingServiceType(name string) ServiceType {
 	switch strings.ToLower(name) {
+	case "dagcosmos", "c":
+		return DagCosmos
+	case "dageth", "e":
+		return DagCosmos
 	case "file", "f":
 		return File
 	default:
@@ -35,6 +42,10 @@ func NewStreamingServiceType(name string) ServiceType {
 // String returns the string name of a streaming.ServiceType
 func (sst ServiceType) String() string {
 	switch sst {
+	case DagCosmos:
+		return "dagcosmos"
+	case DagEth:
+		return "dageth"
 	case File:
 		return "file"
 	default:
@@ -44,7 +55,9 @@ func (sst ServiceType) String() string {
 
 // ServiceConstructorLookupTable is a mapping of streaming.ServiceTypes to streaming.ServiceConstructors
 var ServiceConstructorLookupTable = map[ServiceType]ServiceConstructor{
-	File: FileStreamingConstructor,
+	File:      FileStreamingConstructor,
+	DagCosmos: DagCosmosStreamingConstructor,
+	DagEth:    DagEthStreamingConstructor,
 }
 
 // NewServiceConstructor returns the streaming.ServiceConstructor corresponding to the provided name
@@ -57,6 +70,20 @@ func NewServiceConstructor(name string) (ServiceConstructor, error) {
 		return constructor, nil
 	}
 	return nil, fmt.Errorf("streaming service constructor of type %s not found", ssType.String())
+}
+
+// DagCosmosStreamingConstructor is the streaming.ServiceConstructor function for creating a DagCosmosStreamingService
+func DagCosmosStreamingConstructor(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
+	filePrefix := cast.ToString(opts.Get("streamers.dagcosmos.prefix"))
+	fileDir := cast.ToString(opts.Get("streamers.dagcosmos.writeDir"))
+	return NewDagCosmosStreamingService(fileDir, filePrefix, keys, marshaller)
+}
+
+// DagEthStreamingConstructor is the streaming.ServiceConstructor function for creating a DagEthStreamingService
+func DagEthStreamingConstructor(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
+	filePrefix := cast.ToString(opts.Get("streamers.dageth.prefix"))
+	fileDir := cast.ToString(opts.Get("streamers.dageth.writeDir"))
+	return NewDagEthStreamingService(fileDir, filePrefix, keys, marshaller)
 }
 
 // FileStreamingConstructor is the streaming.ServiceConstructor function for creating a FileStreamingService
