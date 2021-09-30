@@ -8,12 +8,16 @@ import (
 	"sync"
 
 	carv1 "github.com/ipld/go-car"
+	carv2 "github.com/ipld/go-car/v2"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/node/bindnode"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/traversal/selector"
+	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -124,31 +128,50 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 
 	//pt := bindnode.Prototype(req.ByzantineValidators, GetHeaderType().)
 
-	h := bindnode.Wrap(&req.Hash, nil)
-
-	head := bindnode.Wrap(&req.Header, GetHeaderType())
+	head := fluent.MustBuildMap(basicnode.Prototype.Map, 2, func(na fluent.MapAssembler) {
+		na.AssembleEntry("chain_id").AssignString(req.Header.ChainID)
+		na.AssembleEntry("hash").AssignString(string(req.Hash))
+	})
 
 	// lc := bindnode.Wrap(&req.LastCommitInfo, nil)
 	// ev := bindnode.Wrap(&req.ByzantineValidators, nil)
 
 	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), ev)
 
-	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head.Representation())
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+
+	// the graph assembled above looks as follows, in order:
+	// nd3 -> [c, nd2 -> [nd1 -> a, b, nd1 -> a]]
+	// this selector starts at n3, and traverses a link at index 1 (nd2, the second link, zero indexed)
+	// it then recursively traverses all of its children
+	// the only node skipped is 'c' -- link at index 0 immediately below nd3
+	// the purpose is simply to show we are not writing the entire dag underneath
+	// nd3
+	selector := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+		efsb.Insert("Links",
+			ssb.ExploreIndex(1, ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge()))))
+	}).Node()
+
+	link := fss.sls.MustComputeLink(GetLinkPrototype(), head)
+	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head)
 	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), lc)
-	hashnode := fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), h)
+	//	hashnode := fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), h)
 	car := carv1.NewSelectiveCar(context.Background(),
 		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
 		[]carv1.Dag{{
 
 			// CID of the root node of the DAG to traverse.
-			Root: hashnode.(cidlink.Link).Cid,
+			Root:     link.(cidlink.Link).Cid,
+			Selector: selector,
 			// Traversal convenience selector that gives us "everything".
 			// Selector: everything(),
 		}})
 	file, _ := os.Create(dstFile)
 	car.Write(file)
 
-	//	carv2.WrapV1File(dstFile, v2file)
+	v2file := append([]byte(dstFile), []byte("v2")...)
+
+	carv2.WrapV1File(dstFile, string(v2file))
 	return nil
 }
 

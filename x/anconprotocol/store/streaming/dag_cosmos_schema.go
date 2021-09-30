@@ -45,18 +45,18 @@ func GetHeaderType() schema.Type {
 	ts.Accumulate(schema.SpawnStruct("Header",
 		[]schema.StructField{
 			//			schema.SpawnStructField("Version", "Version", false, false),
-			schema.SpawnStructField("ChainID", "String", false, false),
-			schema.SpawnStructField("Height", "Int", false, false),
-			//		schema.SpawnStructField("Time", "Time", false, false),
-			//			schema.SpawnStructField("LastBlockID", "BlockID", false, false),
-			schema.SpawnStructField("LastCommitHash", "Link", false, false),     // CommitTreeCID
-			schema.SpawnStructField("DataHash", "Link", false, false),           // TxTreeCID
-			schema.SpawnStructField("ValidatorsHash", "Link", false, false),     // ValidatorTreeCID
-			schema.SpawnStructField("NextValidatorsHash", "Link", false, false), // ValidatorTreeCID
-			schema.SpawnStructField("ConsensusHash", "Link", false, false),      // HashedParamsCID
-			schema.SpawnStructField("AppHash", "Link", false, false),            // AppStateTreeCID
-			schema.SpawnStructField("LastResultsHash", "Link", false, false),    // LastResultsHash
-			schema.SpawnStructField("EvidenceHash", "Link", false, false),       // EvidenceTreeCID
+			schema.SpawnStructField("ChainID", "String", true, true),
+			schema.SpawnStructField("Height", "Int", true, true),
+			//		schema.SpawnStructField("Time", "Time", true, true),
+			//			schema.SpawnStructField("LastBlockID", "BlockID", true, true),
+			schema.SpawnStructField("LastCommitHash", "Link", true, true),     // CommitTreeCID
+			schema.SpawnStructField("DataHash", "Link", true, true),           // TxTreeCID
+			schema.SpawnStructField("ValidatorsHash", "Link", true, true),     // ValidatorTreeCID
+			schema.SpawnStructField("NextValidatorsHash", "Link", true, true), // ValidatorTreeCID
+			schema.SpawnStructField("ConsensusHash", "Link", true, true),      // HashedParamsCID
+			schema.SpawnStructField("AppHash", "Link", true, true),            // AppStateTreeCID
+			schema.SpawnStructField("LastResultsHash", "Link", true, true),    // LastResultsHash
+			schema.SpawnStructField("EvidenceHash", "Link", true, true),       // EvidenceTreeCID
 			//			schema.SpawnStructField("ProposerAddress", "Address", false, false),
 		},
 		schema.SpawnStructRepresentationMap(nil),
