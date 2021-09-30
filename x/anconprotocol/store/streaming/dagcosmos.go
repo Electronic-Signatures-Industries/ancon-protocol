@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	carv1 "github.com/ipld/go-car"
-	carv2 "github.com/ipld/go-car/v2"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
 
 	"github.com/ipfs/go-cid"
@@ -16,7 +15,6 @@ import (
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -140,17 +138,7 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 
-	// the graph assembled above looks as follows, in order:
-	// nd3 -> [c, nd2 -> [nd1 -> a, b, nd1 -> a]]
-	// this selector starts at n3, and traverses a link at index 1 (nd2, the second link, zero indexed)
-	// it then recursively traverses all of its children
-	// the only node skipped is 'c' -- link at index 0 immediately below nd3
-	// the purpose is simply to show we are not writing the entire dag underneath
-	// nd3
-	selector := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
-		efsb.Insert("Links",
-			ssb.ExploreIndex(1, ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge()))))
-	}).Node()
+	selector := ssb.ExploreAll(ssb.Matcher()).Node()
 
 	link := fss.sls.MustComputeLink(GetLinkPrototype(), head)
 	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head)
@@ -159,7 +147,6 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	car := carv1.NewSelectiveCar(context.Background(),
 		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
 		[]carv1.Dag{{
-
 			// CID of the root node of the DAG to traverse.
 			Root:     link.(cidlink.Link).Cid,
 			Selector: selector,
@@ -169,9 +156,8 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	file, _ := os.Create(dstFile)
 	car.Write(file)
 
-	v2file := append([]byte(dstFile), []byte("v2")...)
-
-	carv2.WrapV1File(dstFile, string(v2file))
+	// v2file := append([]byte(dstFile), []byte("v2")...)
+	// carv2.WrapV1File(dstFile, string(v2file))
 	return nil
 }
 
