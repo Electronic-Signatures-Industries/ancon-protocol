@@ -44,11 +44,11 @@ func GetHeaderType() schema.Type {
 	))
 	ts.Accumulate(schema.SpawnStruct("Header",
 		[]schema.StructField{
-			schema.SpawnStructField("Version", "Version", false, false),
+			//			schema.SpawnStructField("Version", "Version", false, false),
 			schema.SpawnStructField("ChainID", "String", false, false),
 			schema.SpawnStructField("Height", "Int", false, false),
-			schema.SpawnStructField("Time", "Time", false, false),
-			schema.SpawnStructField("LastBlockID", "BlockID", false, false),
+			//		schema.SpawnStructField("Time", "Time", false, false),
+			//			schema.SpawnStructField("LastBlockID", "BlockID", false, false),
 			schema.SpawnStructField("LastCommitHash", "Link", false, false),     // CommitTreeCID
 			schema.SpawnStructField("DataHash", "Link", false, false),           // TxTreeCID
 			schema.SpawnStructField("ValidatorsHash", "Link", false, false),     // ValidatorTreeCID
@@ -57,14 +57,12 @@ func GetHeaderType() schema.Type {
 			schema.SpawnStructField("AppHash", "Link", false, false),            // AppStateTreeCID
 			schema.SpawnStructField("LastResultsHash", "Link", false, false),    // LastResultsHash
 			schema.SpawnStructField("EvidenceHash", "Link", false, false),       // EvidenceTreeCID
-			schema.SpawnStructField("ProposerAddress", "Address", false, false),
+			//			schema.SpawnStructField("ProposerAddress", "Address", false, false),
 		},
 		schema.SpawnStructRepresentationMap(nil),
 	))
 
-	types := ts.GetTypes()
-
-	return types["Header"]
+	return ts.TypeByName("Header")
 }
 
 /*
