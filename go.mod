@@ -18,9 +18,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/improbable-eng/grpc-web v0.14.1
-	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-cid v0.1.0
-	github.com/ipld/go-car/v2 v2.0.2
 	github.com/ipld/go-ipld-prime v0.12.0
 	github.com/itchyny/base58-go v0.2.0
 	github.com/multiformats/go-multibase v0.0.3
@@ -47,10 +45,11 @@ require (
 
 require (
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
-	github.com/ipfs/go-merkledag v0.3.2
+	github.com/ipld/go-car v0.3.1
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/onsi/ginkgo v1.15.1 // indirect
+	github.com/proofzero/go-ipld-linkstore v1.0.0
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

@@ -1,30 +1,24 @@
 package streaming
 
 import (
-	"bytes"
+	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"sync"
 
-	blocks "github.com/ipfs/go-block-format"
-	"github.com/ipfs/go-merkledag"
-
-	carv2 "github.com/ipld/go-car/v2"
-	"github.com/ipld/go-car/v2/blockstore"
+	carv1 "github.com/ipld/go-car"
+	linkstore "github.com/proofzero/go-ipld-linkstore"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/storage"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	dagcosmos "github.com/vulcanize/go-codec-dagcosmos"
-	"github.com/vulcanize/go-codec-dagcosmos/header"
 	_ "github.com/vulcanize/go-codec-dagcosmos/header"
 )
 
@@ -46,6 +40,7 @@ var _ StreamingService = &DagCosmosStreamingService{}
 
 // StreamingService is a concrete implementation of StreamingService that writes state changes out to files
 type DagCosmosStreamingService struct {
+	sls                *linkstore.StorageLinkSystem
 	listeners          map[sdk.StoreKey][]types.WriteListener // the listeners that will be initialized with BaseApp
 	srcChan            <-chan []byte                          // the channel that all of the WriteListeners write their data out to
 	filePrefix         string                                 // optional prefix for each of the generated files
@@ -91,7 +86,9 @@ func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.S
 	if err := isDirWriteable(writeDir); err != nil {
 		return nil, err
 	}
+	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
 	return &DagCosmosStreamingService{
+		sls:            sls,
 		listeners:      listeners,
 		srcChan:        listenChan,
 		filePrefix:     filePrefix,
@@ -107,7 +104,7 @@ func (fss *DagCosmosStreamingService) Listeners() map[sdk.StoreKey][]types.Write
 	return fss.listeners
 }
 
-func (fss *DagCosmosStreamingService) GetLinkPrototype() ipld.LinkPrototype {
+func GetLinkPrototype() ipld.LinkPrototype {
 	// tip: 0x0129 dag-json
 	return cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
@@ -117,101 +114,6 @@ func (fss *DagCosmosStreamingService) GetLinkPrototype() ipld.LinkPrototype {
 	}}
 
 }
-func (fss *DagCosmosStreamingService) WriteBeginBlockCAR(dst string, headerBlock ipld.Node) error {
-
-	lsys := cidlink.DefaultLinkSystem()
-	lp := fss.GetLinkPrototype()
-	var blockList []blocks.Block
-
-	store := storage.Memory{}
-	lsys.StorageReadOpener = (&store).OpenRead
-	lsys.StorageWriteOpener = (&store).OpenWrite
-
-	var bufdata bytes.Buffer
-	_ = dagcbor.Encode(headerBlock, &bufdata)
-
-	link := lsys.MustComputeLink(lp, headerBlock)
-	c, _ := cid.Decode(link.String())
-	roots := []cid.Cid{c}
-
-	rwbs, err := blockstore.OpenReadWrite(dst, roots, carv2.UseDataPadding(1413), carv2.UseIndexPadding(42))
-	if err != nil {
-		return err
-	}
-
-	blockList = append(blockList, merkledag.NewRawNode(bufdata.Bytes()))
-	if err := rwbs.PutMany(blockList); err != nil {
-		return err
-	}
-	fmt.Printf("Successfully wrote %v blocks into the blockstore.\n", len(blockList))
-
-	// Any blocks put can be read back using the same blockstore instance.
-	/*block, err := rwbs.Get(c)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Read back block just put with raw value of `%v`.\n", string(block.RawData()))
-	*/
-
-	// Finalize the blockstore to flush out the index and make a complete CARv2.
-	if err := rwbs.Finalize(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (fss *DagCosmosStreamingService) WriteDeliverTxCAR(dst string, responseDeliverTxNode ipld.Node, tx ipld.Node) error {
-
-	lsys := cidlink.DefaultLinkSystem()
-	lp := fss.GetLinkPrototype()
-	var blockList []blocks.Block
-
-	path := ipld.ParsePath("/result")
-	link, err := lsys.Store(
-		ipld.LinkContext{LinkPath: path}, lp, responseDeliverTxNode,
-	)
-	if err != nil {
-		return err
-	}
-	delivertxLink, _ := cid.Decode(link.String())
-
-	txpath := ipld.ParsePath("/tx")
-	txlink, err := lsys.Store(
-		ipld.LinkContext{LinkPath: txpath}, lp, tx,
-	)
-	if err != nil {
-		return err
-	}
-	txLink, _ := cid.Decode(txlink.String())
-
-	roots := []cid.Cid{delivertxLink, txLink}
-
-	rwbs, err := blockstore.OpenReadWrite(dst, roots, carv2.UseDataPadding(1413), carv2.UseIndexPadding(42))
-	if err != nil {
-		return err
-	}
-
-	if err := rwbs.PutMany(blockList); err != nil {
-		return err
-	}
-	fmt.Printf("Successfully wrote %v blocks into the blockstore.\n", len(blockList))
-
-	// Any blocks put can be read back using the same blockstore instance.
-	/*block, err := rwbs.Get(c)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Read back block just put with raw value of `%v`.\n", string(block.RawData()))
-	*/
-
-	// Finalize the blockstore to flush out the index and make a complete CARv2.
-	if err := rwbs.Finalize(); err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // ListenBeginBlock satisfies the Hook interface
 // It writes out the received BeginBlock request and response and the resulting state changes out to a file as described
@@ -219,50 +121,40 @@ func (fss *DagCosmosStreamingService) WriteDeliverTxCAR(dst string, responseDeli
 func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
-	// write req to file
-	var headerNode ipld.Node
 
-	head := tmtypes.Header{
-		Version: req.Header.Version,
-		ChainID: req.Header.ChainID,
-		Height:  req.Header.Height,
-		Time:    req.Header.Time,
-		LastBlockID: tmtypes.BlockID{
-			Hash: req.Header.LastBlockId.Hash,
-			PartSetHeader: tmtypes.PartSetHeader{
-				Total: req.Header.LastBlockId.PartSetHeader.Total,
-				Hash:  req.Header.LastBlockId.PartSetHeader.Hash,
-			},
-		},
-		LastCommitHash:     req.Header.LastCommitHash,
-		DataHash:           req.Header.DataHash,
-		ValidatorsHash:     req.Header.ValidatorsHash,
-		NextValidatorsHash: req.Header.NextValidatorsHash,
-		ConsensusHash:      req.Header.ConsensusHash,
-		AppHash:            req.Header.AppHash,
-		LastResultsHash:    req.Header.LastResultsHash,
-		EvidenceHash:       req.Header.EvidenceHash,
-		ProposerAddress:    req.Header.ProposerAddress,
-	}
-	err := head.ValidateBasic()
-	if err != nil {
-		///			return err
-	}
+	// pt := bindnode.Prototype(req.ByzantineValidators, nil)
 
-	lbBuilder := dagcosmos.Type.Header.NewBuilder()
-	if err := header.DecodeHeader(lbBuilder, head); err != nil {
-		fmt.Errorf("unable to decode light block into an IPLD node: %v", err)
-	}
-	headerNode = lbBuilder.Build()
+	h := bindnode.Wrap(&req.Hash, nil)
 
-	// Missing evidence
-	return fss.WriteBeginBlockCAR(dstFile, headerNode)
+	head := bindnode.Wrap(&req.Header, nil)
+
+	lc := bindnode.Wrap(&req.LastCommitInfo, nil)
+	ev := bindnode.Wrap(&req.ByzantineValidators, nil)
+
+	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), ev)
+	hashnode := fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), h)
+	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head)
+	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), lc)
+	car := carv1.NewSelectiveCar(context.Background(),
+		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
+		[]carv1.Dag{{
+
+			// CID of the root node of the DAG to traverse.
+			Root: hashnode.(cidlink.Link).Cid,
+			// Traversal convenience selector that gives us "everything".
+			// Selector: everything(),
+		}})
+	file, _ := os.Create(dstFile)
+	car.Write(file)
+
+	//	carv2.WrapV1File(dstFile, v2file)
+	return nil
 }
 
 func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBeginBlock) string {
 	fss.currentBlockNumber = req.GetHeader().Height
 	fss.currentTxIndex = 0
-	fileName := fmt.Sprintf("block-%d-begin", fss.currentBlockNumber)
+	fileName := fmt.Sprintf("block-%d-begin.car", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
