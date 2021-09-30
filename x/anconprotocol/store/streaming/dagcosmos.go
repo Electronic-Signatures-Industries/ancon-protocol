@@ -83,9 +83,9 @@ func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.S
 	}
 	// check that the writeDir exists and is writeable so that we can catch the error here at initialization if it is not
 	// we don't open a dstFile until we receive our first ABCI message
-	if err := isDirWriteable(writeDir); err != nil {
-		return nil, err
-	}
+	// if err := isDirWriteable(writeDir); err != nil {
+	// 	return nil, err
+	// }
 	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
 	return &DagCosmosStreamingService{
 		sls:            sls,
@@ -122,19 +122,20 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
 
-	// pt := bindnode.Prototype(req.ByzantineValidators, nil)
+	//pt := bindnode.Prototype(req.ByzantineValidators, GetHeaderType().)
 
 	h := bindnode.Wrap(&req.Hash, nil)
 
-	head := bindnode.Wrap(&req.Header, nil)
+	head := bindnode.Wrap(&req.Header, GetHeaderType())
 
-	lc := bindnode.Wrap(&req.LastCommitInfo, nil)
-	ev := bindnode.Wrap(&req.ByzantineValidators, nil)
+	// lc := bindnode.Wrap(&req.LastCommitInfo, nil)
+	// ev := bindnode.Wrap(&req.ByzantineValidators, nil)
 
-	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), ev)
+	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), ev)
+
+	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head.Representation())
+	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), lc)
 	hashnode := fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), h)
-	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head)
-	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), lc)
 	car := carv1.NewSelectiveCar(context.Background(),
 		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
 		[]carv1.Dag{{
