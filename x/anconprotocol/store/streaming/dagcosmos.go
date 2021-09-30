@@ -8,10 +8,13 @@ import (
 	"sync"
 
 	carv1 "github.com/ipld/go-car"
+	"github.com/multiformats/go-multihash"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
+	"github.com/spf13/cast"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
@@ -114,6 +117,61 @@ func GetLinkPrototype() ipld.LinkPrototype {
 		MhType:   0x12, // sha2-256
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
+
+}
+
+func CreateHashCidLink(hash []byte) cidlink.Link {
+	lchMh, err := multihash.Encode(hash, GetLinkPrototype().(cidlink.LinkPrototype).MhType)
+	if err != nil {
+		return cidlink.Link{}
+	}
+	// TODO: switch to use CommitTree codec type
+	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
+	lcLinkCID := cidlink.Link{Cid: lcCID}
+	return lcLinkCID
+}
+
+func MustCreateHashCidLink(hash []byte) (cidlink.Link, error) {
+	return cidlink.Link{}, nil
+}
+
+func (fss *DagCosmosStreamingService) BuildHeaderMap(req *abci.RequestBeginBlock) datamodel.Node {
+	head := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("chain_id").AssignString(req.Header.ChainID)
+		na.AssembleEntry("hash").AssignString(string(req.Hash))
+		na.AssembleEntry("height").AssignInt(req.Header.Height)
+		na.AssembleEntry("last_commit_hash").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
+		na.AssembleEntry("data_hash").AssignLink(CreateHashCidLink(req.Header.DataHash))
+		na.AssembleEntry("validators_hash").AssignLink(CreateHashCidLink(req.Header.ProposerAddress))
+		na.AssembleEntry("next_validators_hash").AssignLink(CreateHashCidLink(req.Header.NextValidatorsHash))
+
+		na.AssembleEntry("consensus_hash").AssignLink(CreateHashCidLink(req.Header.ConsensusHash))
+		na.AssembleEntry("app_hash").AssignLink(CreateHashCidLink(req.Header.AppHash))
+		na.AssembleEntry("last_result_hash").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
+		na.AssembleEntry("evidence_hash").AssignLink(CreateHashCidLink(req.Header.EvidenceHash))
+	})
+	return head
+}
+
+func (fss DagCosmosStreamingService) BuildValidatorMap(req *abci.RequestBeginBlock) datamodel.Node {
+	head := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("byzantine_validators").CreateList(cast.ToInt64(len(req.ByzantineValidators)), func(la fluent.ListAssembler) {
+			for i := 0; i < len(req.ByzantineValidators); i++ {
+				//c, _ := cid.Parse(req.ByzantineValidators[i])
+				// todo: implement error handling
+				//la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
+				if req.ByzantineValidators[i].Type == abci.EvidenceType_DUPLICATE_VOTE {
+					//req.ByzantineValidators[i].(tmt)
+				}
+
+			}
+		})
+	})
+
+	return head
+}
+
+func BuildLastCommitMap() {
 
 }
 

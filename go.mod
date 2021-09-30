@@ -46,9 +46,9 @@ require (
 require (
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/ipld/go-car v0.3.1
-	github.com/ipld/go-car/v2 v2.0.2
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
+	github.com/multiformats/go-multihash v0.0.15
 	github.com/onsi/ginkgo v1.15.1 // indirect
 	github.com/proofzero/go-ipld-linkstore v1.0.0
 )
