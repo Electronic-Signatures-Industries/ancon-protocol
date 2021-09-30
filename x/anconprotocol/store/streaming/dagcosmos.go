@@ -7,16 +7,18 @@ import (
 	"path/filepath"
 	"sync"
 
-	carv1 "github.com/ipld/go-car"
 	"github.com/multiformats/go-multihash"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
 	"github.com/spf13/cast"
 
 	"github.com/ipfs/go-cid"
+	carv1 "github.com/ipld/go-car"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/multicodec"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -24,7 +26,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/vulcanize/go-codec-dagcosmos/header"
 )
 
 /*
@@ -74,6 +75,11 @@ func NewDagCosmosIntermediateWriter(outChan chan<- []byte) *DagCosmosIntermediat
 func (iw *DagCosmosIntermediateWriter) Write(b []byte) (int, error) {
 	iw.outChan <- b
 	return len(b), nil
+}
+func init() {
+	multicodec.RegisterEncoder(0x71, dagcbor.Encode)
+	multicodec.RegisterDecoder(0x71, dagcbor.Decode)
+
 }
 
 // NewStreamingService creates a new StreamingService for the provided writeDir, (optional) filePrefix, and storeKeys
@@ -136,43 +142,56 @@ func MustCreateHashCidLink(hash []byte) (cidlink.Link, error) {
 }
 
 func (fss *DagCosmosStreamingService) BuildHeaderMap(req *abci.RequestBeginBlock) datamodel.Node {
-	head := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+	node := fluent.MustBuildMap(basicnode.Prototype.Map, 14, func(na fluent.MapAssembler) {
 		na.AssembleEntry("chain_id").AssignString(req.Header.ChainID)
 		na.AssembleEntry("hash").AssignString(string(req.Hash))
 		na.AssembleEntry("height").AssignInt(req.Header.Height)
-		na.AssembleEntry("last_commit_hash").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
-		na.AssembleEntry("data_hash").AssignLink(CreateHashCidLink(req.Header.DataHash))
-		na.AssembleEntry("validators_hash").AssignLink(CreateHashCidLink(req.Header.ProposerAddress))
-		na.AssembleEntry("next_validators_hash").AssignLink(CreateHashCidLink(req.Header.NextValidatorsHash))
+		na.AssembleEntry("last_commit_link").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
+		na.AssembleEntry("data_link").AssignLink(CreateHashCidLink(req.Header.DataHash))
+		na.AssembleEntry("validators_link").AssignLink(CreateHashCidLink(req.Header.ProposerAddress))
+		na.AssembleEntry("next_validators_link").AssignLink(CreateHashCidLink(req.Header.NextValidatorsHash))
 
-		na.AssembleEntry("consensus_hash").AssignLink(CreateHashCidLink(req.Header.ConsensusHash))
-		na.AssembleEntry("app_hash").AssignLink(CreateHashCidLink(req.Header.AppHash))
-		na.AssembleEntry("last_result_hash").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
-		na.AssembleEntry("evidence_hash").AssignLink(CreateHashCidLink(req.Header.EvidenceHash))
-	})
-	return head
-}
+		na.AssembleEntry("consensus_link").AssignLink(CreateHashCidLink(req.Header.ConsensusHash))
+		na.AssembleEntry("app_link").AssignLink(CreateHashCidLink(req.Header.AppHash))
+		na.AssembleEntry("last_result_link").AssignLink(CreateHashCidLink(req.Header.LastCommitHash))
+		na.AssembleEntry("evidence_link").AssignLink(CreateHashCidLink(req.Header.EvidenceHash))
 
-func (fss DagCosmosStreamingService) BuildValidatorMap(req *abci.RequestBeginBlock) datamodel.Node {
-	head := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
-		na.AssembleEntry("byzantine_validators").CreateList(cast.ToInt64(len(req.ByzantineValidators)), func(la fluent.ListAssembler) {
-			for i := 0; i < len(req.ByzantineValidators); i++ {
-				//c, _ := cid.Parse(req.ByzantineValidators[i])
-				// todo: implement error handling
-				//la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
-				if req.ByzantineValidators[i].Type == abci.EvidenceType_DUPLICATE_VOTE {
-					//req.ByzantineValidators[i].(tmt)
-				}
+		na.AssembleEntry("version_app").AssignInt(int64(req.Header.Version.App))
+		na.AssembleEntry("version_block").AssignInt(int64(req.Header.Version.Block))
+		na.AssembleEntry("time").AssignInt(int64(req.Header.Time.Unix()))
+		na.AssembleEntry("proposer_address").AssignString(string(req.Header.ProposerAddress))
 
-			}
+		na.AssembleEntry("last_block_id").CreateMap(3, func(la fluent.MapAssembler) {
+			la.AssembleEntry("hash").AssignLink(CreateHashCidLink(req.Header.LastBlockId.Hash))
+			la.AssembleEntry("partsetheader_link").AssignLink(CreateHashCidLink(req.Header.LastBlockId.PartSetHeader.Hash))
+			la.AssembleEntry("partsetheader_total").AssignInt((int64(req.Header.LastBlockId.PartSetHeader.Total)))
 		})
-	})
 
-	return head
+	})
+	return node
 }
 
-func BuildLastCommitMap() {
+func (fss *DagCosmosStreamingService) BuildLastCommitMap(req *abci.RequestBeginBlock) datamodel.Node {
+	node := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("round").AssignInt(cast.ToInt64(req.LastCommitInfo.Round))
 
+		// Vote
+		if len(req.LastCommitInfo.Votes) > 0 {
+			na.AssembleEntry("votes").CreateList(int64(len(req.LastCommitInfo.Votes)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(req.LastCommitInfo.Votes); i++ {
+					v := req.LastCommitInfo.Votes[i]
+					la.AssembleValue().CreateMap(3, func(m fluent.MapAssembler) {
+
+						m.AssembleEntry("signed_last_block").AssignBool(v.SignedLastBlock)
+						m.AssembleEntry("validator_address").AssignBytes(v.Validator.Address)
+						m.AssembleEntry("validator_power").AssignInt(v.Validator.Power)
+					})
+				}
+			})
+
+		}
+	})
+	return node
 }
 
 // ListenBeginBlock satisfies the Hook interface
@@ -182,26 +201,24 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
 
-	//pt := bindnode.Prototype(req.ByzantineValidators, GetHeaderType().)
-
-	head := fluent.MustBuildMap(basicnode.Prototype.Map, 2, func(na fluent.MapAssembler) {
-		na.AssembleEntry("chain_id").AssignString(req.Header.ChainID)
-		na.AssembleEntry("hash").AssignString(string(req.Hash))
-	})
-
-	// lc := bindnode.Wrap(&req.LastCommitInfo, nil)
-	// ev := bindnode.Wrap(&req.ByzantineValidators, nil)
-
-	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), ev)
-
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 
 	selector := ssb.ExploreAll(ssb.Matcher()).Node()
 
-	link := fss.sls.MustComputeLink(GetLinkPrototype(), head)
-	fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), head)
-	// fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), lc)
-	//	hashnode := fss.sls.MustStore(ipld.LinkContext{}, GetLinkPrototype(), h)
+	head := fss.BuildHeaderMap(&req)
+
+	lsys := fss.sls
+	c := ipld.LinkContext{Ctx: ctx.Context()}
+	p := GetLinkPrototype()
+
+	//	link := fss.sls.MustComputeLink(GetLinkPrototype(), head)
+	link, err := lsys.Store(c, p, head)
+	if err != nil {
+		return err
+	}
+
+	lc := fss.BuildLastCommitMap(&req)
+	fss.sls.MustStore(c, p, lc)
 	car := carv1.NewSelectiveCar(context.Background(),
 		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
 		[]carv1.Dag{{

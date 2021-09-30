@@ -35,7 +35,6 @@ require (
 	github.com/tendermint/spm v0.0.0-20210524110815-6d7452d2dc4a
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4
-	github.com/vulcanize/go-codec-dagcosmos v0.0.0-20210804041909-7dea9565a467
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af
 	google.golang.org/grpc v1.40.0
@@ -45,12 +44,19 @@ require (
 
 require (
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/ipfs/go-blockservice v0.1.3 // indirect
+	github.com/ipfs/go-datastore v0.4.5 // indirect
+	github.com/ipfs/go-ipfs-blockstore v1.0.4 // indirect
+	github.com/ipfs/go-peertaskqueue v0.2.0 // indirect
 	github.com/ipld/go-car v0.3.1
-	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
+	github.com/ipld/go-codec-dagpb v1.3.0 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
+	github.com/libp2p/go-libp2p v0.13.0 // indirect
+	github.com/libp2p/go-libp2p-core v0.8.5 // indirect
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/onsi/ginkgo v1.15.1 // indirect
 	github.com/proofzero/go-ipld-linkstore v1.0.0
+	github.com/whyrusleeping/cbor-gen v0.0.0-20210219115102-f37d292932f2 // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

@@ -91,7 +91,7 @@ var (
 
 	// file stuff
 	dagtestPrefix = "testPrefix"
-	dagtestDir    = "/home/edgar/.ancon-protocold"
+	dagtestDir    = "/home/rogelio/.ancon-protocold/.test"
 
 	// mock state changes
 	dagmockKey1   = []byte{1, 2, 3}
