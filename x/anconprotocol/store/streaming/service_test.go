@@ -140,7 +140,7 @@ func TestFileStreamingService(t *testing.T) {
 	testListener2 = testStreamingService.listeners[mockStoreKey2][0]
 	wg := new(sync.WaitGroup)
 	quitChan := make(chan struct{})
-	testStreamingService.Stream(wg, quitChan)
+	testStreamingService.Stream(wg)
 	testListenBeginBlock(t)
 	testListenDeliverTx1(t)
 	testListenDeliverTx2(t)

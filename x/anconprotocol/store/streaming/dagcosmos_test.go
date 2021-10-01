@@ -139,7 +139,7 @@ func TestDagCosmosDagCosmosStreamingService(t *testing.T) {
 	testDagCosmosListener2 = testDagCosmosStreamingService.listeners[mockStoreKey2][0]
 	wg := new(sync.WaitGroup)
 	quitChan := make(chan struct{})
-	testDagCosmosStreamingService.Stream(wg, quitChan)
+	testDagCosmosStreamingService.Stream(wg)
 	testDagCosmosListenBeginBlock(t)
 	testDagCosmosListenDeliverTx1(t)
 	testDagCosmosListenDeliverTx2(t)

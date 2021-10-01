@@ -24,6 +24,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/iavl"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -57,6 +58,7 @@ type DagCosmosStreamingService struct {
 	currentBlockNumber int64                                  // the current block number
 	currentTxIndex     int64                                  // the index of the current tx
 	quitChan           chan struct{}                          // channel to synchronize closure
+	currentHeader      types.Header
 }
 
 // DagCosmosIntermediateWriter is used so that we do not need to update the underlying io.Writer inside the StoreKVPairWriteListener
@@ -95,9 +97,9 @@ func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.S
 	}
 	// check that the writeDir exists and is writeable so that we can catch the error here at initialization if it is not
 	// we don't open a dstFile until we receive our first ABCI message
-	// if err := isDirWriteable(writeDir); err != nil {
-	// 	return nil, err
-	// }
+	if err := isDirWriteable(writeDir); err != nil {
+		return nil, err
+	}
 	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
 	return &DagCosmosStreamingService{
 		sls:            sls,
@@ -195,6 +197,29 @@ func (fss *DagCosmosStreamingService) BuildLastCommitMap(req *abci.RequestBeginB
 	return node
 }
 
+func (fss *DagCosmosStreamingService) BuildTx(tx []byte) datamodel.Node {
+	node := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("round").AssignInt(cast.ToInt64(req.LastCommitInfo.Round))
+
+		// Vote
+		if len(req.LastCommitInfo.Votes) > 0 {
+			na.AssembleEntry("votes").CreateList(int64(len(req.LastCommitInfo.Votes)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(req.LastCommitInfo.Votes); i++ {
+					v := req.LastCommitInfo.Votes[i]
+					la.AssembleValue().CreateMap(3, func(m fluent.MapAssembler) {
+
+						m.AssembleEntry("signed_last_block").AssignBool(v.SignedLastBlock)
+						m.AssembleEntry("validator_address").AssignBytes(v.Validator.Address)
+						m.AssembleEntry("validator_power").AssignInt(v.Validator.Power)
+					})
+				}
+			})
+
+		}
+	})
+	return node
+}
+
 // ListenBeginBlock satisfies the Hook interface
 // It writes out the received BeginBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
@@ -202,36 +227,27 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
 
-	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
-
-	selector := ssb.ExploreAll(ssb.Matcher()).Node()
-
+	// TODO: Need to add developer comments!
 	head := fss.BuildHeaderMap(&req)
 
 	lsys := fss.sls
 	c := ipld.LinkContext{Ctx: ctx.Context()}
 	p := GetLinkPrototype()
 
-	//	link := fss.sls.MustComputeLink(GetLinkPrototype(), head)
+	// Store header
 	link, err := lsys.Store(c, p, head)
 	if err != nil {
 		return err
 	}
 
+	// Missing ByzantineValidators
+
+	// Store LastCommitMap
 	lc := fss.BuildLastCommitMap(&req)
 	fss.sls.MustStore(c, p, lc)
-	car := carv1.NewSelectiveCar(context.Background(),
-		fss.sls.ReadStore, // <- special sauce block format access to prime nodes.
-		[]carv1.Dag{{
-			// CID of the root node of the DAG to traverse.
-			Root:     link.(cidlink.Link).Cid,
-			Selector: selector,
-			// Traversal convenience selector that gives us "everything".
-			// Selector: everything(),
-		}})
-	file, _ := os.Create(dstFile)
-	car.Write(file)
 
+	// Write CAR	
+	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
 	// v2file := append([]byte(dstFile), []byte("v2")...)
 	// carv2.WrapV1File(dstFile, string(v2file))
 	return nil
@@ -240,10 +256,12 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBeginBlock) string {
 	fss.currentBlockNumber = req.GetHeader().Height
 	fss.currentTxIndex = 0
+	fss.currentHeader = nil
 	fileName := fmt.Sprintf("block-%d-begin.car", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
+	fss.currentHeader = req.GetHeader
 	return filepath.Join(fss.writeDir, fileName)
 }
 
@@ -251,24 +269,30 @@ func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBegi
 // It writes out the received DeliverTx request and response and the resulting state changes out to a file as described
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
-	// // Just need to translate Tx protobuf to ipld node
-	// // generate the new file
-	// dstFile := fss.getDeliverTxFilePath()
+	// generate the new file
+	dstFile := fss.getDeliverTxFilePath(req)
 
-	// builder := dagcosmos.Type.ResponseDeliverTx.NewBuilder()
-	// var resultNode ipld.Node
-	// err := dagcosmosresult.DecodeParams(builder, res)
-	// if err != nil {
-	// 	return err
-	// }
-	// resultNode = builder.Build()
+	head := fss.BuildHeaderMap(&req)
 
-	// txb := dagcosmos.Type.Tx.NewBuilder()
-	// txb.AssignBytes(req.GetTx())
-	// txNode := txb.Build()
+	lsys := fss.sls
+	linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
+	lp := GetLinkPrototype()
 
-	// return fss.WriteDeliverTxCAR(dstFile, txNode, resultNode)
+	// Store header
+	link, err := lsys.Store(linkCtx, lp, head)
+	if err != nil {
+		return err
+	}
 
+	// Store Tx - Translate to MsgEthereumTx
+	lc := fss.BuildTx(&req.GetTx())
+	fss.sls.MustStore(c, p, lc)
+
+
+	// Write CAR	
+	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
+	// v2file := append([]byte(dstFile), []byte("v2")...)
+	// carv2.WrapV1File(dstFile, string(v2file))
 	return nil
 }
 
@@ -285,7 +309,67 @@ func (fss *DagCosmosStreamingService) getDeliverTxFilePath() string {
 // It writes out the received EndBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) error {
-	// no-op
+	// generate the new file
+	dstFile := fss.getEndBlockFilePath(req)
+
+	// Store Height - height_at_end_block
+	// req.Height 
+
+
+	// res.ConsensusParamUpdates 
+	// res.ConsensusParamUpdates.Block.MaxBytes
+	// res.ConsensusParamUpdates.Block.MaxBytes
+	// res.ConsensusParamUpdates.Evidence.MaxAgeDuration
+	// res.ConsensusParamUpdates.Evidence.MaxAgeNumBlocks
+	// res.ConsensusParamUpdates.Evidence.MaxBytes
+	// res.ConsensusParamUpdates.Validator.PubKeyTypes
+	// res.ConsensusParamUpdates.Version.AppVersion
+
+	// res.Events[0].Attributes
+	// res.Events[0].Type
+	// res.ValidatorUpdates
+	// res.GetValidatorUpdates()[0].Power
+	// res.GetValidatorUpdates()[0].PubKey
+	
+	// set key
+	ctx.KVStore("evm").Set("/bla", "foo")
+	// Get Proof
+
+	iavlStore := ctx.MultiStore().(*iavl.Store)
+	// Get Proof
+	proofres := iavlStore.Query(abci.RequestQuery{
+		Path:  "/key", // required path to get key/value+proof
+		Data:  []byte("MYKEY"),
+		Prove: true,
+	})
+
+	proofres.ProofOps
+
+	// Enviar a GetProof modificado que acepte proof ops proof.go - GetProofsByKey
+	// Store in IPLD Dag one or both existence proof
+	// Vector Commitments
+	
+	head := fss.BuildHeaderMap(&req)
+
+	lsys := fss.sls
+	linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
+	lp := GetLinkPrototype()
+
+	// Store header
+	link, err := lsys.Store(linkCtx, lp, head)
+	if err != nil {
+		return err
+	}
+
+	// Store LastCommitMap
+	lc := fss.BuildTx(&req.GetTx())
+	fss.sls.MustStore(c, p, lc)
+
+
+	// Write CAR	
+	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
+	// v2file := append([]byte(dstFile), []byte("v2")...)
+	// carv2.WrapV1File(dstFile, string(v2file))
 	return nil
 }
 
@@ -323,3 +407,25 @@ func (fss *DagCosmosStreamingService) Close() error {
 	close(fss.quitChan)
 	return nil
 }
+
+// WriteCAR
+func (fss *DagCosmosStreamingService) WriteCAR(root cid.Cid, filename string) error {
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+	selector := ssb.ExploreAll(ssb.Matcher()).Node()
+
+	car := carv1.NewSelectiveCar(context.Background(),
+		fss.sls.ReadStore,
+		[]carv1.Dag{{
+			Root:     root,
+			Selector: selector,
+		}})
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	err = car.Write(file)
+	if err != nil {
+		return err
+	}
+
+	return nil
