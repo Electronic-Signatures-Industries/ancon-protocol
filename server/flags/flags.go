@@ -16,6 +16,12 @@ const (
 	CPUProfile     = "cpu-profile"
 )
 
+// TLS flags
+const (
+	TLSCertPath = "tls.certificate-path"
+	TLSKeyPath  = "tls.key-path"
+)
+
 // GRPC-related flags.
 const (
 	GRPCEnable     = "grpc.enable"
