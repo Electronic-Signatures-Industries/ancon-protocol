@@ -40,6 +40,7 @@ type DagEthStreamingService struct {
 	stateCacheLock     *sync.Mutex                            // mutex for the state cache
 	currentBlockNumber int64                                  // the current block number
 	currentTxIndex     int64                                  // the index of the current tx
+	quitChan           chan struct{}                          // channel to synchronize closure
 }
 
 // DagEthIntermediateWriter is used so that we do not need to update the underlying io.Writer inside the StoreKVPairWriteListener
@@ -245,13 +246,14 @@ func (fss *DagEthStreamingService) openEndBlockFile() (*os.File, error) {
 // Stream spins up a goroutine select loop which awaits length-prefixed binary encoded KV pairs and caches them in the order they were received
 // Do we need this and an intermediate writer? We could just write directly to the buffer on calls to Write
 // But then we don't support a Stream interface, which could be needed for other types of streamers
-func (fss *DagEthStreamingService) Stream(wg *sync.WaitGroup, quitChan <-chan struct{}) {
+func (fss *DagEthStreamingService) Stream(wg *sync.WaitGroup) {
+	fss.quitChan = make(chan struct{})
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		for {
 			select {
-			case <-quitChan:
+			case <-fss.quitChan:
 				return
 			case by := <-fss.srcChan:
 				fss.stateCacheLock.Lock()
@@ -260,4 +262,10 @@ func (fss *DagEthStreamingService) Stream(wg *sync.WaitGroup, quitChan <-chan st
 			}
 		}
 	}()
+}
+
+// Close satisfies the io.Closer interface, which satisfies the baseapp.StreamingService interface
+func (fss *DagEthStreamingService) Close() error {
+	close(fss.quitChan)
+	return nil
 }
