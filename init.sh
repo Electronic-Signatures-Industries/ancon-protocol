@@ -95,6 +95,16 @@ sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g'
 sed -i 's/swagger = false/swagger = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/enable = false/enable = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
+echo '' >> $HOME/.ancon-protocold/config/app.toml
+echo '[store]' >> $HOME/.ancon-protocold/config/app.toml
+echo 'streamers = ["dagcosmos",]' >> $HOME/.ancon-protocold/config/app.toml
+echo '' >> $HOME/.ancon-protocold/config/app.toml
+echo '[streamers]' >> $HOME/.ancon-protocold/config/app.toml
+echo '[streamers.dagcosmos]' >> $HOME/.ancon-protocold/config/app.toml
+echo 'keys = ["mint", "acc", "evm"]' >> $HOME/.ancon-protocold/config/app.toml
+echo 'writeDir ="'$HOME'/.ancon-protocold/data"' >> $HOME/.ancon-protocold/config/app.toml
+echo 'prefix = "dagbridge"' >> $HOME/.ancon-protocold/config/app.toml
 
 
 #~/go/bin/ancon-protocold keys show alice | echo
