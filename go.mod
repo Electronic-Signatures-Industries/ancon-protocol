@@ -50,6 +50,7 @@ require (
 	github.com/ipfs/go-peertaskqueue v0.2.0 // indirect
 	github.com/ipld/go-car v0.3.1
 	github.com/ipld/go-codec-dagpb v1.3.0 // indirect
+	github.com/irisnet/irismod v1.4.0
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/libp2p/go-libp2p v0.13.0 // indirect
 	github.com/libp2p/go-libp2p-core v0.8.5 // indirect
