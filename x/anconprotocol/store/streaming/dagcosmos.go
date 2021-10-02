@@ -7,11 +7,13 @@ import (
 	"path/filepath"
 	"sync"
 
+	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/types"
 	"github.com/multiformats/go-multihash"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
 	"github.com/spf13/cast"
 
 	"github.com/ipfs/go-cid"
+
 	carv1 "github.com/ipld/go-car"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -24,13 +26,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store/iavl"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	iristypes "github.com/irisnet/irismod/modules/token/types"
 )
 
 /*
@@ -49,6 +46,9 @@ the length-prefixed protobuf encoded `EndBlock` request is written, and the resp
 
 var _ StreamingService = &DagCosmosStreamingService{}
 
+type StreamingHooks struct {
+}
+
 // StreamingService is a concrete implementation of StreamingService that writes state changes out to files
 type DagCosmosStreamingService struct {
 	sls                *linkstore.StorageLinkSystem
@@ -62,7 +62,7 @@ type DagCosmosStreamingService struct {
 	currentBlockNumber int64                                  // the current block number
 	currentTxIndex     int64                                  // the index of the current tx
 	quitChan           chan struct{}                          // channel to synchronize closure
-	currentHeader      types.Header
+	currentRoot        cidlink.Link
 }
 
 // DagCosmosIntermediateWriter is used so that we do not need to update the underlying io.Writer inside the StoreKVPairWriteListener
@@ -90,7 +90,7 @@ func init() {
 }
 
 // NewStreamingService creates a new StreamingService for the provided writeDir, (optional) filePrefix, and storeKeys
-func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*DagCosmosStreamingService, error) {
+func NewDagCosmosStreamingService(ctx context.Context, writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*DagCosmosStreamingService, error) {
 	listenChan := make(chan []byte)
 	iw := NewIntermediateWriter(listenChan)
 	listener := types.NewStoreKVPairWriteListener(iw, c)
@@ -104,7 +104,9 @@ func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.S
 	if err := isDirWriteable(writeDir); err != nil {
 		return nil, err
 	}
+
 	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
+
 	return &DagCosmosStreamingService{
 		sls:            sls,
 		listeners:      listeners,
@@ -201,43 +203,27 @@ func (fss *DagCosmosStreamingService) BuildLastCommitMap(req *abci.RequestBeginB
 	return node
 }
 
-func (fss *DagCosmosStreamingService) BuildTx(tx []byte, req *abci.RequestBeginBlock) datamodel.Node {
-	node := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
-		na.AssembleEntry("round").AssignInt(cast.ToInt64(req.LastCommitInfo.Round))
-
-		// switch expression {
-		// case condition:
-		// 	na.AssembleEntry("votes").CreateList(int64(len(req.LastCommitInfo.Votes)), func(la fluent.ListAssembler) {
-		// 		for i := 0; i < len(req.LastCommitInfo.Votes); i++ {
-		// 			v := req.LastCommitInfo.Votes[i]
-		// 			la.AssembleValue().CreateMap(3, func(m fluent.MapAssembler) {
-
-		// 				m.AssembleEntry("signed_last_block").AssignBool(v.SignedLastBlock)
-		// 				m.AssembleEntry("validator_address").AssignBytes(v.Validator.Address)
-		// 				m.AssembleEntry("validator_power").AssignInt(v.Validator.Power)
-		// 			})
-		// 		}
-		// 	})
-		// }
-
-		// Vote
-		if len(req.LastCommitInfo.Votes) > 0 {
-			na.AssembleEntry("votes").CreateList(int64(len(req.LastCommitInfo.Votes)), func(la fluent.ListAssembler) {
-				for i := 0; i < len(req.LastCommitInfo.Votes); i++ {
-					v := req.LastCommitInfo.Votes[i]
-					la.AssembleValue().CreateMap(3, func(m fluent.MapAssembler) {
-
-						m.AssembleEntry("signed_last_block").AssignBool(v.SignedLastBlock)
-						m.AssembleEntry("validator_address").AssignBytes(v.Validator.Address)
-						m.AssembleEntry("validator_power").AssignInt(v.Validator.Power)
-					})
-				}
-			})
-
-		}
-
-	})
-	return node
+func (fss *DagCosmosStreamingService) BuildTx(tx evmtypes.MsgEthereumTx) datamodel.Node {
+	data := tx.AsTransaction()
+	if data != nil {
+		node := fluent.MustBuildMap(basicnode.Prototype.Map, 12, func(na fluent.MapAssembler) {
+			na.AssembleEntry("size").AssignFloat(tx.Size_)
+			na.AssembleEntry("hash").AssignString(tx.Hash)
+			na.AssembleEntry("from").AssignString(tx.From)
+			na.AssembleEntry("chain_id").AssignString(data.ChainId().String())
+			na.AssembleEntry("cost").AssignString(data.Cost().String())
+			na.AssembleEntry("gas_price").AssignString(data.GasPrice().String())
+			na.AssembleEntry("gas").AssignString(string(data.Gas()))
+			na.AssembleEntry("nonce").AssignString(string(data.Nonce()))
+			na.AssembleEntry("value").AssignString(data.Value().String())
+			na.AssembleEntry("tx_type").AssignInt(int64(data.Type()))
+			na.AssembleEntry("data").AssignBytes((data.Data()))
+			na.AssembleEntry("to").AssignString(data.To().Hex())
+		})
+		return node
+	} else {
+		return nil
+	}
 }
 
 // ListenBeginBlock satisfies the Hook interface
@@ -246,7 +232,6 @@ func (fss *DagCosmosStreamingService) BuildTx(tx []byte, req *abci.RequestBeginB
 func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
-
 	// TODO: Need to add developer comments!
 	head := fss.BuildHeaderMap(&req)
 
@@ -262,9 +247,12 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 
 	// Missing ByzantineValidators
 
+	fss.currentRoot = link.(cidlink.Link)
 	// Store LastCommitMap
 	lc := fss.BuildLastCommitMap(&req)
 	fss.sls.MustStore(c, p, lc)
+
+	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot.Cid.String(), ctx.BlockHeight())
 
 	// Write CAR
 	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
@@ -276,42 +264,40 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBeginBlock) string {
 	fss.currentBlockNumber = req.GetHeader().Height
 	fss.currentTxIndex = 0
-	fss.currentHeader = nil
+	fss.currentRoot = cidlink.Link{}
 	fileName := fmt.Sprintf("block-%d-begin.car", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
 	}
-	fss.currentHeader = req.GetHeader
 	return filepath.Join(fss.writeDir, fileName)
 }
 
 // ListenDeliverTx satisfies the Hook interface
 // It writes out the received DeliverTx request and response and the resulting state changes out to a file as described
 // in the above the naming schema
-func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx, reqBegin *abci.RequestBeginBlock) error {
+func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
 	// generate the new file
 	dstFile := fss.getDeliverTxFilePath(req)
 
-	head := fss.BuildHeaderMap(reqBegin)
-
-	lsys := fss.sls
 	linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
 	lp := GetLinkPrototype()
 
-	// Store header
-	link, err := lsys.Store(linkCtx, lp, head)
-	if err != nil {
-		return err
+	if req.Tx != nil {
+
+		// Store Tx - Translate to MsgEthereumTx
+		msg := evmtypes.MsgEthereumTx{}
+		msg.Unmarshal(req.Tx)
+		tx := fss.BuildTx(msg)
+
+		if tx != nil {
+			fss.sls.MustStore(linkCtx, lp, tx)
+
+			// Write CAR
+			fss.WriteCAR(fss.currentRoot.Cid, dstFile)
+			// v2file := append([]byte(dstFile), []byte("v2")...)
+			// carv2.WrapV1File(dstFile, string(v2file))
+		}
 	}
-
-	// Store Tx - Translate to MsgEthereumTx
-	lc := fss.BuildTx(ctx.TxBytes(), reqBegin)
-	fss.sls.MustStore(c, p, lc)
-
-	// Write CAR
-	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
-	// v2file := append([]byte(dstFile), []byte("v2")...)
-	// carv2.WrapV1File(dstFile, string(v2file))
 	return nil
 }
 
@@ -327,9 +313,9 @@ func (fss *DagCosmosStreamingService) getDeliverTxFilePath(req abci.RequestDeliv
 // ListenEndBlock satisfies the Hook interface
 // It writes out the received EndBlock request and response and the resulting state changes out to a file as described
 // in the above the naming schema
-func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock, reqBegin abci.RequestBeginBlock) error {
+func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) error {
 	// generate the new file
-	dstFile := fss.getEndBlockFilePath()
+	//	dstFile := fss.getEndBlockFilePath()
 
 	// Store Height - height_at_end_block
 	// req.Height
@@ -349,44 +335,42 @@ func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.R
 	// res.GetValidatorUpdates()[0].Power
 	// res.GetValidatorUpdates()[0].PubKey
 
-	// set key
-	ctx.KVStore("evm").Set("/bla", "foo")
-	// Get Proof
+	// // set key
+	// ctx.KVStore("evm").Set("/bla", "foo")
+	// // Get Proof
 
-	iavlStore := ctx.MultiStore().(*iavl.Store)
-	// Get Proof
-	proofres := iavlStore.Query(abci.RequestQuery{
-		Path:  "/key", // required path to get key/value+proof
-		Data:  []byte("MYKEY"),
-		Prove: true,
-	})
+	// iavlStore := ctx.MultiStore().(*iavl.Store)
+	// // Get Proof
+	// proofres := iavlStore.Query(abci.RequestQuery{
+	// 	Path:  "/key", // required path to get key/value+proof
+	// 	Data:  []byte("MYKEY"),
+	// 	Prove: true,
+	// })
 
-	proofres.ProofOps
+	// proofres.ProofOps
 
-	// Enviar a GetProof modificado que acepte proof ops proof.go - GetProofsByKey
-	// Store in IPLD Dag one or both existence proof
-	// Vector Commitments
+	// // Enviar a GetProof modificado que acepte proof ops proof.go - GetProofsByKey
+	// // Store in IPLD Dag one or both existence proof
+	// // Vector Commitments
 
-	head := fss.BuildHeaderMap(&reqBegin)
+	// head := fss.BuildHeaderMap(&reqBegin)
 
-	lsys := fss.sls
-	linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
-	lp := GetLinkPrototype()
+	// lsys := fss.sls
+	// linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
+	// lp := GetLinkPrototype()
 
-	// Store header
-	link, err := lsys.Store(linkCtx, lp, head)
-	if err != nil {
-		return err
-	}
+	// // Store header
+	// link, err := lsys.Store(linkCtx, lp, head)
+	// if err != nil {
+	// 	return err
+	// }
 
-	// Store LastCommitMap
-	lc := fss.BuildTx(ctx.TxBytes(), &reqBegin)
-	fss.sls.MustStore(c, p, lc)
+	// // Store LastCommitMap
+	// lc := fss.BuildTx(ctx.TxBytes(), &reqBegin)
+	// fss.sls.MustStore(c, p, lc)
 
-	// Write CAR
-	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
-	// v2file := append([]byte(dstFile), []byte("v2")...)
-	// carv2.WrapV1File(dstFile, string(v2file))
+	// // Write CAR
+	// fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
 	return nil
 }
 
@@ -446,61 +430,4 @@ func (fss *DagCosmosStreamingService) WriteCAR(root cid.Cid, filename string) er
 	}
 
 	return nil
-}
-
-type ValidateTokenFeeDecorator struct {
-	k  Keeper
-	bk iristypes.BankKeeper
-}
-
-func NewValidateTokenFeeDecorator(k Keeper, bk iristypes.BankKeeper) ValidateTokenFeeDecorator {
-	return ValidateTokenFeeDecorator{
-		k:  k,
-		bk: bk,
-	}
-}
-
-// AnteHandle returns an AnteHandler that checks if the balance of
-// the fee payer is sufficient for token related fee
-func (dtf ValidateTokenFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
-	// total fee
-	feeMap := make(map[string]sdk.Coin)
-	for _, msg := range tx.GetMsgs() {
-		switch msg := msg.(type) {
-		case *iristypes.MsgIssueToken:
-			fee, err := dtf.k.GetTokenIssueFee(ctx, msg.Symbol)
-			if err != nil {
-				return ctx, sdkerrors.Wrap(iristypes.ErrInvalidBaseFee, err.Error())
-			}
-
-			if fe, ok := feeMap[msg.Owner]; ok {
-				feeMap[msg.Owner] = fe.Add(fee)
-			} else {
-				feeMap[msg.Owner] = fee
-			}
-		case *iristypes.MsgMintToken:
-			fee, err := dtf.k.GetTokenMintFee(ctx, msg.Symbol)
-			if err != nil {
-				return ctx, sdkerrors.Wrap(iristypes.ErrInvalidBaseFee, err.Error())
-			}
-
-			if fe, ok := feeMap[msg.Owner]; ok {
-				feeMap[msg.Owner] = fe.Add(fee)
-			} else {
-				feeMap[msg.Owner] = fee
-			}
-		}
-	}
-
-	for addr, fee := range feeMap {
-		owner, _ := sdk.AccAddressFromBech32(addr)
-		balance := dtf.bk.GetBalance(ctx, owner, fee.Denom)
-		if balance.IsLT(fee) {
-			return ctx, sdkerrors.Wrapf(
-				sdkerrors.ErrInsufficientFunds, "insufficient coins for token fee; %s < %s", balance, fee,
-			)
-		}
-	}
-	// continue
-	return next(ctx, tx, simulate)
 }
