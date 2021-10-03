@@ -1,7 +1,6 @@
 package streaming
 
 import (
-	"context"
 	"fmt"
 	"strings"
 
@@ -13,7 +12,7 @@ import (
 )
 
 // ServiceConstructor is used to construct a streaming service
-type ServiceConstructor func(ctx context.Context, opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error)
+type ServiceConstructor func(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error)
 
 // ServiceType enum for specifying the type of StreamingService
 type ServiceType int
@@ -74,21 +73,21 @@ func NewServiceConstructor(name string) (ServiceConstructor, error) {
 }
 
 // DagCosmosStreamingConstructor is the streaming.ServiceConstructor function for creating a DagCosmosStreamingService
-func DagCosmosStreamingConstructor(ctx context.Context, opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
+func DagCosmosStreamingConstructor(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
 	filePrefix := cast.ToString(opts.Get("streamers.dagcosmos.prefix"))
 	fileDir := cast.ToString(opts.Get("streamers.dagcosmos.writeDir"))
-	return NewDagCosmosStreamingService(ctx, fileDir, filePrefix, keys, marshaller)
+	return NewDagCosmosStreamingService(fileDir, filePrefix, keys, marshaller)
 }
 
 // DagEthStreamingConstructor is the streaming.ServiceConstructor function for creating a DagEthStreamingService
-func DagEthStreamingConstructor(ctx context.Context, opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
+func DagEthStreamingConstructor(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
 	filePrefix := cast.ToString(opts.Get("streamers.dageth.prefix"))
 	fileDir := cast.ToString(opts.Get("streamers.dageth.writeDir"))
 	return NewDagEthStreamingService(fileDir, filePrefix, keys, marshaller)
 }
 
 // FileStreamingConstructor is the streaming.ServiceConstructor function for creating a FileStreamingService
-func FileStreamingConstructor(ctx context.Context, opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
+func FileStreamingConstructor(opts serverTypes.AppOptions, keys []sdk.StoreKey, marshaller codec.BinaryCodec) (StreamingService, error) {
 	filePrefix := cast.ToString(opts.Get("streamers.file.prefix"))
 	fileDir := cast.ToString(opts.Get("streamers.file.writeDir"))
 	return NewStreamingService(fileDir, filePrefix, keys, marshaller)

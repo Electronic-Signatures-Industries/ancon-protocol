@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -812,7 +811,7 @@ func LoadStreamingServices(app *App, appOpts servertypes.AppOptions, appCodec co
 		}
 
 		// generate the streaming service using the constructor, appOptions, and the StoreKeys we want to expose
-		streamingService, err := constructor(context.Background(), appOpts, exposeStoreKeys, appCodec)
+		streamingService, err := constructor(appOpts, exposeStoreKeys, appCodec)
 		if err != nil {
 			// close any services we may have already spun up before hitting the error on this one
 			for _, activeStreamer := range activeStreamers {

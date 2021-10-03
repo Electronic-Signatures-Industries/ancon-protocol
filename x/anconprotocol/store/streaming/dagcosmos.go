@@ -62,7 +62,7 @@ type DagCosmosStreamingService struct {
 	currentBlockNumber int64                                  // the current block number
 	currentTxIndex     int64                                  // the index of the current tx
 	quitChan           chan struct{}                          // channel to synchronize closure
-	currentRoot        cidlink.Link
+	currentRoot        cid.Cid                                // chain genesis state Hash
 }
 
 // DagCosmosIntermediateWriter is used so that we do not need to update the underlying io.Writer inside the StoreKVPairWriteListener
@@ -90,7 +90,7 @@ func init() {
 }
 
 // NewStreamingService creates a new StreamingService for the provided writeDir, (optional) filePrefix, and storeKeys
-func NewDagCosmosStreamingService(ctx context.Context, writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*DagCosmosStreamingService, error) {
+func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.StoreKey, c codec.BinaryCodec) (*DagCosmosStreamingService, error) {
 	listenChan := make(chan []byte)
 	iw := NewIntermediateWriter(listenChan)
 	listener := types.NewStoreKVPairWriteListener(iw, c)
@@ -132,7 +132,10 @@ func GetLinkPrototype() ipld.LinkPrototype {
 		MhType:   0x12, // sha2-256
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
+}
 
+func GetCurrentCidRoot(hash []byte) cidlink.Link {
+	return CreateHashCidLink(hash)
 }
 
 func CreateHashCidLink(hash []byte) cidlink.Link {
@@ -144,10 +147,6 @@ func CreateHashCidLink(hash []byte) cidlink.Link {
 	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
 	lcLinkCID := cidlink.Link{Cid: lcCID}
 	return lcLinkCID
-}
-
-func MustCreateHashCidLink(hash []byte) (cidlink.Link, error) {
-	return cidlink.Link{}, nil
 }
 
 func (fss *DagCosmosStreamingService) BuildHeaderMap(req *abci.RequestBeginBlock) datamodel.Node {
@@ -232,39 +231,38 @@ func (fss *DagCosmosStreamingService) BuildTx(tx evmtypes.MsgEthereumTx) datamod
 func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
 	// generate the new file
 	dstFile := fss.getBeginBlockFilePath(req)
-	// TODO: Need to add developer comments!
+
 	head := fss.BuildHeaderMap(&req)
 
 	lsys := fss.sls
 	c := ipld.LinkContext{Ctx: ctx.Context()}
-	p := GetLinkPrototype()
+	lp := GetLinkPrototype()
 
 	// Store header
-	link, err := lsys.Store(c, p, head)
+	_, err := lsys.Store(c, lp, head)
 	if err != nil {
 		return err
 	}
 
+	if req.Header.Height == 0 {
+		fss.currentRoot = GetCurrentCidRoot(req.Hash).Cid
+	}
 	// Missing ByzantineValidators
 
-	fss.currentRoot = link.(cidlink.Link)
 	// Store LastCommitMap
 	lc := fss.BuildLastCommitMap(&req)
-	fss.sls.MustStore(c, p, lc)
+	fss.sls.MustStore(c, lp, lc)
 
-	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot.Cid.String(), ctx.BlockHeight())
+	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot, ctx.BlockHeight())
 
 	// Write CAR
-	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
-	// v2file := append([]byte(dstFile), []byte("v2")...)
-	// carv2.WrapV1File(dstFile, string(v2file))
+	fss.WriteCAR(fss.currentRoot, dstFile)
 	return nil
 }
 
 func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBeginBlock) string {
 	fss.currentBlockNumber = req.GetHeader().Height
 	fss.currentTxIndex = 0
-	fss.currentRoot = cidlink.Link{}
 	fileName := fmt.Sprintf("block-%d-begin.car", fss.currentBlockNumber)
 	if fss.filePrefix != "" {
 		fileName = fmt.Sprintf("%s-%s", fss.filePrefix, fileName)
@@ -283,7 +281,6 @@ func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.
 	lp := GetLinkPrototype()
 
 	if req.Tx != nil {
-
 		// Store Tx - Translate to MsgEthereumTx
 		msg := evmtypes.MsgEthereumTx{}
 		msg.Unmarshal(req.Tx)
@@ -293,9 +290,7 @@ func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.
 			fss.sls.MustStore(linkCtx, lp, tx)
 
 			// Write CAR
-			fss.WriteCAR(fss.currentRoot.Cid, dstFile)
-			// v2file := append([]byte(dstFile), []byte("v2")...)
-			// carv2.WrapV1File(dstFile, string(v2file))
+			fss.WriteCAR(fss.currentRoot, dstFile)
 		}
 	}
 	return nil
@@ -335,19 +330,7 @@ func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.R
 	// res.GetValidatorUpdates()[0].Power
 	// res.GetValidatorUpdates()[0].PubKey
 
-	// // set key
-	// ctx.KVStore("evm").Set("/bla", "foo")
-	// // Get Proof
-
-	// iavlStore := ctx.MultiStore().(*iavl.Store)
-	// // Get Proof
-	// proofres := iavlStore.Query(abci.RequestQuery{
-	// 	Path:  "/key", // required path to get key/value+proof
-	// 	Data:  []byte("MYKEY"),
-	// 	Prove: true,
-	// })
-
-	// proofres.ProofOps
+	// proofs := proofres.ProofOps
 
 	// // Enviar a GetProof modificado que acepte proof ops proof.go - GetProofsByKey
 	// // Store in IPLD Dag one or both existence proof
@@ -370,7 +353,7 @@ func (fss *DagCosmosStreamingService) ListenEndBlock(ctx sdk.Context, req abci.R
 	// fss.sls.MustStore(c, p, lc)
 
 	// // Write CAR
-	// fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
+	//	fss.WriteCAR(link.(cidlink.Link).Cid, dstFile)
 	return nil
 }
 
