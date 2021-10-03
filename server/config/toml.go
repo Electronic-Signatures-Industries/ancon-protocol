@@ -56,7 +56,7 @@ streamers = [
 
 [streamers]
 [streamers.dagcosmos]
-keys = ["evm", "mint", "acc"]
+keys = ["evm", "acc", "anconprotocol"]
 # writeDir = "path to the write directory"
 # prefix = "optional prefix to prepend to the generated file names"
 `

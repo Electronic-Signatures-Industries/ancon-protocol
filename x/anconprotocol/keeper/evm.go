@@ -5,66 +5,109 @@ import (
 )
 
 var (
-	// MintTrustedContentEvent represent the signature of
-	// `event _anconMintTrustedContest(address recipient, uint256 amount, string denom)`
-	MintTrustedContentEvent abi.Event
+	// CreateMetadata represent the signature of
+	// `event _anconCreateMetadata(
+	// address owner,
+	// bytes did,
+	// bytes name,
+	// bytes description,
+	// bytes image,
+	// bytes parent,
+	// bytes[]  sources,
+	// bytes[]  links)`
+	CreateMetadata abi.Event
 )
 
 func init() {
 	addressType, _ := abi.NewType("address", "", nil)
-	uint256Type, _ := abi.NewType("uint256", "", nil)
-	stringType, _ := abi.NewType("string", "", nil)
-	MintTrustedContentEvent = abi.NewEvent(
-		"_anconMintTrustedContest",
-		"_anconMintTrustedContest",
+	bytesAType, _ := abi.NewType("bytes[]", "", nil)
+	bytesType, _ := abi.NewType("bytes", "", nil)
+	//	stringType, _ := abi.NewType("string", "", nil)
+	CreateMetadata = abi.NewEvent(
+		"_anconCreateMetadata",
+		"_anconCreateMetadata",
 		false,
 		abi.Arguments{abi.Argument{
-			Name:    "recipient",
+			Name:    "owner",
 			Type:    addressType,
 			Indexed: false,
 		}, abi.Argument{
-			Name:    "amount",
-			Type:    uint256Type,
+			Name:    "did",
+			Type:    bytesType,
 			Indexed: false,
 		}, abi.Argument{
-			Name:    "denom",
-			Type:    stringType,
+			Name:    "name",
+			Type:    bytesType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "description",
+			Type:    bytesType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "image",
+			Type:    bytesType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "parent",
+			Type:    bytesType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "sources",
+			Type:    bytesAType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "links",
+			Type:    bytesAType,
 			Indexed: false,
 		}},
 	)
 }
 
-type MintTrustedContentHook struct {
+type CreateMetadataHook struct {
 	anconprotocolKeeper Keeper
 }
 
-func NewBankSendHook(anconprotocolKeeper Keeper) *MintTrustedContentHook {
-	return &MintTrustedContentHook{
+func NewCreateMetadataHook(anconprotocolKeeper Keeper) *CreateMetadataHook {
+	return &CreateMetadataHook{
 		anconprotocolKeeper: anconprotocolKeeper,
 	}
 }
 
-// func (h MintTrustedContentHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash, logs []*ethtypes.Log) error {
+// func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash, logs []*ethtypes.Log) error {
 // 	for _, log := range logs {
-// 		if len(log.Topics) == 0 || log.Topics[0] != MintTrustedContentEvent.ID {
+// 		if len(log.Topics) == 0 || log.Topics[0] != CreateMetadata.ID {
 // 			continue
 // 		}
-// 		if !ContractAllowed(log.Address) {
-// 			// Check the contract whitelist to prevent accidental native call.
-// 			continue
-// 		}
-// 		unpacked, err := MintTrustedContentEvent.Inputs.Unpack(log.Data)
+// 		// if !ContractAllowed(log.Address) {
+// 		// 	// Check the contract whitelist to prevent accidental native call.
+// 		// 	continue
+// 		// }
+// 		unpacked, err := CreateMetadata.Inputs.Unpack(log.Data)
 // 		if err != nil {
 // 			log.Warn("log signature matches but failed to decode")
 // 			continue
 // 		}
 // 		contract := sdk.AccAddress(log.Address.Bytes())
 // 		recipient := sdk.AccAddress(unpacked[0].(common.Address).Bytes())
-// 		coins := sdk.NewCoins(sdk.NewCoin(unpacked[2].(string), sdk.NewIntFromBigInt(unpacked[1].(*big.Int))))
-// 		err = h.anconprotocolKeeper.SendCoins(ctx, contract, recipient, coins)
+
+// 		err := msg.ValidateBasic()
 // 		if err != nil {
-// 			return err
+// 			return nil, err
 // 		}
+
+// 		lnk, _ := k.AddMetadata(
+// 			ctx,
+// 			msg,
+// 		)
+// 		ctx.EventManager().EmitEvents(sdk.Events{
+// 			sdk.NewEvent(
+// 				types.ChangeOwnerEvent,
+// 				sdk.NewAttribute("Identity", res.Identity),
+// 				sdk.NewAttribute("Owner", res.Owner),
+// 				sdk.NewAttribute("Height", fmt.Sprint(res.PreviousChange)),
+// 			),
+// 		})
+
 // 	}
 // 	return nil
 // }

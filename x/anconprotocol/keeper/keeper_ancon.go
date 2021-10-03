@@ -9,6 +9,7 @@ import (
 	// This package is needed so that all the preloaded plugins are loaded automatically
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/multiformats/go-multihash"
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -305,6 +306,27 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	return link.String(), nil
 }
 
+func CreateHashCidLink(hash []byte) cidlink.Link {
+	lchMh, err := multihash.Encode(hash, GetLinkPrototype().(cidlink.LinkPrototype).MhType)
+	if err != nil {
+		return cidlink.Link{}
+	}
+	// TODO: switch to use CommitTree codec type
+	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
+	lcLinkCID := cidlink.Link{Cid: lcCID}
+	return lcLinkCID
+}
+
+func GetLinkPrototype() ipld.LinkPrototype {
+	// tip: 0x0129 dag-json
+	return cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    0x71, // dag-cbor
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
+	}}
+}
+
 func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, error) {
 	lsys := cidlink.DefaultLinkSystem()
 
@@ -349,10 +371,8 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(sources)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(sources); i++ {
-					//c, _ := cid.Parse(sources[i])
-					// todo: implement error handling
-					//la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
-					la.AssembleValue().AssignString(sources[i])
+					lnk := CreateHashCidLink([]byte(sources[i]))
+					la.AssembleValue().AssignLink(lnk)
 				}
 			})
 		}
@@ -361,27 +381,18 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 			na.AssembleEntry("links").CreateList(cast.ToInt64(len(links)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(links); i++ {
-					//c, _ := cid.Parse(links[i])
-					// todo: implement error handling
-					// la.AssembleValue().AssignLink(cidlink.Link{Cid: c})
-					la.AssembleValue().AssignString(links[i])
+
+					lnk := CreateHashCidLink([]byte(links[i]))
+					la.AssembleValue().AssignLink(lnk)
 				}
 			})
 		}
 	})
 
-	// tip: 0x0129 dag-json
-	lp := cidlink.LinkPrototype{cid.Prefix{
-		Version:  1,
-		Codec:    0x71, // dag-cbor
-		MhType:   0x12, // sha2-256
-		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
-	}}
-
 	link, err := lsys.Store(
 		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
-		lp,                 // The LinkPrototype says what codec and hashing to use.
-		n,                  // And here's our data.
+		GetLinkPrototype(),
+		n, // And here's our data.
 	)
 	if err != nil {
 		return "", err
