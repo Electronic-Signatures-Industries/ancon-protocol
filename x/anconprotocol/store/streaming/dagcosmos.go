@@ -230,33 +230,33 @@ func (fss *DagCosmosStreamingService) BuildTx(tx evmtypes.MsgEthereumTx) datamod
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) error {
 	// generate the new file
-	dstFile := fss.getBeginBlockFilePath(req)
+	// dstFile := fss.getBeginBlockFilePath(req)
 
-	head := fss.BuildHeaderMap(&req)
+	// head := fss.BuildHeaderMap(&req)
 
-	lsys := fss.sls
-	c := ipld.LinkContext{Ctx: ctx.Context()}
-	lp := GetLinkPrototype()
+	// lsys := fss.sls
+	// c := ipld.LinkContext{Ctx: ctx.Context()}
+	// lp := GetLinkPrototype()
 
-	// Store header
-	_, err := lsys.Store(c, lp, head)
-	if err != nil {
-		return err
-	}
+	// // Store header
+	// _, err := lsys.Store(c, lp, head)
+	// if err != nil {
+	// 	return err
+	// }
 
-	if req.Header.Height == 0 {
-		fss.currentRoot = GetCurrentCidRoot(req.Hash).Cid
-	}
-	// Missing ByzantineValidators
+	// if req.Header.Height == 0 {
+	// 	fss.currentRoot = GetCurrentCidRoot(req.Hash).Cid
+	// }
+	// // Missing ByzantineValidators
 
-	// Store LastCommitMap
-	lc := fss.BuildLastCommitMap(&req)
-	fss.sls.MustStore(c, lp, lc)
+	// // Store LastCommitMap
+	// lc := fss.BuildLastCommitMap(&req)
+	// fss.sls.MustStore(c, lp, lc)
 
-	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot, ctx.BlockHeight())
+	// fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot, ctx.BlockHeight())
 
-	// Write CAR
-	fss.WriteCAR(fss.currentRoot, dstFile)
+	// // Write CAR
+	// fss.WriteCAR(fss.currentRoot, dstFile)
 	return nil
 }
 
@@ -275,24 +275,24 @@ func (fss *DagCosmosStreamingService) getBeginBlockFilePath(req abci.RequestBegi
 // in the above the naming schema
 func (fss *DagCosmosStreamingService) ListenDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) error {
 	// generate the new file
-	dstFile := fss.getDeliverTxFilePath(req)
+	// dstFile := fss.getDeliverTxFilePath(req)
 
-	linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
-	lp := GetLinkPrototype()
+	// linkCtx := ipld.LinkContext{Ctx: ctx.Context()}
+	// lp := GetLinkPrototype()
 
-	if req.Tx != nil {
-		// Store Tx - Translate to MsgEthereumTx
-		msg := evmtypes.MsgEthereumTx{}
-		msg.Unmarshal(req.Tx)
-		tx := fss.BuildTx(msg)
+	// if req.Tx != nil {
+	// 	// Store Tx - Translate to MsgEthereumTx
+	// 	msg := evmtypes.MsgEthereumTx{}
+	// 	msg.Unmarshal(req.Tx)
+	// 	tx := fss.BuildTx(msg)
 
-		if tx != nil {
-			fss.sls.MustStore(linkCtx, lp, tx)
+	// 	if tx != nil {
+	// 		fss.sls.MustStore(linkCtx, lp, tx)
 
-			// Write CAR
-			fss.WriteCAR(fss.currentRoot, dstFile)
-		}
-	}
+	// 		// Write CAR
+	// 		fss.WriteCAR(fss.currentRoot, dstFile)
+	// 	}
+	// }
 	return nil
 }
 

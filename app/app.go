@@ -321,10 +321,6 @@ func New(
 		memKeys:           memKeys,
 		cms:               cms,
 	}
-	// configure state listening capabilities using AppOptions
-	if _, _, err := LoadStreamingServices(app, appOpts, appCodec, keys); err != nil {
-		tmos.Exit(err.Error())
-	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 
@@ -585,6 +581,10 @@ func New(
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
+	// configure state listening capabilities using AppOptions
+	// if _, _, err := LoadStreamingServices(app, appOpts, appCodec, keys); err != nil {
+	// 	tmos.Exit(err.Error())
+	// }
 
 	//	LoadStreamingServices(app, appOpts, appCodec, keys)
 	return app
