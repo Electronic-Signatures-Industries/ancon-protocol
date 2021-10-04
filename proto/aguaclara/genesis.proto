@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.aguaclara;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types";
+
+// GenesisState defines the aguaclara module's genesis state.
+message GenesisState {
+    string port_id = 1;
+  // this line is used by starport scaffolding # genesis/proto/state
+}
