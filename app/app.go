@@ -108,6 +108,10 @@ import (
 	// "github.com/Electronic-Signatures-Industries/ancon-evm/x/feemarket"
 	// feemarketkeeper "github.com/Electronic-Signatures-Industries/ancon-evm/x/feemarket/keeper"
 
+	aguaclaramodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara"
+	aguaclaramodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
+	aguaclaramoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol"
 	anconprotocolkeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
@@ -158,6 +162,7 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		aguaclaramodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		anconprotocol.AppModuleBasic{},
 		// Ethermint modules
@@ -241,6 +246,8 @@ type App struct {
 	EvmKeeper *evmkeeper.Keeper
 	// FeeMarketKeeper feemarketkeeper.Keeper
 
+	ScopedAguaclaraKeeper capabilitykeeper.ScopedKeeper
+	AguaclaraKeeper       aguaclaramodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	AnconprotocolKeeper anconprotocolkeeper.Keeper
@@ -304,6 +311,7 @@ func New(
 		// ethermint keys
 		evmtypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		aguaclaramoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
 		anconprotocoltypes.StoreKey,
 	)
@@ -334,10 +342,6 @@ func New(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
-
-	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
-	// their scoped modules in `NewApp` with `ScopeToModule`
-	app.CapabilityKeeper.Seal()
 
 	// add keepers
 	// use custom Ethermint account for contracts
@@ -425,7 +429,22 @@ func New(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
+	scopedAguaclaraKeeper := app.CapabilityKeeper.ScopeToModule(aguaclaramoduletypes.ModuleName)
+	app.ScopedAguaclaraKeeper = scopedAguaclaraKeeper
+	app.AguaclaraKeeper = *aguaclaramodulekeeper.NewKeeper(
+		appCodec,
+		keys[aguaclaramoduletypes.StoreKey],
+		keys[aguaclaramoduletypes.MemStoreKey],
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedAguaclaraKeeper,
+	)
+	aguaclaraModule := aguaclaramodule.NewAppModule(appCodec, app.AguaclaraKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
+	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
+	// their scoped modules in `NewApp` with `ScopeToModule`
+	app.CapabilityKeeper.Seal()
 
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
 		appCodec,
@@ -447,6 +466,7 @@ func New(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
+	ibcRouter.AddRoute(aguaclaramoduletypes.ModuleName, aguaclaraModule)
 	// this line is used by starport scaffolding # ibc/app/router
 
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -486,6 +506,7 @@ func New(
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		// feemarket.NewAppModule(app.FeeMarketKeeper),
 		transferModule,
+		aguaclaraModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		anconprotocolModule,
 	)
@@ -531,6 +552,7 @@ func New(
 		evmtypes.ModuleName,
 		// feemarkettypes.ModuleName,
 
+		aguaclaramoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		anconprotocoltypes.ModuleName,
 		crisistypes.ModuleName,
@@ -763,6 +785,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(aguaclaramoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	paramsKeeper.Subspace(anconprotocoltypes.ModuleName)
