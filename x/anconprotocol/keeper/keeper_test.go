@@ -4,13 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"testing"
-	"time"
 
 	anconapp "github.com/Electronic-Signatures-Industries/ancon-evm/app"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/ethsecp256k1"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/tests"
-	evmkeeper "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -22,25 +17,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	cbor "github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/version"
 	tmdb "github.com/tendermint/tm-db"
 
 	_ "embed"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
-
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
 )
 
 type KeeperTestSuite struct {
@@ -61,70 +47,6 @@ type KeeperTestSuite struct {
 }
 
 /// DoSetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
-func (suite KeeperTestSuite) DoSetupTest(t require.TestingT) {
-	checkTx := false
-
-	// account key
-	priv, err := ethsecp256k1.GenerateKey()
-	require.NoError(t, err)
-	suite.address = common.BytesToAddress(priv.PubKey().Address().Bytes())
-	suite.signer = tests.NewSigner(priv)
-
-	// consensus key
-	priv, err = ethsecp256k1.GenerateKey()
-	require.NoError(t, err)
-	suite.consAddress = sdk.ConsAddress(priv.PubKey().Address())
-
-	suite.app = anconapp.Setup(checkTx)
-	suite.ctx = suite.app.BaseApp.NewContext(checkTx, tmproto.Header{
-		Height:          1,
-		ChainID:         "ethermint_9000-1",
-		Time:            time.Now().UTC(),
-		ProposerAddress: suite.consAddress.Bytes(),
-		Version: tmversion.Consensus{
-			Block: version.BlockProtocol,
-		},
-		LastBlockId: tmproto.BlockID{
-			Hash: tmhash.Sum([]byte("block_id")),
-			PartSetHeader: tmproto.PartSetHeader{
-				Total: 11,
-				Hash:  tmhash.Sum([]byte("partset_header")),
-			},
-		},
-		AppHash:            tmhash.Sum([]byte("app")),
-		DataHash:           tmhash.Sum([]byte("data")),
-		EvidenceHash:       tmhash.Sum([]byte("evidence")),
-		ValidatorsHash:     tmhash.Sum([]byte("validators")),
-		NextValidatorsHash: tmhash.Sum([]byte("next_validators")),
-		ConsensusHash:      tmhash.Sum([]byte("consensus")),
-		LastResultsHash:    tmhash.Sum([]byte("last_result")),
-	})
-	suite.app.EvmKeeper.WithContext(suite.ctx)
-
-	// queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
-	// types.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
-	// suite.queryClient = types.NewQueryClient(queryHelper)
-
-	acc := &ethermint.EthAccount{
-		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),
-		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
-	}
-
-	suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
-
-	valAddr := sdk.ValAddress(suite.address.Bytes())
-	validator, err := stakingtypes.NewValidator(valAddr, priv.PubKey(), stakingtypes.Description{})
-	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
-	require.NoError(t, err)
-	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
-	require.NoError(t, err)
-	suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
-
-	encodingConfig := encoding.MakeConfig(anconapp.ModuleBasics)
-	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
-	suite.ethSigner = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
-	suite.appCodec = encodingConfig.Marshaler
-}
 
 func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
@@ -136,13 +58,12 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())
 	registry := codectypes.NewInterfaceRegistry()
-	evmTestKeeper := evmkeeper.NewKeeper(codec.NewProtoCodec(registry), storeKey, memStoreKey, paramstypes.NewSubspace(codec.NewProtoCodec(registry),
-		nil, storeKey, memStoreKey, "test"), nil, nil, nil, "", false)
+
 	keeper := NewTestKeeper(codec.NewProtoCodec(registry), storeKey, memStoreKey,
 		paramstypes.NewSubspace(
 			codec.NewProtoCodec(registry),
 			nil, storeKey, memStoreKey, "test",
-		), nil, nil, evmTestKeeper, map[string]bool{})
+		), nil, nil, nil, map[string]bool{})
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return &keeper, ctx
@@ -330,6 +251,42 @@ func TestTrustedContent_Voucher(t *testing.T) {
 	// 	t.Error("TestTrustedContent_Voucher could not find NFT")
 	// }
 
+}
+
+func Test_AddMetadata_EVM_Hook(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	hook := NewCreateMetadataHook(*keeper)
+
+	event := CreateMetadataAbi()
+	pck, _ := event.Pack(
+		"_anconCreateMetadata",
+		"0xEb44e9278f552580EB80431c9e64F103fBE7a7e7",
+		"did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
+		"testMetadata",
+		"metadata description",
+		"bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm",
+		"",
+		"[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]",
+		"[]",
+	)
+
+	log := &ethtypes.Log{
+		Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
+		BlockHash:   common.HexToHash("0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056"),
+		BlockNumber: 2019236,
+		Data:        pck,
+		Index:       2,
+		TxIndex:     3,
+		TxHash:      common.HexToHash("0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e"),
+		Topics: []common.Hash{
+			common.HexToHash("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"),
+			common.HexToHash("0x00000000000000000000000080b2c9d7cbbf30a1b0fc8983c647d754c6525615"),
+		},
+	}
+
+	err := hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
+
+	require.Equal(t, err, nil)
 }
 
 // func TestTrustedContent_VoucherQuery(t *testing.T) {
