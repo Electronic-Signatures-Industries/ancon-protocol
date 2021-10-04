@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -29,8 +31,8 @@ func init() {
 func CreateMetedataAbiEvent() abi.Event {
 	addressType, _ := abi.NewType("address", "", nil)
 	//bytesAType, _ := abi.NewType("bytes[]", "", nil)
-	bytesType, _ := abi.NewType("bytes", "", nil)
-	//	stringType, _ := abi.NewType("string", "", nil)
+	//bytesType, _ := abi.NewType("bytes", "", nil)
+	stringType, _ := abi.NewType("string", "", nil)
 	metadata := abi.NewEvent(
 		"_anconCreateMetadata",
 		"_anconCreateMetadata",
@@ -41,31 +43,31 @@ func CreateMetedataAbiEvent() abi.Event {
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "did",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "name",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "description",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "image",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "parent",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "sources",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}, abi.Argument{
 			Name:    "links",
-			Type:    bytesType,
+			Type:    stringType,
 			Indexed: false,
 		}},
 	)
@@ -120,15 +122,17 @@ func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash
 		sources := unpacked[6].(string)
 		links := unpacked[7].(string)
 
+		fmt.Println("Sources", sources, "links", links)
+
 		msg := types.MsgMetadata{
-			Creator:                owner.String(),
-			Name:                   name,
-			Description:            description,
-			Image:                  image,
-			Owner:                  owner.String(),
-			Parent:                 parent,
-			Sources:                sources,
-			Links:                  links,
+			Creator:     owner.String(),
+			Name:        name,
+			Description: description,
+			Image:       image,
+			Owner:       owner.String(),
+			Parent:      parent,
+			//Sources:                sources,
+			//Links:                  links,
 			VerifiedCredentialRef:  "",
 			Did:                    did,
 			From:                   "",

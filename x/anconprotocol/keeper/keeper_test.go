@@ -257,18 +257,20 @@ func Test_AddMetadata_EVM_Hook(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 	hook := NewCreateMetadataHook(*keeper)
 
-	event := CreateMetadataAbi()
-	pck, _ := event.Pack(
-		"_anconCreateMetadata",
-		"0xEb44e9278f552580EB80431c9e64F103fBE7a7e7",
+	evm_hook_abi := CreateMetadataAbi()
+	inputs := evm_hook_abi.Events["_anconCreateMetadata"].Inputs
+
+	pck, err := inputs.Pack(
+		common.HexToAddress("0xEb44e9278f552580EB80431c9e64F103fBE7a7e7"),
 		"did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
 		"testMetadata",
 		"metadata description",
 		"bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm",
 		"",
-		"[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]",
-		"[]",
+		"",
+		"",
 	)
+	require.Equal(t, err, nil)
 
 	log := &ethtypes.Log{
 		Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
@@ -279,12 +281,10 @@ func Test_AddMetadata_EVM_Hook(t *testing.T) {
 		TxIndex:     3,
 		TxHash:      common.HexToHash("0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e"),
 		Topics: []common.Hash{
-			common.HexToHash("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"),
-			common.HexToHash("0x00000000000000000000000080b2c9d7cbbf30a1b0fc8983c647d754c6525615"),
+			evm_hook_abi.Events["_anconmetadata"].ID,
 		},
 	}
-
-	err := hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
+	err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
 
 	require.Equal(t, err, nil)
 }
