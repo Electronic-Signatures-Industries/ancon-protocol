@@ -245,7 +245,7 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	}
 
 	if req.Header.Height == 0 {
-		fss.currentRoot = GetCurrentCidRoot(req.Hash).Cid
+		fss.currentRoot = GetCurrentCidRoot(req.Header.AppHash).Cid
 	}
 	// Missing ByzantineValidators
 
@@ -253,7 +253,7 @@ func (fss *DagCosmosStreamingService) ListenBeginBlock(ctx sdk.Context, req abci
 	lc := fss.BuildLastCommitMap(&req)
 	fss.sls.MustStore(c, lp, lc)
 
-	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot, ctx.BlockHeight())
+	fmt.Printf("Current root cid %s for height %s\n", fss.currentRoot.String(), ctx.BlockHeight())
 
 	// Write CAR
 	fss.WriteCAR(fss.currentRoot, dstFile)
