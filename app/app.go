@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -482,7 +483,7 @@ func New(
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
-			app.AccountKeeper, app.StakingKeeper, app.AnconDeliverTx,
+			app.AccountKeeper, app.StakingKeeper, app.DeliverTx,
 			encodingConfig.TxConfig,
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
@@ -609,6 +610,7 @@ func New(
 	// }
 
 	//	LoadStreamingServices(app, appOpts, appCodec, keys)
+	aguaclaraModule.RegisterGraphsync(context.Background())
 	return app
 }
 
@@ -620,11 +622,6 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 	res := app.mm.BeginBlock(ctx, req)
 
 	// call the hooks with the BeginBlock messages
-	for _, streamingListener := range app.streamingListeners {
-		if err := streamingListener.ListenBeginBlock(ctx, req, res); err != nil {
-			app.Logger().Error("BeginBlock listening hook failed", "height", req.Header.Height, "err", err)
-		}
-	}
 
 	return res
 }
@@ -634,11 +631,6 @@ func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Respo
 	res := app.mm.EndBlock(ctx, req)
 
 	// call the streaming service hooks with the EndBlock messages
-	for _, streamingListener := range app.streamingListeners {
-		if err := streamingListener.ListenEndBlock(ctx, req, res); err != nil {
-			app.Logger().Error("EndBlock listening hook failed", "height", req.Height, "err", err)
-		}
-	}
 
 	return res
 }
