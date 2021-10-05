@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -610,7 +609,7 @@ func New(
 	// }
 
 	//	LoadStreamingServices(app, appOpts, appCodec, keys)
-	aguaclaraModule.RegisterGraphsync(context.Background())
+	// aguaclaraModule.RegisterGraphsync(context.Background())
 	return app
 }
 
