@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -14,13 +12,13 @@ var (
 	// CreateMetadata represent the signature of
 	// `event _anconCreateMetadata(
 	// address owner,
-	// bytes did,
-	// bytes name,
-	// bytes description,
-	// bytes image,
-	// bytes parent,
-	// bytes[]  sources,
-	// bytes[]  links)`
+	// string did,
+	// string name,
+	// string description,
+	// string image,
+	// string parent,
+	// string  sources,
+	// string  links)`
 	CreateMetadata abi.Event
 )
 
@@ -112,7 +110,7 @@ func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash
 			//log.Warn("log signature matches but failed to decode")
 			continue
 		}
-		//contract := sdk.AccAddress(log.Address.Bytes())
+
 		owner := sdk.AccAddress(unpacked[0].(common.Address).Bytes())
 		did := unpacked[1].(string)
 		name := unpacked[2].(string)
@@ -122,17 +120,15 @@ func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash
 		sources := unpacked[6].(string)
 		links := unpacked[7].(string)
 
-		fmt.Println("Sources", sources, "links", links)
-
 		msg := types.MsgMetadata{
-			Creator:     owner.String(),
-			Name:        name,
-			Description: description,
-			Image:       image,
-			Owner:       owner.String(),
-			Parent:      parent,
-			//Sources:                sources,
-			//Links:                  links,
+			Creator:                owner.String(),
+			Name:                   name,
+			Description:            description,
+			Image:                  image,
+			Owner:                  owner.String(),
+			Parent:                 parent,
+			Sources:                sources,
+			Links:                  links,
 			VerifiedCredentialRef:  "",
 			Did:                    did,
 			From:                   "",

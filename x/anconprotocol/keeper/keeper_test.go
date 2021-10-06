@@ -267,8 +267,8 @@ func Test_AddMetadata_EVM_Hook(t *testing.T) {
 		"metadata description",
 		"bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm",
 		"",
-		"",
-		"",
+		"[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]",
+		"[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]",
 	)
 	require.Equal(t, err, nil)
 
@@ -281,7 +281,7 @@ func Test_AddMetadata_EVM_Hook(t *testing.T) {
 		TxIndex:     3,
 		TxHash:      common.HexToHash("0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e"),
 		Topics: []common.Hash{
-			evm_hook_abi.Events["_anconmetadata"].ID,
+			evm_hook_abi.Events["_anconCreateMetadata"].ID,
 		},
 	}
 	err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})

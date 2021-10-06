@@ -417,10 +417,10 @@ func (msg *MsgMetadata) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if sdk.IsAlphaNumeric(msg.Name) {
+	if (msg.Name) == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid name type (%s)", err)
 	}
-	if sdk.IsAlphaNumeric(msg.Description) {
+	if (msg.Description) == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid description address (%s)", err)
 	}
 
