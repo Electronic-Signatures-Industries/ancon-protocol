@@ -39,7 +39,6 @@ Authenticity and provenance data economy decentralized chain<br/>
 ### October 2021
 
 - EVM module
-- Celo Optics for cross chain messaging
 - Grant M2 - NFT bridges ETH-Cosmos-Flow
 - NFT Marketplaces - Use Case
 - Cleaning, fixes, tech debt
@@ -52,7 +51,7 @@ Authenticity and provenance data economy decentralized chain<br/>
 
 ## Features
 
-- EVM Cross chain messaging using Celo Optics, use Ancon to distribute NFTs into other chains!
+- EVM Cross chain bridges, use Ancon to distribute NFTs into other chains!
 - Built in onchain metadata
 - Metadata security and permissions using Decentralized Identities (DID)
 - EVM Smart Contracts Module
