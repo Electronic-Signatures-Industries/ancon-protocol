@@ -105,7 +105,8 @@ echo '[streamers.dagcosmos]' >> $HOME/.ancon-protocold/config/app.toml
 echo 'keys = ["evm", "acc"]' >> $HOME/.ancon-protocold/config/app.toml
 echo 'writeDir ="'$HOME'/.ancon-protocold/data"' >> $HOME/.ancon-protocold/config/app.toml
 echo 'prefix = "dagbridge"' >> $HOME/.ancon-protocold/config/app.toml
-sed -i 's/"tcp://127.0.0.1:26657"/"tcp://0.0.0.0:26657"/g' $HOME/.ancon-protocold/config/config.toml
+
+cp config.toml $HOME/.ancon-protocold/config/config.toml
 
 
 
