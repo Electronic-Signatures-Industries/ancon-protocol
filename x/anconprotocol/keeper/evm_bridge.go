@@ -41,6 +41,14 @@ type RecieveCrossmintRequest struct {
 	newOwner     string
 }
 
+type VerifyCredential struct {
+	issuer    common.Address
+	subject   common.Address
+	data      byte
+	validfrom uint
+	validTo   uint
+}
+
 func init() {
 	RecieveCrossmintCallback = RecieveCrossmintCallbackMethod()
 }
@@ -138,10 +146,10 @@ func ExecuteTransaction(
 	rq RecieveCrossmintRequest,
 	walletAddress common.Address, // *
 	client *ethclient.Client,
-	chainID *big.Int, // move to rq
-	privateKey *ecdsa.PrivateKey, // *
-	crossMintAddress common.Address, // *
-	value int64, // *
+	chainID *big.Int,
+	privateKey *ecdsa.PrivateKey,
+	crossMintAddress common.Address,
+	value int64,
 ) (string, error) {
 
 	data, err := SendCrossmintRequestAbi().Pack(
@@ -195,7 +203,8 @@ func ExecuteTransaction(
 
 	}
 	if err != nil {
-		log.Fatal(err)
+
+		return "", err
 	}
 	return txh.Hex(), nil
 }

@@ -1,11 +1,14 @@
 package keeper
 
 import (
+	"crypto/ecdsa"
 	"encoding/base64"
 	"encoding/json"
+	"math/big"
 	"testing"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/verifiable"
 	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -27,6 +30,7 @@ import (
 	_ "embed"
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type KeeperTestSuite struct {
@@ -285,6 +289,43 @@ func Test_AddMetadata_EVM_Hook(t *testing.T) {
 		},
 	}
 	err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
+
+	require.Equal(t, err, nil)
+}
+func Test_ExecuteTransaction(
+	t *testing.T,
+) {
+	_, ctx := setupKeeper(t)
+	client, err := ethclient.Dial("http://localhost:8545")
+
+	//	inputs := evm_hook_abi.Events["_anconCreateMetadata"].Inputs
+	//ganache mnemonic for testing purposes "squirrel health crash famous regret weird grape speak panda always quote enter"
+	//Acc 0x762e2386Cf62a597db3Bac1d3092da24400a00d1
+	//Pkey 0xd99d1aa5a610528926846e187774c7a680cd5d0f12ba31fee0dde4bdc565f700
+	//err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
+	pkeyint := new(big.Int)
+	pkeyint.SetString("d99d1aa5a610528926846e187774c7a680cd5d0f12ba31fee0dde4bdc565f700", 16)
+
+	_, err = ExecuteTransaction(
+		ctx,
+		RecieveCrossmintRequest{
+			vc:           verifiable.Credential{},
+			v:            0,
+			r:            []byte{},
+			s:            []byte{},
+			metadataHash: "",
+			to:           "",
+			newOwner:     "",
+		},
+		common.HexToAddress("0x762e2386Cf62a597db3Bac1d3092da24400a00d1"),
+		client,
+		big.NewInt(3),
+		&ecdsa.PrivateKey{
+			D: pkeyint,
+		},
+		common.HexToAddress("0x762e2386Cf62a597db3Bac1d3092da24400a00d1"),
+		int64(0),
+	)
 
 	require.Equal(t, err, nil)
 }
