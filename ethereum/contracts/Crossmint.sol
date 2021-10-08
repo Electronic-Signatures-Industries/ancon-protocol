@@ -71,7 +71,7 @@ contract Crossmint is ICrossmint {
         string memory permitHash
     ) public returns (bool) {
         require(
-            fromTokenNft == tokenNFT,
+           address(fromTokenNft) == tokenNFT,
             "Contract does not support this token NFT"
         );
 

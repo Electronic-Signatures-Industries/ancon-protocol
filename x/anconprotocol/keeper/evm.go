@@ -250,33 +250,33 @@ func (h SendCrossmintRequestHook) PostTxProcessing(ctx sdk.Context, txHash commo
 		// 	// Check the contract whitelist to prevent accidental native call.
 		// 	continue
 		// }
-		unpacked, err := SendCrossmintRequest.Inputs.Unpack(log.Data)
+		_, err := SendCrossmintRequest.Inputs.Unpack(log.Data)
 		if err != nil {
 			//log.Warn("log signature matches but failed to decode")
 			continue
 		}
 
-		toChainId := unpacked[0].(int)
-		fromTokenNft := unpacked[1].(string)
-		toTokenNft := unpacked[2].(string)
-		metadataHash := unpacked[3].(string)
-		fromOwner := unpacked[4].(string)
-		toOwner := unpacked[5].(string)
-		permitHash := unpacked[6].(string)
-		permitSig := unpacked[7].(string)
+		// toChainId := unpacked[0].(int)
+		// fromTokenNft := unpacked[1].(string)
+		// toTokenNft := unpacked[2].(string)
+		// metadataHash := unpacked[3].(string)
+		// fromOwner := unpacked[4].(string)
+		// toOwner := unpacked[5].(string)
+		// permitHash := unpacked[6].(string)
+		// permitSig := unpacked[7].(string)
 
-		// Validate
-		// Execute chain B
-		// Change owner
+		// // Validate
+		// // Execute chain B
+		// // Change owner
 
-		ctx.EventManager().EmitEvents(sdk.Events{
-			sdk.NewEvent(
-				"AddMetadataEvent",
-				sdk.NewAttribute("TxHash", txHash.Hex()),
-				sdk.NewAttribute("Link", lnk),
-				sdk.NewAttribute("Sender", unpacked[0].(common.Address).Hex()),
-			),
-		})
+		// ctx.EventManager().EmitEvents(sdk.Events{
+		// 	sdk.NewEvent(
+		// 		"AddMetadataEvent",
+		// 		sdk.NewAttribute("TxHash", txHash.Hex()),
+		// 		sdk.NewAttribute("Link", lnk),
+		// 		sdk.NewAttribute("Sender", unpacked[0].(common.Address).Hex()),
+		// 	),
+		// })
 
 	}
 	return nil

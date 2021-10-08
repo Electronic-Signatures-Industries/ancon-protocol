@@ -2,4 +2,6 @@ main
 vue/node_modules
 vue/dist
 secret.yml
-.idea
+.idea/
+gen
+ethereum/node_modules
