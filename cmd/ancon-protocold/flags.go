@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/Electronic-Signatures-Industries/ancon-evm/version"
+	"github.com/tharsis/ethermint/version"
 )
 
 const (

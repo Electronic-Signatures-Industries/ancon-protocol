@@ -40,11 +40,11 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	ethdebug "github.com/Electronic-Signatures-Industries/ancon-evm/ethereum/rpc/namespaces/debug"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/log"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/server/config"
-	srvflags "github.com/Electronic-Signatures-Industries/ancon-evm/server/flags"
 	ethlog "github.com/ethereum/go-ethereum/log"
+	"github.com/tharsis/ethermint/log"
+	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
+	"github.com/tharsis/ethermint/server/config"
+	srvflags "github.com/tharsis/ethermint/server/flags"
 )
 
 // StartCmd runs the service passed in, either stand-alone or in-process with

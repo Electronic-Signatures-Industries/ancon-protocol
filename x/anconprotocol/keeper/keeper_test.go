@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	anconapp "github.com/Electronic-Signatures-Industries/ancon-evm/app"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"

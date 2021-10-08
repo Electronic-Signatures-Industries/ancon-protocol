@@ -3,12 +3,11 @@ module github.com/Electronic-Signatures-Industries/ancon-protocol
 go 1.16
 
 require (
-	github.com/Electronic-Signatures-Industries/ancon-evm v0.6.1
 	github.com/confio/ics23/go v0.6.6
 	github.com/cosmos/cosmos-sdk v0.44.1
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/iavl v0.17.1
-	github.com/cosmos/ibc-go v1.2.0
+	github.com/cosmos/ibc-go v1.2.1
 	github.com/ethereum/go-ethereum v1.10.3
 	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
@@ -50,6 +49,7 @@ require (
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/proofzero/go-ipld-linkstore v1.0.0
+	github.com/tharsis/ethermint v0.7.0
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

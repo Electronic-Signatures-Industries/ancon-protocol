@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	clientkeys "github.com/Electronic-Signatures-Industries/ancon-evm/client/keys"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	clientkeys "github.com/tharsis/ethermint/client/keys"
+	"github.com/tharsis/ethermint/crypto/hd"
 )
 
 // KeyCommands registers a sub-tree of commands to interact with

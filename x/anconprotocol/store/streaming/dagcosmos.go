@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"sync"
 
-	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/types"
 	"github.com/multiformats/go-multihash"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
 	"github.com/spf13/cast"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	"github.com/ipfs/go-cid"
 

@@ -13,7 +13,6 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/client/cli"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -22,6 +21,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	evmtypes "github.com/tharsis/ethermint/x/evm/keeper"
 	// this line is used by starport scaffolding # ibc/module/import
 )
 

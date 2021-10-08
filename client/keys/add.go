@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sort"
 
-	etherminthd "github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
+	etherminthd "github.com/tharsis/ethermint/crypto/hd"
 
 	bip39 "github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"

@@ -19,10 +19,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
-	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
-	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
-	evmtypes "github.com/Electronic-Signatures-Industries/ancon-evm/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/tharsis/ethermint/crypto/hd"
+	ethermint "github.com/tharsis/ethermint/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
 const (

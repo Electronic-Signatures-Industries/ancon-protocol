@@ -30,15 +30,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	ethermintclient "github.com/Electronic-Signatures-Industries/ancon-evm/client"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/client/debug"
-	"github.com/Electronic-Signatures-Industries/ancon-evm/crypto/hd"
-	encoding "github.com/Electronic-Signatures-Industries/ancon-evm/encoding"
-	servercfg "github.com/Electronic-Signatures-Industries/ancon-evm/server/config"
-	srvflags "github.com/Electronic-Signatures-Industries/ancon-evm/server/flags"
-	ethermint "github.com/Electronic-Signatures-Industries/ancon-evm/types"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/server"
+	ethermintclient "github.com/tharsis/ethermint/client"
+	"github.com/tharsis/ethermint/client/debug"
+	"github.com/tharsis/ethermint/crypto/hd"
+	encoding "github.com/tharsis/ethermint/encoding"
+	servercfg "github.com/tharsis/ethermint/server/config"
+	srvflags "github.com/tharsis/ethermint/server/flags"
+	ethermint "github.com/tharsis/ethermint/types"
 )
 
 const EnvPrefix = "ETHERMINT"
