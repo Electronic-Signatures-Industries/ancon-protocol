@@ -135,15 +135,14 @@ func RecieveCrossmintCallbackMethod() abi.Method {
 
 func ExecuteTransaction(
 	ctx sdk.Context,
-	ethClient ethclient.Client,
 	rq RecieveCrossmintRequest,
-	walletAddress common.Address,
+	walletAddress common.Address, // *
 	client *ethclient.Client,
-	chainID *big.Int,
-	privateKey *ecdsa.PrivateKey,
-	crossMintAddress common.Address,
-	value int64,
-) {
+	chainID *big.Int, // move to rq
+	privateKey *ecdsa.PrivateKey, // *
+	crossMintAddress common.Address, // *
+	value int64, // *
+) (string, error) {
 
 	data, err := SendCrossmintRequestAbi().Pack(
 		"recieveCrossmintCallback",
@@ -164,6 +163,7 @@ func ExecuteTransaction(
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 
+	txh := tx.Hash()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -177,7 +177,25 @@ func ExecuteTransaction(
 
 	err = client.SendTransaction(ctx.Context(), signedTx)
 
+	for {
+		_, pending, err := client.TransactionByHash(ctx.Context(), txh)
+		if err != nil {
+			panic(err)
+		}
+		if !pending {
+			receipt, e := client.TransactionReceipt(ctx.Context(), txh)
+			if e != nil {
+				panic(e)
+			}
+			if receipt.Status == uint64(0) {
+				fmt.Errorf("%s", "revert transaction")
+			}
+			break
+		}
+
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
+	return txh.Hex(), nil
 }
