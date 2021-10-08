@@ -1,129 +1,183 @@
 package keeper
 
-// import (
-// 	"context"
-// 	"crypto/ecdsa"
-// 	"fmt"
-// 	"log"
-// 	"math"
-// 	"math/big"
+import (
+	"bytes"
+	"crypto/ecdsa"
+	"encoding/hex"
+	"fmt"
+	"log"
+	"math/big"
 
-// 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-// 	"github.com/ethereum/go-ethereum/common"
-// 	"github.com/ethereum/go-ethereum/crypto"
-// 	"github.com/ethereum/go-ethereum/ethclient"
-// )
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/verifiable"
+)
 
-// func main() {
-// 	// server := api.GetAPIServer()
-// 	// port := "8080"
-// 	// log.Println("Listening on port")
+var (
 
-// 	// log.Fatal(http.ListenAndServe(":"+port, server))
+	// event _anconSendCrossmintRequest(
+	//     uint256 recipientChainId,
+	//     string fromTokenNft,
+	//     string toTokenNft,
+	//     string metadataHash,
+	//     string fromOwner,
+	//     string toOwner,
+	//     string permitHash,
+	//     string permitSignature
+	// );
+	RecieveCrossmintCallback abi.Method
+)
 
-// 	client, err := ethclient.Dial("http://localhost:8545")
-// 	exitOnErr(err)
+type RecieveCrossmintRequest struct {
+	vc           verifiable.Credential
+	v            int
+	r            []byte
+	s            []byte
+	metadataHash string
+	to           string
+	newOwner     string
+}
 
-// 	accountPK, err := crypto.HexToECDSA("5ad53543cdbffb2aba59777b93ec1f97dc3c0c09293ffe24f466d733f95e10a7")
-// 	exitOnErr(err)
+func init() {
+	RecieveCrossmintCallback = RecieveCrossmintCallbackMethod()
+}
 
-// 	paymentAddress := common.HexToAddress("0x8Ce77c5052f1aFd847eBd365729C0367De85626C")
+func RecieveCrossmintCallbackMethod() abi.Method {
+	//addressType, _ := abi.NewType("address", "", nil)
+	uint8Type, _ := abi.NewType("uint8", "", nil)
+	uintType, _ := abi.NewType("uint", "", nil)
+	bytes32Type, _ := abi.NewType("bytes32", "", nil)
+	stringType, _ := abi.NewType("string", "", nil)
+	verifiableCredential, _ := abi.NewType("VerifiableCredential", "", []abi.ArgumentMarshaling{
+		abi.ArgumentMarshaling{
+			Name:         "issuer",
+			Type:         "address",
+			InternalType: "",
+			Components:   []abi.ArgumentMarshaling{},
+			Indexed:      false,
+		},
+		abi.ArgumentMarshaling{
+			Name:         "subject",
+			Type:         "address",
+			InternalType: "",
+			Components:   []abi.ArgumentMarshaling{},
+			Indexed:      false,
+		},
+		abi.ArgumentMarshaling{
+			Name:         "data",
+			Type:         "bytes32",
+			InternalType: "",
+			Components:   []abi.ArgumentMarshaling{},
+			Indexed:      false,
+		},
+		abi.ArgumentMarshaling{
+			Name:         "validFrom",
+			Type:         "uint256",
+			InternalType: "",
+			Components:   []abi.ArgumentMarshaling{},
+			Indexed:      false,
+		},
+		abi.ArgumentMarshaling{
+			Name:         "validTo",
+			Type:         "uint256",
+			InternalType: "",
+			Components:   []abi.ArgumentMarshaling{},
+			Indexed:      false,
+		},
+	})
+	metadata := abi.NewMethod(
+		"recieveCrossmintCallback",
+		"recieveCrossmintCallback",
+		abi.Function,
+		"nonpayable",
+		false,
+		false,
+		abi.Arguments{abi.Argument{
+			Name:    "vc",
+			Type:    verifiableCredential,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "v",
+			Type:    uint8Type,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "r",
+			Type:    bytes32Type,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "s",
+			Type:    bytes32Type,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "metadataHash",
+			Type:    stringType,
+			Indexed: false,
+		}, abi.Argument{
+			Name:    "to",
+			Type:    stringType,
+			Indexed: false,
+		},
+			abi.Argument{
+				Name:    "newOwner",
+				Type:    uintType,
+				Indexed: false,
+			}},
+		abi.Arguments{abi.Argument{
+			Type: uintType,
+		}},
+	)
 
-// 	walletAddress := common.HexToAddress("0xA83B070a68336811e9265fbEc6d49B98538F61EA")
+	return metadata
+}
 
-// 	paymentContract, err := didpayment.NewDidpayment(paymentAddress, client)
-// 	exitOnErr(err)
+func ExecuteTransaction(
+	ctx sdk.Context,
+	ethClient ethclient.Client,
+	rq RecieveCrossmintRequest,
+	walletAddress common.Address,
+	client *ethclient.Client,
+	chainID *big.Int,
+	privateKey *ecdsa.PrivateKey,
+	crossMintAddress common.Address,
+	value int64,
+) {
 
-// 	auth := getBindOptions(client, walletAddress, accountPK)
+	data, err := SendCrossmintRequestAbi().Pack(
+		"recieveCrossmintCallback",
+		rq.vc,
+		rq.v,
+		rq.r,
+		rq.s,
+		rq.metadataHash,
+		rq.to,
+		rq.newOwner,
+	)
 
-// 	//this is from administrative account only
-// 	tx, err := paymentContract.SetWhitelistedUser(auth, walletAddress, true)
-// 	exitOnErr(err)
+	gasPrice, err := client.SuggestGasPrice(ctx.Context())
+	gasLimit := uint64(300000)
+	nonce, err := client.PendingNonceAt(ctx.Context(), walletAddress)
 
-// 	fmt.Println(tx.Hash().Hex())
+	tx := types.NewTransaction(nonce, crossMintAddress, big.NewInt(value), gasLimit, gasPrice, data)
 
-// 	opts := bind.CallOpts{}
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 
-// 	auth = getBindOptions(client, walletAddress, accountPK)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var buff bytes.Buffer
 
-// 	// query := ethereum.FilterQuery{
+	_ = signedTx.EncodeRLP(&buff)
 
-// 	// 	Addresses: []common.Address{
-// 	// 		paymentAddress,
-// 	// 	},
-// 	// }
+	rawTxHex := hex.EncodeToString(buff.Bytes())
 
-// 	// logs, err := client.FilterLogs(context.Background(), query)
-// 	// if err != nil {
-// 	// 	log.Fatal(err)
-// 	// }
+	fmt.Printf(rawTxHex)
 
-// 	// for _, l := range logs {
-// 	// 	log.Println(l)
-// 	// }
+	err = client.SendTransaction(ctx.Context(), signedTx)
 
-// 	// allredyPaid, err := paymentContract.Orders(&opts, walletAddress)
-// 	// exitOnErr(err)
-
-// 	allredyPaid, err := paymentContract.VerifyPayment(&opts, walletAddress)
-// 	// exitOnErr(err)
-
-// 	if !allredyPaid {
-// 		tx2, err := paymentContract.PayKYCService(auth, walletAddress)
-// 		exitOnErr(err)
-
-// 		//wait for transaction to be mined
-// 		bind.WaitMined(context.Background(), client, tx2)
-// 		receipt, err := client.TransactionReceipt(context.Background(), tx2.Hash())
-// 		_ = receipt.BlockNumber
-
-// 		fmt.Println("Receipt", receipt)
-// 		fmt.Println("TX Error", err)
-
-// 		//exitOnErr(err)
-// 	} else {
-// 		fmt.Println("ya pago")
-// 	}
-
-// }
-
-// func getBindOptions(client *ethclient.Client, address common.Address, pk *ecdsa.PrivateKey) *bind.TransactOpts {
-// 	gasPrice, err := client.SuggestGasPrice(context.Background())
-// 	exitOnErr(err)
-
-// 	nonce, err := client.PendingNonceAt(context.Background(), address)
-// 	auth := bind.NewKeyedTransactor(pk)
-// 	auth.Nonce = big.NewInt(int64(nonce))
-// 	auth.GasLimit = uint64(300000)
-// 	auth.GasPrice = gasPrice
-// 	return auth
-// }
-
-// func exitOnErr(err error) {
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
-
-// func mintUSDCToWallet(pk *ecdsa.PrivateKey, walletAddress common.Address, client *ethclient.Client) {
-// 	usdcAddress := common.HexToAddress("0xb84A298335C3eda7a6aB5Eb51b9b9D836D5128c1")
-
-// 	gasPrice, err := client.SuggestGasPrice(context.Background())
-// 	exitOnErr(err)
-
-// 	nonce, err := client.PendingNonceAt(context.Background(), walletAddress)
-// 	auth := bind.NewKeyedTransactor(pk)
-// 	auth.Nonce = big.NewInt(int64(nonce))
-// 	auth.GasLimit = uint64(300000) // in units
-// 	auth.GasPrice = gasPrice
-
-// 	usdcContract, err := usdc.NewUsdc(usdcAddress, client)
-// 	exitOnErr(err)
-
-// 	mintAmout := big.NewInt(95)
-// 	toMint := mintAmout.Mul(big.NewInt(int64(math.Pow10(17))), mintAmout)
-
-// 	tr, err := usdcContract.Mint(auth, walletAddress, toMint)
-// 	log.Println(tr.Hash().Hex())
-
-// }
+	if err != nil {
+		log.Fatal(err)
+	}
+}
