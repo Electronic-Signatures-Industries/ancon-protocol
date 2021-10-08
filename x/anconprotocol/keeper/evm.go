@@ -250,46 +250,24 @@ func (h SendCrossmintRequestHook) PostTxProcessing(ctx sdk.Context, txHash commo
 		// 	// Check the contract whitelist to prevent accidental native call.
 		// 	continue
 		// }
-		unpacked, err := CreateMetadata.Inputs.Unpack(log.Data)
+		unpacked, err := SendCrossmintRequest.Inputs.Unpack(log.Data)
 		if err != nil {
 			//log.Warn("log signature matches but failed to decode")
 			continue
 		}
 
-		owner := sdk.AccAddress(unpacked[0].(common.Address).Bytes())
-		did := unpacked[1].(string)
-		name := unpacked[2].(string)
-		description := unpacked[3].(string)
-		image := unpacked[4].(string)
-		parent := unpacked[5].(string)
-		sources := unpacked[6].(string)
-		links := unpacked[7].(string)
+		toChainId := unpacked[0].(int)
+		fromTokenNft := unpacked[1].(string)
+		toTokenNft := unpacked[2].(string)
+		metadataHash := unpacked[3].(string)
+		fromOwner := unpacked[4].(string)
+		toOwner := unpacked[5].(string)
+		permitHash := unpacked[6].(string)
+		permitSig := unpacked[7].(string)
 
-		msg := types.MsgMetadata{
-			Creator:                owner.String(),
-			Name:                   name,
-			Description:            description,
-			Image:                  image,
-			Owner:                  owner.String(),
-			Parent:                 parent,
-			Sources:                sources,
-			Links:                  links,
-			VerifiedCredentialRef:  "",
-			Did:                    did,
-			From:                   "",
-			EnableIpldForestAccess: false,
-			FactRef:                "",
-		}
-
-		err = msg.ValidateBasic()
-		if err != nil {
-			return err
-		}
-
-		lnk, _ := h.anconprotocolKeeper.AddMetadata(
-			ctx,
-			&msg,
-		)
+		// Validate
+		// Execute chain B
+		// Change owner
 
 		ctx.EventManager().EmitEvents(sdk.Events{
 			sdk.NewEvent(

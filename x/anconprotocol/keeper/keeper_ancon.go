@@ -10,13 +10,19 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/multiformats/go-multihash"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
+	"github.com/ipld/go-ipld-prime/must"
+	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/spf13/cast"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -402,80 +408,84 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	return link.String(), nil
 }
 
-// func (k Keeper) ApplySendCrossMintTrusted(ctx sdk.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
-// 	// Add Metadata Cid to NFT
-// 	tokenID := fmt.Sprint(k.GetTotalSupply(ctx, msg.DenomId))
-// 	denom, found := k.GetDenom(ctx, msg.DenomId)
-// 	if !found {
-// 		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
-// 	}
+func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamodel.Node, error) {
+	lnk, err := cid.Parse(hash)
+	if err != nil {
+		return nil, status.Error(
+			codes.InvalidArgument,
+			types.ErrIntOverflowQuery.Error(),
+		)
+	}
+	//  TODO: Do a separate function
+	lsys := cidlink.DefaultLinkSystem()
 
-// 	if denom.MintRestricted && denom.Creator != msg.Creator {
-// 		return "", sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
-// 	}
+	var id []byte
+	if path != "" {
+		id = append([]byte(lnk.String()), path...)
+	} else {
+		id = []byte(lnk.String())
+	}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+	has := store.Has(id)
 
-// 	if k.HasNFT(ctx, msg.DenomId, tokenID) {
-// 		return "", sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, msg.DenomId)
-// 	}
+	if !has {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
 
-// 	// function dispatchTypeA(uint32 _destinationDomain, uint256 _number)
-// 	//     external
-// 	// {
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+		buf := store.Get(id)
+		return bytes.NewReader(buf), nil
+	}
 
-// 		// cross chain
-// 		dispatcher := abi.NewMethod("dispatchTypeA", "dispatchTypeA", abi.Function, "", false, false, abi.Arguments{
-// 			{
-// 				Name:    "_destinationDomain",
-// 				Type:    abi.Type{},
-// 				Indexed: false,
-// 			},
-// 			{
-// 			Name:    "_number",
-// 			Type:    abi.Type{},
-// 				Indexed: false,
-// 			},
-// 		}, nil)
+	// TODO: add a typesystem to read
+	np := basicnode.Prototype.Any
 
-// 		evmtypes.PackTxData(&evmtypes.LegacyTx{
-// 			Nonce:    0,
-// 			GasPrice: &sdk.Int{},
-// 			GasLimit: 0,
-// 			To:       tokenID,
-// 			Amount:   &sdk.Int{},
-// 			Data:     []byte{},
-// 			V:        []byte{},
-// 			R:        []byte{},
-// 			S:        []byte{},
-// 		})
+	n, err := lsys.Load(
+		linking.LinkContext{},
+		cidlink.Link{Cid: lnk}, // The Link we want to load!
+		np,                     // The NodePrototype says what kind of Node we want as a result.
+	)
 
-// 		mt := evmtypes.PackTxData(&evmtypes.f)
-// 		msg := &types.MsgSendCrossMintTrusted{
-// 			Creator:           "",
-// 			MetadataRef:       "",
-// 			DenomId:           "",
-// 			Name:              "",
-// 			Recipient:         "",
-// 			DidOwner:          "",
-// 			LazyMint:          false,
-// 			Price:             0,
-// 			MetaTransaction:   mt,
-// 			DestinationDomain: 0,
-// 		}
+	return n, err
+}
+func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner string, newOwner string) (string, error) {
+	lsys := cidlink.DefaultLinkSystem()
 
-// 		addr, _ := inj.CosmosAddressToEthAddress(msg.Creator)
+	rootNode, err := k.GetMetadata(ctx, hash, "")
 
-// 	meta := evmtypes.UnpackTxData(msg.MetaTransaction)
-// 	data := evmtypes.NewTxDataFromTx(meta)
-// 	msgContract := evmtypes.NewTx(
-// 		k.evmKeeper.ChainID(),
-// 		k.evmKeeper.GetNonce(addr),
-// 		addr,
-// 		0,
+	n, err := traversal.FocusedTransform(
+		rootNode,
+		datamodel.ParsePath("owner"),
+		func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+			if progress.Path.String() == "owner" && must.String(prev) == previousOwner {
+				nb := prev.Prototype().NewBuilder()
+				nb.AssignString(newOwner)
+				return nb.Build(), nil
+			}
+			return nil, fmt.Errorf("Owner not found")
+		}, false)
 
-// 	))
-// 		k.evmKeeper.ApplyNativeMessage(msgContract)
+	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+			store.Set([]byte(lnk.String()), buf.Bytes())
+			return nil
+		}, nil
+	}
 
-// 	return *types.MsgSendCrossMintTrustedResponse{
-// 		Id: 0,
-// 	}, nil
-// }
+	link, err := lsys.Store(
+		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		GetLinkPrototype(),
+		n, // And here's our data.
+	)
+	if err != nil {
+		return "", err
+	}
+
+	//	id, _ := cid.Decode(link.String())
+	return link.String(), nil
+}

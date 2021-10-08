@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/exported"
@@ -16,12 +15,7 @@ import (
 	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	cid "github.com/ipfs/go-cid"
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/ipld/go-ipld-prime/linking"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -202,88 +196,14 @@ func (k *Keeper) GetObject(ctx sdk.Context, req *types.QueryResourceRequest) (*t
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	lnk, err := cid.Parse(req.Cid)
+	n, err := k.GetMetadata(ctx, req.Cid, req.Path)
 	if err != nil {
-		return nil, status.Error(
-			codes.InvalidArgument,
-			types.ErrIntOverflowQuery.Error(),
-		)
-	} //Do a separate function
-	lsys := cidlink.DefaultLinkSystem()
-
-	var id []byte
-	if req.Path != "" {
-		path := req.Path
-		id = append([]byte(lnk.String()), path...)
-	} else {
-		id = []byte(lnk.String())
+		return nil, status.Error(codes.InvalidArgument, "failed to get metadata")
 	}
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-	has := store.Has(id)
-
-	if !has {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
-
-	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
-		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-		buf := store.Get(id)
-		return bytes.NewReader(buf), nil
-	}
-
-	// TODO: add a typesystem to read
-	np := basicnode.Prototype.Any
-
-	n, err := lsys.Load(
-		linking.LinkContext{},
-		cidlink.Link{Cid: lnk}, // The Link we want to load!
-		np,                     // The NodePrototype says what kind of Node we want as a result.
-	)
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(n, &bufdata)
 
 	return &types.QueryResourceResponse{
 		Data: base64.RawStdEncoding.EncodeToString(bufdata.Bytes()),
 	}, nil
-}
-
-func (k *Keeper) ReadCBOR(ctx sdk.Context, req *types.QueryResourceRequest) ([]byte, error) {
-
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	lnk, err := cid.Parse(req.Cid)
-	if err != nil {
-		return nil, status.Error(
-			codes.InvalidArgument,
-			types.ErrIntOverflowQuery.Error(),
-		)
-	} //Do a separate function
-
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-	has := store.Has([]byte(lnk.String()))
-
-	if !has {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
-	lsys := cidlink.DefaultLinkSystem()
-
-	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, link ipld.Link) (io.Reader, error) {
-		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-		buf := store.Get([]byte(link.String()))
-		return bytes.NewReader(buf), nil
-	}
-
-	np := basicnode.Prototype.Any
-
-	n, err := lsys.Load(
-		linking.LinkContext{},
-		cidlink.Link{Cid: lnk}, // The Link we want to load!
-		np,                     // The NodePrototype says what kind of Node we want as a result.
-	)
-	var bufdata bytes.Buffer
-	_ = dagcbor.Encode(n, &bufdata)
-
-	return bufdata.Bytes(), nil
 }
