@@ -44,12 +44,16 @@ require (
 require (
 	github.com/Electronic-Signatures-Industries/ancon-ipld-router-sync v0.0.0-20211005122235-25fc5ac8f59f
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-graphsync v0.9.3
 	github.com/ipld/go-car v0.3.1
-	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
+	github.com/libp2p/go-libp2p-core v0.8.6
+	github.com/libp2p/go-libp2p-host v0.1.0
+	github.com/libp2p/go-libp2p-kad-dht v0.13.1
+	github.com/multiformats/go-multiaddr v0.3.3
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/proofzero/go-ipld-linkstore v1.0.0
-	github.com/tharsis/ethermint v0.7.0
+	github.com/tharsis/ethermint v0.7.1
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

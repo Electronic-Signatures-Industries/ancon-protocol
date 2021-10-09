@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 
 	"github.com/spf13/cobra"
 
@@ -52,7 +53,7 @@ import (
 func StartCmd(appCreator types.AppCreator, defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start",
-		Short: "Run the full ancon node",
+		Short: "Run the full node",
 		Long: `Run the full node application with Tendermint in or out of process. By
 default, the application will run with Tendermint in process.
 
@@ -101,6 +102,17 @@ which accepts a path for the resulting pprof file.
 				return startStandAlone(serverCtx, appCreator)
 			}
 
+			serverCtx.Logger.Info("Unlocking keyring")
+
+			// fire unlock precess for keyring
+			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
+			if keyringBackend == keyring.BackendFile {
+				_, err = clientCtx.Keyring.List()
+				if err != nil {
+					return err
+				}
+			}
+
 			serverCtx.Logger.Info("starting ABCI with Tendermint")
 
 			// amino is needed here for backwards compatibility of REST routes
@@ -146,6 +158,7 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Uint64(srvflags.JSONRPCGasCap, config.DefaultGasCap, "Sets a cap on gas that can be used in eth_call/estimateGas (0=infinite)")
 
 	cmd.Flags().String(srvflags.EVMTracer, config.DefaultEVMTracer, "the EVM tracer type to collect execution traces from the EVM transaction execution (json|struct|access_list|markdown)")
+
 	cmd.Flags().String(srvflags.TLSCertPath, "", "the cert.pem file path for the server TLS configuration")
 	cmd.Flags().String(srvflags.TLSKeyPath, "", "the key.pem file path for the server TLS configuration")
 

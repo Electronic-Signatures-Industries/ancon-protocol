@@ -7,7 +7,7 @@ KEYRING="test"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
 # to trace evm
-TRACE=""
+TRACE="--trace"
 # TRACE=""
 MNEMONIC="soda comic bachelor scheme absent embrace case toddler medal scrub obtain glad"
 MNEMONICA="lend lock kit kiss walnut flower expect text upset nut arrive hub waste stairs climb neither must crowd harvest network wife lizard shiver obtain"

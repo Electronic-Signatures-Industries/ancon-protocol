@@ -107,6 +107,10 @@ import (
 
 	// "github.com/tharsis/ethermint/x/feemarket"
 	// feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
+	// feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+
+	// "github.com/tharsis/ethermint/x/feemarket"
+	// feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
 
 	aguaclaramodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara"
 	aguaclaramodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
@@ -114,6 +118,7 @@ import (
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol"
+	_ "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	anconprotocolkeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	anconprotocoltypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 )
@@ -167,7 +172,7 @@ var (
 		anconprotocol.AppModuleBasic{},
 		// Ethermint modules
 		evm.AppModuleBasic{},
-		// feemarket.AppModuleBasic{},
+		//		feemarket.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 	)
 
@@ -244,7 +249,7 @@ type App struct {
 
 	// Ethermint keepers
 	EvmKeeper *evmkeeper.Keeper
-	// FeeMarketKeeper feemarketkeeper.Keeper
+	//	FeeMarketKeeper feemarketkeeper.Keeper
 
 	ScopedAguaclaraKeeper capabilitykeeper.ScopedKeeper
 	AguaclaraKeeper       aguaclaramodulekeeper.Keeper
@@ -310,6 +315,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey,
+		// feemarkettypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		aguaclaramoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
@@ -387,17 +393,6 @@ func New(
 
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
-	// Create Ethermint keepers
-	app.EvmKeeper = evmkeeper.NewKeeper(
-		appCodec, keys[evmtypes.StoreKey], tkeys[evmtypes.TransientKey], app.GetSubspace(evmtypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
-		tracer, bApp.Trace(), // debug EVM based on Baseapp options
-	)
-
-	// app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-	// 	appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
-	// )
-
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName),
@@ -445,7 +440,16 @@ func New(
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
-
+	// Create Ethermint keepers
+	// app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+	// 	appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
+	// )
+	evmkeeperInstance := evmkeeper.NewKeeper(
+		appCodec, keys[evmtypes.StoreKey], tkeys[evmtypes.TransientKey], app.GetSubspace(evmtypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
+		// app.FeeMarketKeeper,
+		tracer, bApp.Trace(), // debug EVM based on Baseapp options
+	)
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
 		appCodec,
 		keys[anconprotocoltypes.StoreKey],
@@ -453,11 +457,13 @@ func New(
 		app.GetSubspace(anconprotocoltypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.EvmKeeper,
+		evmkeeperInstance,
 		app.ModuleAccountAddrs(),
 	)
 	anconprotocolModule := anconprotocol.NewAppModule(appCodec, app.AnconprotocolKeeper, app.AccountKeeper, app.BankKeeper)
-
+	app.EvmKeeper = evmkeeperInstance.SetHooks(evmkeeper.NewMultiEvmHooks(anconprotocolkeeper.NewSendCrossmintRequestHook(
+		app.AnconprotocolKeeper,
+	)))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -587,6 +593,7 @@ func New(
 	app.SetAnteHandler(
 		evmante.NewAnteHandler(
 			app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.FeeGrantKeeper, app.IBCKeeper.ChannelKeeper,
+			//			app.FeeMarketKeeper,
 			encodingConfig.TxConfig.SignModeHandler(),
 		),
 	)

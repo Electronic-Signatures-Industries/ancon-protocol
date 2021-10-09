@@ -296,10 +296,10 @@ func Test_ExecuteTransaction(
 	t *testing.T,
 ) {
 	_, ctx := setupKeeper(t)
-	client, err := ethclient.Dial("http://localhost:8545")
+	client, err := ethclient.Dial("http://localhost:8646")
 
 	//	inputs := evm_hook_abi.Events["_anconCreateMetadata"].Inputs
-	//ganache mnemonic for testing purposes "squirrel health crash famous regret weird grape speak panda always quote enter"
+	//ganache mnemonic for testing purposes
 	//Acc 0x762e2386Cf62a597db3Bac1d3092da24400a00d1
 	//Pkey 0xd99d1aa5a610528926846e187774c7a680cd5d0f12ba31fee0dde4bdc565f700
 	//err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
