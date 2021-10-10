@@ -105,7 +105,6 @@ func Test_AddMetadata_JSON(t *testing.T) {
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
-	var res []byte
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: lnk}
 	om, _ := keeper.GetObject(ctx, x)
@@ -115,8 +114,37 @@ func Test_AddMetadata_JSON(t *testing.T) {
 
 	var output types.IPLDMetadataStore
 	_ = cbor.Unmarshal(cborPayload, &output)
-	res, _ = json.Marshal(output)
-	require.Equal(t, output, res)
+	require.Equal(t, output.Did, f[0].Did)
+}
+
+func Test_ChangeMetadata_JSON(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	f := make([]types.MsgMetadata, 1)
+	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	f[0].Description = "NFT Metadata"
+	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
+	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
+	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
+	f[0].Parent = ""
+	f[0].VerifiedCredentialRef = ""
+	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
+	f[0].Links = "[]"
+	f[0].From = "gggggggggggggg"
+
+	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+
+	updlnk, _ := keeper.ChangeOwnerMetadata(ctx, lnk, f[0].Owner, f[0].Did)
+
+	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
+	x := &types.QueryResourceRequest{Cid: updlnk}
+	om, _ := keeper.GetObject(ctx, x)
+
+	var cborPayload []byte
+	cborPayload, _ = base64.RawStdEncoding.DecodeString(om.Data)
+
+	var output types.IPLDMetadataStore
+	_ = cbor.Unmarshal(cborPayload, &output)
+	require.Equal(t, output.Owner, f[0].Did)
 }
 
 func TestTrustedContent(t *testing.T) {
