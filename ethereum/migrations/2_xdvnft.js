@@ -21,6 +21,7 @@ function sha256( data ) {
 }
 
 function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
+  // abi.encodePacked(....)
 	const hashDiplomaHex = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 
 	const encodeEIP712Domain = web3Abi.encodeParameters(

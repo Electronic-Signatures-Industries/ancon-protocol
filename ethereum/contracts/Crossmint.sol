@@ -6,6 +6,7 @@ import "./ICrossmint.sol";
 import "./IClaimsVerifier.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
@@ -20,9 +21,9 @@ contract Crossmint is ICrossmint {
     IClaimsVerifier public verifier;
 
     event CrossMintCallbackReceived(
-      address indexed newOwner,
-      string indexed metadataHash,
-      uint256 indexed tokenId
+        address indexed newOwner,
+        string indexed metadataHash,
+        uint256 indexed tokenId
     );
 
     constructor(
@@ -37,27 +38,17 @@ contract Crossmint is ICrossmint {
         tokenNFT = _tokenNFT;
     }
 
-
-    
-
     // initiateCrossmint from Cosmos EVM to EVM
     function initiateCrossmint(
-        uint256 recipientChainId,
         address fromOwner,
         address toOwner,
         bytes memory permitSignature,
         bytes32 permitHash
     ) public returns (bool) {
-        // require(
-        //    (fromTokenNft) == tokenNFT,
-        //     "Contract does not support this token NFT"
-        // );
 
-        require(
-            senderChainId != recipientChainId,
-            "Recipient chain Id must be different from this chain id"
-        );
-
+// const role = await registryContract.ISSUER_ROLE()
+// console.log(role)
+// credentialRegistry.grantRole( credentialRegistry.ISSUER_ROLE, verifier.address );
 
         bool ok = credentialRegistry.registerCredential(
             fromOwner,
@@ -70,9 +61,7 @@ contract Crossmint is ICrossmint {
 
         require(ok, "Invalid permit credential, try again");
 
-
         return true;
-
     }
 
     /**
@@ -83,28 +72,47 @@ contract Crossmint is ICrossmint {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) public returns(uint) {
+    ) public returns (uint256) {
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        (bool exists, bool hasRevoked, bool issuerValid, bool a, bool expired)  = verifier.verifyCredential(vc, v, r, s);
+        (
+            bool exists,
+            bool hasRevoked,
+            bool issuerValid,
+            bool a,
+            bool expired
+        ) = verifier.verifyCredential(vc, v, r, s);
         require(exists, "Missing permit");
         require(hasRevoked, "Permit has been revoked");
         require(issuerValid, "Issuer is not valid");
         require(expired, "Permit has expired");
         // verify token exists
         // ERC721(tokenAddress)
-       (string memory metadata, address to, uint tokenId, bool isNew) = abi.decode(vc.data, (string, address, uint, bool));
+        (
+            string memory metadata,
+            address to,
+            address fromOwner,
+            address newOwner,
+            uint256 tokenId,
+            bool isNew
+        ) = abi.decode(
+                vc.data,
+                (string, address, address, address, uint256, bool)
+            );
         ERC721 nft = ERC721(to);
 
-        require(nft.ownerOf(tokenId), "Invalid token id");
+        address owned = nft.ownerOf(tokenId);
+        require(owned == fromOwner, "Invalid token id");
+
         
+        // Cross update
+        //  function safeTransferFrom(
+        // address from,
+        // address to,
+        // uint256 tokenId,
+        // bytes memory _data
+        uint256 newItemId = 0;
 
-        // verify subject ==  vc.subject
-        require(vc.subject == newOwner, "Invalid vc subject, recipient owner incorrect");
-
-        // MINT
-        uint256 newItemId =  nft.mint(newOwner, metadataHash);
-
-        emit CrossMintCallbackReceived(newOwner, newItemId, metadataHash);
+        emit CrossMintCallbackReceived(newOwner, metadata, newItemId);
         return newItemId;
     }
 }
