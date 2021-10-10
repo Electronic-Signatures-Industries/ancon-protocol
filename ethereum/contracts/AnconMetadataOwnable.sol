@@ -13,12 +13,11 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Crossmint is ICrossmint {
+contract AnconMetadataOwnable {
     address public tokenNFT;
-    uint256 public senderChainId;
-
-    ICredentialRegistry public credentialRegistry;
     IClaimsVerifier public verifier;
+    uint256 public senderChainId;
+    ICredentialRegistry public credentialRegistry;
 
     event CrossMintCallbackReceived(
         address indexed newOwner,
@@ -29,27 +28,20 @@ contract Crossmint is ICrossmint {
     constructor(
         address _tokenNFT,
         address _credentialRegistry,
-        address _verifier,
-        uint256 _senderChainId
+        address _verifier
     ) public {
-        senderChainId = _senderChainId;
         verifier = IClaimsVerifier(_verifier);
         credentialRegistry = ICredentialRegistry(_credentialRegistry);
         tokenNFT = _tokenNFT;
     }
 
-    // initiateCrossmint from Cosmos EVM to EVM
-    function initiateCrossmint(
+    // changeOwner
+    function changeOwner(
         address fromOwner,
         address toOwner,
         bytes memory permitSignature,
         bytes32 permitHash
     ) public returns (bool) {
-
-// const role = await registryContract.ISSUER_ROLE()
-// console.log(role)
-// credentialRegistry.grantRole( credentialRegistry.ISSUER_ROLE, verifier.address );
-
         bool ok = credentialRegistry.registerCredential(
             fromOwner,
             toOwner,
@@ -65,14 +57,14 @@ contract Crossmint is ICrossmint {
     }
 
     /**
-     * applyCrossmintChangeRequest
+     * changeOwnerWithProof
      */
-    function applyCrossmintChangeRequest(
+    function changeOwnerWithProof(
         VerifiableCredential memory vc,
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) public returns (uint256) {
+    ) public returns (bool) {
         // verify permit exists, has not revoked, has valid issuer and is not expired
         (
             bool exists,
@@ -86,33 +78,34 @@ contract Crossmint is ICrossmint {
         require(issuerValid, "Issuer is not valid");
         require(expired, "Permit has expired");
         // verify token exists
+        _execute(vc.data);
+    }
+
+    function _execute(bytes memory data) internal returns (bool){
         // ERC721(tokenAddress)
         (
             string memory metadata,
             address to,
-            address fromOwner,
             address newOwner,
-            uint256 tokenId,
+            address fromOwner,
+            uint256 id,
             bool isNew
         ) = abi.decode(
-                vc.data,
+                data,
                 (string, address, address, address, uint256, bool)
             );
         ERC721 nft = ERC721(to);
 
-        address owned = nft.ownerOf(tokenId);
-        require(owned == fromOwner, "Invalid token id");
+        require(nft.ownerOf(id) == fromOwner, "Invalid token id");
 
-        
-        // Cross update
-        //  function safeTransferFrom(
-        // address from,
-        // address to,
-        // uint256 tokenId,
-        // bytes memory _data
-        uint256 newItemId = 0;
+        if (isNew) {
+            // todo: should mint
+        } else {
+            nft.safeTransferFrom(fromOwner, newOwner, id, data);
+        }
 
-        emit CrossMintCallbackReceived(newOwner, metadata, newItemId);
-        return newItemId;
+        emit CrossMintCallbackReceived(newOwner, metadata, id);
+
+        return true;
     }
 }

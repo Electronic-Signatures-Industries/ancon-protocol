@@ -8,9 +8,12 @@ import "./lib/ECDSA.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "./AbstractClaimsVerifier.sol";
+import "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 import "./ClaimTypes.sol";
 
-contract ClaimsVerifier is AbstractClaimsVerifier, ClaimTypes, AccessControl, AccessControlEnumerable {
+contract ClaimsVerifier is AbstractClaimsVerifier, 
+ClaimTypes, 
+AccessControlEnumerable{
 
     using ECDSA for bytes32;
 
@@ -78,5 +81,6 @@ contract ClaimsVerifier is AbstractClaimsVerifier, ClaimTypes, AccessControl, Ac
         require(hasRole(ISSUER_ROLE, msg.sender), "Caller is not a issuer 1");
         _;
     }
+
 
 }

@@ -3,6 +3,7 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
@@ -10,43 +11,22 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICredentialRegistry.sol";
 
-// interface IERC721Receiver {
-//     /**
-//      * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
-//      * by `operator` from `from`, this function is called.
-//      *
-//      * It must return its Solidity selector to confirm the token transfer.
-//      * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
-//      *
-//      * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.
-//      */
-//     function onERC721Received(
-//         address operator,
-//         address from,
-//         uint256 tokenId,
-//         bytes calldata data
-//     ) external returns (bytes4);
-
-//  a NFT secure document 
-contract XDVNFT is ERC721Burnable, ERC721Pausable, ERC721URIStorage, Ownable {
+//  a NFT secure document
+contract XDVNFT is
+    ERC721Burnable,
+    ERC721Pausable,
+    ERC721URIStorage,
+    Ownable,
+    IERC721Receiver
+{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     IERC20 public stablecoin;
-    ICredentialRegistry public credentialRegistry;
+    address public verifierAddress;
     uint256 public serviceFeeForPaymentAddress = 0;
     uint256 public serviceFeeForContract = 0;
 
     event Withdrawn(address indexed paymentAddress, uint256 amount);
-    // Ancon EVM Hook
-	event _anconCreateMetadata(
-	address owner,
-	string did,
-	string name,
-	string description,
-	string image,
-	string parent,
-	string  sources,
-	string  links);
 
     event ServiceFeePaid(
         address indexed from,
@@ -61,10 +41,10 @@ contract XDVNFT is ERC721Burnable, ERC721Pausable, ERC721URIStorage, Ownable {
         string memory name,
         string memory symbol,
         address tokenERC20,
-        address credentialAddr
+        address verifierAddr
     ) ERC721(name, symbol) {
         stablecoin = IERC20(tokenERC20);
-        credentialRegistry = ICredentialRegistry(credentialAddr);
+        verifierAddress = verifierAddr;
     }
 
     function setServiceFeeForPaymentAddress(uint256 _fee) public onlyOwner {
@@ -88,70 +68,44 @@ contract XDVNFT is ERC721Burnable, ERC721Pausable, ERC721URIStorage, Ownable {
         return newItemId;
     }
 
-        // TODO: later lacchain vc eip1812
-    function swap(
-        address user, //owner
-        uint256 chainid,
-        bytes32 credentialHash,
-        bytes memory signature,
-        // MsgMetadata
-        string memory did,
-        string memory name,
-        string memory description,
-        string memory image,
-        string memory parent,
-        // JSON Encoded arrays
-        string memory  sources,
-        string memory  links
-    ) public returns (bool
-        // string memory did, 
-        // string memory description, 
-        // string memory image, 
-        // string memory parent
-    ) {
-	
-    // swap 
-    // user
-    // chainid
-    // vc  lacchain
-    //  register(msg.sender, user, 1h, validfrom, data)
-    credentialRegistry.registerCredential(
-        msg.sender, 
-        user, 
-        credentialHash, 
-        block.timestamp, 
-        block.timestamp + 2 days , 
-        signature);
-    // metadata(...)
+    /**
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.
+     */
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4) {
+        // Verify operator
+        require(operator == verifierAddress, "Invalid verifier");
 
-    //logs
-    // log := &ethtypes.Log{
-	// 	Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
-	// 	BlockHash:   common.HexToHash("0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056"),
-	// 	BlockNumber: 2019236,
-	// 	Data:        pck,
-	// 	Index:       2,
-	// 	TxIndex:     3,
-	// 	TxHash:      common.HexToHash("0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e"),
-	// 	Topics: []common.Hash{
-	// 		evm_hook_abi.Events["_anconCreateMetadata"].ID,
-	// 	},
-	// }
+        // Verify owner owns token id
+        address owned = ownerOf(tokenId);
+        require(owned == from, "Invalid token id owner");
+        (
+            string memory _metadata,
+            address _to,
+            address _fromOwner,
+            address _newOwner,
+            uint256 _tokenId,
+            bool _isNew
+        ) = abi.decode(
+                data,
+                (string, address, address, address, uint256, bool)
+            );
+        require(bytes(_metadata).length == 0, "Empty metadata");
 
-        emit _anconCreateMetadata(user,
-            did,
-            name,
-            description,
-            image,
-            parent,
-            sources,
-            links
-        );
-
-        return true;
-
+        // set metadata URI
+        _setTokenURI(_tokenId, _metadata);
+        return this.onERC721Received.selector;
     }
-    // supportWith
 
     /**
      * @dev Just overrides the superclass' function. Fixes inheritance
@@ -196,7 +150,6 @@ contract XDVNFT is ERC721Burnable, ERC721Pausable, ERC721URIStorage, Ownable {
      * Reverts if the payment procedure could not be completed.
      */
     function paymentBeforeMint(address tokenHolder) internal virtual {
-
         // Transfer tokens to pay service fee
         require(
             stablecoin.transferFrom(
@@ -217,10 +170,7 @@ contract XDVNFT is ERC721Burnable, ERC721Pausable, ERC721URIStorage, Ownable {
     function withdrawBalance(address payable payee) public onlyOwner {
         uint256 balance = stablecoin.balanceOf(address(this));
 
-        require(
-            stablecoin.transfer(payee, balance),
-            "XDV: Transfer failed"
-        );
+        require(stablecoin.transfer(payee, balance), "XDV: Transfer failed");
 
         emit Withdrawn(payee, balance);
     }
