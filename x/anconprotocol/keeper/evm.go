@@ -1,16 +1,11 @@
 package keeper
 
 import (
-	"crypto/ecdsa"
-	"math/big"
-
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/hyperledger/aries-framework-go/pkg/doc/verifiable"
 )
 
 var (
@@ -150,37 +145,6 @@ func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash
 			EnableIpldForestAccess: false,
 			FactRef:                "",
 		}
-
-		client, err := ethclient.Dial("http://localhost:8646")
-
-		//	inputs := evm_hook_abi.Events["__CosmosNativeCreateMetadata"].Inputs
-		//ganache mnemonic for testing purposes
-		//Acc 0x762e2386Cf62a597db3Bac1d3092da24400a00d1
-		//Pkey 0xd99d1aa5a610528926846e187774c7a680cd5d0f12ba31fee0dde4bdc565f700
-		//err = hook.PostTxProcessing(ctx, log.TxHash, []*ethtypes.Log{log})
-		pkeyint := new(big.Int)
-		pkeyint.SetString("d99d1aa5a610528926846e187774c7a680cd5d0f12ba31fee0dde4bdc565f700", 16)
-
-		_, err = ExecuteTransaction(
-			ctx,
-			RecieveCrossmintRequest{
-				vc:           verifiable.Credential{},
-				v:            0,
-				r:            []byte{},
-				s:            []byte{},
-				metadataHash: "",
-				to:           "",
-				newOwner:     "",
-			},
-			common.HexToAddress("0x762e2386Cf62a597db3Bac1d3092da24400a00d1"),
-			client,
-			big.NewInt(3),
-			&ecdsa.PrivateKey{
-				D: pkeyint,
-			},
-			common.HexToAddress("0x762e2386Cf62a597db3Bac1d3092da24400a00d1"),
-			int64(0),
-		)
 
 		err = msg.ValidateBasic()
 		if err != nil {
