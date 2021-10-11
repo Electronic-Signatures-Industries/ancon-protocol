@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/types"
 	ethrpc "github.com/ethereum/go-ethereum/rpc"
 
-	anconrpc "github.com/Electronic-Signatures-Industries/ancon-protocol/rpc"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon"
 	"github.com/tharsis/ethermint/rpc"
 
 	"github.com/tharsis/ethermint/server/config"
@@ -26,7 +26,8 @@ func StartJSONRPC(ctx *server.Context, clientCtx client.Context, tmRPCAddr, tmEn
 
 	rpcAPIArr := config.JSONRPC.API
 	apis := rpc.GetRPCAPIs(ctx, clientCtx, tmWsClient, rpcAPIArr)
-	apis = append(apis, anconrpc.GetRPCAPIs(ctx, clientCtx, tmWsClient))
+	rpcapis := ancon.GetRPCAPIs(ctx, clientCtx, tmWsClient, rpcAPIArr)
+	apis = append(apis, rpcapis...)
 
 	for _, api := range apis {
 		if err := rpcServer.RegisterName(api.Namespace, api.Service); err != nil {

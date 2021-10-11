@@ -1,18 +1,13 @@
 package ancon
 
 import (
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon/namespaces/ancon"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/server"
-
-	"github.com/tharsis/ethermint/ethereum/rpc/backend"
-	"github.com/tharsis/ethermint/ethereum/rpc/namespaces/eth"
-	"github.com/tharsis/ethermint/ethereum/rpc/namespaces/eth/filters"
 )
 
 // RPC namespaces and API version
@@ -43,26 +38,26 @@ func GetRPCAPIs(ctx *server.Context,
 				rpc.API{
 					Namespace: AnconNamespace,
 					Version:   apiVersion,
-					Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
+					Service:   ancon.NewPublicAPI(ctx.Logger, clientCtx, evmBackend),
 					Public:    true,
 				},
 			)
 
-		case GraphsyncNamespace:
-			apis = append(apis,
-				rpc.API{
-					Namespace: GraphsyncNamespace,
-					Version:   apiVersion,
-					Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
-					Public:    true,
-				},
-				rpc.API{
-					Namespace: EthNamespace,
-					Version:   apiVersion,
-					Service:   filters.NewPublicAPI(ctx.Logger, tmWSClient, evmBackend),
-					Public:    true,
-				},
-			)
+		// case GraphsyncNamespace:
+		// 	apis = append(apis,
+		// 		rpc.API{
+		// 			Namespace: GraphsyncNamespace,
+		// 			Version:   apiVersion,
+		// 			Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
+		// 			Public:    true,
+		// 		},
+		// 		rpc.API{
+		// 			Namespace: EthNamespace,
+		// 			Version:   apiVersion,
+		// 			Service:   filters.NewPublicAPI(ctx.Logger, tmWSClient, evmBackend),
+		// 			Public:    true,
+		// 		},
+		// 	)
 		default:
 			ctx.Logger.Error("invalid namespace value", "namespace", selectedAPIs[index])
 		}

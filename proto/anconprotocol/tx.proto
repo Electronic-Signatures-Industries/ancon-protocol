@@ -55,7 +55,20 @@ service Msg {
   rpc RegisterRelay(MsgRegisterRelay) returns (MsgRegisterRelayResponse);
   // MintSwap
   rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);
+  //Create ancon metadata
+  //rpc ChangeMetadataOwnership(MsgChangeMetadataOwnership) returns (MsgChangeMetadataOwnershipResponse);
 }
+
+// message MsgChangeMetadataOwnership {
+//   string sender = 1;
+//   //string chain = 2;
+//   //string alg = 3;
+//   //string pub = 4;
+// }
+
+// message MsgChangeMetadataOwnershipResponse {
+//   string id = 1;
+// }
 
 message MsgRegisterRelay {
   string sender = 1;

@@ -57,6 +57,7 @@ require (
 	github.com/libp2p/go-libp2p-noise v0.2.0
 	github.com/libp2p/go-libp2p-routing v0.1.0
 	github.com/multiformats/go-multihash v0.0.15
+	github.com/pkg/errors v0.9.1
 	github.com/proofzero/go-ipld-linkstore v1.0.0
 	github.com/tharsis/ethermint v0.7.1
 )
