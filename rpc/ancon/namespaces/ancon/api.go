@@ -2,6 +2,7 @@ package ancon
 
 import (
 	"context"
+	"encoding/json"
 	"math/big"
 
 	"github.com/pkg/errors"
@@ -91,20 +92,19 @@ func (e *PublicAPI) SendSignTx(args rpctypes.SendTxArgs) (string, error) {
 
 	var buff []byte
 
-	str, error := args.Data.MarshalText()
+	dataString := string(*args.Data)
 
-	if error != nil {
-		e.logger.Error("failed to query evm params", "error", error.Error())
-		return "", error
+	var raw map[string]interface{}
+
+	if err := json.Unmarshal([]byte(dataString), &raw); err != nil {
+		e.logger.Error("failed to query evm params", "error", err.Error())
 	}
 
-	buff = []byte(str)
-
 	signdoc := txtypes.SignDoc{
-		BodyBytes:     []byte{},
-		AuthInfoBytes: []byte{},
-		ChainId:       "",
-		AccountNumber: 0,
+		BodyBytes:     raw["bodyBytes"].([]byte),
+		AuthInfoBytes: raw["authInfoBytes"].([]byte),
+		ChainId:       args.ChainID.ToInt().String(),
+		AccountNumber: raw["accountNumber"].(uint64),
 	}
 
 	signdoc.Unmarshal(buff)

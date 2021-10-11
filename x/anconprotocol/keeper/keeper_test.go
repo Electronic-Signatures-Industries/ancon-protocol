@@ -3,12 +3,15 @@ package keeper
 import (
 	"crypto/ecdsa"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/verifiable"
+	"github.com/spf13/cast"
 	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -89,6 +92,25 @@ func Test_AddFile_JSON(t *testing.T) {
 	require.Equal(t, match["content"], f[0].Content)
 }
 
+func Test_Convert_From_Base64_To_Bytes(t *testing.T) {
+	hexinput := "7b22466f6f223a22626172227d"
+
+	bystr, _ := hex.DecodeString(hexinput)
+
+	var dat map[string]interface{}
+	json.Unmarshal(bystr, &dat)
+
+	//var schema JSN
+	//json.Unmarshal(bystr, &schema)
+	//(schema := map[string]int{foo: "bar"}
+
+	//jsondec(&schema)
+	//fmt.Printf("%s", schema.Foo)
+
+	fmt.Printf("%s", cast.ToString(dat))
+	//fmt.Printf("%s", bytes)
+}
+
 func Test_AddMetadata_JSON(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 	f := make([]types.MsgMetadata, 1)
@@ -133,7 +155,7 @@ func Test_ChangeMetadata_JSON(t *testing.T) {
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
-	updlnk, _ := keeper.ChangeOwnerMetadata(ctx, lnk, f[0].Owner, f[0].Did)
+	updlnk, _ := keeper.ChangeOwnerMetadata(ctx, lnk, f[0].Owner, f[0].Did, "", "")
 
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: updlnk}
