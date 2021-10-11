@@ -115,7 +115,7 @@ cp config.toml $HOME/.ancon-protocold/config/config.toml
 
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-~/go/bin/ancon-protocold start --node tcp://0.0.0.0:26657 --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
+~/go/bin/ancon-protocold start --node tcp://0.0.0.0:26657 --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api graphsync, ancon, eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
 
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton

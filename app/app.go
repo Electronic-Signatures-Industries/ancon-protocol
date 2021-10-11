@@ -96,6 +96,7 @@ import (
 	evmante "github.com/tharsis/ethermint/app/ante"
 
 	// unnamed import of statik for swagger UI support
+	ethermintapp "github.com/tharsis/ethermint/app"
 	_ "github.com/tharsis/ethermint/client/docs/statik"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
@@ -105,9 +106,9 @@ import (
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
-	// "github.com/tharsis/ethermint/x/feemarket"
-	// feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
-	// feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+	"github.com/tharsis/ethermint/x/feemarket"
+	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
+	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	// "github.com/tharsis/ethermint/x/feemarket"
 	// feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
@@ -172,7 +173,7 @@ var (
 		anconprotocol.AppModuleBasic{},
 		// Ethermint modules
 		evm.AppModuleBasic{},
-		//		feemarket.AppModuleBasic{},
+		feemarket.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 	)
 
@@ -195,8 +196,8 @@ var (
 )
 
 var (
-	_ CosmosApp               = (*App)(nil)
-	_ servertypes.Application = (*App)(nil)
+	_ CosmosApp               = (*ethermintapp.EthermintApp)(nil)
+	_ servertypes.Application = (*ethermintapp.EthermintApp)(nil)
 )
 
 func init() {
@@ -248,8 +249,8 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// Ethermint keepers
-	EvmKeeper *evmkeeper.Keeper
-	//	FeeMarketKeeper feemarketkeeper.Keeper
+	EvmKeeper       *evmkeeper.Keeper
+	FeeMarketKeeper feemarketkeeper.Keeper
 
 	ScopedAguaclaraKeeper capabilitykeeper.ScopedKeeper
 	AguaclaraKeeper       aguaclaramodulekeeper.Keeper
@@ -315,7 +316,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey,
-		// feemarkettypes.StoreKey,
+		feemarkettypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		aguaclaramoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
@@ -441,13 +442,10 @@ func New(
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
 	// Create Ethermint keepers
-	// app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-	// 	appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
-	// )
 	evmkeeperInstance := evmkeeper.NewKeeper(
 		appCodec, keys[evmtypes.StoreKey], tkeys[evmtypes.TransientKey], app.GetSubspace(evmtypes.ModuleName),
 		app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
-		// app.FeeMarketKeeper,
+		//	app.FeeMarketKeeper,
 		tracer, bApp.Trace(), // debug EVM based on Baseapp options
 	)
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
@@ -464,6 +462,9 @@ func New(
 	app.EvmKeeper = evmkeeperInstance.SetHooks(evmkeeper.NewMultiEvmHooks(anconprotocolkeeper.NewSendCrossmintRequestHook(
 		app.AnconprotocolKeeper,
 	)))
+	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
+	)
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -510,7 +511,7 @@ func New(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
-		// feemarket.NewAppModule(app.FeeMarketKeeper),
+		feemarket.NewAppModule(app.FeeMarketKeeper),
 		transferModule,
 		aguaclaraModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
@@ -533,7 +534,7 @@ func New(
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		evmtypes.ModuleName,
-		// feemarkettypes.ModuleName,
+		feemarkettypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -556,7 +557,7 @@ func New(
 		authz.ModuleName, feegrant.ModuleName,
 		// Ethermint modules
 		evmtypes.ModuleName,
-		// feemarkettypes.ModuleName,
+		feemarkettypes.ModuleName,
 
 		aguaclaramoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -593,7 +594,7 @@ func New(
 	app.SetAnteHandler(
 		evmante.NewAnteHandler(
 			app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.FeeGrantKeeper, app.IBCKeeper.ChannelKeeper,
-			//			app.FeeMarketKeeper,
+			// app.FeeMarketKeeper,
 			encodingConfig.TxConfig.SignModeHandler(),
 		),
 	)
@@ -789,7 +790,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(anconprotocoltypes.ModuleName)
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
-	//	paramsKeeper.Subspace(feemarkettypes.ModuleName)
+	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	return paramsKeeper
 }
 
