@@ -7,23 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) RegisterRelay(goCtx context.Context, msg *types.MsgRegisterRelay) (*types.MsgRegisterRelayResponse, error) {
-	//	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// err := msg.ValidateBasic()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// k.AddInitiateSwap(
-	// 	ctx,
-	// 	msg,
-	// )
-
-	return &types.MsgRegisterRelayResponse{}, nil
-}
-
-func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*types.MsgMintSwapResponse, error) {
+// ChangeMetadataOwnership
+func (k msgServer) ChangeMetadataOwnership(goCtx context.Context, msg *types.MsgChangeMetadataOwnership) (*types.MsgChangeMetadataOwnershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
@@ -31,15 +16,16 @@ func (k msgServer) MintSwap(goCtx context.Context, msg *types.MsgMintSwap) (*typ
 		return nil, err
 	}
 
-	// k.RequestLazyMint(
-	// 	ctx,
-	// 	&types.MsgMintTrustedContent{},
-	// )
+	lnk, _ := k.ChangeOwnerMetadata(
+		ctx, msg.Hash, msg.PreviousOwner, msg.NewOwner, msg.CurrentChainId, msg.RecipientChainId,
+	)
 
-	k.AddInitiateSwap(ctx, &types.MsgInitiateSwap{})
-
-	return &types.MsgMintSwapResponse{}, nil
+	return &types.MsgChangeMetadataOwnershipResponse{
+		Cid: lnk,
+	}, nil
 }
+
+// Metadata
 func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*types.MsgMetadataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -104,24 +90,6 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 	)
 
 	return &types.MsgMintTrustedResourceResponse{}, nil
-}
-
-func (k msgServer) SendCrossMintTrusted(goCtx context.Context, msg *types.MsgSendCrossMintTrusted) (*types.MsgSendCrossMintTrustedResponse, error) {
-	//	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	err := msg.ValidateBasic()
-	//TODO: validate content & meta transaction data
-	if err != nil {
-		return nil, err
-	}
-
-	// k.ApplySendCrossMintTrusted(
-	// 	ctx,
-	// 	msg,
-	// )
-	//TODO: emit an event before return
-
-	return &types.MsgSendCrossMintTrustedResponse{}, nil
 }
 
 func (k msgServer) File(goCtx context.Context, msg *types.MsgFile) (*types.MsgFileResponse, error) {

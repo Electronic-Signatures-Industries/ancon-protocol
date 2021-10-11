@@ -259,8 +259,7 @@ func (k Keeper) ClaimSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (s
 	return "", nil
 }
 func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
-	lsys := cidlink.DefaultLinkSystem()
-
+	lsys := k.GetLinkSystem()
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
@@ -323,19 +322,8 @@ func CreateHashCidLink(hash []byte) cidlink.Link {
 	return lcLinkCID
 }
 
-func GetLinkPrototype() ipld.LinkPrototype {
-	// tip: 0x0129 dag-json
-	return cidlink.LinkPrototype{cid.Prefix{
-		Version:  1,
-		Codec:    0x71, // dag-cbor
-		MhType:   0x12, // sha2-256
-		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
-	}}
-}
-
 func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, error) {
-	lsys := cidlink.DefaultLinkSystem()
-
+	lsys := k.GetLinkSystem()
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
@@ -409,6 +397,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 }
 
 func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamodel.Node, error) {
+	lsys := k.GetLinkSystem()
 	lnk, err := cid.Parse(hash)
 	if err != nil {
 		return nil, status.Error(
@@ -417,7 +406,6 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 		)
 	}
 	//  TODO: Do a separate function
-	lsys := cidlink.DefaultLinkSystem()
 
 	var id []byte
 	if path != "" {
@@ -449,11 +437,16 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 
 	return n, err
 }
-func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner string, newOwner string) (string, error) {
-	lsys := cidlink.DefaultLinkSystem()
+func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 
+	lsys := k.GetLinkSystem()
 	rootNode, err := k.GetMetadata(ctx, hash, "")
 
+	if err != nil {
+		return "", err
+	}
+
+	// owner update
 	n, err := traversal.FocusedTransform(
 		rootNode,
 		datamodel.ParsePath("owner"),
@@ -466,6 +459,23 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner 
 			return nil, fmt.Errorf("Owner not found")
 		}, false)
 
+	if err != nil {
+		return "", err
+	}
+
+	// parent update
+	n, _ = traversal.FocusedTransform(
+		n,
+		datamodel.ParsePath("parent"),
+		func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+			if progress.Path.String() == "parent" && must.String(prev) == previousOwner {
+				nb := prev.Prototype().NewBuilder()
+				// set previous hash, not current
+				nb.AssignString(hash)
+				return nb.Build(), nil
+			}
+			return nil, fmt.Errorf("Parent not found")
+		}, false)
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
@@ -488,4 +498,18 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner 
 
 	//	id, _ := cid.Decode(link.String())
 	return link.String(), nil
+}
+
+func (k Keeper) GetLinkSystem() linking.LinkSystem {
+	return cidlink.DefaultLinkSystem()
+}
+
+func GetLinkPrototype() ipld.LinkPrototype {
+	// tip: 0x0129 dag-json
+	return cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    0x71, // dag-cbor
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
+	}}
 }

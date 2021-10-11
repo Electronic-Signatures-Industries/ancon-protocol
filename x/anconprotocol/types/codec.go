@@ -25,6 +25,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRevokeAttribute{}, "anconprotocol/RevokeAttribute", nil)
 
 	cdc.RegisterConcrete(&MsgMetadata{}, "anconprotocol/Metadata", nil)
+	cdc.RegisterConcrete(&MsgChangeMetadataOwnership{}, "anconprotocol/ChangeMetadataOwnership", nil)
 
 	cdc.RegisterConcrete(&MsgFile{}, "anconprotocol/File", nil)
 
@@ -32,16 +33,12 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgEditNFT{}, "anconprotocol/EditNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "anconprotocol/BurnNFT", nil)
 	cdc.RegisterConcrete(&MsgTransferDenom{}, "anconprotocol/TransferDenom", nil)
-	cdc.RegisterConcrete(&MsgMintSwap{}, "anconprotocol/MintSwap", nil)
-	cdc.RegisterConcrete(&MsgRegisterRelay{}, "anconprotocol/RegisterRelay", nil)
-	cdc.RegisterConcrete(&MsgSendCrossMintTrusted{}, "anconprotocol/SendCrossMintTrusted", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgGrantDelegate{},
-		&MsgRegisterRelay{},
 		&MsgGrantAttribute{},
 		&MsgRevokeDelegate{},
 		&MsgRevokeAttribute{},
@@ -56,9 +53,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateDid{},
 		&MsgUpdateDid{},
 		&MsgRevokeDid{},
-		&MsgMintSwap{},
-		&MsgInitiateSwap{},
-		&MsgSendCrossMintTrusted{},
+		&MsgChangeMetadataOwnership{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

@@ -19,7 +19,7 @@ service Msg {
   // RevokeDid
   rpc RevokeDid(MsgRevokeDid) returns (MsgRevokeDidResponse);    
   // RoyaltyInfo defines a metadata CID royalty info
-  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
+//  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
   // ChangeOwer TODO
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
@@ -49,26 +49,22 @@ service Msg {
   rpc MintTrustedContent(MsgMintTrustedContent) returns (MsgMintTrustedContentResponse);
   // MintTrustedResource defines a method for minting a resource.
   rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
-  // RegisterRelay
-  rpc SendCrossMintTrusted(MsgSendCrossMintTrusted) returns (MsgSendCrossMintTrustedResponse);
-  // RegisterRelay
-  rpc RegisterRelay(MsgRegisterRelay) returns (MsgRegisterRelayResponse);
-  // MintSwap
-  rpc MintSwap(MsgMintSwap) returns (MsgMintSwapResponse);
   //Create ancon metadata
-  //rpc ChangeMetadataOwnership(MsgChangeMetadataOwnership) returns (MsgChangeMetadataOwnershipResponse);
+  rpc ChangeMetadataOwnership(MsgChangeMetadataOwnership) returns (MsgChangeMetadataOwnershipResponse);
 }
 
-// message MsgChangeMetadataOwnership {
-//   string sender = 1;
-//   //string chain = 2;
-//   //string alg = 3;
-//   //string pub = 4;
-// }
+message MsgChangeMetadataOwnership {
+  string hash = 1;
+  string previousOwner = 2; // did
+  string newOwner = 3;      // did
+  string currentChainId = 4; // optional
+  string recipientChainId = 5;  // optional
+  string sender = 6;
+}
 
-// message MsgChangeMetadataOwnershipResponse {
-//   string id = 1;
-// }
+message MsgChangeMetadataOwnershipResponse {
+  string cid = 1;
+}
 
 message MsgRegisterRelay {
   string sender = 1;
