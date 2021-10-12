@@ -2,7 +2,6 @@ package ancon
 
 import (
 	"encoding/hex"
-	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -12,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
-
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
@@ -67,19 +65,28 @@ func (e *AnconAPIHandler) SendRawTransaction(data string) (string, error) {
 	tx := new(ethtypes.Transaction)
 	rlp.DecodeBytes(ethToHex, &tx)
 	sdkPayload := tx.Data()
+
+	// https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/unpack_test.go
 	sdkToHex, err := hex.DecodeString(string(sdkPayload))
 
 	if err != nil {
 		return "", err
 	}
-	var payload txtypes.TxRaw
+	var payload map[string]interface{}
+	e.logger.Error("evm params", sdkToHex, payload, err)
 
-	if err := json.Unmarshal(sdkToHex, &payload); err != nil {
-		e.logger.Error("failed to query evm params", "error", err.Error())
+	// if err := json.Unmarshal(sdkToHex, &payload); err != nil {
+	// 	e.logger.Error("failed to query evm params", "error", err.Error())
+	// }
+	txr := txtypes.TxRaw{
+		BodyBytes:     payload["bodyBytes"].([]byte),
+		AuthInfoBytes: payload["authInfoBytes"].([]byte),
+		Signatures:    payload["signatures"].([][]byte),
 	}
-
+	rawbt := sdkToHex
+	e.clientCtx.Codec.Unmarshal(sdkToHex, &txr)
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	rsp, err := syncCtx.BroadcastTx(sdkToHex)
+	rsp, err := syncCtx.BroadcastTx(rawbt)
 
 	if err != nil || rsp.Code != 0 {
 		if err == nil {
