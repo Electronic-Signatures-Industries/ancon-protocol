@@ -1,9 +1,11 @@
 package ancon
 
 import (
+	"encoding/hex"
 	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -11,10 +13,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
-
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
 // AnconAPIHandler is the ancon_ prefixed set of APIs
@@ -58,51 +60,33 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 }
 
 // SendSignTx
-func (e *AnconAPIHandler) SendRawTransaction(data string) error {
+func (e *AnconAPIHandler) SendRawTransaction(data string) (string, error) {
 	e.logger.Debug("ancon_sendSignTx")
 
-	msgEthTx, err := rpctypes.RawTxToEthTx(e.clientCtx, []byte(data))
+	ethToHex := hexutil.MustDecode(data)
+	tx := new(ethtypes.Transaction)
+	rlp.DecodeBytes(ethToHex, &tx)
+	sdkPayload := tx.Data()
+	sdkToHex, err := hex.DecodeString(string(sdkPayload))
 
 	if err != nil {
-		e.logger.Error("msgEthTx", err)
-		return err
+		return "", err
 	}
-	dataToString, err := hexutil.Decode(string(msgEthTx.AsTransaction().Data()))
+	var payload txtypes.TxRaw
 
-	if err != nil {
-		e.logger.Error("dataToString", err, msgEthTx.AsTransaction().Data())
-		return err
-	}
-	var payload map[string]interface{}
-
-	if err := json.Unmarshal([]byte(dataToString), &payload); err != nil {
+	if err := json.Unmarshal(sdkToHex, &payload); err != nil {
 		e.logger.Error("failed to query evm params", "error", err.Error())
 	}
-	e.logger.Error("payload", err, payload)
-	signdoc := txtypes.SignDoc{
-		BodyBytes:     payload["bodyBytes"].([]byte),
-		AuthInfoBytes: payload["authInfoBytes"].([]byte),
-		ChainId:       msgEthTx.AsTransaction().ChainId().String(),
-		AccountNumber: payload["accountNumber"].(uint64),
-	}
 
-	var buff []byte
-	signdoc.Unmarshal(buff)
-
-	signdocmar, err := signdoc.Marshal()
-
-	if err != nil {
-		return err
-	}
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	rsp, err := syncCtx.BroadcastTx(signdocmar)
+	rsp, err := syncCtx.BroadcastTx(sdkToHex)
 
 	if err != nil || rsp.Code != 0 {
 		if err == nil {
 			err = errors.New(rsp.RawLog)
 		}
 		e.logger.Error("failed to broadcast tx", "error", err.Error())
-		return err
+		return rsp.TxHash, err
 	}
-	return nil
+	return rsp.TxHash, nil
 }
