@@ -28,52 +28,30 @@ func GetRPCAPIs(ctx *server.Context,
 	evmBackend := backend.NewEVMBackend(ctx, ctx.Logger, clientCtx)
 
 	var apis []rpc.API
-	// remove duplicates
-	selectedAPIs = unique(selectedAPIs)
+	apis = append(apis,
+		rpc.API{
+			Namespace: AnconNamespace,
+			Version:   apiVersion,
+			Service:   ancon.NewAPIHandler(ctx, ctx.Logger, clientCtx, evmBackend),
+			Public:    true,
+		},
+	)
 
-	for index := range selectedAPIs {
-		switch selectedAPIs[index] {
-		case AnconNamespace:
-			apis = append(apis,
-				rpc.API{
-					Namespace: AnconNamespace,
-					Version:   apiVersion,
-					Service:   ancon.NewPublicAPI(ctx.Logger, clientCtx, evmBackend),
-					Public:    true,
-				},
-			)
-
-		// case GraphsyncNamespace:
-		// 	apis = append(apis,
-		// 		rpc.API{
-		// 			Namespace: GraphsyncNamespace,
-		// 			Version:   apiVersion,
-		// 			Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
-		// 			Public:    true,
-		// 		},
-		// 		rpc.API{
-		// 			Namespace: EthNamespace,
-		// 			Version:   apiVersion,
-		// 			Service:   filters.NewPublicAPI(ctx.Logger, tmWSClient, evmBackend),
-		// 			Public:    true,
-		// 		},
-		// 	)
-		default:
-			ctx.Logger.Error("invalid namespace value", "namespace", selectedAPIs[index])
-		}
-	}
+	// case GraphsyncNamespace:
+	// 	apis = append(apis,
+	// 		rpc.API{
+	// 			Namespace: GraphsyncNamespace,
+	// 			Version:   apiVersion,
+	// 			Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
+	// 			Public:    true,
+	// 		},
+	// 		rpc.API{
+	// 			Namespace: EthNamespace,
+	// 			Version:   apiVersion,
+	// 			Service:   filters.NewPublicAPI(ctx.Logger, tmWSClient, evmBackend),
+	// 			Public:    true,
+	// 		},
+	// 	)
 
 	return apis
-}
-
-func unique(intSlice []string) []string {
-	keys := make(map[string]bool)
-	var list []string
-	for _, entry := range intSlice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
-		}
-	}
-	return list
 }

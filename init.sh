@@ -96,15 +96,6 @@ sed -i 's/swagger = false/swagger = true/g' $HOME/.ancon-protocold/config/app.to
 sed -i 's/enable = false/enable = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
-echo '' >> $HOME/.ancon-protocold/config/app.toml
-echo '[store]' >> $HOME/.ancon-protocold/config/app.toml
-echo 'streamers = ["dagcosmos",]' >> $HOME/.ancon-protocold/config/app.toml
-echo '' >> $HOME/.ancon-protocold/config/app.toml
-echo '[streamers]' >> $HOME/.ancon-protocold/config/app.toml
-echo '[streamers.dagcosmos]' >> $HOME/.ancon-protocold/config/app.toml
-echo 'keys = ["evm", "acc"]' >> $HOME/.ancon-protocold/config/app.toml
-echo 'writeDir ="'$HOME'/.ancon-protocold/data"' >> $HOME/.ancon-protocold/config/app.toml
-echo 'prefix = "dagbridge"' >> $HOME/.ancon-protocold/config/app.toml
 
 cp config.toml $HOME/.ancon-protocold/config/config.toml
 
@@ -115,7 +106,7 @@ cp config.toml $HOME/.ancon-protocold/config/config.toml
 
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-~/go/bin/ancon-protocold start --node tcp://0.0.0.0:26657 --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api  eth,ancon,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
+~/go/bin/ancon-protocold start --node tcp://0.0.0.0:26657 --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api  eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
 
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
 #~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton

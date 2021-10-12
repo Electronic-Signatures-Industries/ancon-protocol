@@ -1,115 +1,96 @@
 package ancon
 
 import (
-	"context"
 	"encoding/json"
-	"math/big"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/server"
 
-	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
-	ethermint "github.com/tharsis/ethermint/types"
 
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
-// PublicAPI is the ancon_ prefixed set of APIs
-type PublicAPI struct {
-	ctx          context.Context
-	clientCtx    client.Context
-	queryClient  *rpctypes.QueryClient
-	chainIDEpoch *big.Int
-	logger       log.Logger
-	backend      backend.Backend
+// AnconAPIHandler is the ancon_ prefixed set of APIs
+type AnconAPIHandler struct {
+	ctx         *server.Context
+	clientCtx   client.Context
+	queryClient *rpctypes.QueryClient
+	logger      log.Logger
+	backend     backend.Backend
 }
 
-// NewPublicAPI creates an instance of the public ETH Web3 API.
-func NewPublicAPI(
+// var Handler = new(HandlerT)
+
+// type HandlerT struct {
+// }
+
+// NewAPI creates an instance of the public ETH Web3 AnconAPIHandler.
+func NewAPIHandler(
+	ctx *server.Context,
 	logger log.Logger,
 	clientCtx client.Context,
 	backend backend.Backend,
 
-) *PublicAPI {
-	epoch, err := ethermint.ParseChainID(clientCtx.ChainID)
-	if err != nil {
-		panic(err)
+) *AnconAPIHandler {
+	return &AnconAPIHandler{
+		ctx:         ctx,
+		clientCtx:   clientCtx,
+		queryClient: rpctypes.NewQueryClient(clientCtx),
+		logger:      logger.With("module", "ancon"),
+		backend:     backend,
 	}
-
-	algos, _ := clientCtx.Keyring.SupportedAlgorithms()
-
-	if !algos.Contains(hd.EthSecp256k1) {
-		kr, err := keyring.New(
-			sdk.KeyringServiceName(),
-			viper.GetString(flags.FlagKeyringBackend),
-			clientCtx.KeyringDir,
-			clientCtx.Input,
-			hd.EthSecp256k1Option(),
-		)
-		if err != nil {
-			panic(err)
-		}
-
-		clientCtx = clientCtx.WithKeyring(kr)
-	}
-
-	api := &PublicAPI{
-		ctx:          context.Background(),
-		clientCtx:    clientCtx,
-		queryClient:  rpctypes.NewQueryClient(clientCtx),
-		chainIDEpoch: epoch,
-		logger:       logger.With("client", "json-rpc"),
-		backend:      backend,
-	}
-
-	return api
 }
 
 // ClientCtx returns client context
-func (e *PublicAPI) ClientCtx() client.Context {
+func (e *AnconAPIHandler) ClientCtx() client.Context {
 	return e.clientCtx
 }
 
-func (e *PublicAPI) QueryClient() *rpctypes.QueryClient {
+func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 	return e.queryClient
 }
 
-func (e *PublicAPI) Ctx() context.Context {
-	return e.ctx
+func (e *AnconAPIHandler) GetBlockTransactionCountByHash(hash string) error {
+	return nil
 }
 
 // SendSignTx
-func (e *PublicAPI) SendSignTx(args rpctypes.SendTxArgs) (string, error) {
-	e.logger.Debug("ancon_sendsigntx")
+func (e *AnconAPIHandler) SendSignTx(data string) error {
+	e.logger.Debug("ancon_sendSignTx")
 
-	var buff []byte
-
-	dataString := string(*args.Data)
-
+	msgEthTx, err := rpctypes.RawTxToEthTx(e.clientCtx, []byte(data))
+	if err != nil {
+		return err
+	}
+	dataToString := hexutil.MustDecode(string(msgEthTx.AsTransaction().Data()))
 	var raw map[string]interface{}
 
-	if err := json.Unmarshal([]byte(dataString), &raw); err != nil {
+	if err := json.Unmarshal([]byte(dataToString), &raw); err != nil {
 		e.logger.Error("failed to query evm params", "error", err.Error())
 	}
 
 	signdoc := txtypes.SignDoc{
 		BodyBytes:     raw["bodyBytes"].([]byte),
 		AuthInfoBytes: raw["authInfoBytes"].([]byte),
-		ChainId:       args.ChainID.ToInt().String(),
+		ChainId:       msgEthTx.AsTransaction().ChainId().String(),
 		AccountNumber: raw["accountNumber"].(uint64),
 	}
 
+	var buff []byte
 	signdoc.Unmarshal(buff)
 
 	signdocmar, err := signdoc.Marshal()
+
+	if err != nil {
+		return err
+	}
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
 	rsp, err := syncCtx.BroadcastTx(signdocmar)
 
@@ -118,7 +99,7 @@ func (e *PublicAPI) SendSignTx(args rpctypes.SendTxArgs) (string, error) {
 			err = errors.New(rsp.RawLog)
 		}
 		e.logger.Error("failed to broadcast tx", "error", err.Error())
-		return rsp.TxHash, err
+		return err
 	}
-	return rsp.TxHash, nil
+	return nil
 }
