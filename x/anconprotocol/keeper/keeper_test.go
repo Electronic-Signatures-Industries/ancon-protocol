@@ -3,7 +3,6 @@ package keeper
 import (
 	"crypto/ecdsa"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/verifiable"
-	"github.com/spf13/cast"
 	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,6 +21,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/rlp"
 	cbor "github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -93,22 +93,35 @@ func Test_AddFile_JSON(t *testing.T) {
 }
 
 func Test_Convert_From_Base64_To_Bytes(t *testing.T) {
-	hexinput := "7b22466f6f223a22626172227d"
+	// data := "0xf901a38080808080b901560aab010aa8010a432f456c656374726f6e69635369676e617475726573496e64757374726965732e616e636f6e70726f746f636f6c2e616e636f6e70726f746f636f6c2e4d736746696c6512610a2b6574686d31783233706378616b756c7071373472376a763934386b6b39306170763666306b37733934337a120a696e6465782e68746d6c1a0568656c6c6f2a0d3136333430353536373031343332106170706c69636174696f6e2f6a736f6e12640a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21025ce530922368e657ee5edfdeba0b21fbfa850eadb1f8535628076ea793e6313712040a02080112120a0c0a076170686f746f6e12013410c09a0c1a40109f5cf0e44a66050fd76f5c3cabc7b2239b540f5a4b36f1c96939da9c2da3f0024e700833eac03590c44f668099d5fa67ef70b16a30c78ea46a0f6d9414ead7824673a027305dcd5ffa6f97936b3ec4eedb8a5027cd8fb725f99cfed34359a2b67b61fea0632376c6dee7bc29ef8fbfdb4bd2c908b1c1fcb278b317fdbec0ea66eb7352a6"
 
-	bystr, _ := hex.DecodeString(hexinput)
+	// ETH HEX A BYTES
+	// BYTES A JSON
+	// TXHEX JSON.DATA
+	txhex := "0xaab010aa8010a432f456c656374726f6e69635369676e617475726573496e64757374726965732e616e636f6e70726f746f636f6c2e616e636f6e70726f746f636f6c2e4d736746696c6512610a2b6574686d31783233706378616b756c7071373472376a763934386b6b39306170763666306b37733934337a120a696e6465782e68746d6c1a0568656c6c6f2a0d3136333430353733323430393732106170706c69636174696f6e2f6a736f6e12640a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21025ce530922368e657ee5edfdeba0b21fbfa850eadb1f8535628076ea793e6313712040a02080112120a0c0a076170686f746f6e12013410c09a0c1a40f1d4fa0f3ecf45c69bc4e70a755a4659515d2973a1d62589ffc0a6a3571932f153e36f341c4ff1b5f780497c1f6e01bba8e8493a43bc713e2dea2a77fc41cca3"
 
-	var dat map[string]interface{}
-	json.Unmarshal(bystr, &dat)
+	var payload map[string]interface{}
+	d := hexutil.MustDecode(txhex)
 
-	//var schema JSN
-	//json.Unmarshal(bystr, &schema)
-	//(schema := map[string]int{foo: "bar"}
+	// signdoc marshal
+	a := hexutil.MustDecode(string(d))
 
-	//jsondec(&schema)
-	//fmt.Printf("%s", schema.Foo)
+	err := rlp.DecodeBytes(a, &payload)
 
-	fmt.Printf("%s", cast.ToString(dat))
-	//fmt.Printf("%s", bytes)
+	if err != nil {
+		fmt.Sprintf("%v", err)
+	}
+	// dataToString, err := hexutil.Decode(string(msgEthTx.AsTransaction().Data()))
+
+	// if err != nil {
+	// 	e.logger.Error("dataToString", err, msgEthTx.AsTransaction().Data())
+	// 	return err
+	// }
+	// var payload map[string]interface{}
+
+	// if err := json.Unmarshal([]byte(dataToString), &payload); err != nil {
+	// 	e.logger.Error("failed to query evm params", "error", err.Error())
+	// }
 }
 
 func Test_AddMetadata_JSON(t *testing.T) {

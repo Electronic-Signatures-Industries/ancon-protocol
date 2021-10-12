@@ -57,30 +57,33 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 	return e.queryClient
 }
 
-func (e *AnconAPIHandler) GetBlockTransactionCountByHash(hash string) error {
-	return nil
-}
-
 // SendSignTx
-func (e *AnconAPIHandler) SendSignTx(data string) error {
+func (e *AnconAPIHandler) SendRawTransaction(data string) error {
 	e.logger.Debug("ancon_sendSignTx")
 
 	msgEthTx, err := rpctypes.RawTxToEthTx(e.clientCtx, []byte(data))
+
 	if err != nil {
+		e.logger.Error("msgEthTx", err)
 		return err
 	}
-	dataToString := hexutil.MustDecode(string(msgEthTx.AsTransaction().Data()))
-	var raw map[string]interface{}
+	dataToString, err := hexutil.Decode(string(msgEthTx.AsTransaction().Data()))
 
-	if err := json.Unmarshal([]byte(dataToString), &raw); err != nil {
+	if err != nil {
+		e.logger.Error("dataToString", err, msgEthTx.AsTransaction().Data())
+		return err
+	}
+	var payload map[string]interface{}
+
+	if err := json.Unmarshal([]byte(dataToString), &payload); err != nil {
 		e.logger.Error("failed to query evm params", "error", err.Error())
 	}
-
+	e.logger.Error("payload", err, payload)
 	signdoc := txtypes.SignDoc{
-		BodyBytes:     raw["bodyBytes"].([]byte),
-		AuthInfoBytes: raw["authInfoBytes"].([]byte),
+		BodyBytes:     payload["bodyBytes"].([]byte),
+		AuthInfoBytes: payload["authInfoBytes"].([]byte),
 		ChainId:       msgEthTx.AsTransaction().ChainId().String(),
-		AccountNumber: raw["accountNumber"].(uint64),
+		AccountNumber: payload["accountNumber"].(uint64),
 	}
 
 	var buff []byte
