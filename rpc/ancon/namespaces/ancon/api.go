@@ -1,18 +1,19 @@
 package ancon
 
 import (
-	"encoding/hex"
+	"fmt"
+	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/libs/log"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
 )
@@ -58,33 +59,83 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 }
 
 // SendSignTx
-func (e *AnconAPIHandler) SendRawTransaction(data string) (string, error) {
+func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error) {
 	e.logger.Debug("ancon_sendSignTx")
 
-	ethToHex := hexutil.MustDecode(data)
-	tx := new(ethtypes.Transaction)
-	rlp.DecodeBytes(ethToHex, &tx)
-	sdkPayload := tx.Data()
+	// RLP decode raw transaction bytes
+	tx, err := e.clientCtx.TxConfig.TxDecoder()(data)
+	if err != nil {
+		e.logger.Error("transaction decoding failed", "error", err.Error())
 
-	// https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/unpack_test.go
-	sdkToHex, err := hex.DecodeString(string(sdkPayload))
+		return "", err
+	}
 
+	ethereumTx, isEthTx := tx.(*evmtypes.MsgEthereumTx)
+	if !isEthTx {
+		e.logger.Debug("invalid transaction type", "type", fmt.Sprintf("%T", tx))
+		return "", fmt.Errorf("invalid transaction type %T", tx)
+	}
+
+	if err := ethereumTx.ValidateBasic(); err != nil {
+		e.logger.Debug("tx failed basic validation", "error", err.Error())
+		return "", err
+	}
+
+	// builder, ok := e.clientCtx.TxConfig.NewTxBuilder().(authtx.ExtensionOptionsTxBuilder)
+	// if !ok {
+	// 	e.logger.Error("clientCtx.TxConfig.NewTxBuilder returns unsupported builder")
+	// }
+
+	// option, err := codectypes.NewAnyWithValue(&evmtypes.ExtensionOptionsEthereumTx{})
+	// if err != nil {
+	// 	e.logger.Error("codectypes.NewAnyWithValue failed to pack an obvious value", "error", err.Error())
+	// }
+
+	// builder.SetExtensionOptions(option)
+	// err = builder.SetMsgs(tx.GetMsgs()...)
+	// if err != nil {
+	// 	e.logger.Error("builder.SetMsgs failed", "error", err.Error())
+	// }
+	// // https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/unpack_test.go
+	def := fmt.Sprintf(`[{ "name" : "method", "type": "function", "outputs": %s}]`,
+		`[{"name": "raw", "type": "bytes"}]`)
+	abi, err := abi.JSON(strings.NewReader(def))
+	if err != nil {
+		return "", fmt.Errorf("invalid ABI definition %s: %v", def, err)
+	}
+	encb := ethereumTx.Data.Value
+	if err != nil {
+		return "", fmt.Errorf("invalid hex %s: %v", encb, err)
+	}
+	var txr txtypes.TxRaw
+	err = abi.UnpackIntoInterface(&txr, "method", encb)
+	e.logger.Error("%v", txr)
 	if err != nil {
 		return "", err
 	}
-	var payload map[string]interface{}
-	e.logger.Error("evm params", sdkToHex, payload, err)
 
-	// if err := json.Unmarshal(sdkToHex, &payload); err != nil {
-	// 	e.logger.Error("failed to query evm params", "error", err.Error())
+	// var signedDoc txtypes.SignDoc
+	// err = json.Unmarshal((packed["signed"]), &signedDoc)
+	// if err != nil {
+	// 	return "", err
 	// }
-	txr := txtypes.TxRaw{
-		BodyBytes:     payload["bodyBytes"].([]byte),
-		AuthInfoBytes: payload["authInfoBytes"].([]byte),
-		Signatures:    payload["signatures"].([][]byte),
+	// var signatures [][]byte
+	// err = json.Unmarshal((packed["signatures"]), &signatures)
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	// txr := txtypes.TxRaw{
+	// 	BodyBytes:     signedDoc.BodyBytes,
+	// 	AuthInfoBytes: signedDoc.AuthInfoBytes,
+	// 	Signatures:    signatures,
+	// }
+
+	rawbt, err := txr.Marshal()
+	if err != nil {
+		return "", err
 	}
-	rawbt := sdkToHex
-	e.clientCtx.Codec.Unmarshal(sdkToHex, &txr)
+	e.logger.Error("%v", rawbt)
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
 	rsp, err := syncCtx.BroadcastTx(rawbt)
 
