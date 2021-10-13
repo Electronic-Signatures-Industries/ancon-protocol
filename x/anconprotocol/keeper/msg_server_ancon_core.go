@@ -8,6 +8,7 @@ import (
 )
 
 // ChangeMetadataOwnership
+//TODO: emit event
 func (k msgServer) ChangeMetadataOwnership(goCtx context.Context, msg *types.MsgChangeMetadataOwnership) (*types.MsgChangeMetadataOwnershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -26,6 +27,7 @@ func (k msgServer) ChangeMetadataOwnership(goCtx context.Context, msg *types.Msg
 }
 
 // Metadata
+//TODO: emit event
 func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*types.MsgMetadataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -60,6 +62,7 @@ func (k msgServer) RoyaltyInfo(goCtx context.Context, msg *types.MsgRoyaltyInfo)
 	return &types.MsgRoyaltyInfoResponse{}, nil
 }
 
+//TODO: emit event
 func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintTrustedContent) (*types.MsgMintTrustedContentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -76,6 +79,7 @@ func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintT
 	return &types.MsgMintTrustedContentResponse{}, nil
 }
 
+//TODO: emit event
 func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMintTrustedResource) (*types.MsgMintTrustedResourceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -92,6 +96,7 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 	return &types.MsgMintTrustedResourceResponse{}, nil
 }
 
+//TODO: emit event
 func (k msgServer) File(goCtx context.Context, msg *types.MsgFile) (*types.MsgFileResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
