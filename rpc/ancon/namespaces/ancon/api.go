@@ -5,13 +5,19 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
+	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
 // AnconAPIHandler is the ancon_ prefixed set of APIs
@@ -36,6 +42,23 @@ func NewAPIHandler(
 	backend backend.Backend,
 
 ) *AnconAPIHandler {
+	algos, _ := clientCtx.Keyring.SupportedAlgorithms()
+
+	if !algos.Contains(hd.EthSecp256k1) {
+		kr, err := keyring.New(
+			sdk.KeyringServiceName(),
+			viper.GetString(flags.FlagKeyringBackend),
+			clientCtx.KeyringDir,
+			clientCtx.Input,
+			hd.EthSecp256k1Option(),
+		)
+		if err != nil {
+			panic(err)
+		}
+
+		clientCtx = clientCtx.WithKeyring(kr)
+	}
+
 	return &AnconAPIHandler{
 		ctx:         ctx,
 		clientCtx:   clientCtx,
@@ -87,9 +110,21 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("invalid hex %s: %v", encb, err)
 	}
-	e.logger.Error("%v", encb)
+	e.logger.Error("%s", encb)
+
+	txr := txtypes.TxRaw{}
+	err = e.clientCtx.Codec.Unmarshal(encb, &txr)
+	if err != nil {
+		return "", fmt.Errorf("invalid TxRaw %s: %v", encb, err)
+	}
+
+	out, err := txr.Marshal()
+	if err != nil {
+		return "", fmt.Errorf("invalid TxRaw %s: %v", encb, err)
+	}
+
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	rsp, err := syncCtx.BroadcastTx(encb)
+	rsp, err := syncCtx.BroadcastTx(out)
 
 	if err != nil || rsp.Code != 0 {
 		if err == nil {
