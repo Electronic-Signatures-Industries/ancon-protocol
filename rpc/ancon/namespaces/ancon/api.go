@@ -2,20 +2,18 @@ package ancon
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/pkg/errors"
-	"github.com/tendermint/tendermint/libs/log"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server"
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/pkg/errors"
+	"github.com/tendermint/tendermint/libs/log"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
 // AnconAPIHandler is the ancon_ prefixed set of APIs
@@ -81,63 +79,34 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error)
 		return "", err
 	}
 
-	// builder, ok := e.clientCtx.TxConfig.NewTxBuilder().(authtx.ExtensionOptionsTxBuilder)
-	// if !ok {
-	// 	e.logger.Error("clientCtx.TxConfig.NewTxBuilder returns unsupported builder")
-	// }
-
-	// option, err := codectypes.NewAnyWithValue(&evmtypes.ExtensionOptionsEthereumTx{})
-	// if err != nil {
-	// 	e.logger.Error("codectypes.NewAnyWithValue failed to pack an obvious value", "error", err.Error())
-	// }
-
-	// builder.SetExtensionOptions(option)
-	// err = builder.SetMsgs(tx.GetMsgs()...)
-	// if err != nil {
-	// 	e.logger.Error("builder.SetMsgs failed", "error", err.Error())
-	// }
-	// // https://github.com/ethereum/go-ethereum/blob/master/accounts/abi/unpack_test.go
-	def := fmt.Sprintf(`[{ "name" : "method", "type": "function", "outputs": %s}]`,
-		`[{"name": "raw", "type": "bytes"}]`)
-	abi, err := abi.JSON(strings.NewReader(def))
-	if err != nil {
-		return "", fmt.Errorf("invalid ABI definition %s: %v", def, err)
+	builder, ok := e.clientCtx.TxConfig.NewTxBuilder().(authtx.ExtensionOptionsTxBuilder)
+	if !ok {
+		e.logger.Error("clientCtx.TxConfig.NewTxBuilder returns unsupported builder")
 	}
-	encb := ethereumTx.Data.Value
+
+	option, err := codectypes.NewAnyWithValue(&evmtypes.ExtensionOptionsEthereumTx{})
+	if err != nil {
+		e.logger.Error("codectypes.NewAnyWithValue failed to pack an obvious value", "error", err.Error())
+	}
+
+	builder.SetExtensionOptions(option)
+	err = builder.SetMsgs(tx.GetMsgs()...)
+	if err != nil {
+		e.logger.Error("builder.SetMsgs failed", "error", err.Error())
+	}
+	txData, err := evmtypes.UnpackTxData(ethereumTx.Data)
+	if err != nil {
+		e.logger.Error("failed to unpack tx data", "error", err.Error())
+		return "", err
+	}
+
+	encb := txData.GetData()
 	if err != nil {
 		return "", fmt.Errorf("invalid hex %s: %v", encb, err)
 	}
-	var txr txtypes.TxRaw
-	err = abi.UnpackIntoInterface(&txr, "method", encb)
-	e.logger.Error("%v", txr)
-	if err != nil {
-		return "", err
-	}
-
-	// var signedDoc txtypes.SignDoc
-	// err = json.Unmarshal((packed["signed"]), &signedDoc)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// var signatures [][]byte
-	// err = json.Unmarshal((packed["signatures"]), &signatures)
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// txr := txtypes.TxRaw{
-	// 	BodyBytes:     signedDoc.BodyBytes,
-	// 	AuthInfoBytes: signedDoc.AuthInfoBytes,
-	// 	Signatures:    signatures,
-	// }
-
-	rawbt, err := txr.Marshal()
-	if err != nil {
-		return "", err
-	}
-	e.logger.Error("%v", rawbt)
+	e.logger.Error("%v", encb)
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	rsp, err := syncCtx.BroadcastTx(rawbt)
+	rsp, err := syncCtx.BroadcastTx(encb)
 
 	if err != nil || rsp.Code != 0 {
 		if err == nil {
