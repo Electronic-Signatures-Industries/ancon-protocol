@@ -99,6 +99,7 @@ sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g'
 
 cp config.toml $HOME/.ancon-protocold/config/config.toml
 
+~/go/bin/ancon-protocold tx bank send mykey ethm1h8mfzjn5zhu6mpn6n3fhgudydhag22aw4dyenj 10000aphoton
 
 
 #~/go/bin/ancon-protocold keys show alice | echo

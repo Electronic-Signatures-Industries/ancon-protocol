@@ -5,9 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server"
-	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/libs/log"
@@ -79,21 +77,6 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error)
 		return "", err
 	}
 
-	builder, ok := e.clientCtx.TxConfig.NewTxBuilder().(authtx.ExtensionOptionsTxBuilder)
-	if !ok {
-		e.logger.Error("clientCtx.TxConfig.NewTxBuilder returns unsupported builder")
-	}
-
-	option, err := codectypes.NewAnyWithValue(&evmtypes.ExtensionOptionsEthereumTx{})
-	if err != nil {
-		e.logger.Error("codectypes.NewAnyWithValue failed to pack an obvious value", "error", err.Error())
-	}
-
-	builder.SetExtensionOptions(option)
-	err = builder.SetMsgs(tx.GetMsgs()...)
-	if err != nil {
-		e.logger.Error("builder.SetMsgs failed", "error", err.Error())
-	}
 	txData, err := evmtypes.UnpackTxData(ethereumTx.Data)
 	if err != nil {
 		e.logger.Error("failed to unpack tx data", "error", err.Error())
