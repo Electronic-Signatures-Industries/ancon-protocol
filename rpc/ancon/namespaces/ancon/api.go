@@ -78,7 +78,7 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 }
 
 // SendSignTx
-func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error) {
+func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (*sdk.TxResponse, error) {
 	e.logger.Debug("ancon_sendSignTx")
 
 	// RLP decode raw transaction bytes
@@ -86,41 +86,41 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error)
 	if err != nil {
 		e.logger.Error("transaction decoding failed", "error", err.Error())
 
-		return "", err
+		return nil, err
 	}
 
 	ethereumTx, isEthTx := tx.(*evmtypes.MsgEthereumTx)
 	if !isEthTx {
 		e.logger.Debug("invalid transaction type", "type", fmt.Sprintf("%T", tx))
-		return "", fmt.Errorf("invalid transaction type %T", tx)
+		return nil, fmt.Errorf("invalid transaction type %T", tx)
 	}
 
 	if err := ethereumTx.ValidateBasic(); err != nil {
 		e.logger.Debug("tx failed basic validation", "error", err.Error())
-		return "", err
+		return nil, err
 	}
 
 	txData, err := evmtypes.UnpackTxData(ethereumTx.Data)
 	if err != nil {
 		e.logger.Error("failed to unpack tx data", "error", err.Error())
-		return "", err
+		return nil, err
 	}
 
 	encb := txData.GetData()
 	if err != nil {
-		return "", fmt.Errorf("invalid hex %s: %v", encb, err)
+		return nil, fmt.Errorf("invalid hex %s: %v", encb, err)
 	}
 	e.logger.Error("%s", encb)
 
 	txr := txtypes.TxRaw{}
 	err = e.clientCtx.Codec.Unmarshal(encb, &txr)
 	if err != nil {
-		return "", fmt.Errorf("invalid TxRaw %s: %v", encb, err)
+		return nil, fmt.Errorf("invalid TxRaw %s: %v", encb, err)
 	}
 
 	out, err := txr.Marshal()
 	if err != nil {
-		return "", fmt.Errorf("invalid TxRaw %s: %v", encb, err)
+		return nil, fmt.Errorf("invalid TxRawBytes %s: %v", encb, err)
 	}
 
 	syncCtx := e.clientCtx.WithBroadcastMode(flags.BroadcastSync)
@@ -131,7 +131,7 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (string, error)
 			err = errors.New(rsp.RawLog)
 		}
 		e.logger.Error("failed to broadcast tx", "error", err.Error())
-		return rsp.TxHash, err
+		return rsp, err
 	}
-	return rsp.TxHash, nil
+	return rsp, nil
 }
