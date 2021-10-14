@@ -40,19 +40,9 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
         bytes memory value
     ) public returns (bool) {
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        (
-            bool exists,
-            bool hasRevoked,
-            bool issuerValid,
-            bool a,
-            bool expired
-        ) = verifier.verifyCredential(vc, v, r, s);
-        require(exists, "Missing permit");
-        require(hasRevoked, "Permit has been revoked");
-        require(issuerValid, "Issuer is not valid");
-        require(expired, "Permit has expired");
+        
         // verify token exists
-        _execute(vc.data);
+        //_execute(vc.data);
     }
 
     function _execute(bytes memory data) internal returns (bool){

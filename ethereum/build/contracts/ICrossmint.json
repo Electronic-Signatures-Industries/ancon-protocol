@@ -10,20 +10,20 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\n\ninterface ICrossmint {\n}",
-  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
   "ast": {
     "absolutePath": "project:/contracts/ICrossmint.sol",
     "exportedSymbols": {
       "ICrossmint": [
-        4455
+        4226
       ]
     },
-    "id": 4456,
+    "id": 4227,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4454,
+        "id": 4225,
         "literals": [
           "solidity",
           "^",
@@ -31,7 +31,7 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:31"
+        "src": "39:23:30"
       },
       {
         "abstract": false,
@@ -40,34 +40,34 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": true,
-        "id": 4455,
+        "id": 4226,
         "linearizedBaseContracts": [
-          4455
+          4226
         ],
         "name": "ICrossmint",
-        "nameLocation": "74:10:31",
+        "nameLocation": "74:10:30",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 4456,
-        "src": "64:24:31",
+        "scope": 4227,
+        "src": "64:24:30",
         "usedErrors": []
       }
     ],
-    "src": "39:49:31"
+    "src": "39:49:30"
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/ICrossmint.sol",
     "exportedSymbols": {
       "ICrossmint": [
-        4455
+        4226
       ]
     },
-    "id": 4456,
+    "id": 4227,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4454,
+        "id": 4225,
         "literals": [
           "solidity",
           "^",
@@ -75,7 +75,7 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:31"
+        "src": "39:23:30"
       },
       {
         "abstract": false,
@@ -84,20 +84,20 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": true,
-        "id": 4455,
+        "id": 4226,
         "linearizedBaseContracts": [
-          4455
+          4226
         ],
         "name": "ICrossmint",
-        "nameLocation": "74:10:31",
+        "nameLocation": "74:10:30",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 4456,
-        "src": "64:24:31",
+        "scope": 4227,
+        "src": "64:24:30",
         "usedErrors": []
       }
     ],
-    "src": "39:49:31"
+    "src": "39:49:30"
   },
   "compiler": {
     "name": "solc",
@@ -105,7 +105,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-10T13:09:09.454Z",
+  "updatedAt": "2021-10-14T20:47:38.817Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
