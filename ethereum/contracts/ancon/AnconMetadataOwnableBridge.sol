@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "./ICredentialRegistry.sol";
-import "./ICrossmint.sol";
-import "./IClaimsVerifier.sol";
+import "../ICredentialRegistry.sol";
+import "../ICrossmint.sol";
+import "../IClaimsVerifier.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC721Receiver.sol";
@@ -12,12 +12,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./ICS23Verifier.sol";
 
-contract AnconMetadataOwnable {
-    address public tokenNFT;
-    IClaimsVerifier public verifier;
-    uint256 public senderChainId;
-    ICredentialRegistry public credentialRegistry;
+contract AnconMetadataOwnableBridge is ICS23Verifier {
+
 
     event CrossMintCallbackReceived(
         address indexed newOwner,
@@ -26,44 +24,20 @@ contract AnconMetadataOwnable {
     );
 
     constructor(
-        address _tokenNFT,
-        address _credentialRegistry,
-        address _verifier
     ) public {
-        verifier = IClaimsVerifier(_verifier);
-        credentialRegistry = ICredentialRegistry(_credentialRegistry);
-        tokenNFT = _tokenNFT;
-    }
+     }
 
-    // changeOwner
-    function changeOwner(
-        address fromOwner,
-        address toOwner,
-        bytes memory permitSignature,
-        bytes32 permitHash
-    ) public returns (bool) {
-        bool ok = credentialRegistry.registerCredential(
-            fromOwner,
-            toOwner,
-            permitHash,
-            block.timestamp,
-            block.timestamp + 6 hours,
-            permitSignature
-        );
-
-        require(ok, "Invalid permit credential, try again");
-
-        return true;
-    }
-
+ 
+ 
     /**
      * changeOwnerWithProof
      */
     function changeOwnerWithProof(
-        VerifiableCredential memory vc,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        bytes memory packet,
+        bytes memory proofBz,
+        bytes memory rootBz,
+        bytes memory pathBz,
+        bytes memory value
     ) public returns (bool) {
         // verify permit exists, has not revoked, has valid issuer and is not expired
         (
