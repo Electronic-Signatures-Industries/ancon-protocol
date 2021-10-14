@@ -311,6 +311,7 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	return link.String(), nil
 }
 
+// CreateHashCidLink takes a hash eg ethereum hash and converts it to cid multihash
 func CreateHashCidLink(hash []byte) cidlink.Link {
 	lchMh, err := multihash.Encode(hash, GetLinkPrototype().(cidlink.LinkPrototype).MhType)
 	if err != nil {
@@ -320,6 +321,19 @@ func CreateHashCidLink(hash []byte) cidlink.Link {
 	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
 	lcLinkCID := cidlink.Link{Cid: lcCID}
 	return lcLinkCID
+}
+
+// ParseHashCidLink parses a string cid multihash into a cidLink
+func ParseHashCidLink(hash string) (cidlink.Link, error) {
+	lnk, err := cid.Parse(hash)
+	if err != nil {
+		return cidlink.Link{}, status.Error(
+			codes.InvalidArgument,
+			types.ErrIntOverflowQuery.Error(),
+		)
+	}
+
+	return cidlink.Link{Cid: lnk}, nil
 }
 
 func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, error) {
@@ -365,7 +379,10 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(sources)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(sources); i++ {
-					lnk := CreateHashCidLink([]byte(sources[i]))
+					lnk, err := ParseHashCidLink((sources[i]))
+					if err != nil {
+						continue
+					}
 					la.AssembleValue().AssignLink(lnk)
 				}
 			})
@@ -376,7 +393,10 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			na.AssembleEntry("links").CreateList(cast.ToInt64(len(links)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(links); i++ {
 
-					lnk := CreateHashCidLink([]byte(links[i]))
+					lnk, err := ParseHashCidLink((links[i]))
+					if err != nil {
+						continue
+					}
 					la.AssembleValue().AssignLink(lnk)
 				}
 			})

@@ -15,7 +15,7 @@ const registry = await deployer.deploy(CredentialRegistry);
 const verifier = await deployer.deploy(ClaimsVerifier, registry.address);
 const registryContract = await CredentialRegistry.deployed();
 
-deployer.deploy(Crossmint, tokenid, registry, verifier, chainid);
+// deployer.deploy(Crossmint, tokenid, registry, verifier, chainid);
 
 
 
