@@ -34,7 +34,7 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
      */
     function changeOwnerWithProof(
         bytes memory packet,
-        bytes memory proofBz,
+        ExistenceProof memory existenceProof,
         bytes memory rootBz,
         bytes memory pathBz,
         bytes memory value

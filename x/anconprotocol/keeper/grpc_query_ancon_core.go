@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/exported"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -80,16 +79,16 @@ func (k Keeper) GetVoucher(ctx sdk.Context, voucherID string) (*types.Voucher, e
 
 // GetVoucherProof returns stored voucher proof
 func (k Keeper) GetVoucherProof(ctx sdk.Context, path string, abci rpcclient.ABCIClient, voucherID string) (*ics23.ExistenceProof, error) {
-	opts := rpcclient.ABCIQueryOptions{
-		Height: ctx.BlockHeight(),
-		Prove:  true,
-	}
+	// opts := rpcclient.ABCIQueryOptions{
+	// 	Height: ctx.BlockHeight(),
+	// 	Prove:  true,
+	// }
 
-	_, proofA, _, err := exported.GetProofsByKey(abci, path, []byte(voucherID), opts, true)
-	if err != nil {
-		return nil, err
-	}
-	return proofA, nil
+	//_, proofA, _, err := exported.GetProofsByKey(abci, path, []byte(voucherID), opts, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return nil, nil
 }
 
 func requestReadWithPath(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {

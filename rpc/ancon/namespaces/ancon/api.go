@@ -1,7 +1,10 @@
 package ancon
 
 import (
+	"context"
+	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -28,6 +31,9 @@ type AnconAPIHandler struct {
 	logger      log.Logger
 	backend     backend.Backend
 }
+
+//Must migrate all the new bussines logic to
+//GetTxByHash rpc that will return the complete merkle proof
 
 // var Handler = new(HandlerT)
 
@@ -133,5 +139,45 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (*sdk.TxRespons
 		e.logger.Error("failed to broadcast tx", "error", err.Error())
 		return rsp, err
 	}
-	return rsp, nil
+
+	TxRes, err := e.clientCtx.Client.Tx(context.Background(), []byte(rsp.TxHash), true)
+	if err != nil {
+		e.logger.Error("failed to broadcast tx", "error", err.Error())
+		return rsp, err
+
+	}
+	logEntry, err := GetIAVLCommitmentProof(TxRes.Proof)
+
+	proofB, _ := logEntry.Marshal()
+
+	rspEvent := sdk.NewEvent(
+		"commitment_proof",
+		sdk.NewAttribute("Root", string(TxRes.Proof.RootHash)),
+		sdk.NewAttribute("Path", string(logEntry.Key)),
+		sdk.NewAttribute("Value", string(logEntry.Value)),
+		sdk.NewAttribute("ProofBytes", string(proofB)),
+	)
+
+	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
+
+	l := sdk.NewABCIMessageLog(uint32(len(rsp.Logs)+1), "commitment proof", rspEventAppend)
+
+	logs := append(rsp.Logs, l)
+
+	newRsp := &sdk.TxResponse{
+		TxHash:    rsp.TxHash,
+		Height:    rsp.Height,
+		Codespace: rsp.Codespace,
+		Code:      rsp.Code,
+		Data:      strings.ToUpper(hex.EncodeToString([]byte(rsp.Data))),
+		RawLog:    rsp.RawLog,
+		Logs:      logs,
+		Info:      rsp.Info,
+		GasWanted: rsp.GasWanted,
+		GasUsed:   rsp.GasUsed,
+		Tx:        ethereumTx.Data,
+		Timestamp: rsp.Timestamp,
+	}
+
+	return newRsp, nil
 }

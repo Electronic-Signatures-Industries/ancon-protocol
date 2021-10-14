@@ -1,4 +1,4 @@
-package exported
+package ancon
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	ics23 "github.com/confio/ics23/go"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/tendermint/tendermint/proto/tendermint/crypto"
+	coreTypes "github.com/tendermint/tendermint/types"
 )
 
 func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) ([]byte, *ics23.ExistenceProof, *ics23.ExistenceProof, error) {
@@ -54,4 +55,20 @@ func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) ([]byte, *
 	}
 
 	return nil, iavlEp, multiStoreEp, nil
+}
+
+func GetIAVLCommitmentProof(txProof coreTypes.TxProof) (*ics23.ExistenceProof, error) {
+	var iavlEp *ics23.ExistenceProof
+	proof := &ics23.CommitmentProof{}
+	err := proof.Unmarshal(txProof.Data)
+	if err != nil {
+		panic(err)
+	}
+	iavlOps := storetypes.NewIavlCommitmentOp(proof.GetExist().Key, proof)
+	iavlEp = iavlOps.Proof.GetExist()
+	if iavlEp == nil {
+		return &ics23.ExistenceProof{}, fmt.Errorf("IAVL existence proof not found")
+	} else {
+		return iavlEp, nil
+	}
 }
