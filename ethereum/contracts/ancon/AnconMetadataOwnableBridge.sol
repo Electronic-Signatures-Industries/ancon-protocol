@@ -4,14 +4,14 @@ pragma solidity ^0.8.7;
 import "../ICredentialRegistry.sol";
 import "../ICrossmint.sol";
 import "../IClaimsVerifier.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+//import "@openzeppelin/contracts/access/Ownable.sol";
+//import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
+//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+//import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICS23Verifier.sol";
 
 contract AnconMetadataOwnableBridge is ICS23Verifier {
@@ -25,10 +25,8 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
 
     constructor(
     ) public {
-     }
+    }
 
- 
- 
     /**
      * changeOwnerWithProof
      */
@@ -52,6 +50,7 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
             address to,
             address newOwner,
             address fromOwner,
+            address escrowAddress,
             // fromTokenId
             // toTokenId
             uint256 id,
