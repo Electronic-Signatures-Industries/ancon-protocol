@@ -15,6 +15,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
+	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
@@ -83,6 +84,63 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 	return e.queryClient
 }
 
+// GetTransactionByHash
+func (e *AnconAPIHandler) GetTransactionByHash(hash string) (*sdk.TxResponse, error) {
+	e.logger.Debug("ancon_getTransactionByHash")
+
+	search, err := e.clientCtx.Client.TxSearch(context.Background(), fmt.Sprintf("tx.hash='%v'", hash), true, nil, nil, "asc")
+
+	if err != nil {
+		e.logger.Error("failed to broadcast tx", "error", err.Error())
+		return nil, err
+
+	}
+	if search.TotalCount == 0 {
+		e.logger.Error("no hash found")
+		return nil, err
+
+	}
+
+	txres := search.Txs[0]
+	logEntry, err := ConvertExistenceProof((*crypto.Proof)(&txres.Proof.Proof), txres.Hash, txres.Proof.Data) //GetIAVLCommitmentProof(txres.Proof.ToProto().Data)
+
+	proofB, _ := logEntry.Marshal()
+
+	rspEvent := sdk.NewEvent(
+		"commitment_proof",
+		sdk.NewAttribute("Root", hexutil.Encode(txres.Proof.RootHash)),
+		sdk.NewAttribute("Path", hexutil.Encode(logEntry.Key)),
+		sdk.NewAttribute("Value", hexutil.Encode(logEntry.Value)),
+		sdk.NewAttribute("Proof", hexutil.Encode(proofB)),
+	)
+
+	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
+
+	l := sdk.NewABCIMessageLog(uint32(1), "commitment proof", rspEventAppend)
+
+	logs := sdk.ABCIMessageLogs{{
+		MsgIndex: l.MsgIndex,
+		Log:      l.Log,
+		Events:   l.Events,
+	}}
+
+	newRsp := &sdk.TxResponse{
+		TxHash:    hexutil.Encode(txres.Hash),
+		Height:    txres.Height,
+		Codespace: txres.TxResult.Codespace,
+		Code:      txres.TxResult.Code,
+		Data:      strings.ToUpper(hex.EncodeToString([]byte(txres.TxResult.Data))),
+		RawLog:    txres.TxResult.Log,
+		Logs:      logs,
+		Info:      txres.TxResult.Info,
+		GasWanted: txres.TxResult.GasWanted,
+		GasUsed:   txres.TxResult.GasUsed,
+		//		Timestamp: txres.TxResult.Info.
+	}
+
+	return newRsp, nil
+}
+
 // SendSignTx
 func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (*sdk.TxResponse, error) {
 	e.logger.Debug("ancon_sendSignTx")
@@ -116,7 +174,6 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (*sdk.TxRespons
 	if err != nil {
 		return nil, fmt.Errorf("invalid hex %s: %v", encb, err)
 	}
-	e.logger.Error("%s", encb)
 
 	txr := txtypes.TxRaw{}
 	err = e.clientCtx.Codec.Unmarshal(encb, &txr)
@@ -140,44 +197,6 @@ func (e *AnconAPIHandler) SendRawTransaction(data hexutil.Bytes) (*sdk.TxRespons
 		return rsp, err
 	}
 
-	TxRes, err := e.clientCtx.Client.Tx(context.Background(), []byte(rsp.TxHash), true)
-	if err != nil {
-		e.logger.Error("failed to broadcast tx", "error", err.Error())
-		return rsp, err
+	return rsp, nil
 
-	}
-	logEntry, err := GetIAVLCommitmentProof(TxRes.Proof)
-
-	proofB, _ := logEntry.Marshal()
-
-	rspEvent := sdk.NewEvent(
-		"commitment_proof",
-		sdk.NewAttribute("Root", string(TxRes.Proof.RootHash)),
-		sdk.NewAttribute("Path", string(logEntry.Key)),
-		sdk.NewAttribute("Value", string(logEntry.Value)),
-		sdk.NewAttribute("ProofBytes", string(proofB)),
-	)
-
-	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
-
-	l := sdk.NewABCIMessageLog(uint32(len(rsp.Logs)+1), "commitment proof", rspEventAppend)
-
-	logs := append(rsp.Logs, l)
-
-	newRsp := &sdk.TxResponse{
-		TxHash:    rsp.TxHash,
-		Height:    rsp.Height,
-		Codespace: rsp.Codespace,
-		Code:      rsp.Code,
-		Data:      strings.ToUpper(hex.EncodeToString([]byte(rsp.Data))),
-		RawLog:    rsp.RawLog,
-		Logs:      logs,
-		Info:      rsp.Info,
-		GasWanted: rsp.GasWanted,
-		GasUsed:   rsp.GasUsed,
-		Tx:        ethereumTx.Data,
-		Timestamp: rsp.Timestamp,
-	}
-
-	return newRsp, nil
 }
