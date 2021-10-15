@@ -41,30 +41,34 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
         // verify permit exists, has not revoked, has valid issuer and is not expired
         return this.verifyMembership(iavlSpec, rootBz, existenceProof, pathBz, value);
         // verify token exists
-        //_execute(vc.data);
+        //_lock(vc.data);
+        // _release
     }
 
-    function _execute(bytes memory data) internal returns (bool){
+    function _lock(bytes memory data) internal returns (bool){
         // ERC721(tokenAddress)
         (
             string memory metadata,
             address to,
             address newOwner,
             address fromOwner,
+            // fromTokenId
+            // toTokenId
             uint256 id,
             bool isNew
         ) = abi.decode(
                 data,
                 (string, address, address, address, uint256, bool)
             );
+        // FromTokenId verification
         ERC721 nft = ERC721(to);
-
         require(nft.ownerOf(id) == fromOwner, "Invalid token id");
 
         if (isNew) {
             // todo: should mint
         } else {
-            nft.safeTransferFrom(fromOwner, newOwner, id, data);
+            // Escrow Address aka Lock
+            nft.safeTransferFrom(fromOwner, escrowAddress, id, data);
         }
 
         emit CrossMintCallbackReceived(newOwner, metadata, id);
