@@ -5,3 +5,5 @@ secret.yml
 .idea/
 gen
 ethereum/node_modules
+.env
+ethereum/.env

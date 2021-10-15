@@ -40,25 +40,30 @@ module.exports = {
       port: 8545,
       network_id: '*' // Match any network id
     },
-    rinkeby: {
+    ancon: {
       provider: () =>
-        new HDWalletProvider('lend lock kit kiss walnut flower expect text upset nut arrive hub waste stairs climb neither must crowd harvest network wife lizard shiver obtain', 'http://localhost:8545'),
+        new HDWalletProvider(process.env.MNEMONIC, process.env.ANCON),
       network_id: '*',
       gas: 7000000,
       gasPrice: 30000000
     },
-    
+    rinkeby: {
+      provider: () =>
+        new HDWalletProvider(process.env.MNEMONIC, process.env.RINKEBY),
+      network_id: '*',
+      gas: 7000000,
+      gasPrice: 30000000
+    },    
     kovan: {
       provider: () =>
-        new HDWalletProvider(process.env.MNEMONIC, process.env.URL),
+        new HDWalletProvider(process.env.MNEMONIC, process.env.KOVAN),
       network_id: 42,
       gas: 7000000,
       gasPrice: 30000000000
     },
-
     ropsten: {
       provider: () =>
-        new HDWalletProvider(process.env.MNEMONIC, process.env.URL),
+        new HDWalletProvider(process.env.MNEMONIC, process.env.ROPSTEN),
       network_id: 3,
       gas: 5000000,
      // timeoutBlocks: 3,

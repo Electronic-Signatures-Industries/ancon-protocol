@@ -10,7 +10,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\n\ninterface ICrossmint {\n}",
-  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
+  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
   "ast": {
     "absolutePath": "project:/contracts/ICrossmint.sol",
     "exportedSymbols": {
@@ -105,7 +105,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-14T20:47:38.817Z",
+  "updatedAt": "2021-10-15T17:27:32.905Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

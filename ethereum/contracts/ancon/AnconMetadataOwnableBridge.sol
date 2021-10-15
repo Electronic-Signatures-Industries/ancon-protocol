@@ -33,14 +33,13 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
      * changeOwnerWithProof
      */
     function changeOwnerWithProof(
-        bytes memory packet,
         ExistenceProof memory existenceProof,
         bytes memory rootBz,
         bytes memory pathBz,
         bytes memory value
     ) public returns (bool) {
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        
+        return this.verifyMembership(iavlSpec, rootBz, existenceProof, pathBz, value);
         // verify token exists
         //_execute(vc.data);
     }
