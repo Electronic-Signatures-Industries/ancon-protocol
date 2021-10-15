@@ -3,9 +3,11 @@ package ancon
 import (
 	"context"
 	"encoding/hex"
+
 	"fmt"
 	"strings"
 
+	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -14,8 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
@@ -102,17 +104,50 @@ func (e *AnconAPIHandler) GetTransactionByHash(hash string) (*sdk.TxResponse, er
 	}
 
 	txres := search.Txs[0]
-	logEntry, err := ConvertExistenceProof((*crypto.Proof)(&txres.Proof.Proof), txres.Hash, txres.Proof.Data) //GetIAVLCommitmentProof(txres.Proof.ToProto().Data)
 
-	proofB, _ := logEntry.Marshal()
+	mp, err := merkle.ProofFromProto(txres.Proof.ToProto().Proof)
+	if err != nil {
+		return nil, err
 
+	}
+
+	err = mp.ValidateBasic()
+	if err != nil {
+		return nil, err
+
+	}
+	exproof, err := ConvertExistenceProof(mp, txres.Tx)
+	if exproof == nil {
+		return nil, fmt.Errorf("MultiStore existence proof not found")
+	}
+	if err != nil {
+		return nil, err
+
+	}
+
+	proofB, _ := exproof.Marshal()
+	rr, _ := exproof.Calculate()
 	rspEvent := sdk.NewEvent(
 		"commitment_proof",
-		sdk.NewAttribute("Root", hexutil.Encode(txres.Proof.RootHash)),
-		sdk.NewAttribute("Path", hexutil.Encode(logEntry.Key)),
-		sdk.NewAttribute("Value", hexutil.Encode(logEntry.Value)),
+		sdk.NewAttribute("Root", hexutil.Encode(rr)),
+		sdk.NewAttribute("Path", hexutil.Encode(exproof.Key)),
+		sdk.NewAttribute("Value", hexutil.Encode(exproof.Value)),
 		sdk.NewAttribute("Proof", hexutil.Encode(proofB)),
 	)
+	err = exproof.Verify(ics23.TendermintSpec, rr, exproof.Key, exproof.Value)
+	if err != nil {
+		return nil, err
+	}
+	c := &ics23.CommitmentProof{
+		Proof: &ics23.CommitmentProof_Exist{
+			Exist: exproof,
+		},
+	}
+	ok := ics23.VerifyMembership(ics23.TendermintSpec, rr, c, exproof.Key, exproof.Value)
+	if ok {
+
+		e.logger.Error("VERIFIED")
+	}
 
 	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
 

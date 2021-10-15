@@ -5,7 +5,7 @@ import (
 	"math/bits"
 
 	ics23 "github.com/confio/ics23/go"
-	"github.com/tendermint/tendermint/proto/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/merkle"
 )
 
 // ConvertExistenceProof will convert the given proof into a valid
@@ -13,10 +13,21 @@ import (
 //
 // This is the simplest case of the range proof and we will focus on
 // demoing compatibility here
-func ConvertExistenceProof(p *crypto.Proof, key, value []byte) (*ics23.ExistenceProof, error) {
+func ConvertExistenceProof(p *merkle.Proof, value []byte) (*ics23.ExistenceProof, error) {
 	path, err := convertInnerOps(p)
 	if err != nil {
 		return nil, err
+	}
+
+	var key []byte
+
+	if len(path) == 0 {
+		key = []byte{1}
+
+	} else {
+		keys, _ := merkle.KeyPathToKeys(string(path[0].Prefix))
+		key = keys[0]
+
 	}
 
 	proof := &ics23.ExistenceProof{
@@ -42,12 +53,12 @@ func convertLeafOp() *ics23.LeafOp {
 	}
 }
 
-func convertInnerOps(p *crypto.Proof) ([]*ics23.InnerOp, error) {
-	inners := make([]*ics23.InnerOp, 0, len(p.Aunts))
-	path := buildPath(p.Index, p.Total)
+func convertInnerOps(p *merkle.Proof) ([]*ics23.InnerOp, error) {
+	var inners []*ics23.InnerOp
+	path := buildPath(int(p.Index), int(p.Total))
 
 	if len(p.Aunts) != len(path) {
-		return nil, fmt.Errorf("calculated a path different length (%d) than provided by SimpleProof (%d)", len(path), len(p.Aunts))
+		return nil, fmt.Errorf("Calculated a path different length (%d) than provided by SimpleProof (%d)", len(path), len(p.Aunts))
 	}
 
 	for i, aunt := range p.Aunts {
@@ -69,7 +80,7 @@ func convertInnerOps(p *crypto.Proof) ([]*ics23.InnerOp, error) {
 // buildPath returns a list of steps from leaf to root
 // in each step, true means index is left side, false index is right side
 // code adapted from merkle/simple_proof.go:computeHashFromAunts
-func buildPath(idx, total int64) []bool {
+func buildPath(idx int, total int) []bool {
 	if total < 2 {
 		return nil
 	}
@@ -84,13 +95,13 @@ func buildPath(idx, total int64) []bool {
 	return append(buildPath(idx-numLeft, total-numLeft), goLeft)
 }
 
-func getSplitPoint(length int64) int64 {
+func getSplitPoint(length int) int {
 	if length < 1 {
 		panic("Trying to split a tree with size < 1")
 	}
 	uLength := uint(length)
 	bitlen := bits.Len(uLength)
-	k := int64(1 << uint(bitlen-1))
+	k := 1 << uint(bitlen-1)
 	if k == length {
 		k >>= 1
 	}
