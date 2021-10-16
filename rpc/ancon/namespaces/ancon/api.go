@@ -3,6 +3,7 @@ package ancon
 import (
 	"context"
 	"encoding/hex"
+	"math/big"
 
 	"fmt"
 	"strings"
@@ -14,9 +15,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
@@ -86,6 +90,126 @@ func (e *AnconAPIHandler) QueryClient() *rpctypes.QueryClient {
 	return e.queryClient
 }
 
+// MOVE to utils
+// CreateHashCidLink takes a hash eg ethereum hash and converts it to cid multihash
+func CreateHashCidLink(hash []byte) cidlink.Link {
+	lchMh, err := multihash.Encode(hash, GetLinkPrototype().(cidlink.LinkPrototype).MhType)
+	if err != nil {
+		return cidlink.Link{}
+	}
+	// TODO: switch to use CommitTree codec type
+	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
+	lcLinkCID := cidlink.Link{Cid: lcCID}
+	return lcLinkCID
+}
+
+func GetLinkPrototype() ipld.LinkPrototype {
+	// tip: 0x0129 dag-json
+	return cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    0x71, // dag-cbor
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
+	}}
+}
+
+// GetProofs
+func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error) {
+	e.logger.Debug("ancon_getProofs")
+
+	block, err := e.clientCtx.Client.Block(context.Background(), height)
+
+	if err != nil {
+		e.logger.Error("failed to get block", "error", err.Error())
+		return nil, err
+
+	}
+
+	blockhashcid := CreateHashCidLink(block.BlockID.Hash)
+
+	_, exproofs, err := CreateProof(block.Block.Txs, fmt.Sprintf("/anconprotocol/%s", blockhashcid))
+	if err != nil {
+		return nil, err
+	}
+
+	// verify
+	rspEventAppend := sdk.EmptyEvents()
+	for _, exproof := range exproofs {
+
+		roothash, err := exproof.Calculate()
+		exproof.Verify(ics23.IavlSpec, ics23.CommitmentRoot(roothash), exproof.Key, exproof.Value)
+
+		leaf, _ := exproof.Leaf.Marshal()
+		if err != nil {
+			return nil, err
+		}
+		path, err := e.clientCtx.Codec.MarshalJSON(exproof)
+		if err != nil {
+			return nil, err
+		}
+
+		rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
+			fmt.Sprintf("proof_path_%s", exproof.Key),
+			sdk.NewAttribute("key", hexutil.Encode(exproof.Key)),
+			sdk.NewAttribute("value", hexutil.Encode(exproof.Value)),
+			sdk.NewAttribute("leaf", hexutil.Encode(leaf)),
+			sdk.NewAttribute("ex", hexutil.Encode(path)),
+			sdk.NewAttribute("root", hexutil.Encode(roothash)),
+		))
+	}
+
+	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
+
+	logs := sdk.ABCIMessageLogs{{
+		MsgIndex: l.MsgIndex,
+		Log:      l.Log,
+		Events:   l.Events,
+	}}
+
+	return &logs, nil
+}
+
+// VerifyMembership
+func (e *AnconAPIHandler) VerifyMembership(root, key, value, exproof hexutil.Bytes) (*sdk.ABCIMessageLogs, error) {
+	e.logger.Debug("ancon_verifyMembership")
+
+	var proof ics23.ExistenceProof
+	e.clientCtx.Codec.UnmarshalJSON((exproof), &proof)
+	rr := (root)
+	err := proof.Verify(ics23.IavlSpec, ics23.CommitmentRoot(rr), proof.Key, proof.Value)
+	if err != nil {
+		return nil, err
+	}
+	c := &ics23.CommitmentProof{
+		Proof: &ics23.CommitmentProof_Exist{
+			Exist: &proof,
+		},
+	}
+
+	ok := ics23.VerifyMembership(ics23.IavlSpec, ics23.CommitmentRoot(rr), c, (key), (value))
+
+	isok := big.NewInt(0)
+	if ok {
+		isok = big.NewInt(1)
+	}
+	rspEvent := sdk.NewEvent(
+		"verify_membership",
+		sdk.NewAttribute("valid", hexutil.EncodeBig(isok)),
+	)
+
+	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
+
+	l := sdk.NewABCIMessageLog(uint32(0), "verify_membership", rspEventAppend)
+
+	logs := sdk.ABCIMessageLogs{{
+		MsgIndex: l.MsgIndex,
+		Log:      l.Log,
+		Events:   l.Events,
+	}}
+
+	return &logs, nil
+}
+
 // GetTransactionByHash
 func (e *AnconAPIHandler) GetTransactionByHash(hash string) (*sdk.TxResponse, error) {
 	e.logger.Debug("ancon_getTransactionByHash")
@@ -105,58 +229,10 @@ func (e *AnconAPIHandler) GetTransactionByHash(hash string) (*sdk.TxResponse, er
 
 	txres := search.Txs[0]
 
-	mp, err := merkle.ProofFromProto(txres.Proof.ToProto().Proof)
-	if err != nil {
-		return nil, err
-
-	}
-
-	err = mp.ValidateBasic()
-	if err != nil {
-		return nil, err
-
-	}
-	exproof, err := ConvertExistenceProof(mp, txres.Tx)
-	if exproof == nil {
-		return nil, fmt.Errorf("MultiStore existence proof not found")
-	}
-	if err != nil {
-		return nil, err
-
-	}
-
-	proofB, _ := exproof.Marshal()
-	rr, _ := exproof.Calculate()
-	rspEvent := sdk.NewEvent(
-		"commitment_proof",
-		sdk.NewAttribute("Root", hexutil.Encode(rr)),
-		sdk.NewAttribute("Path", hexutil.Encode(exproof.Key)),
-		sdk.NewAttribute("Value", hexutil.Encode(exproof.Value)),
-		sdk.NewAttribute("Proof", hexutil.Encode(proofB)),
-	)
-	err = exproof.Verify(ics23.TendermintSpec, rr, exproof.Key, exproof.Value)
-	if err != nil {
-		return nil, err
-	}
-	c := &ics23.CommitmentProof{
-		Proof: &ics23.CommitmentProof_Exist{
-			Exist: exproof,
-		},
-	}
-	ok := ics23.VerifyMembership(ics23.TendermintSpec, rr, c, exproof.Key, exproof.Value)
-	if ok {
-
-		e.logger.Error("VERIFIED")
-	}
-
-	rspEventAppend := sdk.EmptyEvents().AppendEvent(rspEvent)
-
-	l := sdk.NewABCIMessageLog(uint32(1), "commitment proof", rspEventAppend)
-
 	logs := sdk.ABCIMessageLogs{{
-		MsgIndex: l.MsgIndex,
-		Log:      l.Log,
-		Events:   l.Events,
+		MsgIndex: 0,
+		Log:      "",
+		Events:   sdk.StringifyEvents(txres.TxResult.GetEvents()),
 	}}
 
 	newRsp := &sdk.TxResponse{

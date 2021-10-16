@@ -6,28 +6,48 @@ import (
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/tendermint/tendermint/crypto/merkle"
+	txtypes "github.com/tendermint/tendermint/types"
 )
+
+func CreateProof(txs []txtypes.Tx, rootKeyPath string) ([]byte, []*ics23.ExistenceProof, error) {
+	l := len(txs)
+	bzs := make([][]byte, l)
+	for i := 0; i < l; i++ {
+		bzs[i] = txs[i].Hash()
+	}
+	var kp merkle.KeyPath
+	root, proofs := merkle.ProofsFromByteSlices(bzs)
+	keys, err := merkle.KeyPathToKeys(rootKeyPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i := 0; i < len(keys); i++ {
+		kp = kp.AppendKey(keys[i], merkle.KeyEncodingURL)
+	}
+
+	var exps []*ics23.ExistenceProof
+	for i := 0; i < len(proofs); i++ {
+
+		k := kp.AppendKey(txs[i].Hash(), merkle.KeyEncodingHex)
+		res, err := ConvertExistenceProof(proofs[i], []byte(k.String()), txs[i])
+		if err != nil {
+			return nil, nil, err
+		}
+		exps = append(exps, res)
+	}
+
+	return root, exps, nil
+}
 
 // ConvertExistenceProof will convert the given proof into a valid
 // existence proof, if that's what it is.
 //
 // This is the simplest case of the range proof and we will focus on
 // demoing compatibility here
-func ConvertExistenceProof(p *merkle.Proof, value []byte) (*ics23.ExistenceProof, error) {
+func ConvertExistenceProof(p *merkle.Proof, key, value []byte) (*ics23.ExistenceProof, error) {
 	path, err := convertInnerOps(p)
 	if err != nil {
 		return nil, err
-	}
-
-	var key []byte
-
-	if len(path) == 0 {
-		key = []byte{1}
-
-	} else {
-		keys, _ := merkle.KeyPathToKeys(string(path[0].Prefix))
-		key = keys[0]
-
 	}
 
 	proof := &ics23.ExistenceProof{
