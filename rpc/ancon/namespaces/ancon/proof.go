@@ -5,11 +5,14 @@ import (
 	"math/bits"
 
 	ics23 "github.com/confio/ics23/go"
+	"github.com/cosmos/cosmos-sdk/client"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/tendermint/tendermint/crypto/merkle"
+
 	txtypes "github.com/tendermint/tendermint/types"
 )
 
-func CreateProof(txs []txtypes.Tx, rootKeyPath string) ([]byte, []*ics23.ExistenceProof, error) {
+func CreateProof(e client.Context, txs []txtypes.Tx, rootKeyPath string) ([]byte, []*ics23.ExistenceProof, []*ics23.CommitmentProof, error) {
 	l := len(txs)
 	bzs := make([][]byte, l)
 	for i := 0; i < l; i++ {
@@ -19,24 +22,57 @@ func CreateProof(txs []txtypes.Tx, rootKeyPath string) ([]byte, []*ics23.Existen
 	root, proofs := merkle.ProofsFromByteSlices(bzs)
 	keys, err := merkle.KeyPathToKeys(rootKeyPath)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	for i := 0; i < len(keys); i++ {
 		kp = kp.AppendKey(keys[i], merkle.KeyEncodingURL)
 	}
 
 	var exps []*ics23.ExistenceProof
-	for i := 0; i < len(proofs); i++ {
+	var commitments []*ics23.CommitmentProof
 
-		k := kp.AppendKey(txs[i].Hash(), merkle.KeyEncodingHex)
-		res, err := ConvertExistenceProof(proofs[i], []byte(k.String()), txs[i])
+	for i := 0; i < len(proofs); i++ {
+		err := proofs[i].Verify(root, txs[i].Hash())
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
-		exps = append(exps, res)
+		k := kp.AppendKey(txs[i].Hash(), merkle.KeyEncodingHex)
+		d := (merkle.NewValueOp([]byte(k.String()), proofs[i]))
+
+		path, err := convertInnerOps(d.Proof)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		px := ics23.CommitmentProof_Exist{
+			Exist: &ics23.ExistenceProof{
+				Key:   []byte(k.String()),
+				Value: txs[i].Hash(),
+				Leaf:  convertLeafOp(),
+				Path:  path,
+			},
+		}
+		c := storetypes.CommitmentOp{
+			Type: storetypes.ProofOpSimpleMerkleCommitment,
+			Spec: ics23.TendermintSpec,
+			Key:  []byte(k.String()),
+			Proof: &ics23.CommitmentProof{
+				Proof: &px,
+			},
+		}
+
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		// err = res.Verify(ics23.IavlSpec, root, []byte(k.String()), txs[i].Hash())
+		// if err != nil {
+		// 	return nil, nil, err
+		// }
+		exps = append(exps, c.Proof.GetExist())
+		commitments = append(commitments, c.Proof)
 	}
 
-	return root, exps, nil
+	return root, exps, commitments, nil
 }
 
 // ConvertExistenceProof will convert the given proof into a valid

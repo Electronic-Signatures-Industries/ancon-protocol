@@ -127,23 +127,29 @@ func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error)
 
 	blockhashcid := CreateHashCidLink(block.BlockID.Hash)
 
-	_, exproofs, err := CreateProof(block.Block.Txs, fmt.Sprintf("/anconprotocol/%s", blockhashcid))
+	_, exproofs, commitments, err := CreateProof(e.clientCtx, block.Block.Txs, fmt.Sprintf("/anconprotocol/%s", blockhashcid))
 	if err != nil {
 		return nil, err
 	}
 
 	// verify
+	r := ics23.CommitmentRoot(block.Block.Header.AppHash)
 	rspEventAppend := sdk.EmptyEvents()
+	i := 0
 	for _, exproof := range exproofs {
 
-		roothash, err := exproof.Calculate()
-		exproof.Verify(ics23.IavlSpec, ics23.CommitmentRoot(roothash), exproof.Key, exproof.Value)
+		exproof.Verify(ics23.TendermintSpec, (r), exproof.Key, exproof.Value)
+		r, err = exproof.Calculate()
 
 		leaf, _ := exproof.Leaf.Marshal()
 		if err != nil {
 			return nil, err
 		}
-		path, err := e.clientCtx.Codec.MarshalJSON(exproof)
+		exproofjson, err := e.clientCtx.Codec.MarshalJSON(exproof)
+		if err != nil {
+			return nil, err
+		}
+		comm, err := e.clientCtx.Codec.MarshalJSON(commitments[i])
 		if err != nil {
 			return nil, err
 		}
@@ -153,9 +159,11 @@ func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error)
 			sdk.NewAttribute("key", hexutil.Encode(exproof.Key)),
 			sdk.NewAttribute("value", hexutil.Encode(exproof.Value)),
 			sdk.NewAttribute("leaf", hexutil.Encode(leaf)),
-			sdk.NewAttribute("ex", hexutil.Encode(path)),
-			sdk.NewAttribute("root", hexutil.Encode(roothash)),
+			sdk.NewAttribute("ex", hexutil.Encode(exproofjson)),
+			sdk.NewAttribute("root", hexutil.Encode(r)),
+			sdk.NewAttribute("commitment", hexutil.Encode(comm)),
 		))
+		i++
 	}
 
 	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
@@ -171,22 +179,10 @@ func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error)
 
 // VerifyMembership
 func (e *AnconAPIHandler) VerifyMembership(root, key, value, exproof hexutil.Bytes) (*sdk.ABCIMessageLogs, error) {
-	e.logger.Debug("ancon_verifyMembership")
+	var commitment ics23.CommitmentProof
+	e.clientCtx.Codec.UnmarshalJSON((exproof), &commitment)
 
-	var proof ics23.ExistenceProof
-	e.clientCtx.Codec.UnmarshalJSON((exproof), &proof)
-	rr := (root)
-	err := proof.Verify(ics23.IavlSpec, ics23.CommitmentRoot(rr), proof.Key, proof.Value)
-	if err != nil {
-		return nil, err
-	}
-	c := &ics23.CommitmentProof{
-		Proof: &ics23.CommitmentProof_Exist{
-			Exist: &proof,
-		},
-	}
-
-	ok := ics23.VerifyMembership(ics23.IavlSpec, ics23.CommitmentRoot(rr), c, (key), (value))
+	ok := ics23.VerifyMembership(ics23.TendermintSpec, ics23.CommitmentRoot(root), &commitment, key, value)
 
 	isok := big.NewInt(0)
 	if ok {
