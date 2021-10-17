@@ -69,6 +69,64 @@ Authenticity and provenance data economy decentralized chain<br/>
 - A decentralized invoice factoring NFT using IBC, Ancon and Terra
 
 
+## Milestone 2 - Developer Notes
+## Cross Chain NFT Ownership (DID or Ethereum account)
+
+### ICS23/IBC Verification Cosmos
+ 
+1. Use KVStore to query for proofs for 0.2.0 demo
+2. Complete `ancon_getProofs` to use `ABCIQueryWithOptions`
+3. Store proofs in IPLD and IPFS
+4. Complete `ancon_verifyMembership`
+
+### ICS23/IBC Verification EVM
+ 
+1. Use ics23.sol to verifiy signatures
+2. Add additional user and verifier whitelisting
+3. Add `updateHeader` and add a recurring cronjob
+4. For EVM to Cosmos consider using `HashFromByteSlices`
+
+### ICS23/IBC Verification Flow
+ 
+1. Migrate ICS23 Rust to Flow Cadence
+2. Add additional user and verifier whitelisting
+3. Add `updateHeader` and add a recurring cronjob
+4. For Flow to Cosmos consider using `HashFromByteSlices`
+
+### Verification Summary
+
+Long term, IBC is the way to go but still early in EVM integration. Consider using IBC WASM Client or IBC Middleware. The latter is useful
+to implement Milestone 3 Graphsync and Data Pipes.
+
+### Custom EVM JSON RPC Summary
+
+Think we got a pretty good understanding on how to use it and it will be expanded, it gives us basically a way to send EVM and Cosmos transactions to the Evmos module and let it handle it. AnconJS repo has the implementation for frontend, backend is using Custom JSON RPC.
+
+###  Frontend tasks for 0.2.0
+
+- Alice must send Cosmos Transaction MsgChangeMetadataOwnership through EVM
+- Alice requests tx proofs either with JSON RPC or REST, if REST must return a hash cid to fetch from IPFS or Ancon IPLD.
+- Alice tx proofs can further be used to request other proofs or credentials with proofs or claims (EIP1812).
+- Alice sends proofs/claims to EVM A and EVM B
+- EVM A verifies merkle proof and/or verifies Alice (EIP1812), if OK, proceeds to change owner or delegate to a DID ether address.
+- EVM B verifies merkle proof and/or verifies Alice (EIP1812), if OK, proceeds to (change owner by default) mint or transfer from escrow DID ether address.
+- Alice needs to manually complete/claim cross ownership.
+- Ancon replicates/publish to IPFS change metadata ownership from `unconfirmed` to `verified` , adding two transaction hashes in multiformat (as cid).
+
+### Summary for frontend tasks
+
+Once again, because of timelines, this can be improved using IBC protocol.
+
+### Flow tasks for 0.2.0
+
+Practically need to migrate from ics23 Rust to Cadence, estimates are around 2 weeks and should be easy to integrate with the existing frontend implementation. We'll have to do a lot of upfront code due to Flow missing some pieces, eg available DIDs.
+
+### Summary for Flow integration
+
+We should not stay long in Flow, if code migration works, then we can document a plan for doing similar for other chains.
+
+
+
 
 
 ## Get started
