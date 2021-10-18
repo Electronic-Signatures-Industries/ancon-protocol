@@ -280,6 +280,7 @@ func (app *App) SetStreamingService(s streaming.StreamingService) {
 
 func (app *App) AnconDeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	result := app.BaseApp.DeliverTx(req)
+
 	logger := app.BaseApp.Logger()
 	var res abci.ResponseDeliverTx
 	for _, streamingListener := range app.streamingListeners {

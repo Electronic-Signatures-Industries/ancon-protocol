@@ -23,9 +23,7 @@ import (
 	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	tmtypes "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
@@ -116,66 +114,50 @@ func GetLinkPrototype() ipld.LinkPrototype {
 }
 
 // GetProofs
-func (e *AnconAPIHandler) GetProofs(height *int64, key string) (*sdk.ABCIMessageLogs, error) {
+func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageLogs, error) {
 	e.logger.Debug("ancon_getProofs")
 
-	block, err := e.clientCtx.Client.Block(context.Background(), height)
+	e.clientCtx = e.clientCtx.WithHeight(height)
+	v, pops, err := e.queryClient.GetProof(e.clientCtx, "anconprotocol", []byte(key))
 
-	if err != nil {
-		e.logger.Error("failed to get block", "error", err.Error())
-		return nil, err
+	// _, err := e.clientCtx.Client.Block(context.Background(), &height)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	mproofs, err := ibc.ConvertProofs(pops)
 
-	}
-
-	query := abci.RequestQuery{
-		Data:   []byte(key),
-		Path:   ("/store/anconprotocol/key"),
-		Height: block.Block.Height,
-		Prove:  true,
-	}
-	res, err := e.clientCtx.Client.ABCIQueryWithOptions(context.Background(),
-		query.Path, query.Data, tmtypes.ABCIQueryOptions{
-			Height: query.Height,
-			Prove:  true,
-		})
-
-	mproofs, err := ibc.ConvertProofs(res.Response.ProofOps)
-
-	root := ibc.MerkleRoot{
-		Hash: block.Block.AppHash,
-	}
-	err = mproofs.VerifyMembership(ibc.GetSDKSpecs(), root, ibc.NewMerklePath(string(mproofs.Proofs[0].GetExist().Key)), []byte(key))
 	if err != nil {
 		return nil, err
 	}
-
-	r := ics23.CommitmentRoot(block.Block.Header.AppHash)
 	rspEventAppend := sdk.EmptyEvents()
-	i := 0
 
-	for _, exproof := range mproofs.Proofs {
-
-		// exproof.Verify(ics23.TendermintSpec, (r), exproof.Key, key)
-		exproofjson, err := e.clientCtx.Codec.MarshalJSON(exproof)
-		if err != nil {
-			return nil, err
-		}
-		comm, err := e.clientCtx.Codec.MarshalJSON(exproof.GetExist())
-		if err != nil {
-			return nil, err
-		}
-
-		rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
-			fmt.Sprintf("proof_path_%s", exproof.GetExist().Key),
-			sdk.NewAttribute("key", hexutil.Encode(exproof.GetExist().Key)),
-			sdk.NewAttribute("value", hexutil.Encode([]byte(exproof.GetExist().Value))),
-			sdk.NewAttribute("leaf", hexutil.Encode([]byte{0x0})),
-			sdk.NewAttribute("ex", hexutil.Encode(exproofjson)),
-			sdk.NewAttribute("root", hexutil.Encode(r)),
-			sdk.NewAttribute("commitment", hexutil.Encode(comm)),
-		))
-		i++
+	ps := []*ics23.ProofSpec{
+		ics23.IavlSpec,
+		ics23.TendermintSpec,
 	}
+
+	key = fmt.Sprintf("store/anconprotocol/key/%s", key)
+
+	///	kp := ibc.NewMerklePath("store/anconprotocol/key", key)
+	h, err := mproofs.Proofs[0].Calculate()
+
+	err = mproofs.Proofs[0].GetExist().Verify(ps[0], h, mproofs.Proofs[0].GetExist().Key, mproofs.Proofs[0].GetExist().Value)
+	if err != nil {
+		return nil, err
+	}
+
+	comm, err := e.clientCtx.Codec.MarshalJSON(mproofs.Proofs[0])
+	if err != nil {
+		return nil, err
+	}
+
+	rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
+		fmt.Sprintf("proof_path_%s", key),
+		sdk.NewAttribute("root", hexutil.Encode((h))),
+		sdk.NewAttribute("commitment", hexutil.Encode(comm)),
+		sdk.NewAttribute("value", hexutil.Encode(v)),
+		sdk.NewAttribute("key", key),
+	))
 
 	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
 
@@ -193,7 +175,7 @@ func (e *AnconAPIHandler) VerifyMembership(root, key, value, exproof hexutil.Byt
 	var commitment ics23.CommitmentProof
 	e.clientCtx.Codec.UnmarshalJSON((exproof), &commitment)
 
-	ok := ics23.VerifyMembership(ics23.TendermintSpec, ics23.CommitmentRoot(root), &commitment, key, value)
+	ok := ics23.VerifyMembership(ics23.IavlSpec, ics23.CommitmentRoot(root), &commitment, key, value)
 
 	isok := big.NewInt(0)
 	if ok {

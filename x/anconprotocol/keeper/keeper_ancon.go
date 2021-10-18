@@ -10,11 +10,13 @@ import (
 	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/multiformats/go-multihash"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -25,7 +27,6 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/spf13/cast"
 
-	"github.com/cosmos/cosmos-sdk/store/iavl"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -460,24 +461,20 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 }
 
 func (k Keeper) GetMetadataProof(ctx sdk.Context, height int64, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
-	// //	lsys := k.GetLinkSystem()
-	// lnk, err := cid.Parse(hash)
-	// if err != nil {
-	// 	return nil, nil, status.Error(
-	// 		codes.InvalidArgument,
-	// 		types.ErrIntOverflowQuery.Error(),
-	// 	)
-	// }
-	// //  TODO: Do a separate function
-
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
 	} else {
 		id = []byte(hash)
 	}
+	ctx.Logger().Error("id created")
+	kvstore := ctx.MultiStore().GetKVStore(sdk.NewKVStoreKey("anconprotocol"))
+	ctx.Logger().Error("id created")
+	ctx.Logger().Error("id created")
 
-	queryStore := ctx.MultiStore().GetKVStore(k.storeKey).(*iavl.Store)
+	queryStore := kvstore.(store.Queryable)
+
+	ctx.Logger().Error("id created")
 
 	query := abci.RequestQuery{
 		Data:   id,
@@ -485,13 +482,14 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, height int64, hash, path strin
 		Height: height - 1,
 		Prove:  true,
 	}
+	ctx.Logger().Error("query results created")
 	res := queryStore.Query(query)
 
 	mproofs, err := ibc.ConvertProofs(res.ProofOps)
 	if err != nil {
 		return nil, nil, err
 	}
-
+	ctx.Logger().Error("proofs created")
 	r, err := mproofs.Proofs[0].Calculate()
 	root := ibc.MerkleRoot{
 		Hash: r,
@@ -499,15 +497,54 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, height int64, hash, path strin
 	if err != nil {
 		return nil, nil, err
 	}
+	ctx.Logger().Error("root hash created")
+	value := kvstore.Get(id)
 
-	value := queryStore.Get(id)
 	ps := []*ics23.ProofSpec{
 		ics23.IavlSpec,
 	}
+
 	err = mproofs.VerifyMembership(ps, root, ibc.NewMerklePath(string(id)), value)
 	if err != nil {
 		return nil, nil, err
 	}
+	ctx.Logger().Error("verified membeship created")
+	return &root, &mproofs, nil
+}
+func (k *Keeper) GetMetadataProof2(ctx sdk.Context, proofOps *crypto.ProofOps, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
+	var id []byte
+	if path != "" {
+		id = append([]byte(hash), path...)
+	} else {
+		id = []byte(hash)
+	}
+
+	kvstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+
+	mproofs, err := ibc.ConvertProofs(proofOps)
+	if err != nil {
+		return nil, nil, err
+	}
+	ctx.Logger().Error("proofs created")
+	r, err := mproofs.Proofs[0].Calculate()
+	root := ibc.MerkleRoot{
+		Hash: r,
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+	ctx.Logger().Error("root hash created")
+	value := kvstore.Get(id)
+
+	ps := []*ics23.ProofSpec{
+		ics23.IavlSpec,
+	}
+
+	err = mproofs.VerifyMembership(ps, root, ibc.NewMerklePath(string(id)), value)
+	if err != nil {
+		return nil, nil, err
+	}
+	ctx.Logger().Error("verified membeship created")
 	return &root, &mproofs, nil
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
