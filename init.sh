@@ -76,6 +76,7 @@ fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
 ~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 
 # Sign genesis transaction
 ~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
@@ -98,8 +99,6 @@ sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.to
 sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
 
 cp config.toml $HOME/.ancon-protocold/config/config.toml
-
-~/go/bin/ancon-protocold tx bank send mykey ethm1h8mfzjn5zhu6mpn6n3fhgudydhag22aw4dyenj 10000aphoton
 
 
 #~/go/bin/ancon-protocold keys show alice | echo

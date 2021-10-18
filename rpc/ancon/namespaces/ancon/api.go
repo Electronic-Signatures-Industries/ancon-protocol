@@ -172,26 +172,21 @@ func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageL
 
 // VerifyMembership
 func (e *AnconAPIHandler) VerifyMembership(root, key, value, exproof hexutil.Bytes) (*sdk.ABCIMessageLogs, error) {
-	var commitment ics23.CommitmentProof
-	e.clientCtx.Codec.UnmarshalJSON((exproof), &commitment)
+	var mp ibc.MerkleProof
 
-	// ok := ics23.VerifyMembership(ics23.TendermintSpec, ics23.CommitmentRoot(root), &commitment, key, value)
-	mp := &ibc.MerkleProof{
-		Proofs: []*ics23.CommitmentProof{&commitment},
-	}
-	ps := []*ics23.ProofSpec{
-		ics23.TendermintSpec,
-	}
+	mp.Unmarshal(exproof)
 
-	err := mp.VerifyMembership(ps, ibc.NewMerkleRoot(root), ibc.NewMerklePath(key.String()), []byte(value))
-	if err != nil {
-		return nil, err
-	}
+	ex := mp.Proofs[0].GetExist()
+	err := ex.Verify(ics23.IavlSpec, ics23.CommitmentRoot(root), key, value)
 
 	isok := big.NewInt(0)
 	if err == nil {
 		isok = big.NewInt(1)
+
+	} else {
+		return nil, err
 	}
+
 	rspEvent := sdk.NewEvent(
 		"verify_membership",
 		sdk.NewAttribute("valid", hexutil.EncodeBig(isok)),
