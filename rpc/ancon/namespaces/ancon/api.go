@@ -14,6 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
@@ -21,13 +23,13 @@ import (
 	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/rpc/ethereum/backend"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
 // AnconAPIHandler is the ancon_ prefixed set of APIs
@@ -114,7 +116,7 @@ func GetLinkPrototype() ipld.LinkPrototype {
 }
 
 // GetProofs
-func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error) {
+func (e *AnconAPIHandler) GetProofs(height *int64, key string) (*sdk.ABCIMessageLogs, error) {
 	e.logger.Debug("ancon_getProofs")
 
 	block, err := e.clientCtx.Client.Block(context.Background(), height)
@@ -125,40 +127,49 @@ func (e *AnconAPIHandler) GetProofs(height *int64) (*sdk.ABCIMessageLogs, error)
 
 	}
 
-	blockhashcid := CreateHashCidLink(block.BlockID.Hash)
+	query := abci.RequestQuery{
+		Data:   []byte(key),
+		Path:   ("/store/anconprotocol/key"),
+		Height: block.Block.Height,
+		Prove:  true,
+	}
+	res, err := e.clientCtx.Client.ABCIQueryWithOptions(context.Background(),
+		query.Path, query.Data, tmtypes.ABCIQueryOptions{
+			Height: query.Height,
+			Prove:  true,
+		})
 
-	_, exproofs, commitments, err := CreateProof(e.clientCtx, block.Block.Txs, fmt.Sprintf("/anconprotocol/%s", blockhashcid))
+	mproofs, err := ibc.ConvertProofs(res.Response.ProofOps)
+
+	root := ibc.MerkleRoot{
+		Hash: block.Block.AppHash,
+	}
+	err = mproofs.VerifyMembership(ibc.GetSDKSpecs(), root, ibc.NewMerklePath(string(mproofs.Proofs[0].GetExist().Key)), []byte(key))
 	if err != nil {
 		return nil, err
 	}
 
-	// verify
 	r := ics23.CommitmentRoot(block.Block.Header.AppHash)
 	rspEventAppend := sdk.EmptyEvents()
 	i := 0
-	for _, exproof := range exproofs {
 
-		exproof.Verify(ics23.TendermintSpec, (r), exproof.Key, exproof.Value)
-		r, err = exproof.Calculate()
+	for _, exproof := range mproofs.Proofs {
 
-		leaf, _ := exproof.Leaf.Marshal()
-		if err != nil {
-			return nil, err
-		}
+		// exproof.Verify(ics23.TendermintSpec, (r), exproof.Key, key)
 		exproofjson, err := e.clientCtx.Codec.MarshalJSON(exproof)
 		if err != nil {
 			return nil, err
 		}
-		comm, err := e.clientCtx.Codec.MarshalJSON(commitments[i])
+		comm, err := e.clientCtx.Codec.MarshalJSON(exproof.GetExist())
 		if err != nil {
 			return nil, err
 		}
 
 		rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
-			fmt.Sprintf("proof_path_%s", exproof.Key),
-			sdk.NewAttribute("key", hexutil.Encode(exproof.Key)),
-			sdk.NewAttribute("value", hexutil.Encode(exproof.Value)),
-			sdk.NewAttribute("leaf", hexutil.Encode(leaf)),
+			fmt.Sprintf("proof_path_%s", exproof.GetExist().Key),
+			sdk.NewAttribute("key", hexutil.Encode(exproof.GetExist().Key)),
+			sdk.NewAttribute("value", hexutil.Encode([]byte(exproof.GetExist().Value))),
+			sdk.NewAttribute("leaf", hexutil.Encode([]byte{0x0})),
 			sdk.NewAttribute("ex", hexutil.Encode(exproofjson)),
 			sdk.NewAttribute("root", hexutil.Encode(r)),
 			sdk.NewAttribute("commitment", hexutil.Encode(comm)),

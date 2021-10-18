@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"mime"
@@ -29,39 +28,6 @@ const (
 
 // https://www.jsonrpc.org/historical/json-rpc-over-http.html#id13
 var acceptedContentTypes = []string{contentType, "application/json-rpc", "application/jsonrequest"}
-
-// ServeHTTP serves JSON-RPC requests over HTTP.
-func ServeHTTP2(s *ethrpc.Server) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Permit dumb empty requests for remote health-checks (AWS)
-		if r.Method == http.MethodGet && r.ContentLength == 0 && r.URL.RawQuery == "" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		if code, err := validateRequest(r); err != nil {
-			http.Error(w, err.Error(), code)
-			return
-		}
-		// All checks passed, create a codec that reads directly from the request body
-		// until EOF, writes the response to w, and orders the server to process a
-		// single request.
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, "remote", r.RemoteAddr)
-		ctx = context.WithValue(ctx, "scheme", r.Proto)
-		ctx = context.WithValue(ctx, "local", r.Host)
-		if ua := r.Header.Get("User-Agent"); ua != "" {
-			ctx = context.WithValue(ctx, "User-Agent", ua)
-		}
-		if origin := r.Header.Get("Origin"); origin != "" {
-			ctx = context.WithValue(ctx, "Origin", origin)
-		}
-
-		// w.Header().Set("content-type", contentType)
-		// codec := newHTTPServerConn(r, w)
-		// defer codec.close()
-		// s.serveSingleRequest(ctx, codec)
-	}
-}
 
 // validateRequest returns a non-zero response code and error message if the
 // request is invalid.
@@ -95,7 +61,6 @@ func StartJSONRPC(ctx *server.Context, clientCtx client.Context, tmRPCAddr, tmEn
 	tmWsClient := ConnectTmWS(tmRPCAddr, tmEndpoint, ctx.Logger)
 
 	rpcServer := ethrpc.NewServer()
-
 	rpcAPIArr := config.JSONRPC.API
 	apis := rpc.GetRPCAPIs(ctx, clientCtx, tmWsClient, rpcAPIArr)
 	rpcapis := ancon.GetRPCAPIs(ctx, clientCtx, tmWsClient, rpcAPIArr)

@@ -30,6 +30,10 @@ service Query {
 		option (google.api.http).get = "/ancon/{cid}/{path}";
 	}
 
+	// Reads metadata proofs
+	rpc ReadMetadataProof(QueryProofMetadataRequest) returns (QueryProofResponse) {
+		option (google.api.http).get = "/ancon/proof/{height}/{cid}/{path}";
+	}
 	// this line is used by starport scaffolding # 2
 
 	// Queries a list of owners items.
@@ -90,6 +94,18 @@ message QueryDidWebRequest {
 }
 
 message QueryDidWebResponse {
+}
+
+
+message QueryProofMetadataRequest {
+	int64 height = 1;
+	string cid = 2;
+	string path = 3;
+}
+
+message QueryProofResponse {
+string root = 1;
+string proof = 2;
 }
 
 message QueryGetDidRequest {

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io"
 
-	// This package is needed so that all the preloaded plugins are loaded automatically
-
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/multiformats/go-multihash"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -25,6 +25,7 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/spf13/cast"
 
+	"github.com/cosmos/cosmos-sdk/store/iavl"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -456,6 +457,58 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	)
 
 	return n, err
+}
+
+func (k Keeper) GetMetadataProof(ctx sdk.Context, height int64, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
+	// //	lsys := k.GetLinkSystem()
+	// lnk, err := cid.Parse(hash)
+	// if err != nil {
+	// 	return nil, nil, status.Error(
+	// 		codes.InvalidArgument,
+	// 		types.ErrIntOverflowQuery.Error(),
+	// 	)
+	// }
+	// //  TODO: Do a separate function
+
+	var id []byte
+	if path != "" {
+		id = append([]byte(hash), path...)
+	} else {
+		id = []byte(hash)
+	}
+
+	queryStore := ctx.MultiStore().GetKVStore(k.storeKey).(*iavl.Store)
+
+	query := abci.RequestQuery{
+		Data:   id,
+		Path:   ("/key"),
+		Height: height - 1,
+		Prove:  true,
+	}
+	res := queryStore.Query(query)
+
+	mproofs, err := ibc.ConvertProofs(res.ProofOps)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	r, err := mproofs.Proofs[0].Calculate()
+	root := ibc.MerkleRoot{
+		Hash: r,
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	value := queryStore.Get(id)
+	ps := []*ics23.ProofSpec{
+		ics23.IavlSpec,
+	}
+	err = mproofs.VerifyMembership(ps, root, ibc.NewMerklePath(string(id)), value)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &root, &mproofs, nil
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 

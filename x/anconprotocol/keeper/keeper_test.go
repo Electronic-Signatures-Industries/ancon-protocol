@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -16,6 +17,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/store/iavl"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -105,10 +107,20 @@ func Test_AddMetadata_JSON(t *testing.T) {
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
+	st := ctx.MultiStore().GetKVStore(keeper.storeKey).(*iavl.Store)
+	id := st.Commit()
+
+	lnk, _ = keeper.AddMetadata(ctx, &f[0])
+
+	id = st.Commit()
+	require.NotEqual(t, id, nil)
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: lnk}
 	om, _ := keeper.GetObject(ctx, x)
+	r, p, _ := keeper.GetMetadataProof(ctx, 2, fmt.Sprintf("ancon%s", lnk), "")
 
+	require.NotNil(t, r)
+	require.NotNil(t, p)
 	var cborPayload []byte
 	cborPayload, _ = base64.RawStdEncoding.DecodeString(om.Data)
 
@@ -357,65 +369,3 @@ func Test_ExecuteTransaction(
 
 	require.Equal(t, err, nil)
 }
-
-// func TestTrustedContent_VoucherQuery(t *testing.T) {
-// 	keeper, ctx := setupKeeper(t)
-// 	f := make([]types.MsgMetadata, 1)
-// 	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
-// 	f[0].Description = "NFT Metadata"
-// 	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
-// 	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
-// 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
-// 	f[0].Parent = ""
-// 	f[0].VerifiedCredentialRef = ""
-// 	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-// 	f[0].Links = "[]"
-// 	f[0].From = "gggggggggggggg"
-
-// 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
-
-// 	tokenName := "nftToken"
-
-// 	err := keeper.IssueDenom(ctx, tokenName, tokenName, "", "ancon",
-// 		sdk.AccAddress("cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"), false, false)
-
-// 	if err != nil {
-// 		t.Error("TestTrustedContent_VoucherQuery could not issue token")
-// 	}
-
-// 	voucherID, _ := keeper.AddTrustedContent(
-// 		ctx,
-// 		&types.MsgMintTrustedContent{
-// 			Creator:     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
-// 			MetadataRef: lnk,
-// 			DenomId:     tokenName,
-// 			Name:        tokenName,
-// 			Recipient:   "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
-// 			DidOwner:    "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB",
-// 			LazyMint:    true,
-// 			R:           "", //metadata-ref + DenomID + Name + Recipient
-// 			S:           "",
-// 			V:           0,
-// 		},
-// 	)
-
-// 	if len(voucherID) == 0 {
-// 		t.Error("TestTrustedContent_VoucherQuery could not add trusted content [voucher]")
-// 	}
-
-// 	// GetVoucher should be offchain
-// 	voucher, err := keeper.GetVoucher(ctx.Context(), voucherID)
-// 	if err != nil {
-// 		t.Error("TestTrustedContent_VoucherQuery could not find voucher")
-// 	}
-
-// 	_ = voucher
-
-// 	// this step should be a smart contract
-// 	_ = keeper.AddTrustedContentWithProof(ctx, voucher["GetVoucher"], voucher["voucher"])
-
-// 	// if !keeper.HasNFT(ctx, tokenName, tokenID) {
-// 	// 	t.Error("TestTrustedContent_VoucherQuery could not find NFT")
-// 	// }
-
-// }
