@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 import "../ICredentialRegistry.sol";
 import "../ICrossmint.sol";
 import "../IClaimsVerifier.sol";
+import "./Proofs.sol";
 //import "@openzeppelin/contracts/access/Ownable.sol";
 //import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC721Receiver.sol";
@@ -15,8 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./ICS23Verifier.sol";
 
 contract AnconMetadataOwnableBridge is ICS23Verifier {
-
-
+   using IBCExistenceProof for  IBCExistenceProof.Data;
     event CrossMintCallbackReceived(
         address indexed newOwner,
         string indexed metadataHash,
@@ -31,13 +31,15 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
      * changeOwnerWithProof
      */
     function changeOwnerWithProof(
-        ExistenceProof memory existenceProof,
+        bytes memory existenceProof,
         bytes memory rootBz,
         bytes memory pathBz,
         bytes memory value
     ) public returns (bool) {
+        IBCExistenceProof.Data  memory xp=        IBCExistenceProof.decode(existenceProof);
+    
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        return this.verifyMembership(iavlSpec, rootBz, existenceProof, pathBz, value);
+        return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);
         // verify token exists
         //_lock(vc.data);
         // _release

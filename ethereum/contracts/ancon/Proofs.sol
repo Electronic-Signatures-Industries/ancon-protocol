@@ -3,7 +3,7 @@ pragma solidity ^0.8.7;
 import "./ProtoBufRuntime.sol";
 import "./GoogleProtobufAny.sol";
 
-library ExistenceProof {
+library IBCExistenceProof {
 
 
   //struct definition
@@ -494,7 +494,7 @@ library ExistenceProof {
     }
   }
 }
-//library ExistenceProof
+//library IBCExistenceProof
 
 library NonExistenceProof {
 
@@ -502,8 +502,8 @@ library NonExistenceProof {
   //struct definition
   struct Data {
     bytes key;
-    ExistenceProof.Data left;
-    ExistenceProof.Data right;
+    IBCExistenceProof.Data left;
+    IBCExistenceProof.Data right;
   }
 
   // Decoder section
@@ -635,7 +635,7 @@ library NonExistenceProof {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (ExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
+    (IBCExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
     if (isNil(r)) {
       counters[2] += 1;
     } else {
@@ -662,7 +662,7 @@ library NonExistenceProof {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (ExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
+    (IBCExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
     if (isNil(r)) {
       counters[3] += 1;
     } else {
@@ -683,12 +683,12 @@ library NonExistenceProof {
   function _decode_ExistenceProof(uint256 p, bytes memory bs)
     internal
     pure
-    returns (ExistenceProof.Data memory, uint)
+    returns (IBCExistenceProof.Data memory, uint)
   {
     uint256 pointer = p;
     (uint256 sz, uint256 bytesRead) = ProtoBufRuntime._decode_varint(pointer, bs);
     pointer += bytesRead;
-    (ExistenceProof.Data memory r, ) = ExistenceProof._decode(pointer, bs, sz);
+    (IBCExistenceProof.Data memory r, ) = IBCExistenceProof._decode(pointer, bs, sz);
     return (r, sz + bytesRead);
   }
 
@@ -741,7 +741,7 @@ library NonExistenceProof {
       pointer,
       bs
     );
-    pointer += ExistenceProof._encode_nested(r.left, pointer, bs);
+    pointer += IBCExistenceProof._encode_nested(r.left, pointer, bs);
     
     
     pointer += ProtoBufRuntime._encode_key(
@@ -750,7 +750,7 @@ library NonExistenceProof {
       pointer,
       bs
     );
-    pointer += ExistenceProof._encode_nested(r.right, pointer, bs);
+    pointer += IBCExistenceProof._encode_nested(r.right, pointer, bs);
     
     return pointer - offset;
   }
@@ -796,8 +796,8 @@ library NonExistenceProof {
   ) internal pure returns (uint) {
     uint256 e;
     e += 1 + ProtoBufRuntime._sz_lendelim(r.key.length);
-    e += 1 + ProtoBufRuntime._sz_lendelim(ExistenceProof._estimate(r.left));
-    e += 1 + ProtoBufRuntime._sz_lendelim(ExistenceProof._estimate(r.right));
+    e += 1 + ProtoBufRuntime._sz_lendelim(IBCExistenceProof._estimate(r.left));
+    e += 1 + ProtoBufRuntime._sz_lendelim(IBCExistenceProof._estimate(r.right));
     return e;
   }
   // empty checker
@@ -822,8 +822,8 @@ library NonExistenceProof {
    */
   function store(Data memory input, Data storage output) internal {
     output.key = input.key;
-    ExistenceProof.store(input.left, output.left);
-    ExistenceProof.store(input.right, output.right);
+    IBCExistenceProof.store(input.left, output.left);
+    IBCExistenceProof.store(input.right, output.right);
 
   }
 
@@ -858,7 +858,7 @@ library CommitmentProof {
 
   //struct definition
   struct Data {
-    ExistenceProof.Data exist;
+    IBCExistenceProof.Data exist;
     NonExistenceProof.Data nonexist;
     BatchProof.Data batch;
     CompressedBatchProof.Data compressed;
@@ -969,7 +969,7 @@ library CommitmentProof {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (ExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
+    (IBCExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
     if (isNil(r)) {
       counters[1] += 1;
     } else {
@@ -1071,12 +1071,12 @@ library CommitmentProof {
   function _decode_ExistenceProof(uint256 p, bytes memory bs)
     internal
     pure
-    returns (ExistenceProof.Data memory, uint)
+    returns (IBCExistenceProof.Data memory, uint)
   {
     uint256 pointer = p;
     (uint256 sz, uint256 bytesRead) = ProtoBufRuntime._decode_varint(pointer, bs);
     pointer += bytesRead;
-    (ExistenceProof.Data memory r, ) = ExistenceProof._decode(pointer, bs, sz);
+    (IBCExistenceProof.Data memory r, ) = IBCExistenceProof._decode(pointer, bs, sz);
     return (r, sz + bytesRead);
   }
 
@@ -1177,7 +1177,7 @@ library CommitmentProof {
       pointer,
       bs
     );
-    pointer += ExistenceProof._encode_nested(r.exist, pointer, bs);
+    pointer += IBCExistenceProof._encode_nested(r.exist, pointer, bs);
     
     
     pointer += ProtoBufRuntime._encode_key(
@@ -1249,7 +1249,7 @@ library CommitmentProof {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(ExistenceProof._estimate(r.exist));
+    e += 1 + ProtoBufRuntime._sz_lendelim(IBCExistenceProof._estimate(r.exist));
     e += 1 + ProtoBufRuntime._sz_lendelim(NonExistenceProof._estimate(r.nonexist));
     e += 1 + ProtoBufRuntime._sz_lendelim(BatchProof._estimate(r.batch));
     e += 1 + ProtoBufRuntime._sz_lendelim(CompressedBatchProof._estimate(r.compressed));
@@ -1272,7 +1272,7 @@ library CommitmentProof {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    ExistenceProof.store(input.exist, output.exist);
+    IBCExistenceProof.store(input.exist, output.exist);
     NonExistenceProof.store(input.nonexist, output.nonexist);
     BatchProof.store(input.batch, output.batch);
     CompressedBatchProof.store(input.compressed, output.compressed);
@@ -3409,7 +3409,7 @@ library BatchEntry {
 
   //struct definition
   struct Data {
-    ExistenceProof.Data exist;
+    IBCExistenceProof.Data exist;
     NonExistenceProof.Data nonexist;
   }
 
@@ -3512,7 +3512,7 @@ library BatchEntry {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (ExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
+    (IBCExistenceProof.Data memory x, uint256 sz) = _decode_ExistenceProof(p, bs);
     if (isNil(r)) {
       counters[1] += 1;
     } else {
@@ -3560,12 +3560,12 @@ library BatchEntry {
   function _decode_ExistenceProof(uint256 p, bytes memory bs)
     internal
     pure
-    returns (ExistenceProof.Data memory, uint)
+    returns (IBCExistenceProof.Data memory, uint)
   {
     uint256 pointer = p;
     (uint256 sz, uint256 bytesRead) = ProtoBufRuntime._decode_varint(pointer, bs);
     pointer += bytesRead;
-    (ExistenceProof.Data memory r, ) = ExistenceProof._decode(pointer, bs, sz);
+    (IBCExistenceProof.Data memory r, ) = IBCExistenceProof._decode(pointer, bs, sz);
     return (r, sz + bytesRead);
   }
 
@@ -3628,7 +3628,7 @@ library BatchEntry {
       pointer,
       bs
     );
-    pointer += ExistenceProof._encode_nested(r.exist, pointer, bs);
+    pointer += IBCExistenceProof._encode_nested(r.exist, pointer, bs);
     
     
     pointer += ProtoBufRuntime._encode_key(
@@ -3682,7 +3682,7 @@ library BatchEntry {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(ExistenceProof._estimate(r.exist));
+    e += 1 + ProtoBufRuntime._sz_lendelim(IBCExistenceProof._estimate(r.exist));
     e += 1 + ProtoBufRuntime._sz_lendelim(NonExistenceProof._estimate(r.nonexist));
     return e;
   }
@@ -3703,7 +3703,7 @@ library BatchEntry {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    ExistenceProof.store(input.exist, output.exist);
+    IBCExistenceProof.store(input.exist, output.exist);
     NonExistenceProof.store(input.nonexist, output.nonexist);
 
   }

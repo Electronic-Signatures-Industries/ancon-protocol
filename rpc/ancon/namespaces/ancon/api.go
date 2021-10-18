@@ -151,7 +151,7 @@ func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageL
 		return nil, err
 	}
 
-	xp, err := mproofs.Proofs[0].GetExist().Marshal()
+	xp, err := mproofs.Proofs[0].Marshal()
 
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageL
 		sdk.NewAttribute("commitment", hexutil.Encode(comm)),
 		sdk.NewAttribute("value", hexutil.Encode(v)),
 		sdk.NewAttribute("key", key),
-		sdk.NewAttribute("existence_proof", hex.EncodeToString(xp)),
+		sdk.NewAttribute("existence_proof", hexutil.Encode(xp)),
 	))
 
 	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
