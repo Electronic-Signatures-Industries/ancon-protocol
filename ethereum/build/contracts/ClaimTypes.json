@@ -10,20 +10,20 @@
   "sourceMap": "98:774:43:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "98:774:43:-:0;;;;;",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\npragma experimental ABIEncoderV2;\n\ncontract ClaimTypes {\n\n    struct VerifiableCredential {\n        address issuer;\n        address subject;\n        bytes data;\n        uint256 validFrom;\n        uint256 validTo;\n    }\n\n    bytes32 constant internal VERIFIABLE_CREDENTIAL_TYPEHASH = keccak256(\n        \"VerifiableCredential(address issuer,address subject,bytes data,uint256 validFrom,uint256 validTo)\"\n    );\n\n    function hashVerifiableCredential(VerifiableCredential memory vc) internal pure returns (bytes32) {//0xAABBCC11223344....556677\n        return keccak256(\n            abi.encode(\n                VERIFIABLE_CREDENTIAL_TYPEHASH,\n                vc.issuer,\n                vc.subject,\n                vc.data,\n                vc.validFrom,\n                vc.validTo\n            )\n        );\n    }\n}",
-  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/vccontracts/ClaimTypes.sol",
+  "sourcePath": "/mnt/e/Code/ancon-protocol/ethereum/contracts/vccontracts/ClaimTypes.sol",
   "ast": {
     "absolutePath": "project:/contracts/vccontracts/ClaimTypes.sol",
     "exportedSymbols": {
       "ClaimTypes": [
-        28670
+        28795
       ]
     },
-    "id": 28671,
+    "id": 28796,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 28626,
+        "id": 28751,
         "literals": [
           "solidity",
           "^",
@@ -34,7 +34,7 @@
         "src": "39:23:43"
       },
       {
-        "id": 28627,
+        "id": 28752,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -49,9 +49,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 28670,
+        "id": 28795,
         "linearizedBaseContracts": [
-          28670
+          28795
         ],
         "name": "ClaimTypes",
         "nameLocation": "107:10:43",
@@ -59,16 +59,16 @@
         "nodes": [
           {
             "canonicalName": "ClaimTypes.VerifiableCredential",
-            "id": 28638,
+            "id": 28763,
             "members": [
               {
                 "constant": false,
-                "id": 28629,
+                "id": 28754,
                 "mutability": "mutable",
                 "name": "issuer",
                 "nameLocation": "171:6:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "163:14:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -77,7 +77,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 28628,
+                  "id": 28753,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "163:7:43",
@@ -91,12 +91,12 @@
               },
               {
                 "constant": false,
-                "id": 28631,
+                "id": 28756,
                 "mutability": "mutable",
                 "name": "subject",
                 "nameLocation": "195:7:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "187:15:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -105,7 +105,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 28630,
+                  "id": 28755,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "187:7:43",
@@ -119,12 +119,12 @@
               },
               {
                 "constant": false,
-                "id": 28633,
+                "id": 28758,
                 "mutability": "mutable",
                 "name": "data",
                 "nameLocation": "218:4:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "212:10:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -133,7 +133,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 28632,
+                  "id": 28757,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "212:5:43",
@@ -146,12 +146,12 @@
               },
               {
                 "constant": false,
-                "id": 28635,
+                "id": 28760,
                 "mutability": "mutable",
                 "name": "validFrom",
                 "nameLocation": "240:9:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "232:17:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -160,7 +160,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 28634,
+                  "id": 28759,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "232:7:43",
@@ -173,12 +173,12 @@
               },
               {
                 "constant": false,
-                "id": 28637,
+                "id": 28762,
                 "mutability": "mutable",
                 "name": "validTo",
                 "nameLocation": "267:7:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "259:15:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -187,7 +187,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 28636,
+                  "id": 28761,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "259:7:43",
@@ -202,18 +202,18 @@
             "name": "VerifiableCredential",
             "nameLocation": "132:20:43",
             "nodeType": "StructDefinition",
-            "scope": 28670,
+            "scope": 28795,
             "src": "125:156:43",
             "visibility": "public"
           },
           {
             "constant": true,
-            "id": 28643,
+            "id": 28768,
             "mutability": "constant",
             "name": "VERIFIABLE_CREDENTIAL_TYPEHASH",
             "nameLocation": "313:30:43",
             "nodeType": "VariableDeclaration",
-            "scope": 28670,
+            "scope": 28795,
             "src": "287:183:43",
             "stateVariable": true,
             "storageLocation": "default",
@@ -222,7 +222,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 28639,
+              "id": 28764,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "287:7:43",
@@ -235,7 +235,7 @@
               "arguments": [
                 {
                   "hexValue": "56657269666961626c6543726564656e7469616c2861646472657373206973737565722c61646472657373207375626a6563742c627974657320646174612c75696e743235362076616c696446726f6d2c75696e743235362076616c6964546f29",
-                  "id": 28641,
+                  "id": 28766,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -257,7 +257,7 @@
                     "typeString": "literal_string \"VerifiableCredential(address issuer,address subject,bytes data,uint256 validFrom,uint256 validTo)\""
                   }
                 ],
-                "id": 28640,
+                "id": 28765,
                 "name": "keccak256",
                 "nodeType": "Identifier",
                 "overloadedDeclarations": [],
@@ -268,7 +268,7 @@
                   "typeString": "function (bytes memory) pure returns (bytes32)"
                 }
               },
-              "id": 28642,
+              "id": 28767,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -287,7 +287,7 @@
           },
           {
             "body": {
-              "id": 28668,
+              "id": 28793,
               "nodeType": "Block",
               "src": "575:295:43",
               "statements": [
@@ -297,11 +297,11 @@
                       {
                         "arguments": [
                           {
-                            "id": 28654,
+                            "id": 28779,
                             "name": "VERIFIABLE_CREDENTIAL_TYPEHASH",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 28643,
+                            "referencedDeclaration": 28768,
                             "src": "671:30:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -310,25 +310,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28655,
+                              "id": 28780,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "719:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28656,
+                            "id": 28781,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "issuer",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28629,
+                            "referencedDeclaration": 28754,
                             "src": "719:9:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -337,25 +337,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28657,
+                              "id": 28782,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "746:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28658,
+                            "id": 28783,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "subject",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28631,
+                            "referencedDeclaration": 28756,
                             "src": "746:10:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -364,25 +364,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28659,
+                              "id": 28784,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "774:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28660,
+                            "id": 28785,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "data",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28633,
+                            "referencedDeclaration": 28758,
                             "src": "774:7:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes_memory_ptr",
@@ -391,25 +391,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28661,
+                              "id": 28786,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "799:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28662,
+                            "id": 28787,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "validFrom",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28635,
+                            "referencedDeclaration": 28760,
                             "src": "799:12:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -418,25 +418,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28663,
+                              "id": 28788,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "829:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28664,
+                            "id": 28789,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "validTo",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28637,
+                            "referencedDeclaration": 28762,
                             "src": "829:10:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -472,7 +472,7 @@
                             }
                           ],
                           "expression": {
-                            "id": 28652,
+                            "id": 28777,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -483,7 +483,7 @@
                               "typeString": "abi"
                             }
                           },
-                          "id": 28653,
+                          "id": 28778,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -496,7 +496,7 @@
                             "typeString": "function () pure returns (bytes memory)"
                           }
                         },
-                        "id": 28665,
+                        "id": 28790,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -519,7 +519,7 @@
                           "typeString": "bytes memory"
                         }
                       ],
-                      "id": 28651,
+                      "id": 28776,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -530,7 +530,7 @@
                         "typeString": "function (bytes memory) pure returns (bytes32)"
                       }
                     },
-                    "id": 28666,
+                    "id": 28791,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -545,14 +545,14 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 28650,
-                  "id": 28667,
+                  "functionReturnParameters": 28775,
+                  "id": 28792,
                   "nodeType": "Return",
                   "src": "613:250:43"
                 }
               ]
             },
-            "id": 28669,
+            "id": 28794,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -560,38 +560,38 @@
             "nameLocation": "486:24:43",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 28647,
+              "id": 28772,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28646,
+                  "id": 28771,
                   "mutability": "mutable",
                   "name": "vc",
                   "nameLocation": "539:2:43",
                   "nodeType": "VariableDeclaration",
-                  "scope": 28669,
+                  "scope": 28794,
                   "src": "511:30:43",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                     "typeString": "struct ClaimTypes.VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 28645,
+                    "id": 28770,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 28644,
+                      "id": 28769,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 28638,
+                      "referencedDeclaration": 28763,
                       "src": "511:20:43"
                     },
-                    "referencedDeclaration": 28638,
+                    "referencedDeclaration": 28763,
                     "src": "511:20:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$28638_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$28763_storage_ptr",
                       "typeString": "struct ClaimTypes.VerifiableCredential"
                     }
                   },
@@ -601,17 +601,17 @@
               "src": "510:32:43"
             },
             "returnParameters": {
-              "id": 28650,
+              "id": 28775,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28649,
+                  "id": 28774,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 28669,
+                  "scope": 28794,
                   "src": "566:7:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -620,7 +620,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 28648,
+                    "id": 28773,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "566:7:43",
@@ -634,14 +634,14 @@
               ],
               "src": "565:9:43"
             },
-            "scope": 28670,
+            "scope": 28795,
             "src": "477:393:43",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 28671,
+        "scope": 28796,
         "src": "98:774:43",
         "usedErrors": []
       }
@@ -652,15 +652,15 @@
     "absolutePath": "project:/contracts/vccontracts/ClaimTypes.sol",
     "exportedSymbols": {
       "ClaimTypes": [
-        28670
+        28795
       ]
     },
-    "id": 28671,
+    "id": 28796,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 28626,
+        "id": 28751,
         "literals": [
           "solidity",
           "^",
@@ -671,7 +671,7 @@
         "src": "39:23:43"
       },
       {
-        "id": 28627,
+        "id": 28752,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -686,9 +686,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 28670,
+        "id": 28795,
         "linearizedBaseContracts": [
-          28670
+          28795
         ],
         "name": "ClaimTypes",
         "nameLocation": "107:10:43",
@@ -696,16 +696,16 @@
         "nodes": [
           {
             "canonicalName": "ClaimTypes.VerifiableCredential",
-            "id": 28638,
+            "id": 28763,
             "members": [
               {
                 "constant": false,
-                "id": 28629,
+                "id": 28754,
                 "mutability": "mutable",
                 "name": "issuer",
                 "nameLocation": "171:6:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "163:14:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -714,7 +714,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 28628,
+                  "id": 28753,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "163:7:43",
@@ -728,12 +728,12 @@
               },
               {
                 "constant": false,
-                "id": 28631,
+                "id": 28756,
                 "mutability": "mutable",
                 "name": "subject",
                 "nameLocation": "195:7:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "187:15:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -742,7 +742,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 28630,
+                  "id": 28755,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "187:7:43",
@@ -756,12 +756,12 @@
               },
               {
                 "constant": false,
-                "id": 28633,
+                "id": 28758,
                 "mutability": "mutable",
                 "name": "data",
                 "nameLocation": "218:4:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "212:10:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -770,7 +770,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 28632,
+                  "id": 28757,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "212:5:43",
@@ -783,12 +783,12 @@
               },
               {
                 "constant": false,
-                "id": 28635,
+                "id": 28760,
                 "mutability": "mutable",
                 "name": "validFrom",
                 "nameLocation": "240:9:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "232:17:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -797,7 +797,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 28634,
+                  "id": 28759,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "232:7:43",
@@ -810,12 +810,12 @@
               },
               {
                 "constant": false,
-                "id": 28637,
+                "id": 28762,
                 "mutability": "mutable",
                 "name": "validTo",
                 "nameLocation": "267:7:43",
                 "nodeType": "VariableDeclaration",
-                "scope": 28638,
+                "scope": 28763,
                 "src": "259:15:43",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -824,7 +824,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 28636,
+                  "id": 28761,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "259:7:43",
@@ -839,18 +839,18 @@
             "name": "VerifiableCredential",
             "nameLocation": "132:20:43",
             "nodeType": "StructDefinition",
-            "scope": 28670,
+            "scope": 28795,
             "src": "125:156:43",
             "visibility": "public"
           },
           {
             "constant": true,
-            "id": 28643,
+            "id": 28768,
             "mutability": "constant",
             "name": "VERIFIABLE_CREDENTIAL_TYPEHASH",
             "nameLocation": "313:30:43",
             "nodeType": "VariableDeclaration",
-            "scope": 28670,
+            "scope": 28795,
             "src": "287:183:43",
             "stateVariable": true,
             "storageLocation": "default",
@@ -859,7 +859,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 28639,
+              "id": 28764,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "287:7:43",
@@ -872,7 +872,7 @@
               "arguments": [
                 {
                   "hexValue": "56657269666961626c6543726564656e7469616c2861646472657373206973737565722c61646472657373207375626a6563742c627974657320646174612c75696e743235362076616c696446726f6d2c75696e743235362076616c6964546f29",
-                  "id": 28641,
+                  "id": 28766,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -894,7 +894,7 @@
                     "typeString": "literal_string \"VerifiableCredential(address issuer,address subject,bytes data,uint256 validFrom,uint256 validTo)\""
                   }
                 ],
-                "id": 28640,
+                "id": 28765,
                 "name": "keccak256",
                 "nodeType": "Identifier",
                 "overloadedDeclarations": [],
@@ -905,7 +905,7 @@
                   "typeString": "function (bytes memory) pure returns (bytes32)"
                 }
               },
-              "id": 28642,
+              "id": 28767,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -924,7 +924,7 @@
           },
           {
             "body": {
-              "id": 28668,
+              "id": 28793,
               "nodeType": "Block",
               "src": "575:295:43",
               "statements": [
@@ -934,11 +934,11 @@
                       {
                         "arguments": [
                           {
-                            "id": 28654,
+                            "id": 28779,
                             "name": "VERIFIABLE_CREDENTIAL_TYPEHASH",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 28643,
+                            "referencedDeclaration": 28768,
                             "src": "671:30:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -947,25 +947,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28655,
+                              "id": 28780,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "719:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28656,
+                            "id": 28781,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "issuer",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28629,
+                            "referencedDeclaration": 28754,
                             "src": "719:9:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -974,25 +974,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28657,
+                              "id": 28782,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "746:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28658,
+                            "id": 28783,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "subject",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28631,
+                            "referencedDeclaration": 28756,
                             "src": "746:10:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1001,25 +1001,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28659,
+                              "id": 28784,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "774:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28660,
+                            "id": 28785,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "data",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28633,
+                            "referencedDeclaration": 28758,
                             "src": "774:7:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes_memory_ptr",
@@ -1028,25 +1028,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28661,
+                              "id": 28786,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "799:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28662,
+                            "id": 28787,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "validFrom",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28635,
+                            "referencedDeclaration": 28760,
                             "src": "799:12:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1055,25 +1055,25 @@
                           },
                           {
                             "expression": {
-                              "id": 28663,
+                              "id": 28788,
                               "name": "vc",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 28646,
+                              "referencedDeclaration": 28771,
                               "src": "829:2:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                                "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                                 "typeString": "struct ClaimTypes.VerifiableCredential memory"
                               }
                             },
-                            "id": 28664,
+                            "id": 28789,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "validTo",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 28637,
+                            "referencedDeclaration": 28762,
                             "src": "829:10:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1109,7 +1109,7 @@
                             }
                           ],
                           "expression": {
-                            "id": 28652,
+                            "id": 28777,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1120,7 +1120,7 @@
                               "typeString": "abi"
                             }
                           },
-                          "id": 28653,
+                          "id": 28778,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1133,7 +1133,7 @@
                             "typeString": "function () pure returns (bytes memory)"
                           }
                         },
-                        "id": 28665,
+                        "id": 28790,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1156,7 +1156,7 @@
                           "typeString": "bytes memory"
                         }
                       ],
-                      "id": 28651,
+                      "id": 28776,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1167,7 +1167,7 @@
                         "typeString": "function (bytes memory) pure returns (bytes32)"
                       }
                     },
-                    "id": 28666,
+                    "id": 28791,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1182,14 +1182,14 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 28650,
-                  "id": 28667,
+                  "functionReturnParameters": 28775,
+                  "id": 28792,
                   "nodeType": "Return",
                   "src": "613:250:43"
                 }
               ]
             },
-            "id": 28669,
+            "id": 28794,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1197,38 +1197,38 @@
             "nameLocation": "486:24:43",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 28647,
+              "id": 28772,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28646,
+                  "id": 28771,
                   "mutability": "mutable",
                   "name": "vc",
                   "nameLocation": "539:2:43",
                   "nodeType": "VariableDeclaration",
-                  "scope": 28669,
+                  "scope": 28794,
                   "src": "511:30:43",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$28638_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$28763_memory_ptr",
                     "typeString": "struct ClaimTypes.VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 28645,
+                    "id": 28770,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 28644,
+                      "id": 28769,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 28638,
+                      "referencedDeclaration": 28763,
                       "src": "511:20:43"
                     },
-                    "referencedDeclaration": 28638,
+                    "referencedDeclaration": 28763,
                     "src": "511:20:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$28638_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$28763_storage_ptr",
                       "typeString": "struct ClaimTypes.VerifiableCredential"
                     }
                   },
@@ -1238,17 +1238,17 @@
               "src": "510:32:43"
             },
             "returnParameters": {
-              "id": 28650,
+              "id": 28775,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28649,
+                  "id": 28774,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 28669,
+                  "scope": 28794,
                   "src": "566:7:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1257,7 +1257,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 28648,
+                    "id": 28773,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "566:7:43",
@@ -1271,14 +1271,14 @@
               ],
               "src": "565:9:43"
             },
-            "scope": 28670,
+            "scope": 28795,
             "src": "477:393:43",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 28671,
+        "scope": 28796,
         "src": "98:774:43",
         "usedErrors": []
       }
@@ -1290,8 +1290,8 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-18T17:09:49.519Z",
+  "schemaVersion": "3.4.2",
+  "updatedAt": "2021-10-18T22:42:02.896Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

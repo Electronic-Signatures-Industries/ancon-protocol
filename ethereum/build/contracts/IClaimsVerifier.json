@@ -143,7 +143,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\n\nimport \"./ClaimTypes.sol\";\n\ninterface IClaimsVerifier {\n    function verifyCredential(\n        VerifiableCredential\n         memory vc,\n        uint8 v,\n        bytes32 r,\n        bytes32 s\n    )\n        external\n        view\n        returns (\n            bool,\n            bool,\n            bool,\n            bool,\n            bool\n        );\n\n    function verifySigner(\n        VerifiableCredential memory vc,\n        bytes calldata _signature\n    ) external view returns (bool);\n}\n",
-  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
+  "sourcePath": "/mnt/e/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
   "ast": {
     "absolutePath": "project:/contracts/IClaimsVerifier.sol",
     "exportedSymbols": {
@@ -1061,8 +1061,8 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-18T17:09:47.479Z",
+  "schemaVersion": "3.4.2",
+  "updatedAt": "2021-10-18T22:41:58.551Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
