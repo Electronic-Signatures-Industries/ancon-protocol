@@ -151,12 +151,19 @@ func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageL
 		return nil, err
 	}
 
+	xp, err := mproofs.Proofs[0].GetExist().Marshal()
+
+	if err != nil {
+		return nil, err
+	}
+
 	rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
 		fmt.Sprintf("proof_path_%s", key),
 		sdk.NewAttribute("root", hexutil.Encode((h))),
 		sdk.NewAttribute("commitment", hexutil.Encode(comm)),
 		sdk.NewAttribute("value", hexutil.Encode(v)),
 		sdk.NewAttribute("key", key),
+		sdk.NewAttribute("existence_proof", hex.EncodeToString(xp)),
 	))
 
 	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
