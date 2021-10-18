@@ -57,7 +57,7 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
             bool isNew
         ) = abi.decode(
                 data,
-                (string, address, address, address, uint256, bool)
+                (string, address, address, address, address, uint256, bool)
             );
         // FromTokenId verification
         ERC721 nft = ERC721(to);

@@ -1,0 +1,416 @@
+{
+  "contractName": "TendermintSpec",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "metadataHash",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "CrossMintCallbackReceived",
+      "type": "event"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"metadataHash\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"CrossMintCallbackReceived\",\"type\":\"event\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ancon/TendermintSpec.sol\":\"TendermintSpec\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ancon/TendermintSpec.sol\":{\"keccak256\":\"0x48503c8198b1b55f3090acd93626cbd0ed72de86e2fd6b4940dc9766509beeec\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7a96c8502ef0dc0e2be24f8cfffa7ea8d0598c7d31c8c79695650c488d83d679\",\"dweb:/ipfs/QmbXqFuAuFwaJ3kikBRiZ4RzurdnYiUbf3fjeznwyTVgnz\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220a9d73e9f6a6c96fe87d052ac6ac81abc73125305b6259cf0256871ed15df6c3d64736f6c63430008090033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220a9d73e9f6a6c96fe87d052ac6ac81abc73125305b6259cf0256871ed15df6c3d64736f6c63430008090033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "57:694:40:-:0;;;237:33;;;;;;;;;;57:694;;;;;;",
+  "deployedSourceMap": "57:694:40:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\ncontract TendermintSpec {\n\n\n    event CrossMintCallbackReceived(\n        address indexed newOwner,\n        string indexed metadataHash,\n        uint256 indexed tokenId\n    );\n\n    constructor(\n    ) public {\n    }\n\n    // bytes data {\n    //     // Onchain metadata\n    //     string memory metadata,\n\n    //     // From NFT contract address    \n    //     address sourceNft,\n    //     uint sourceChainId,\n    //     address fromOwner,\n\n    //     // To NFT contract address    \n    //     address destinationNft,\n    //     uint destinationChainId,\n    //     address toOwner,\n\n    //     // Source TokenID\n    //     uint256 sourceTokenid,\n\n    //     // ???\n    //     bool isNew\n    // }\n}",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ancon/TendermintSpec.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/ancon/TendermintSpec.sol",
+    "exportedSymbols": {
+      "TendermintSpec": [
+        26935
+      ]
+    },
+    "id": 26936,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 26922,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".7"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:40"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "TendermintSpec",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 26935,
+        "linearizedBaseContracts": [
+          26935
+        ],
+        "name": "TendermintSpec",
+        "nameLocation": "66:14:40",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "id": 26930,
+            "name": "CrossMintCallbackReceived",
+            "nameLocation": "95:25:40",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 26929,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 26924,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "newOwner",
+                  "nameLocation": "146:8:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "130:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 26923,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "130:7:40",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 26926,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "metadataHash",
+                  "nameLocation": "179:12:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "164:27:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 26925,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 26928,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "tokenId",
+                  "nameLocation": "217:7:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "201:23:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 26927,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "120:110:40"
+            },
+            "src": "89:142:40"
+          },
+          {
+            "body": {
+              "id": 26933,
+              "nodeType": "Block",
+              "src": "263:7:40",
+              "statements": []
+            },
+            "id": 26934,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 26931,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "248:7:40"
+            },
+            "returnParameters": {
+              "id": 26932,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "263:0:40"
+            },
+            "scope": 26935,
+            "src": "237:33:40",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 26936,
+        "src": "57:694:40",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:719:40"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/ancon/TendermintSpec.sol",
+    "exportedSymbols": {
+      "TendermintSpec": [
+        26935
+      ]
+    },
+    "id": 26936,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 26922,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".7"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:40"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "TendermintSpec",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 26935,
+        "linearizedBaseContracts": [
+          26935
+        ],
+        "name": "TendermintSpec",
+        "nameLocation": "66:14:40",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "id": 26930,
+            "name": "CrossMintCallbackReceived",
+            "nameLocation": "95:25:40",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 26929,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 26924,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "newOwner",
+                  "nameLocation": "146:8:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "130:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 26923,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "130:7:40",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 26926,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "metadataHash",
+                  "nameLocation": "179:12:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "164:27:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 26925,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 26928,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "tokenId",
+                  "nameLocation": "217:7:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26930,
+                  "src": "201:23:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 26927,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "120:110:40"
+            },
+            "src": "89:142:40"
+          },
+          {
+            "body": {
+              "id": 26933,
+              "nodeType": "Block",
+              "src": "263:7:40",
+              "statements": []
+            },
+            "id": 26934,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 26931,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "248:7:40"
+            },
+            "returnParameters": {
+              "id": 26932,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "263:0:40"
+            },
+            "scope": 26935,
+            "src": "237:33:40",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 26936,
+        "src": "57:694:40",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:719:40"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-18T17:09:49.481Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
