@@ -16,7 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./ICS23Verifier.sol";
 
 contract AnconMetadataOwnableBridge is ICS23Verifier {
-   using IBCExistenceProof for  IBCExistenceProof.Data;
+    using IBCExistenceProof for  IBCExistenceProof.Data;
     event CrossMintCallbackReceived(
         address indexed newOwner,
         string indexed metadataHash,
@@ -36,10 +36,30 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
         bytes memory pathBz,
         bytes memory value
     ) public returns (bool) {
-        IBCExistenceProof.Data  memory xp=        IBCExistenceProof.decode(existenceProof);
-    
+        IBCExistenceProof.Data storage testxp;
+        
+        testxp.decode(existenceProof);
+        LeafOp memory leafOp = LeafOp({
+            hash: testxp.leaf.hash,
+            prehash_key: testxp.leaf.prehash_key,
+            prehash_value: testxp.leaf.prehash_value,
+            len: testxp.leaf.length,
+            valid: false
+        });
+
+        ExistenceProof memory proof = ExistenceProof({
+            valid: false,
+            key: testxp.key,
+            value: testxp.value,
+            leaf: leafOp,
+            path: [InnerOp({})]
+        });
+
+        //proof.key = xp.
+
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);
+        //return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);
+        return true;
         // verify token exists
         //_lock(vc.data);
         // _release
