@@ -10,7 +10,7 @@
   "sourceMap": "98:1933:37:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "98:1933:37:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: Apache-2.0\npragma solidity ^0.8.7;\npragma experimental ABIEncoderV2;\n\nlibrary MerkleTree {\n    function hashFromByteSlices(bytes[] memory data)\n        internal\n        pure\n        returns (bytes32)\n    {\n        uint256 n = data.length;\n        if (n == 0) return sha256(new bytes(0));\n        if (n == 1) return leafHash(data[0]);\n        uint256 k = getSplitPoint(data.length);\n        bytes32 left = hashFromByteSlices(subArray(data, 0, k));\n        bytes32 right = hashFromByteSlices(subArray(data, k, n));\n        return innerHash(left, right);\n    }\n\n    function leafHash(bytes memory data) internal pure returns (bytes32) {\n        bytes memory rs = new bytes(data.length + 1);\n        rs[0] = 0x00;\n        for (uint256 i = 0; i < data.length; i++) {\n            rs[i + 1] = data[i];\n        }\n        return sha256(rs);\n    }\n\n    function innerHash(bytes32 left, bytes32 right)\n        internal\n        pure\n        returns (bytes32)\n    {\n        bytes memory rs = new bytes(left.length + right.length + 1);\n        rs[0] = 0x01;\n\n        uint256 offset = 1;\n        for (uint256 i = 0; i < left.length; i++) {\n            rs[offset] = left[i];\n            offset++;\n        }\n\n        for (uint256 i = 0; i < right.length; i++) {\n            rs[offset] = right[i];\n            offset++;\n        }\n        return sha256(rs);\n    }\n\n    function getSplitPoint(uint256 n) internal pure returns (uint256) {\n        require(n >= 1, \"Trying to split a tree with size < 1\");\n        if (n == 1) {\n            return 0;\n        }\n\n        uint256 splitPoint = 1;\n        while (splitPoint * 2 < n) {\n            splitPoint *= 2;\n        }\n        return splitPoint;\n    }\n\n    function subArray(\n        bytes[] memory data,\n        uint256 begin,\n        uint256 end\n    ) internal pure returns (bytes[] memory) {\n        bytes[] memory ret = new bytes[](end - begin);\n        for (uint256 i = 0; i < ret.length; i++) {\n            ret[i] = data[begin + i];\n        }\n        return ret;\n    }\n}\n",
-  "sourcePath": "/mnt/e/Code/ancon-protocol/ethereum/contracts/ancon/MerkleTree.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ancon/MerkleTree.sol",
   "ast": {
     "absolutePath": "project:/contracts/ancon/MerkleTree.sol",
     "exportedSymbols": {
@@ -7524,8 +7524,8 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.2",
-  "updatedAt": "2021-10-18T22:41:58.699Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-18T22:46:00.956Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

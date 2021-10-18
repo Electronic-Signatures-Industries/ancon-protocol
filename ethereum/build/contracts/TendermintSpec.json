@@ -41,7 +41,7 @@
   "sourceMap": "57:694:40:-:0;;;237:33;;;;;;;;;;57:694;;;;;;",
   "deployedSourceMap": "57:694:40:-:0;;;;;",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\ncontract TendermintSpec {\n\n\n    event CrossMintCallbackReceived(\n        address indexed newOwner,\n        string indexed metadataHash,\n        uint256 indexed tokenId\n    );\n\n    constructor(\n    ) public {\n    }\n\n    // bytes data {\n    //     // Onchain metadata\n    //     string memory metadata,\n\n    //     // From NFT contract address    \n    //     address sourceNft,\n    //     uint sourceChainId,\n    //     address fromOwner,\n\n    //     // To NFT contract address    \n    //     address destinationNft,\n    //     uint destinationChainId,\n    //     address toOwner,\n\n    //     // Source TokenID\n    //     uint256 sourceTokenid,\n\n    //     // ???\n    //     bool isNew\n    // }\n}",
-  "sourcePath": "/mnt/e/Code/ancon-protocol/ethereum/contracts/ancon/TendermintSpec.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ancon/TendermintSpec.sol",
   "ast": {
     "absolutePath": "project:/contracts/ancon/TendermintSpec.sol",
     "exportedSymbols": {
@@ -401,8 +401,8 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.2",
-  "updatedAt": "2021-10-18T22:42:02.822Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-18T22:46:03.922Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

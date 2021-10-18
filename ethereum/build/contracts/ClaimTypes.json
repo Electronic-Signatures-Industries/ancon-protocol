@@ -10,7 +10,7 @@
   "sourceMap": "98:774:43:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "98:774:43:-:0;;;;;",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\npragma experimental ABIEncoderV2;\n\ncontract ClaimTypes {\n\n    struct VerifiableCredential {\n        address issuer;\n        address subject;\n        bytes data;\n        uint256 validFrom;\n        uint256 validTo;\n    }\n\n    bytes32 constant internal VERIFIABLE_CREDENTIAL_TYPEHASH = keccak256(\n        \"VerifiableCredential(address issuer,address subject,bytes data,uint256 validFrom,uint256 validTo)\"\n    );\n\n    function hashVerifiableCredential(VerifiableCredential memory vc) internal pure returns (bytes32) {//0xAABBCC11223344....556677\n        return keccak256(\n            abi.encode(\n                VERIFIABLE_CREDENTIAL_TYPEHASH,\n                vc.issuer,\n                vc.subject,\n                vc.data,\n                vc.validFrom,\n                vc.validTo\n            )\n        );\n    }\n}",
-  "sourcePath": "/mnt/e/Code/ancon-protocol/ethereum/contracts/vccontracts/ClaimTypes.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/vccontracts/ClaimTypes.sol",
   "ast": {
     "absolutePath": "project:/contracts/vccontracts/ClaimTypes.sol",
     "exportedSymbols": {
@@ -1290,8 +1290,8 @@
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.2",
-  "updatedAt": "2021-10-18T22:42:02.896Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-18T22:46:03.958Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
