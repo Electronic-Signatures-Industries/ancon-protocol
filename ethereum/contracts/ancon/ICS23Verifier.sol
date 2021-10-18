@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 import "./MerkleTree.sol";
 import "./ics23.sol";
 
-contract ICS23Verifier is ICS23{
+contract ICS23Verifier {
 
     function hashFromByteSlices(bytes[] memory data)
         public
@@ -15,21 +15,21 @@ contract ICS23Verifier is ICS23{
         return MerkleTree.hashFromByteSlices(data);
     }
 
-    function verifyMembership(
-        bytes memory proofBz,
+    // function verifyMembership(
+    //     bytes memory proofBz,
         
-        bytes memory rootBz,
-        bytes memory pathBz,
-        bytes memory value,
-        ExistenceProof memory proof
-    ) public view returns (bool) {
+    //     bytes memory rootBz,
+    //     bytes memory pathBz,
+    //     bytes memory value,
+    //     ExistenceProof memory proof
+    // ) public view returns (bool) {
         
-        return verifyMembership(
-            iavlSpec,
-            rootBz,
-            proof,
-            pathBz,
-            value
-        );
-    }
+    //     return verifyMembership(
+    //         iavlSpec,
+    //         rootBz,
+    //         proof,
+    //         pathBz,
+    //         value
+    //     );
+    // }
 }

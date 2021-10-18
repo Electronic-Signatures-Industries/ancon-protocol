@@ -12,6 +12,7 @@ const ContractImportBuilder = require('../contract-import-builder');
 const Proofs = artifacts.require("IBCExistenceProof");
 const GoogleProtobufAny = artifacts.require("GoogleProtobufAny");
 const ProtoBufRuntime = artifacts.require("ProtoBufRuntime");
+const ICS23 = artifacts.require("ICS23");
 
 
 
@@ -42,7 +43,9 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(GoogleProtobufAny);
   await deployer.link(GoogleProtobufAny,Proofs);
 	await deployer.deploy(Proofs);
-  await deployer.link(Proofs, AnconMetadataOwnableBridge)
+  await deployer.link(Proofs, AnconMetadataOwnableBridge);
+	await deployer.deploy(ICS23);
+  await deployer.link(ICS23, AnconMetadataOwnableBridge)  
   await deployer.deploy(AnconMetadataOwnableBridge);
 	const verifier = await AnconMetadataOwnableBridge.deployed();
 

@@ -1,21 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
-
-import "../ICredentialRegistry.sol";
-import "../ICrossmint.sol";
-import "../IClaimsVerifier.sol";
 import "./Proofs.sol";
-//import "@openzeppelin/contracts/access/Ownable.sol";
-//import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-//import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-//import "@openzeppelin/contracts/utils/Counters.sol";
-import "./ICS23Verifier.sol";
+import "./ics23.sol";
 
-contract AnconMetadataOwnableBridge is ICS23Verifier {
+contract AnconMetadataOwnableBridge {
+    using ICS23 for ICS23.HashOp;
+    using ICS23 for ICS23.LengthOp;
+    using ICS23 for ICS23.ExistenceProof;
     using IBCExistenceProof for IBCExistenceProof.Data;
     event CrossMintCallbackReceived(
         address indexed newOwner,
@@ -29,27 +20,27 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
         public
         returns (bool)
     {
-        LeafOp memory leafOp = LeafOp({
-            hash: HashOp(uint256(testxp.leaf.hash)),
-            prehash_key: HashOp(uint256(testxp.leaf.prehash_key)),
-            prehash_value: HashOp(uint256(testxp.leaf.prehash_value)),
-            len: LengthOp(uint256(testxp.leaf.length)),
+        ICS23.LeafOp memory leafOp = ICS23.LeafOp({
+            hash: ICS23.HashOp(uint256(testxp.leaf.hash)),
+            prehash_key: ICS23.HashOp(uint256(testxp.leaf.prehash_key)),
+            prehash_value: ICS23.HashOp(uint256(testxp.leaf.prehash_value)),
+            len: ICS23.LengthOp(uint256(testxp.leaf.length)),
             valid: false,
             prefix: bytes("")
         });
 
         // innerOpArr
-        InnerOp[] memory innerOpArr;
+        ICS23.InnerOp[] memory innerOpArr;
 
         for (uint256 i = 0; i < testxp.path.length; i++) {
-            innerOpArr[i] = InnerOp({
+            innerOpArr[i] = ICS23.InnerOp({
                 valid: false,
-                hash: HashOp(uint256(testxp.leaf.hash)),
+                hash: ICS23.HashOp(uint256(testxp.leaf.hash)),
                 prefix: bytes(""),
                 suffix: bytes("")
             });
         }
-        ExistenceProof memory proof = ExistenceProof({
+        ICS23.ExistenceProof memory proof = ICS23.ExistenceProof({
             valid: false,
             key: testxp.key,
             value: testxp.value,
@@ -92,35 +83,35 @@ contract AnconMetadataOwnableBridge is ICS23Verifier {
         // _release
     }
 
-    function _lock(bytes memory data) internal returns (bool) {
-        // ERC721(tokenAddress)
-        (
-            string memory metadata,
-            address to,
-            address newOwner,
-            address fromOwner,
-            address escrowAddress,
-            // fromTokenId
-            // toTokenId
-            uint256 id,
-            bool isNew
-        ) = abi.decode(
-                data,
-                (string, address, address, address, address, uint256, bool)
-            );
-        // FromTokenId verification
-        ERC721 nft = ERC721(to);
-        require(nft.ownerOf(id) == fromOwner, "Invalid token id");
+    // function _lock(bytes memory data) internal returns (bool) {
+    //     // ERC721(tokenAddress)
+    //     (
+    //         string memory metadata,
+    //         address to,
+    //         address newOwner,
+    //         address fromOwner,
+    //         address escrowAddress,
+    //         // fromTokenId
+    //         // toTokenId
+    //         uint256 id,
+    //         bool isNew
+    //     ) = abi.decode(
+    //             data,
+    //             (string, address, address, address, address, uint256, bool)
+    //         );
+    //     // FromTokenId verification
+    //     ERC721 nft = ERC721(to);
+    //     require(nft.ownerOf(id) == fromOwner, "Invalid token id");
 
-        if (isNew) {
-            // todo: should mint
-        } else {
-            // Escrow Address aka Lock
-            nft.safeTransferFrom(fromOwner, escrowAddress, id, data);
-        }
+    //     if (isNew) {
+    //         // todo: should mint
+    //     } else {
+    //         // Escrow Address aka Lock
+    //         nft.safeTransferFrom(fromOwner, escrowAddress, id, data);
+    //     }
 
-        emit CrossMintCallbackReceived(newOwner, metadata, id);
+    //     emit CrossMintCallbackReceived(newOwner, metadata, id);
 
-        return true;
-    }
+    //     return true;
+    // }
 }
