@@ -41,20 +41,20 @@
   "sourceMap": "57:694:40:-:0;;;237:33;;;;;;;;;;57:694;;;;;;",
   "deployedSourceMap": "57:694:40:-:0;;;;;",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\ncontract TendermintSpec {\n\n\n    event CrossMintCallbackReceived(\n        address indexed newOwner,\n        string indexed metadataHash,\n        uint256 indexed tokenId\n    );\n\n    constructor(\n    ) public {\n    }\n\n    // bytes data {\n    //     // Onchain metadata\n    //     string memory metadata,\n\n    //     // From NFT contract address    \n    //     address sourceNft,\n    //     uint sourceChainId,\n    //     address fromOwner,\n\n    //     // To NFT contract address    \n    //     address destinationNft,\n    //     uint destinationChainId,\n    //     address toOwner,\n\n    //     // Source TokenID\n    //     uint256 sourceTokenid,\n\n    //     // ???\n    //     bool isNew\n    // }\n}",
-  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/TendermintSpec.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ancon/TendermintSpec.sol",
   "ast": {
     "absolutePath": "project:/contracts/ancon/TendermintSpec.sol",
     "exportedSymbols": {
       "TendermintSpec": [
-        27057
+        26988
       ]
     },
-    "id": 27058,
+    "id": 26989,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 27044,
+        "id": 26975,
         "literals": [
           "solidity",
           "^",
@@ -71,9 +71,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 27057,
+        "id": 26988,
         "linearizedBaseContracts": [
-          27057
+          26988
         ],
         "name": "TendermintSpec",
         "nameLocation": "66:14:40",
@@ -81,23 +81,23 @@
         "nodes": [
           {
             "anonymous": false,
-            "id": 27052,
+            "id": 26983,
             "name": "CrossMintCallbackReceived",
             "nameLocation": "95:25:40",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 27051,
+              "id": 26982,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27046,
+                  "id": 26977,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "newOwner",
                   "nameLocation": "146:8:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "130:24:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -106,7 +106,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 27045,
+                    "id": 26976,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "130:7:40",
@@ -120,13 +120,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 27048,
+                  "id": 26979,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "metadataHash",
                   "nameLocation": "179:12:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "164:27:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -135,7 +135,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 27047,
+                    "id": 26978,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "164:6:40",
@@ -148,13 +148,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 27050,
+                  "id": 26981,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "217:7:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "201:23:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -163,7 +163,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27049,
+                    "id": 26980,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "201:7:40",
@@ -181,12 +181,12 @@
           },
           {
             "body": {
-              "id": 27055,
+              "id": 26986,
               "nodeType": "Block",
               "src": "263:7:40",
               "statements": []
             },
-            "id": 27056,
+            "id": 26987,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -194,25 +194,25 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 27053,
+              "id": 26984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "248:7:40"
             },
             "returnParameters": {
-              "id": 27054,
+              "id": 26985,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "263:0:40"
             },
-            "scope": 27057,
+            "scope": 26988,
             "src": "237:33:40",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 27058,
+        "scope": 26989,
         "src": "57:694:40",
         "usedErrors": []
       }
@@ -223,15 +223,15 @@
     "absolutePath": "project:/contracts/ancon/TendermintSpec.sol",
     "exportedSymbols": {
       "TendermintSpec": [
-        27057
+        26988
       ]
     },
-    "id": 27058,
+    "id": 26989,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 27044,
+        "id": 26975,
         "literals": [
           "solidity",
           "^",
@@ -248,9 +248,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 27057,
+        "id": 26988,
         "linearizedBaseContracts": [
-          27057
+          26988
         ],
         "name": "TendermintSpec",
         "nameLocation": "66:14:40",
@@ -258,23 +258,23 @@
         "nodes": [
           {
             "anonymous": false,
-            "id": 27052,
+            "id": 26983,
             "name": "CrossMintCallbackReceived",
             "nameLocation": "95:25:40",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 27051,
+              "id": 26982,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27046,
+                  "id": 26977,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "newOwner",
                   "nameLocation": "146:8:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "130:24:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -283,7 +283,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 27045,
+                    "id": 26976,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "130:7:40",
@@ -297,13 +297,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 27048,
+                  "id": 26979,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "metadataHash",
                   "nameLocation": "179:12:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "164:27:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -312,7 +312,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 27047,
+                    "id": 26978,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "164:6:40",
@@ -325,13 +325,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 27050,
+                  "id": 26981,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "tokenId",
                   "nameLocation": "217:7:40",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27052,
+                  "scope": 26983,
                   "src": "201:23:40",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -340,7 +340,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27049,
+                    "id": 26980,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "201:7:40",
@@ -358,12 +358,12 @@
           },
           {
             "body": {
-              "id": 27055,
+              "id": 26986,
               "nodeType": "Block",
               "src": "263:7:40",
               "statements": []
             },
-            "id": 27056,
+            "id": 26987,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -371,25 +371,25 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 27053,
+              "id": 26984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "248:7:40"
             },
             "returnParameters": {
-              "id": 27054,
+              "id": 26985,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "263:0:40"
             },
-            "scope": 27057,
+            "scope": 26988,
             "src": "237:33:40",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 27058,
+        "scope": 26989,
         "src": "57:694:40",
         "usedErrors": []
       }
@@ -402,7 +402,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-18T23:17:24.437Z",
+  "updatedAt": "2021-10-19T14:20:45.594Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
