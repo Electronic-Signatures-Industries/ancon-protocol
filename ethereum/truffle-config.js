@@ -52,7 +52,7 @@ module.exports = {
         new HDWalletProvider(process.env.MNEMONIC, process.env.RINKEBY),
       network_id: '*',
       gas: 7000000,
-      gasPrice: 30000000
+      gasPrice: 3000000000
     },    
     kovan: {
       provider: () =>
