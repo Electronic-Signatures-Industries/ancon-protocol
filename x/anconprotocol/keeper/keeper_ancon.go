@@ -2,11 +2,9 @@ package keeper
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
@@ -352,19 +350,6 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			v := buf.Bytes()
 			store.Set(k, v)
 
-			var h []byte
-			prefix := []byte("ancon")
-			h = append(h, prefix...)
-
-			pk := sha256.Sum256(k)
-			h = append(h, byte(sha256.New().Size()))
-			h = append(h, cast.ToString(pk)...)
-			pv := sha256.Sum256(v)
-			h = append(h, byte(sha256.New().Size()))
-			h = append(h, cast.ToString(pv)...)
-
-			h = []byte(cast.ToString(sha256.Sum256(h)))
-
 			ce := &ics23.CommitmentProof_Exist{
 				Exist: &ics23.ExistenceProof{
 					Key:   k,
@@ -649,7 +634,7 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 				Exist: &ics23.ExistenceProof{
 					Key:   k,
 					Value: v,
-					Leaf:  ics23.IavlSpec.LeafSpec,
+					Leaf:  ce1.Exist.GetLeaf(),
 				},
 			}
 			ps := []*ics23.ProofSpec{
@@ -660,10 +645,23 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 				{ce1},
 			}
 			//			c, err := ics23.CombineProofs(combined)
+			fmt.Sprint(ce2.Exist.Key)
+			fmt.Sprint(ce2.Exist.Value)
+			fmt.Sprint(ce1.Exist.Key)
+			fmt.Sprint(ce1.Exist.Value)
+
+			key1 := string(ce1.Exist.Key)
+			key2 := string(ce2.Exist.Key)
+			key3 := append(ce2.Exist.Key, key1...)
+			key4 := append(ce1.Exist.Key, key1...)
+
+			fmt.Sprint(key3, key4)
+
+			fmt.Sprintf(" KEY 1 =  %s KEY 2 =  %s", key1, key2)
+
 			mp := ibc.MerkleProof{Proofs: combined}
-			mp.VerifyMembership(ps, ibc.MerkleRoot{Hash: r}, ibc.MerklePath{
-				KeyPath: strings.Split(string(k), "/"),
-			}, v)
+			err := mp.VerifyMembership(ps, ibc.MerkleRoot{Hash: ce1.Exist.Value}, ibc.NewMerklePath(key2, key1), v)
+
 			///			err := c.GetExist().Verify(ics23.IavlSpec, r, k, v)
 
 			return err
