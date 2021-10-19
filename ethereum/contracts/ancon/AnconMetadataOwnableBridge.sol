@@ -18,7 +18,7 @@ contract AnconMetadataOwnableBridge {
 
     function convertProof(IBCExistenceProof.Data memory testxp)
         public
-        returns (bool)
+        returns (ICS23.ExistenceProof memory)
     {
         ICS23.LeafOp memory leafOp = ICS23.LeafOp({
             hash: ICS23.HashOp(uint256(testxp.leaf.hash)),
@@ -35,9 +35,9 @@ contract AnconMetadataOwnableBridge {
         for (uint256 i = 0; i < testxp.path.length; i++) {
             innerOpArr[i] = ICS23.InnerOp({
                 valid: false,
-                hash: ICS23.HashOp(uint256(testxp.leaf.hash)),
-                prefix: bytes(""),
-                suffix: bytes("")
+                hash: ICS23.HashOp(uint256(testxp.path[i].hash)),
+                prefix: testxp.path[i].prefix,
+                suffix: testxp.path[i].suffix
             });
         }
         ICS23.ExistenceProof memory proof = ICS23.ExistenceProof({
@@ -48,7 +48,7 @@ contract AnconMetadataOwnableBridge {
             path: innerOpArr
         });
 
-        return true;
+        return proof;
     }
 
     /**
@@ -60,24 +60,26 @@ contract AnconMetadataOwnableBridge {
         bytes memory pathBz,
         bytes memory value
     ) public returns (bool) {
-        IBCExistenceProof.Data memory exProof;
-        
-        exProof = IBCExistenceProof.decode(existenceProof);
+        // todo: verify not empty
+        IBCExistenceProof.Data memory exProofProto = IBCExistenceProof.decode(
+            existenceProof
+        );
 
-        // IBCExistenceProof.Data memory memoryXp = IBCExistenceProof.Data({
-        //     key: testxp.key,
-        //     value: testxp.value,
-        //     leaf: testxp.leaf,
-        //     path: testxp.path
-        // });
+        ICS23.ExistenceProof memory exProofICS23 = convertProof(exProofProto);
 
-        convertProof(exProof);
+        // Verify membership
+        return ICS23.verifyMembership(
+            ICS23.getIavlSpec(),
+            rootBz,
+            exProofICS23,
+            pathBz,
+            value
+        );
 
         //proof.key = xp.
 
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        //return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);
-        return true;
+        //return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);        
         // verify token exists
         //_lock(vc.data);
         // _release
