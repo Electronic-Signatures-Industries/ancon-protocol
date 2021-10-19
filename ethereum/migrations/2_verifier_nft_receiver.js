@@ -13,6 +13,7 @@ const Proofs = artifacts.require("IBCExistenceProof");
 const GoogleProtobufAny = artifacts.require("GoogleProtobufAny");
 const ProtoBufRuntime = artifacts.require("ProtoBufRuntime");
 const ICS23 = artifacts.require("ICS23");
+const AnconVerifier = artifacts.require("AnconVerifier");
 
 
 
@@ -38,16 +39,17 @@ module.exports = async (deployer, network, accounts) => {
     }
     
 
-  await deployer.deploy(ProtoBufRuntime);
-  await deployer.link(ProtoBufRuntime, GoogleProtobufAny, Proofs);
-  await deployer.deploy(GoogleProtobufAny);
-  await deployer.link(GoogleProtobufAny,Proofs);
-	await deployer.deploy(Proofs);
-  await deployer.link(Proofs, AnconMetadataOwnableBridge);
-	await deployer.deploy(ICS23);
-  await deployer.link(ICS23, AnconMetadataOwnableBridge)  
-  await deployer.deploy(AnconMetadataOwnableBridge);
-	const verifier = await AnconMetadataOwnableBridge.deployed();
+  // await deployer.deploy(ProtoBufRuntime);
+  // await deployer.link(ProtoBufRuntime, GoogleProtobufAny, Proofs);
+  // await deployer.deploy(GoogleProtobufAny);
+  // await deployer.link(GoogleProtobufAny,Proofs);
+	// await deployer.deploy(Proofs);
+  // await deployer.link(Proofs, AnconMetadataOwnableBridge);
+	// await deployer.deploy(ICS23);
+  // await deployer.link(ICS23, AnconMetadataOwnableBridge)  
+  // await deployer.deploy(AnconMetadataOwnableBridge);
+  await deployer.deploy(AnconVerifier);
+	const verifier = await AnconVerifier.deployed();
 
 
     // Deploy NFT
@@ -67,12 +69,12 @@ module.exports = async (deployer, network, accounts) => {
     const keyPath = Web3.utils.toHex('anconbafyreiapkje327erp4u736b7juu27jd3isuizupma775cpw6p4yvg7plyi')
     const value = '0xa86364696460646b696e64686d65746164617461646e616d656a74656e6465726d696e7465696d61676575687474703a2f2f6c6f63616c686f73743a31333137656c696e6b7381d82a582500017112201ef5bdf9d651ee110019976a966ddc6bbda2e4e8eeec8794f3a8c0c133043712656f776e657278296469643a6b65793a7a386d57614a48586965415678784c6167427064614e574645424b56576d4d694567736f757263657381d82a582500017112201ef5bdf9d651ee110019976a966ddc6bbda2e4e8eeec8794f3a8c0c1330437126b6465736372697074696f6e6a74656e6465726d696e74'
        
-    await verifier.changeOwnerWithProof(
-      xp,
-      root,
-      keyPath,
-      value
-    );
+    // await verifier.changeOwnerWithProof(
+    //   xp,
+    //   root,
+    //   keyPath,
+    //   value
+    // );
     builder.addContract(
       'XDVNFT',
       xdvnft,

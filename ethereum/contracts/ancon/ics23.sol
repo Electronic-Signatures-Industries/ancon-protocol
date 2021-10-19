@@ -1,6 +1,6 @@
 pragma solidity >=0.8.0;
 
-library ICS23 {
+contract ICS23 {
     // Data structures and helper functions
 
     enum HashOp {

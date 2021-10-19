@@ -134,7 +134,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"subject\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"validTo\",\"type\":\"uint256\"}],\"internalType\":\"struct VerifiableCredential\",\"name\":\"vc\",\"type\":\"tuple\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"r\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"verifyCredential\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"subject\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"validTo\",\"type\":\"uint256\"}],\"internalType\":\"struct VerifiableCredential\",\"name\":\"vc\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"_signature\",\"type\":\"bytes\"}],\"name\":\"verifySigner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol\":\"IClaimsVerifier\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ClaimTypes.sol\":{\"keccak256\":\"0xb6e2d56311bf9fc348a8621c8f14a6945de33393d316409a6d15d1ed5873fcc5\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://76447ec3c5c0e864b1a06af753ff0b4571cc0f30ea2e80e7d6bc6305bc15cb76\",\"dweb:/ipfs/QmPwD7tqmugF8XTQ75VXTpCvpxzpo5s6BpS3u1mgCHsGbo\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol\":{\"keccak256\":\"0x1a69cec7d222496183b3ac3f216ad7996c11a187ba2203c8d65dba697a2280eb\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://8770dc96c9173733f4c87ba1b7c5ec63702f56ed275f50555cdb301b250f36d5\",\"dweb:/ipfs/QmakGccz9odTyK91E8skXESU8HfZk2sDLfpxxiVhXySFeh\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"subject\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"validTo\",\"type\":\"uint256\"}],\"internalType\":\"struct VerifiableCredential\",\"name\":\"vc\",\"type\":\"tuple\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"r\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"verifyCredential\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"subject\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"validTo\",\"type\":\"uint256\"}],\"internalType\":\"struct VerifiableCredential\",\"name\":\"vc\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"_signature\",\"type\":\"bytes\"}],\"name\":\"verifySigner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/IClaimsVerifier.sol\":\"IClaimsVerifier\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ClaimTypes.sol\":{\"keccak256\":\"0xb6e2d56311bf9fc348a8621c8f14a6945de33393d316409a6d15d1ed5873fcc5\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://76447ec3c5c0e864b1a06af753ff0b4571cc0f30ea2e80e7d6bc6305bc15cb76\",\"dweb:/ipfs/QmPwD7tqmugF8XTQ75VXTpCvpxzpo5s6BpS3u1mgCHsGbo\"]},\"project:/contracts/IClaimsVerifier.sol\":{\"keccak256\":\"0x1a69cec7d222496183b3ac3f216ad7996c11a187ba2203c8d65dba697a2280eb\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://8770dc96c9173733f4c87ba1b7c5ec63702f56ed275f50555cdb301b250f36d5\",\"dweb:/ipfs/QmakGccz9odTyK91E8skXESU8HfZk2sDLfpxxiVhXySFeh\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -143,23 +143,23 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\n\nimport \"./ClaimTypes.sol\";\n\ninterface IClaimsVerifier {\n    function verifyCredential(\n        VerifiableCredential\n         memory vc,\n        uint8 v,\n        bytes32 r,\n        bytes32 s\n    )\n        external\n        view\n        returns (\n            bool,\n            bool,\n            bool,\n            bool,\n            bool\n        );\n\n    function verifySigner(\n        VerifiableCredential memory vc,\n        bytes calldata _signature\n    ) external view returns (bool);\n}\n",
-  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
+  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
   "ast": {
-    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
+    "absolutePath": "project:/contracts/IClaimsVerifier.sol",
     "exportedSymbols": {
       "IClaimsVerifier": [
-        48
+        2126
       ],
       "VerifiableCredential": [
-        12
+        2090
       ]
     },
-    "id": 49,
+    "id": 2127,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14,
+        "id": 2092,
         "literals": [
           "solidity",
           "^",
@@ -167,17 +167,17 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:1"
+        "src": "39:23:17"
       },
       {
-        "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ClaimTypes.sol",
+        "absolutePath": "project:/contracts/ClaimTypes.sol",
         "file": "./ClaimTypes.sol",
-        "id": 15,
+        "id": 2093,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 49,
-        "sourceUnit": 13,
-        "src": "64:26:1",
+        "scope": 2127,
+        "sourceUnit": 2091,
+        "src": "64:26:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -188,56 +188,56 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": false,
-        "id": 48,
+        "id": 2126,
         "linearizedBaseContracts": [
-          48
+          2126
         ],
         "name": "IClaimsVerifier",
-        "nameLocation": "102:15:1",
+        "nameLocation": "102:15:17",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a915687d",
-            "id": 37,
+            "id": 2115,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "verifyCredential",
-            "nameLocation": "133:16:1",
+            "nameLocation": "133:16:17",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 25,
+              "id": 2103,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 18,
+                  "id": 2096,
                   "mutability": "mutable",
                   "name": "vc",
-                  "nameLocation": "196:2:1",
+                  "nameLocation": "196:2:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "159:39:1",
+                  "scope": 2115,
+                  "src": "159:39:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$12_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$2090_memory_ptr",
                     "typeString": "struct VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 17,
+                    "id": 2095,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 16,
+                      "id": 2094,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 12,
-                      "src": "159:20:1"
+                      "referencedDeclaration": 2090,
+                      "src": "159:20:17"
                     },
-                    "referencedDeclaration": 12,
-                    "src": "159:20:1",
+                    "referencedDeclaration": 2090,
+                    "src": "159:20:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$12_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$2090_storage_ptr",
                       "typeString": "struct VerifiableCredential"
                     }
                   },
@@ -245,13 +245,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 20,
+                  "id": 2098,
                   "mutability": "mutable",
                   "name": "v",
-                  "nameLocation": "214:1:1",
+                  "nameLocation": "214:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "208:7:1",
+                  "scope": 2115,
+                  "src": "208:7:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -259,10 +259,10 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 19,
+                    "id": 2097,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
-                    "src": "208:5:1",
+                    "src": "208:5:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint8",
                       "typeString": "uint8"
@@ -272,13 +272,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 22,
+                  "id": 2100,
                   "mutability": "mutable",
                   "name": "r",
-                  "nameLocation": "233:1:1",
+                  "nameLocation": "233:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "225:9:1",
+                  "scope": 2115,
+                  "src": "225:9:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -286,10 +286,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 21,
+                    "id": 2099,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "225:7:1",
+                    "src": "225:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -299,13 +299,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 2102,
                   "mutability": "mutable",
                   "name": "s",
-                  "nameLocation": "252:1:1",
+                  "nameLocation": "252:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "244:9:1",
+                  "scope": 2115,
+                  "src": "244:9:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -313,10 +313,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 2101,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "244:7:1",
+                    "src": "244:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -325,21 +325,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "149:110:1"
+              "src": "149:110:17"
             },
             "returnParameters": {
-              "id": 36,
+              "id": 2114,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27,
+                  "id": 2105,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "320:4:1",
+                  "scope": 2115,
+                  "src": "320:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -347,10 +347,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 26,
+                    "id": 2104,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "320:4:1",
+                    "src": "320:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -360,13 +360,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 29,
+                  "id": 2107,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "338:4:1",
+                  "scope": 2115,
+                  "src": "338:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -374,10 +374,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 28,
+                    "id": 2106,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "338:4:1",
+                    "src": "338:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -387,13 +387,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
+                  "id": 2109,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "356:4:1",
+                  "scope": 2115,
+                  "src": "356:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -401,10 +401,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 30,
+                    "id": 2108,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "356:4:1",
+                    "src": "356:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -414,13 +414,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 33,
+                  "id": 2111,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "374:4:1",
+                  "scope": 2115,
+                  "src": "374:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -428,10 +428,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 32,
+                    "id": 2110,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "374:4:1",
+                    "src": "374:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -441,13 +441,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 35,
+                  "id": 2113,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "392:4:1",
+                  "scope": 2115,
+                  "src": "392:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -455,10 +455,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 34,
+                    "id": 2112,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "392:4:1",
+                    "src": "392:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -467,56 +467,56 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "306:100:1"
+              "src": "306:100:17"
             },
-            "scope": 48,
-            "src": "124:283:1",
+            "scope": 2126,
+            "src": "124:283:17",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "functionSelector": "c4d8ce25",
-            "id": 47,
+            "id": 2125,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "verifySigner",
-            "nameLocation": "422:12:1",
+            "nameLocation": "422:12:17",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 43,
+              "id": 2121,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 40,
+                  "id": 2118,
                   "mutability": "mutable",
                   "name": "vc",
-                  "nameLocation": "472:2:1",
+                  "nameLocation": "472:2:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "444:30:1",
+                  "scope": 2125,
+                  "src": "444:30:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$12_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$2090_memory_ptr",
                     "typeString": "struct VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 39,
+                    "id": 2117,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 38,
+                      "id": 2116,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 12,
-                      "src": "444:20:1"
+                      "referencedDeclaration": 2090,
+                      "src": "444:20:17"
                     },
-                    "referencedDeclaration": 12,
-                    "src": "444:20:1",
+                    "referencedDeclaration": 2090,
+                    "src": "444:20:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$12_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$2090_storage_ptr",
                       "typeString": "struct VerifiableCredential"
                     }
                   },
@@ -524,13 +524,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 42,
+                  "id": 2120,
                   "mutability": "mutable",
                   "name": "_signature",
-                  "nameLocation": "499:10:1",
+                  "nameLocation": "499:10:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "484:25:1",
+                  "scope": 2125,
+                  "src": "484:25:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -538,10 +538,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 41,
+                    "id": 2119,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "484:5:1",
+                    "src": "484:5:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -550,21 +550,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "434:81:1"
+              "src": "434:81:17"
             },
             "returnParameters": {
-              "id": 46,
+              "id": 2124,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 45,
+                  "id": 2123,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "539:4:1",
+                  "scope": 2125,
+                  "src": "539:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -572,10 +572,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 44,
+                    "id": 2122,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "539:4:1",
+                    "src": "539:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -584,38 +584,38 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "538:6:1"
+              "src": "538:6:17"
             },
-            "scope": 48,
-            "src": "413:132:1",
+            "scope": 2126,
+            "src": "413:132:17",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 49,
-        "src": "92:455:1",
+        "scope": 2127,
+        "src": "92:455:17",
         "usedErrors": []
       }
     ],
-    "src": "39:509:1"
+    "src": "39:509:17"
   },
   "legacyAST": {
-    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/IClaimsVerifier.sol",
+    "absolutePath": "project:/contracts/IClaimsVerifier.sol",
     "exportedSymbols": {
       "IClaimsVerifier": [
-        48
+        2126
       ],
       "VerifiableCredential": [
-        12
+        2090
       ]
     },
-    "id": 49,
+    "id": 2127,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14,
+        "id": 2092,
         "literals": [
           "solidity",
           "^",
@@ -623,17 +623,17 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:1"
+        "src": "39:23:17"
       },
       {
-        "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ClaimTypes.sol",
+        "absolutePath": "project:/contracts/ClaimTypes.sol",
         "file": "./ClaimTypes.sol",
-        "id": 15,
+        "id": 2093,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 49,
-        "sourceUnit": 13,
-        "src": "64:26:1",
+        "scope": 2127,
+        "sourceUnit": 2091,
+        "src": "64:26:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -644,56 +644,56 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": false,
-        "id": 48,
+        "id": 2126,
         "linearizedBaseContracts": [
-          48
+          2126
         ],
         "name": "IClaimsVerifier",
-        "nameLocation": "102:15:1",
+        "nameLocation": "102:15:17",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a915687d",
-            "id": 37,
+            "id": 2115,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "verifyCredential",
-            "nameLocation": "133:16:1",
+            "nameLocation": "133:16:17",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 25,
+              "id": 2103,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 18,
+                  "id": 2096,
                   "mutability": "mutable",
                   "name": "vc",
-                  "nameLocation": "196:2:1",
+                  "nameLocation": "196:2:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "159:39:1",
+                  "scope": 2115,
+                  "src": "159:39:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$12_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$2090_memory_ptr",
                     "typeString": "struct VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 17,
+                    "id": 2095,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 16,
+                      "id": 2094,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 12,
-                      "src": "159:20:1"
+                      "referencedDeclaration": 2090,
+                      "src": "159:20:17"
                     },
-                    "referencedDeclaration": 12,
-                    "src": "159:20:1",
+                    "referencedDeclaration": 2090,
+                    "src": "159:20:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$12_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$2090_storage_ptr",
                       "typeString": "struct VerifiableCredential"
                     }
                   },
@@ -701,13 +701,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 20,
+                  "id": 2098,
                   "mutability": "mutable",
                   "name": "v",
-                  "nameLocation": "214:1:1",
+                  "nameLocation": "214:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "208:7:1",
+                  "scope": 2115,
+                  "src": "208:7:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -715,10 +715,10 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 19,
+                    "id": 2097,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
-                    "src": "208:5:1",
+                    "src": "208:5:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint8",
                       "typeString": "uint8"
@@ -728,13 +728,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 22,
+                  "id": 2100,
                   "mutability": "mutable",
                   "name": "r",
-                  "nameLocation": "233:1:1",
+                  "nameLocation": "233:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "225:9:1",
+                  "scope": 2115,
+                  "src": "225:9:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -742,10 +742,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 21,
+                    "id": 2099,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "225:7:1",
+                    "src": "225:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -755,13 +755,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 2102,
                   "mutability": "mutable",
                   "name": "s",
-                  "nameLocation": "252:1:1",
+                  "nameLocation": "252:1:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "244:9:1",
+                  "scope": 2115,
+                  "src": "244:9:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -769,10 +769,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 2101,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "244:7:1",
+                    "src": "244:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -781,21 +781,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "149:110:1"
+              "src": "149:110:17"
             },
             "returnParameters": {
-              "id": 36,
+              "id": 2114,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27,
+                  "id": 2105,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "320:4:1",
+                  "scope": 2115,
+                  "src": "320:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -803,10 +803,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 26,
+                    "id": 2104,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "320:4:1",
+                    "src": "320:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -816,13 +816,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 29,
+                  "id": 2107,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "338:4:1",
+                  "scope": 2115,
+                  "src": "338:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -830,10 +830,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 28,
+                    "id": 2106,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "338:4:1",
+                    "src": "338:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -843,13 +843,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
+                  "id": 2109,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "356:4:1",
+                  "scope": 2115,
+                  "src": "356:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -857,10 +857,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 30,
+                    "id": 2108,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "356:4:1",
+                    "src": "356:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -870,13 +870,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 33,
+                  "id": 2111,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "374:4:1",
+                  "scope": 2115,
+                  "src": "374:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -884,10 +884,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 32,
+                    "id": 2110,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "374:4:1",
+                    "src": "374:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -897,13 +897,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 35,
+                  "id": 2113,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "392:4:1",
+                  "scope": 2115,
+                  "src": "392:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -911,10 +911,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 34,
+                    "id": 2112,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "392:4:1",
+                    "src": "392:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -923,56 +923,56 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "306:100:1"
+              "src": "306:100:17"
             },
-            "scope": 48,
-            "src": "124:283:1",
+            "scope": 2126,
+            "src": "124:283:17",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "functionSelector": "c4d8ce25",
-            "id": 47,
+            "id": 2125,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "verifySigner",
-            "nameLocation": "422:12:1",
+            "nameLocation": "422:12:17",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 43,
+              "id": 2121,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 40,
+                  "id": 2118,
                   "mutability": "mutable",
                   "name": "vc",
-                  "nameLocation": "472:2:1",
+                  "nameLocation": "472:2:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "444:30:1",
+                  "scope": 2125,
+                  "src": "444:30:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_VerifiableCredential_$12_memory_ptr",
+                    "typeIdentifier": "t_struct$_VerifiableCredential_$2090_memory_ptr",
                     "typeString": "struct VerifiableCredential"
                   },
                   "typeName": {
-                    "id": 39,
+                    "id": 2117,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 38,
+                      "id": 2116,
                       "name": "VerifiableCredential",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 12,
-                      "src": "444:20:1"
+                      "referencedDeclaration": 2090,
+                      "src": "444:20:17"
                     },
-                    "referencedDeclaration": 12,
-                    "src": "444:20:1",
+                    "referencedDeclaration": 2090,
+                    "src": "444:20:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_VerifiableCredential_$12_storage_ptr",
+                      "typeIdentifier": "t_struct$_VerifiableCredential_$2090_storage_ptr",
                       "typeString": "struct VerifiableCredential"
                     }
                   },
@@ -980,13 +980,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 42,
+                  "id": 2120,
                   "mutability": "mutable",
                   "name": "_signature",
-                  "nameLocation": "499:10:1",
+                  "nameLocation": "499:10:17",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "484:25:1",
+                  "scope": 2125,
+                  "src": "484:25:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -994,10 +994,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 41,
+                    "id": 2119,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "484:5:1",
+                    "src": "484:5:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -1006,21 +1006,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "434:81:1"
+              "src": "434:81:17"
             },
             "returnParameters": {
-              "id": 46,
+              "id": 2124,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 45,
+                  "id": 2123,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 47,
-                  "src": "539:4:1",
+                  "scope": 2125,
+                  "src": "539:4:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1028,10 +1028,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 44,
+                    "id": 2122,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "539:4:1",
+                    "src": "539:4:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1040,29 +1040,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "538:6:1"
+              "src": "538:6:17"
             },
-            "scope": 48,
-            "src": "413:132:1",
+            "scope": 2126,
+            "src": "413:132:17",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 49,
-        "src": "92:455:1",
+        "scope": 2127,
+        "src": "92:455:17",
         "usedErrors": []
       }
     ],
-    "src": "39:509:1"
+    "src": "39:509:17"
   },
   "compiler": {
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.0",
-  "updatedAt": "2021-10-19T00:29:16.225Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-19T15:17:39.636Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
