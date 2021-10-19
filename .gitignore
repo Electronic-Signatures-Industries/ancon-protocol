@@ -7,3 +7,4 @@ gen
 ethereum/node_modules
 .env
 ethereum/.env
+.vscode
