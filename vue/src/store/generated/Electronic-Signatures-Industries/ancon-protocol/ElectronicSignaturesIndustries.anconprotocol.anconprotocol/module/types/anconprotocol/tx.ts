@@ -4,6 +4,23 @@ import * as Long from 'long'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
+export interface MsgUpdateMetadataOwnership {
+  hash: string
+  /** did */
+  previousOwner: string
+  /** did */
+  newOwner: string
+  /** optional */
+  currentChainId: string
+  /** optional */
+  recipientChainId: string
+  sender: string
+}
+
+export interface MsgUpdateMetadataOwnershipResponse {
+  cid: string
+}
+
 export interface MsgRegisterRelay {
   sender: string
   chain: string
@@ -68,6 +85,29 @@ export interface MsgMintTrustedContent {
 }
 
 export interface MsgMintTrustedContentResponse {
+  id: number
+}
+
+export interface MsgSendCrossMintTrusted {
+  creator: string
+  /** metadata */
+  metadataRef: string
+  /** denom id */
+  denomId: string
+  /** nft name */
+  name: string
+  /** recipient */
+  recipient: string
+  /** did owner */
+  didOwner: string
+  /** lazy mint */
+  lazyMint: boolean
+  price: number
+  metaTransaction: string
+  destinationDomain: number
+}
+
+export interface MsgSendCrossMintTrustedResponse {
   id: number
 }
 
@@ -331,9 +371,9 @@ export interface MsgMetadata {
   /** change/diff , ancestor is parent, version */
   parent: string
   /** data sources */
-  sources: string
+  additionalSources: string[]
   /** reference links */
-  links: string
+  links: string[]
   /** mutate */
   verifiedCredentialRef: string
   /** did doc* #my_document */
@@ -363,6 +403,201 @@ export interface MsgFile {
 
 export interface MsgFileResponse {
   hash: string
+}
+
+const baseMsgUpdateMetadataOwnership: object = { hash: '', previousOwner: '', newOwner: '', currentChainId: '', recipientChainId: '', sender: '' }
+
+export const MsgUpdateMetadataOwnership = {
+  encode(message: MsgUpdateMetadataOwnership, writer: Writer = Writer.create()): Writer {
+    if (message.hash !== '') {
+      writer.uint32(10).string(message.hash)
+    }
+    if (message.previousOwner !== '') {
+      writer.uint32(18).string(message.previousOwner)
+    }
+    if (message.newOwner !== '') {
+      writer.uint32(26).string(message.newOwner)
+    }
+    if (message.currentChainId !== '') {
+      writer.uint32(34).string(message.currentChainId)
+    }
+    if (message.recipientChainId !== '') {
+      writer.uint32(42).string(message.recipientChainId)
+    }
+    if (message.sender !== '') {
+      writer.uint32(50).string(message.sender)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgUpdateMetadataOwnership {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgUpdateMetadataOwnership } as MsgUpdateMetadataOwnership
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.hash = reader.string()
+          break
+        case 2:
+          message.previousOwner = reader.string()
+          break
+        case 3:
+          message.newOwner = reader.string()
+          break
+        case 4:
+          message.currentChainId = reader.string()
+          break
+        case 5:
+          message.recipientChainId = reader.string()
+          break
+        case 6:
+          message.sender = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgUpdateMetadataOwnership {
+    const message = { ...baseMsgUpdateMetadataOwnership } as MsgUpdateMetadataOwnership
+    if (object.hash !== undefined && object.hash !== null) {
+      message.hash = String(object.hash)
+    } else {
+      message.hash = ''
+    }
+    if (object.previousOwner !== undefined && object.previousOwner !== null) {
+      message.previousOwner = String(object.previousOwner)
+    } else {
+      message.previousOwner = ''
+    }
+    if (object.newOwner !== undefined && object.newOwner !== null) {
+      message.newOwner = String(object.newOwner)
+    } else {
+      message.newOwner = ''
+    }
+    if (object.currentChainId !== undefined && object.currentChainId !== null) {
+      message.currentChainId = String(object.currentChainId)
+    } else {
+      message.currentChainId = ''
+    }
+    if (object.recipientChainId !== undefined && object.recipientChainId !== null) {
+      message.recipientChainId = String(object.recipientChainId)
+    } else {
+      message.recipientChainId = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = String(object.sender)
+    } else {
+      message.sender = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgUpdateMetadataOwnership): unknown {
+    const obj: any = {}
+    message.hash !== undefined && (obj.hash = message.hash)
+    message.previousOwner !== undefined && (obj.previousOwner = message.previousOwner)
+    message.newOwner !== undefined && (obj.newOwner = message.newOwner)
+    message.currentChainId !== undefined && (obj.currentChainId = message.currentChainId)
+    message.recipientChainId !== undefined && (obj.recipientChainId = message.recipientChainId)
+    message.sender !== undefined && (obj.sender = message.sender)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgUpdateMetadataOwnership>): MsgUpdateMetadataOwnership {
+    const message = { ...baseMsgUpdateMetadataOwnership } as MsgUpdateMetadataOwnership
+    if (object.hash !== undefined && object.hash !== null) {
+      message.hash = object.hash
+    } else {
+      message.hash = ''
+    }
+    if (object.previousOwner !== undefined && object.previousOwner !== null) {
+      message.previousOwner = object.previousOwner
+    } else {
+      message.previousOwner = ''
+    }
+    if (object.newOwner !== undefined && object.newOwner !== null) {
+      message.newOwner = object.newOwner
+    } else {
+      message.newOwner = ''
+    }
+    if (object.currentChainId !== undefined && object.currentChainId !== null) {
+      message.currentChainId = object.currentChainId
+    } else {
+      message.currentChainId = ''
+    }
+    if (object.recipientChainId !== undefined && object.recipientChainId !== null) {
+      message.recipientChainId = object.recipientChainId
+    } else {
+      message.recipientChainId = ''
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender
+    } else {
+      message.sender = ''
+    }
+    return message
+  }
+}
+
+const baseMsgUpdateMetadataOwnershipResponse: object = { cid: '' }
+
+export const MsgUpdateMetadataOwnershipResponse = {
+  encode(message: MsgUpdateMetadataOwnershipResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgUpdateMetadataOwnershipResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgUpdateMetadataOwnershipResponse } as MsgUpdateMetadataOwnershipResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgUpdateMetadataOwnershipResponse {
+    const message = { ...baseMsgUpdateMetadataOwnershipResponse } as MsgUpdateMetadataOwnershipResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgUpdateMetadataOwnershipResponse): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgUpdateMetadataOwnershipResponse>): MsgUpdateMetadataOwnershipResponse {
+    const message = { ...baseMsgUpdateMetadataOwnershipResponse } as MsgUpdateMetadataOwnershipResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
 }
 
 const baseMsgRegisterRelay: object = { sender: '', chain: '', alg: '', pub: '' }
@@ -1275,6 +1510,280 @@ export const MsgMintTrustedContentResponse = {
 
   fromPartial(object: DeepPartial<MsgMintTrustedContentResponse>): MsgMintTrustedContentResponse {
     const message = { ...baseMsgMintTrustedContentResponse } as MsgMintTrustedContentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
+    return message
+  }
+}
+
+const baseMsgSendCrossMintTrusted: object = {
+  creator: '',
+  metadataRef: '',
+  denomId: '',
+  name: '',
+  recipient: '',
+  didOwner: '',
+  lazyMint: false,
+  price: 0,
+  metaTransaction: '',
+  destinationDomain: 0
+}
+
+export const MsgSendCrossMintTrusted = {
+  encode(message: MsgSendCrossMintTrusted, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.metadataRef !== '') {
+      writer.uint32(18).string(message.metadataRef)
+    }
+    if (message.denomId !== '') {
+      writer.uint32(26).string(message.denomId)
+    }
+    if (message.name !== '') {
+      writer.uint32(34).string(message.name)
+    }
+    if (message.recipient !== '') {
+      writer.uint32(42).string(message.recipient)
+    }
+    if (message.didOwner !== '') {
+      writer.uint32(50).string(message.didOwner)
+    }
+    if (message.lazyMint === true) {
+      writer.uint32(56).bool(message.lazyMint)
+    }
+    if (message.price !== 0) {
+      writer.uint32(64).uint64(message.price)
+    }
+    if (message.metaTransaction !== '') {
+      writer.uint32(74).string(message.metaTransaction)
+    }
+    if (message.destinationDomain !== 0) {
+      writer.uint32(80).uint64(message.destinationDomain)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSendCrossMintTrusted {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgSendCrossMintTrusted } as MsgSendCrossMintTrusted
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.metadataRef = reader.string()
+          break
+        case 3:
+          message.denomId = reader.string()
+          break
+        case 4:
+          message.name = reader.string()
+          break
+        case 5:
+          message.recipient = reader.string()
+          break
+        case 6:
+          message.didOwner = reader.string()
+          break
+        case 7:
+          message.lazyMint = reader.bool()
+          break
+        case 8:
+          message.price = longToNumber(reader.uint64() as Long)
+          break
+        case 9:
+          message.metaTransaction = reader.string()
+          break
+        case 10:
+          message.destinationDomain = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgSendCrossMintTrusted {
+    const message = { ...baseMsgSendCrossMintTrusted } as MsgSendCrossMintTrusted
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = String(object.metadataRef)
+    } else {
+      message.metadataRef = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = String(object.denomId)
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name)
+    } else {
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = String(object.recipient)
+    } else {
+      message.recipient = ''
+    }
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = String(object.didOwner)
+    } else {
+      message.didOwner = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = Boolean(object.lazyMint)
+    } else {
+      message.lazyMint = false
+    }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = Number(object.price)
+    } else {
+      message.price = 0
+    }
+    if (object.metaTransaction !== undefined && object.metaTransaction !== null) {
+      message.metaTransaction = String(object.metaTransaction)
+    } else {
+      message.metaTransaction = ''
+    }
+    if (object.destinationDomain !== undefined && object.destinationDomain !== null) {
+      message.destinationDomain = Number(object.destinationDomain)
+    } else {
+      message.destinationDomain = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgSendCrossMintTrusted): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.metadataRef !== undefined && (obj.metadataRef = message.metadataRef)
+    message.denomId !== undefined && (obj.denomId = message.denomId)
+    message.name !== undefined && (obj.name = message.name)
+    message.recipient !== undefined && (obj.recipient = message.recipient)
+    message.didOwner !== undefined && (obj.didOwner = message.didOwner)
+    message.lazyMint !== undefined && (obj.lazyMint = message.lazyMint)
+    message.price !== undefined && (obj.price = message.price)
+    message.metaTransaction !== undefined && (obj.metaTransaction = message.metaTransaction)
+    message.destinationDomain !== undefined && (obj.destinationDomain = message.destinationDomain)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgSendCrossMintTrusted>): MsgSendCrossMintTrusted {
+    const message = { ...baseMsgSendCrossMintTrusted } as MsgSendCrossMintTrusted
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.metadataRef !== undefined && object.metadataRef !== null) {
+      message.metadataRef = object.metadataRef
+    } else {
+      message.metadataRef = ''
+    }
+    if (object.denomId !== undefined && object.denomId !== null) {
+      message.denomId = object.denomId
+    } else {
+      message.denomId = ''
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name
+    } else {
+      message.name = ''
+    }
+    if (object.recipient !== undefined && object.recipient !== null) {
+      message.recipient = object.recipient
+    } else {
+      message.recipient = ''
+    }
+    if (object.didOwner !== undefined && object.didOwner !== null) {
+      message.didOwner = object.didOwner
+    } else {
+      message.didOwner = ''
+    }
+    if (object.lazyMint !== undefined && object.lazyMint !== null) {
+      message.lazyMint = object.lazyMint
+    } else {
+      message.lazyMint = false
+    }
+    if (object.price !== undefined && object.price !== null) {
+      message.price = object.price
+    } else {
+      message.price = 0
+    }
+    if (object.metaTransaction !== undefined && object.metaTransaction !== null) {
+      message.metaTransaction = object.metaTransaction
+    } else {
+      message.metaTransaction = ''
+    }
+    if (object.destinationDomain !== undefined && object.destinationDomain !== null) {
+      message.destinationDomain = object.destinationDomain
+    } else {
+      message.destinationDomain = 0
+    }
+    return message
+  }
+}
+
+const baseMsgSendCrossMintTrustedResponse: object = { id: 0 }
+
+export const MsgSendCrossMintTrustedResponse = {
+  encode(message: MsgSendCrossMintTrustedResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSendCrossMintTrustedResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgSendCrossMintTrustedResponse } as MsgSendCrossMintTrustedResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgSendCrossMintTrustedResponse {
+    const message = { ...baseMsgSendCrossMintTrustedResponse } as MsgSendCrossMintTrustedResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgSendCrossMintTrustedResponse): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgSendCrossMintTrustedResponse>): MsgSendCrossMintTrustedResponse {
+    const message = { ...baseMsgSendCrossMintTrustedResponse } as MsgSendCrossMintTrustedResponse
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id
     } else {
@@ -4714,7 +5223,7 @@ const baseMsgMetadata: object = {
   image: '',
   owner: '',
   parent: '',
-  sources: '',
+  additionalSources: '',
   links: '',
   verifiedCredentialRef: '',
   did: '',
@@ -4743,11 +5252,11 @@ export const MsgMetadata = {
     if (message.parent !== '') {
       writer.uint32(50).string(message.parent)
     }
-    if (message.sources !== '') {
-      writer.uint32(58).string(message.sources)
+    for (const v of message.additionalSources) {
+      writer.uint32(58).string(v!)
     }
-    if (message.links !== '') {
-      writer.uint32(66).string(message.links)
+    for (const v of message.links) {
+      writer.uint32(66).string(v!)
     }
     if (message.verifiedCredentialRef !== '') {
       writer.uint32(74).string(message.verifiedCredentialRef)
@@ -4771,6 +5280,8 @@ export const MsgMetadata = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
     const message = { ...baseMsgMetadata } as MsgMetadata
+    message.additionalSources = []
+    message.links = []
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -4793,10 +5304,10 @@ export const MsgMetadata = {
           message.parent = reader.string()
           break
         case 7:
-          message.sources = reader.string()
+          message.additionalSources.push(reader.string())
           break
         case 8:
-          message.links = reader.string()
+          message.links.push(reader.string())
           break
         case 9:
           message.verifiedCredentialRef = reader.string()
@@ -4823,6 +5334,8 @@ export const MsgMetadata = {
 
   fromJSON(object: any): MsgMetadata {
     const message = { ...baseMsgMetadata } as MsgMetadata
+    message.additionalSources = []
+    message.links = []
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator)
     } else {
@@ -4853,15 +5366,15 @@ export const MsgMetadata = {
     } else {
       message.parent = ''
     }
-    if (object.sources !== undefined && object.sources !== null) {
-      message.sources = String(object.sources)
-    } else {
-      message.sources = ''
+    if (object.additionalSources !== undefined && object.additionalSources !== null) {
+      for (const e of object.additionalSources) {
+        message.additionalSources.push(String(e))
+      }
     }
     if (object.links !== undefined && object.links !== null) {
-      message.links = String(object.links)
-    } else {
-      message.links = ''
+      for (const e of object.links) {
+        message.links.push(String(e))
+      }
     }
     if (object.verifiedCredentialRef !== undefined && object.verifiedCredentialRef !== null) {
       message.verifiedCredentialRef = String(object.verifiedCredentialRef)
@@ -4899,8 +5412,16 @@ export const MsgMetadata = {
     message.image !== undefined && (obj.image = message.image)
     message.owner !== undefined && (obj.owner = message.owner)
     message.parent !== undefined && (obj.parent = message.parent)
-    message.sources !== undefined && (obj.sources = message.sources)
-    message.links !== undefined && (obj.links = message.links)
+    if (message.additionalSources) {
+      obj.additionalSources = message.additionalSources.map((e) => e)
+    } else {
+      obj.additionalSources = []
+    }
+    if (message.links) {
+      obj.links = message.links.map((e) => e)
+    } else {
+      obj.links = []
+    }
     message.verifiedCredentialRef !== undefined && (obj.verifiedCredentialRef = message.verifiedCredentialRef)
     message.did !== undefined && (obj.did = message.did)
     message.from !== undefined && (obj.from = message.from)
@@ -4911,6 +5432,8 @@ export const MsgMetadata = {
 
   fromPartial(object: DeepPartial<MsgMetadata>): MsgMetadata {
     const message = { ...baseMsgMetadata } as MsgMetadata
+    message.additionalSources = []
+    message.links = []
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator
     } else {
@@ -4941,15 +5464,15 @@ export const MsgMetadata = {
     } else {
       message.parent = ''
     }
-    if (object.sources !== undefined && object.sources !== null) {
-      message.sources = object.sources
-    } else {
-      message.sources = ''
+    if (object.additionalSources !== undefined && object.additionalSources !== null) {
+      for (const e of object.additionalSources) {
+        message.additionalSources.push(e)
+      }
     }
     if (object.links !== undefined && object.links !== null) {
-      message.links = object.links
-    } else {
-      message.links = ''
+      for (const e of object.links) {
+        message.links.push(e)
+      }
     }
     if (object.verifiedCredentialRef !== undefined && object.verifiedCredentialRef !== null) {
       message.verifiedCredentialRef = object.verifiedCredentialRef
@@ -5272,9 +5795,11 @@ export interface Msg {
   UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse>
   /** RevokeDid */
   RevokeDid(request: MsgRevokeDid): Promise<MsgRevokeDidResponse>
-  /** RoyaltyInfo defines a metadata CID royalty info */
-  RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse>
-  /** ChangeOwer TODO */
+  /**
+   * RoyaltyInfo defines a metadata CID royalty info
+   *  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
+   * ChangeOwer TODO
+   */
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse>
   /**
    * rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
@@ -5305,10 +5830,8 @@ export interface Msg {
   MintTrustedContent(request: MsgMintTrustedContent): Promise<MsgMintTrustedContentResponse>
   /** MintTrustedResource defines a method for minting a resource. */
   MintTrustedResource(request: MsgMintTrustedResource): Promise<MsgMintTrustedResourceResponse>
-  /** RegisterRelay */
-  RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse>
-  /** MintSwap */
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse>
+  /** Create ancon metadata */
+  UpdateMetadataOwnership(request: MsgUpdateMetadataOwnership): Promise<MsgUpdateMetadataOwnershipResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -5332,12 +5855,6 @@ export class MsgClientImpl implements Msg {
     const data = MsgRevokeDid.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RevokeDid', data)
     return promise.then((data) => MsgRevokeDidResponse.decode(new Reader(data)))
-  }
-
-  RoyaltyInfo(request: MsgRoyaltyInfo): Promise<MsgRoyaltyInfoResponse> {
-    const data = MsgRoyaltyInfo.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RoyaltyInfo', data)
-    return promise.then((data) => MsgRoyaltyInfoResponse.decode(new Reader(data)))
   }
 
   ChangeOwner(request: MsgChangeOwner): Promise<MsgChangeOwnerResponse> {
@@ -5424,16 +5941,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgMintTrustedResourceResponse.decode(new Reader(data)))
   }
 
-  RegisterRelay(request: MsgRegisterRelay): Promise<MsgRegisterRelayResponse> {
-    const data = MsgRegisterRelay.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RegisterRelay', data)
-    return promise.then((data) => MsgRegisterRelayResponse.decode(new Reader(data)))
-  }
-
-  MintSwap(request: MsgMintSwap): Promise<MsgMintSwapResponse> {
-    const data = MsgMintSwap.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'MintSwap', data)
-    return promise.then((data) => MsgMintSwapResponse.decode(new Reader(data)))
+  UpdateMetadataOwnership(request: MsgUpdateMetadataOwnership): Promise<MsgUpdateMetadataOwnershipResponse> {
+    const data = MsgUpdateMetadataOwnership.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'UpdateMetadataOwnership', data)
+    return promise.then((data) => MsgUpdateMetadataOwnershipResponse.decode(new Reader(data)))
   }
 }
 

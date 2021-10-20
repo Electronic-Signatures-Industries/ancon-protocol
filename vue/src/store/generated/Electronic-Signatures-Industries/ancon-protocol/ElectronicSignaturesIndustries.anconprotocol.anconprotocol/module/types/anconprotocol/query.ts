@@ -12,6 +12,16 @@ export interface QueryDidWebRequest {
 
 export interface QueryDidWebResponse {}
 
+export interface QueryProofMetadataRequest {
+  cid: string
+  path: string
+}
+
+export interface QueryProofResponse {
+  root: string
+  proof: string
+}
+
 export interface QueryGetDidRequest {
   name: string
 }
@@ -220,6 +230,150 @@ export const QueryDidWebResponse = {
 
   fromPartial(_: DeepPartial<QueryDidWebResponse>): QueryDidWebResponse {
     const message = { ...baseQueryDidWebResponse } as QueryDidWebResponse
+    return message
+  }
+}
+
+const baseQueryProofMetadataRequest: object = { cid: '', path: '' }
+
+export const QueryProofMetadataRequest = {
+  encode(message: QueryProofMetadataRequest, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    if (message.path !== '') {
+      writer.uint32(18).string(message.path)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryProofMetadataRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryProofMetadataRequest } as QueryProofMetadataRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        case 2:
+          message.path = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryProofMetadataRequest {
+    const message = { ...baseQueryProofMetadataRequest } as QueryProofMetadataRequest
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    if (object.path !== undefined && object.path !== null) {
+      message.path = String(object.path)
+    } else {
+      message.path = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryProofMetadataRequest): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    message.path !== undefined && (obj.path = message.path)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryProofMetadataRequest>): QueryProofMetadataRequest {
+    const message = { ...baseQueryProofMetadataRequest } as QueryProofMetadataRequest
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    if (object.path !== undefined && object.path !== null) {
+      message.path = object.path
+    } else {
+      message.path = ''
+    }
+    return message
+  }
+}
+
+const baseQueryProofResponse: object = { root: '', proof: '' }
+
+export const QueryProofResponse = {
+  encode(message: QueryProofResponse, writer: Writer = Writer.create()): Writer {
+    if (message.root !== '') {
+      writer.uint32(10).string(message.root)
+    }
+    if (message.proof !== '') {
+      writer.uint32(18).string(message.proof)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryProofResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryProofResponse } as QueryProofResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.root = reader.string()
+          break
+        case 2:
+          message.proof = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryProofResponse {
+    const message = { ...baseQueryProofResponse } as QueryProofResponse
+    if (object.root !== undefined && object.root !== null) {
+      message.root = String(object.root)
+    } else {
+      message.root = ''
+    }
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = String(object.proof)
+    } else {
+      message.proof = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryProofResponse): unknown {
+    const obj: any = {}
+    message.root !== undefined && (obj.root = message.root)
+    message.proof !== undefined && (obj.proof = message.proof)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryProofResponse>): QueryProofResponse {
+    const message = { ...baseQueryProofResponse } as QueryProofResponse
+    if (object.root !== undefined && object.root !== null) {
+      message.root = object.root
+    } else {
+      message.root = ''
+    }
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = object.proof
+    } else {
+      message.proof = ''
+    }
     return message
   }
 }
@@ -1773,6 +1927,8 @@ export interface Query {
   ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>
   /** Queries a list of resource items. */
   ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>
+  /** Reads metadata proofs */
+  ReadMetadataProof(request: QueryProofMetadataRequest): Promise<QueryProofResponse>
   /** Queries a list of owners items. */
   IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>
   /** Queries a list of Attributes items. */
@@ -1810,6 +1966,12 @@ export class QueryClientImpl implements Query {
     const data = QueryResourceRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadWithPath', data)
     return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+  }
+
+  ReadMetadataProof(request: QueryProofMetadataRequest): Promise<QueryProofResponse> {
+    const data = QueryProofMetadataRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadMetadataProof', data)
+    return promise.then((data) => QueryProofResponse.decode(new Reader(data)))
   }
 
   IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse> {
