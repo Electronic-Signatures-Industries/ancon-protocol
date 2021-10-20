@@ -375,20 +375,22 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 		// Sources
 		if len(msg.AdditionalSources) > 0 {
 
-			na.AssembleEntry("msg.AdditionalSources").CreateList(cast.ToInt64(len(msg.AdditionalSources)), func(la fluent.ListAssembler) {
+			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(msg.AdditionalSources)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(msg.AdditionalSources); i++ {
 					lnk, err := ParseHashCidLink((msg.AdditionalSources[i]))
 					if err != nil {
 						continue
 					}
-					la.AssembleValue().AssignLink(lnk)
+					la.AssembleValue().AssignString(lnk.Hash().B58String())
 				}
 			})
+		} else {
+			na.AssembleEntry("sources").AssignNull()
 		}
 		// Link
 		if len(msg.Links) > 0 {
 
-			na.AssembleEntry("msg.Links").CreateList(cast.ToInt64(len(msg.Links)), func(la fluent.ListAssembler) {
+			na.AssembleEntry("links").CreateList(cast.ToInt64(len(msg.Links)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(msg.Links); i++ {
 
 					lnk, err := ParseHashCidLink((msg.Links[i]))
@@ -398,6 +400,8 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 					la.AssembleValue().AssignLink(lnk)
 				}
 			})
+		} else {
+			na.AssembleEntry("links").AssignNull()
 		}
 	})
 

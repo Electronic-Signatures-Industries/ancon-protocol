@@ -131,7 +131,7 @@ func (e *AnconAPIHandler) GetProofs(key string) (*sdk.ABCIMessageLogs, error) {
 		return nil, err
 	}
 	var response map[string][]byte
-	err = json.Unmarshal(buf, &response)
+	err = json.Unmarshal(hexutil.MustDecode(string(buf)), &response)
 	if err != nil {
 		return nil, err
 	}
