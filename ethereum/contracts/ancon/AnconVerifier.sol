@@ -4,12 +4,10 @@ pragma solidity ^0.8.7;
 import "./ics23.sol";
 
 contract AnconVerifier is ICS23 {
-    constructor() public {
-        verify();
-    }
+    address public whitelisted;
 
-    function verify() public view returns (bool) {
-        return true;
+    constructor(address onlyOwner) public {
+        whitelisted = onlyOwner;
     }
 
     //Gotten from https://stackoverflow.com/a/69007075
@@ -35,32 +33,33 @@ contract AnconVerifier is ICS23 {
     function convertProof(
         bytes memory key,
         bytes memory value,
-        bytes[] memory _leafOp,
+        bytes memory _prefix,
+        uint256[] memory _leafOpUint,
         bytes[][] memory _innerOp
     ) public pure returns (ExistenceProof memory) {
-        LeafOp memory leafOp = LeafOp({
-            hash: HashOp(bytes2num(_leafOp[0])),
-            prehash_key: HashOp(bytes2num(_leafOp[1])),
-            prehash_value: HashOp(bytes2num(_leafOp[2])),
-            len: LengthOp(bytes2num(_leafOp[3])),
-            valid: true,
-            prefix: _leafOp[4]
-        });
+        LeafOp memory leafOp = LeafOp(
+            true,
+            HashOp((_leafOpUint[0])),
+            HashOp((_leafOpUint[1])),
+            HashOp((_leafOpUint[2])),
+            LengthOp((_leafOpUint[3])),
+            hex"00"
+        );
 
-        // innerOpArr
+        // // innerOpArr
         InnerOp[] memory innerOpArr;
 
-        for (uint256 i = 0; i < _innerOp.length; i++) {
-            bytes[] memory temp = _innerOp[i];
-            innerOpArr[i] = InnerOp({
-                valid: true,
-                hash: HashOp(uint256(bytes2num(temp[0]))),
-                prefix: temp[1],
-                suffix: temp[2]
-            });
-        }
+        // for (uint256 i = 0; i < _innerOp.length; i++) {
+        //     bytes[] memory temp = _innerOp[i];
+        //     innerOpArr[i] = InnerOp({
+        //         valid: true,
+        //         hash: HashOp(uint256(bytes2num(temp[0]))),
+        //         prefix: temp[1],
+        //         suffix: temp[2]
+        //     });
+        // }
         ExistenceProof memory proof = ExistenceProof({
-            valid: false,
+            valid: true,
             key: key,
             value: value,
             leaf: leafOp,
@@ -70,30 +69,84 @@ contract AnconVerifier is ICS23 {
         return proof;
     }
 
-    function changeOwnerWithProof(
-        bytes[] memory existenceProofLeafOp,
+    function requestRoot(
+        uint256[] memory leafOpUint,
+        bytes memory prefix,
         bytes[][] memory existenceProofInnerOp,
-        bytes memory existenceProofValue,
         bytes memory existenceProofKey,
-        bytes memory rootBz,
-        bytes memory pathBz,
-        bytes memory value
-    ) public returns (bool) {
+        bytes memory existenceProofValue
+    ) public view returns (bytes memory) {
+        require(msg.sender == whitelisted, "Must be whitelisted or registered");
         // todo: verify not empty
         ExistenceProof memory proof = convertProof(
             existenceProofKey,
             existenceProofValue,
-            existenceProofLeafOp,
+            prefix,
+            leafOpUint,
             existenceProofInnerOp
         );
+        return bytes(calculate(proof));
+    }
 
+    function changeOwnerWithProof(
+        uint256[] memory leafOpUint,
+        bytes memory prefix,
+        bytes[][] memory existenceProofInnerOp,
+        bytes memory existenceProofKey,
+        bytes memory existenceProofValue,
+        bytes memory root,
+        bytes memory key,
+        bytes memory value
+    ) public pure returns (bool) {
+        // todo: verify not empty
+        ExistenceProof memory proof = convertProof(
+            existenceProofKey,
+            existenceProofValue,
+            prefix,
+            leafOpUint,
+            existenceProofInnerOp
+        );
+        //        return bytes(calculate(proof));
         // Verify membership
-        return verifyMembership(getIavlSpec(), rootBz, proof, pathBz, value);
+
+        verify(proof, getIavlSpec(), root, key, value);
+
+        return true;
 
         //proof.key = xp.
 
         // verify permit exists, has not revoked, has valid issuer and is not expired
-        //return this.verifyMembership(iavlSpec, rootBz, xp, pathBz, value);
+        //return this.verifyMembership(iavlSpec, root, xp, key, value);
+        // verify token exists
+        //_lock(vc.data);
+        // _release
+    }
+
+    function printR(
+        uint256[] memory leafOpUint,
+        bytes memory prefix,
+        bytes[][] memory existenceProofInnerOp,
+        bytes memory existenceProofKey,
+        bytes memory existenceProofValue,
+        bytes memory root,
+        bytes memory key,
+        bytes memory value
+    ) public pure returns (bytes memory) {
+        // todo: verify not empty
+        ExistenceProof memory proof = convertProof(
+            existenceProofKey,
+            existenceProofValue,
+            prefix,
+            leafOpUint,
+            existenceProofInnerOp
+        );
+        return bytes(calculate(proof));
+        // Verify membership
+
+        //proof.key = xp.
+
+        // verify permit exists, has not revoked, has valid issuer and is not expired
+        //return this.verifyMembership(iavlSpec, root, xp, key, value);
         // verify token exists
         //_lock(vc.data);
         // _release

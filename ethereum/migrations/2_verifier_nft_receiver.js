@@ -10,8 +10,8 @@ const Web3 = require("web3");
 const ContractImportBuilder = require('../contract-import-builder');
 
 const Proofs = artifacts.require("IBCExistenceProof");
-const GoogleProtobufAny = artifacts.require("GoogleProtobufAny");
-const ProtoBufRuntime = artifacts.require("ProtoBufRuntime");
+const Bytes = artifacts.require("Bytes");
+const Memory = artifacts.require("Memory");
 const ICS23 = artifacts.require("ICS23");
 const AnconVerifier = artifacts.require("AnconVerifier");
 
@@ -39,16 +39,16 @@ module.exports = async (deployer, network, accounts) => {
     }
     
 
-  // await deployer.deploy(ProtoBufRuntime);
-  // await deployer.link(ProtoBufRuntime, GoogleProtobufAny, Proofs);
-  // await deployer.deploy(GoogleProtobufAny);
-  // await deployer.link(GoogleProtobufAny,Proofs);
+  await deployer.deploy(Memory);
+  await deployer.link(Memory, Bytes);
+  await deployer.deploy(Bytes);
+  await deployer.link(Bytes,AnconVerifier);
 	// await deployer.deploy(Proofs);
   // await deployer.link(Proofs, AnconMetadataOwnableBridge);
 	// await deployer.deploy(ICS23);
   // await deployer.link(ICS23, AnconMetadataOwnableBridge)  
   // await deployer.deploy(AnconMetadataOwnableBridge);
-  await deployer.deploy(AnconVerifier);
+  await deployer.deploy(AnconVerifier, accounts[0]);
 	const verifier = await AnconVerifier.deployed();
 
 

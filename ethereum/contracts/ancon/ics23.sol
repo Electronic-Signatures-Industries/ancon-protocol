@@ -1,6 +1,8 @@
 pragma solidity >=0.8.0;
+import "./Bytes.sol";
 
 contract ICS23 {
+    using Bytes for bytes;
     // Data structures and helper functions
 
     enum HashOp {
@@ -70,16 +72,31 @@ contract ICS23 {
         HashOp hash;
     }
 
-    function getIavlSpec() public pure returns (LeafOp memory) {
-        return
-            LeafOp(
-                true,
-                HashOp.SHA256,
-                HashOp.NO_HASH,
-                HashOp.SHA256,
-                LengthOp.VAR_PROTO,
-                hex"00"
-            );
+    function getIavlSpec() public pure returns (ProofSpec memory) {
+        ProofSpec memory spec;
+
+        uint256[] memory childOrder = new uint256[](2);
+        childOrder[0] = 0;
+        childOrder[1] = 1;
+
+        spec.leafSpec = LeafOp(
+            true,
+            HashOp.SHA256,
+            HashOp.NO_HASH,
+            HashOp.SHA256,
+            LengthOp.VAR_PROTO,
+            hex"00"
+        );
+
+        spec.innerSpec = InnerSpec(
+            childOrder,
+            33,
+            4,
+            12,
+            "",
+            HashOp.SHA256
+        );
+        return spec;
     }
 
     enum Ordering {
@@ -88,444 +105,225 @@ contract ICS23 {
         GT
     }
 
-    function doHashOrNoop(HashOp op, bytes memory preimage)
-        public
+    function checkAgainstSpecLeafOp(LeafOp memory op, ProofSpec memory spec)
+        internal
         pure
-        returns (bytes memory)
     {
-        if (op == HashOp.NO_HASH) {
-            return preimage;
-        }
-        return doHash(op, preimage);
+        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
+        require(
+            op.prehash_key == spec.leafSpec.prehash_key,
+            "Unexpected PrehashKey"
+        );
+        require(
+            op.prehash_value == spec.leafSpec.prehash_value,
+            "Unexpected PrehashKey"
+        );
+        require(op.len == spec.leafSpec.len, "UnexpecteleafSpec LengthOp");
+        require(
+            Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
+            "LeafOpLib: wrong prefix"
+        );
     }
 
-    function doHash(HashOp op, bytes memory preimage)
-        public
-        pure
-        returns (bytes memory)
-    {
-        if (op == HashOp.KECCAK) {
-            return abi.encodePacked(keccak256(preimage));
-        }
-        if (op == HashOp.SHA256) {
-            return abi.encodePacked(sha256(preimage));
-        }
-        if (op == HashOp.RIPEMD160) {
-            return abi.encodePacked(ripemd160(preimage));
-        }
-        if (op == HashOp.BITCOIN) {
-            return
-                abi.encodePacked(ripemd160(abi.encodePacked(sha256(preimage))));
-        }
-        revert("invalid or unsupported hash operation");
-    }
-
-    function doLength(LengthOp op, bytes memory data)
-        public
-        pure
-        returns (bytes memory)
-    {
-        if (op == LengthOp.NO_PREFIX) {
-            return data;
-        }
-        if (op == LengthOp.VAR_PROTO) {
-            uint256 l = data.length;
-            if (l >= 1 << 7) {
-                return
-                    abi.encodePacked(
-                        uint8((l & 0x7f) | 0x80),
-                        uint8(l >>= 7),
-                        data
-                    );
-            }
-            return abi.encodePacked(uint8(l), data);
-        }
-        if (op == LengthOp.REQUIRE_32_BYTES) {
-            require(data.length == 32);
-            return data;
-        }
-        if (op == LengthOp.REQUIRE_64_BYTES) {
-            require(data.length == 64);
-            return data;
-        }
-        revert("invalid or unsupported length operation");
-    }
-
-    function prepareLeafData(
-        HashOp hashop,
-        LengthOp lengthop,
-        bytes memory data
-    ) public pure returns (bytes memory) {
-        bytes memory hashed = doHashOrNoop(hashop, data);
-        bytes memory result = doLength(lengthop, hashed);
-        return result;
-    }
-
-    function applyLeaf(
+    function applyValueLeafOp(
         LeafOp memory op,
         bytes memory key,
         bytes memory value
-    ) public pure returns (bytes memory) {
-        require(key.length != 0);
-        require(value.length != 0);
-
-        bytes memory pkey = prepareLeafData(op.prehash_key, op.len, key);
-        bytes memory pvalue = prepareLeafData(op.prehash_value, op.len, value);
-
-        bytes memory data = abi.encodePacked(op.prefix, pkey, pvalue);
+    ) internal pure returns (bytes memory) {
+        require(key.length > 0, "Leaf op needs key");
+        require(value.length > 0, "Leaf op needs value");
+        bytes memory data = abi.encodePacked(
+            abi.encodePacked(
+                op.prefix,
+                prepareLeafData(op.prehash_key, op.len, key)
+            ),
+            prepareLeafData(op.prehash_value, op.len, value)
+        );
         return doHash(op.hash, data);
     }
 
-    function applyInner(InnerOp memory op, bytes memory child)
-        public
+    function prepareLeafData(
+        HashOp hashOp,
+        LengthOp lengthOp,
+        bytes memory data
+    ) private pure returns (bytes memory) {
+        return doLength(lengthOp, doHashOrNoop(hashOp, data));
+    }
+
+    function doHashOrNoop(HashOp hashOp, bytes memory data)
+        private
         pure
         returns (bytes memory)
     {
-        require(child.length != 0);
-        bytes memory preimage = abi.encodePacked(op.prefix, child, op.suffix);
-        return doHash(op.hash, preimage);
+        if (hashOp == HashOp.NO_HASH) {
+            return data;
+        }
+        return doHash(hashOp, data);
     }
 
-    function hasprefix(bytes memory s, bytes memory prefix)
-        public
+    function checkAgainstSpecInnerOp(InnerOp memory op, ProofSpec memory spec)
+        internal
         pure
-        returns (bool)
     {
-        for (uint256 i = 0; i < prefix.length; i++) {
-            if (s[i] != prefix[i]) {
-                return false;
-            }
-        }
-        return true;
+        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
+        require(
+            !Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
+            "InnerOpLib: wrong prefix"
+        );
+        require(
+            op.prefix.length >= uint256(spec.innerSpec.minPrefixLength),
+            "InnerOp prefix too short"
+        );
+
+        uint256 maxLeftChildLen = (spec.innerSpec.childOrder.length - 1) *
+            uint256(spec.innerSpec.childSize);
+        require(
+            op.prefix.length <=
+                uint256(spec.innerSpec.maxPrefixLength) + maxLeftChildLen,
+            "InnerOp prefix too short"
+        );
     }
 
-    function checkAgainstSpec(ExistenceProof memory proof, LeafOp memory spec)
-        public
-        pure
-        returns (bool)
-    {
-        if (
-            !(proof.leaf.hash == spec.hash &&
-                proof.leaf.prehash_key == spec.prehash_key &&
-                proof.leaf.prehash_value == spec.prehash_value &&
-                proof.leaf.len == spec.len &&
-                hasprefix(proof.leaf.prefix, spec.prefix))
-        ) {
-            return false;
-        }
-
-        for (uint256 i = 0; i < proof.path.length; i++) {
-            if (hasprefix(proof.path[i].prefix, spec.prefix)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    function calculate(ExistenceProof memory proof)
-        public
+    function applyValueInnerOp(InnerOp memory op, bytes memory child)
+        internal
         pure
         returns (bytes memory)
     {
-        bytes memory res = applyLeaf(proof.leaf, proof.key, proof.value);
+        require(child.length > 0, "Inner op needs child value");
+        return
+            doHash(
+                op.hash,
+                abi.encodePacked(abi.encodePacked(op.prefix, child), op.suffix)
+            );
+    }
+
+    function doHash(HashOp hashOp, bytes memory data)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        if (hashOp == HashOp.SHA256) {
+            return Bytes.fromBytes32(sha256(data));
+        }
+
+        if (hashOp == HashOp.SHA512) {
+            //TODO: implement sha512
+            revert("SHA512 not implemented");
+        }
+
+        if (hashOp == HashOp.RIPEMD160) {
+            return Bytes.fromBytes32(ripemd160(data));
+        }
+
+        if (hashOp == HashOp.BITCOIN) {
+            bytes32 hash = sha256(data);
+            return Bytes.fromBytes32(ripemd160(Bytes.fromBytes32(hash)));
+        }
+        revert("Unsupported hashop");
+    }
+
+    function doLength(LengthOp lengthOp, bytes memory data)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        if (lengthOp == LengthOp.NO_PREFIX) {
+            return data;
+        }
+        if (lengthOp == LengthOp.VAR_PROTO) {
+            return abi.encodePacked(encodeVarintProto(uint64(data.length)), data);
+        }
+        if (lengthOp == LengthOp.REQUIRE_32_BYTES) {
+            require(data.length == 32, "Expected 32 bytes");
+            return data;
+        }
+        if (lengthOp == LengthOp.REQUIRE_64_BYTES) {
+            require(data.length == 64, "Expected 64 bytes");
+            return data;
+        }
+        revert("Unsupported lengthop");
+    }
+
+    function encodeVarintProto(uint64 n) internal pure returns (bytes memory) {
+        // Count the number of groups of 7 bits
+        // We need this pre-processing step since Solidity doesn't allow dynamic memory resizing
+        uint64 tmp = n;
+        uint64 num_bytes = 1;
+        while (tmp > 0x7F) {
+            tmp = tmp >> 7;
+            num_bytes += 1;
+        }
+
+        bytes memory buf = new bytes(num_bytes);
+
+        tmp = n;
+        for (uint64 i = 0; i < num_bytes; i++) {
+            // Set the first bit in the byte for each group of 7 bits
+            buf[i] = bytes1(0x80 | uint8(tmp & 0x7F));
+            tmp = tmp >> 7;
+        }
+        // Unset the first bit of the last byte
+        buf[num_bytes - 1] &= 0x7F;
+
+        return buf;
+    }
+
+    function verify(
+        ExistenceProof memory proof,
+        ProofSpec memory spec,
+        bytes memory root,
+        bytes memory key,
+        bytes memory value
+    ) public pure {
+        checkAgainstSpec(proof, spec);
+        require(
+            Bytes.equals(proof.key, key),
+            "Provided key doesn't match proof"
+        );
+        require(
+            Bytes.equals(proof.value, value),
+            "Provided value doesn't match proof"
+        );
+        require(
+            Bytes.equals(calculate(proof), root),
+            "Calculcated root doesn't match provided root"
+        );
+    }
+
+    function checkAgainstSpec(ExistenceProof memory proof, ProofSpec memory spec)
+        private
+        pure
+    {
+        checkAgainstSpecLeafOp(proof.leaf, spec);
+        require(
+            spec.minDepth == 0 || proof.path.length >= uint256(spec.minDepth),
+            "InnerOps depth too short"
+        );
+        require(
+            spec.maxDepth == 0 || proof.path.length >= uint256(spec.maxDepth),
+            "InnerOps depth too short"
+        );
+
         for (uint256 i = 0; i < proof.path.length; i++) {
-            res = applyInner(proof.path[i], res);
+            checkAgainstSpecInnerOp(proof.path[i], spec);
+        }
+    }
+
+    // Calculate determines the root hash that matches the given proof.
+    // You must validate the result is what you have in a header.
+    // Returns error if the calculations cannot be performed.
+    function calculate(ExistenceProof memory p)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        // leaf step takes the key and value as input
+        bytes memory res = applyValueLeafOp(p.leaf, p.key, p.value);
+
+        // the rest just take the output of the last step (reducing it)
+        for (uint256 i = 0; i < p.path.length; i++) {
+            res = applyValueInnerOp(p.path[i], res);
         }
         return res;
-    }
-
-    function verifyExistence(
-        ExistenceProof memory proof,
-        LeafOp memory spec,
-        bytes memory root,
-        bytes memory key,
-        bytes memory value
-    ) public pure returns (bool) {
-        return (checkAgainstSpec(proof, spec) &&
-            equalBytes(key, proof.key) &&
-            equalBytes(value, proof.value) &&
-            equalBytes(calculate(proof), root));
-    }
-
-    function verifyNonExistence(
-        NonExistenceProof memory proof,
-        ProofSpec memory spec,
-        bytes memory root,
-        bytes memory key
-    ) public pure returns (bool) {
-        if (!proof.left.valid && !proof.right.valid) {
-            return false;
-        }
-        if (proof.left.valid) {
-            if (
-                !verifyExistence(
-                    proof.left,
-                    spec.leafSpec,
-                    root,
-                    proof.left.key,
-                    proof.left.value
-                )
-            ) {
-                return false;
-            }
-            if (compareBytes(key, proof.right.key) != Ordering.LT) {
-                return false;
-            }
-        }
-        if (proof.right.valid) {
-            if (
-                !verifyExistence(
-                    proof.right,
-                    spec.leafSpec,
-                    root,
-                    proof.right.key,
-                    proof.right.value
-                )
-            ) {
-                return false;
-            }
-            if (compareBytes(key, proof.left.key) != Ordering.GT) {
-                return false;
-            }
-        }
-
-        if (!proof.left.valid) {
-            if (!isLeftMost(spec.innerSpec, proof.right.path)) {
-                return false;
-            }
-        } else if (!proof.right.valid) {
-            if (!isRightMost(spec.innerSpec, proof.left.path)) {
-                return false;
-            }
-        } else {
-            if (
-                !isLeftNeighbor(
-                    spec.innerSpec,
-                    proof.left.path,
-                    proof.right.path
-                )
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    function orderFromPadding(InnerSpec memory spec, InnerOp memory op)
-        public
-        pure
-        returns (uint256)
-    {
-        uint256 maxBranch = spec.childOrder.length;
-
-        for (uint256 branch = 0; branch < maxBranch; branch++) {
-            (uint256 minPrefix, uint256 maxPrefix, uint256 suffix) = getPadding(
-                spec,
-                branch
-            );
-            if (hasPadding(op, minPrefix, maxPrefix, suffix)) {
-                return branch;
-            }
-        }
-
-        revert();
-    }
-
-    function isLeftStep(
-        InnerSpec memory spec,
-        InnerOp memory left,
-        InnerOp memory right
-    ) public pure returns (bool) {
-        uint256 leftidx = orderFromPadding(spec, left);
-        uint256 rightidx = orderFromPadding(spec, right);
-        return leftidx + 1 == rightidx;
-    }
-
-    function isLeftMost(InnerSpec memory spec, InnerOp[] memory path)
-        public
-        pure
-        returns (bool)
-    {
-        (uint256 minPrefix, uint256 maxPrefix, uint256 suffix) = getPadding(
-            spec,
-            0
-        );
-
-        for (uint256 i = 0; i < path.length; i++) {
-            if (!hasPadding(path[i], minPrefix, maxPrefix, suffix)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function isRightMost(InnerSpec memory spec, InnerOp[] memory path)
-        public
-        pure
-        returns (bool)
-    {
-        uint256 last = spec.childOrder.length - 1;
-        (uint256 minPrefix, uint256 maxPrefix, uint256 suffix) = getPadding(
-            spec,
-            last
-        );
-
-        for (uint256 i = 0; i < path.length; i++) {
-            if (!hasPadding(path[i], minPrefix, maxPrefix, suffix)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function isLeftNeighbor(
-        InnerSpec memory spec,
-        InnerOp[] memory left,
-        InnerOp[] memory right
-    ) public pure returns (bool) {
-        uint256 top = 1;
-        for (
-            ;
-            equalBytes(
-                left[left.length - top].prefix,
-                right[right.length - top].prefix
-            ) &&
-                equalBytes(
-                    left[left.length - top].suffix,
-                    right[right.length - top].suffix
-                );
-            top++
-        ) {}
-
-        InnerOp memory topLeft = left[left.length - top];
-        InnerOp memory topRight = right[right.length - top];
-
-        if (!isLeftStep(spec, topLeft, topRight)) {
-            return false;
-        }
-
-        if (!isRightMost(spec, left)) {
-            return false;
-        }
-
-        if (!isLeftMost(spec, right)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    function getPosition(uint256[] memory order, uint256 branch)
-        public
-        pure
-        returns (uint256)
-    {
-        require(branch < order.length);
-        for (uint256 i = 0; i < order.length; i++) {
-            if (order[i] == branch) {
-                return i;
-            }
-        }
-        revert();
-    }
-
-    function hasPadding(
-        InnerOp memory op,
-        uint256 minPrefix,
-        uint256 maxPrefix,
-        uint256 suffix
-    ) public pure returns (bool) {
-        if (op.prefix.length < minPrefix) {
-            return false;
-        }
-        if (op.prefix.length > maxPrefix) {
-            return false;
-        }
-        return op.suffix.length == suffix;
-    }
-
-    function getPadding(InnerSpec memory spec, uint256 branch)
-        public
-        pure
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
-        uint256 idx = getPosition(spec.childOrder, branch);
-
-        uint256 prefix = idx * spec.childSize;
-        uint256 minPrefix = prefix + spec.minPrefixLength;
-        uint256 maxPrefix = prefix + spec.maxPrefixLength;
-
-        uint256 suffix = (spec.childOrder.length - 1 - idx) * spec.childSize;
-
-        return (minPrefix, maxPrefix, suffix);
-    }
-
-    function equalBytes(bytes memory bz1, bytes memory bz2)
-        public
-        pure
-        returns (bool)
-    {
-        if (bz1.length != bz2.length) {
-            return false;
-        }
-        for (uint256 i = 0; i < bz1.length; i++) {
-            if (bz1[i] != bz2[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function compareBytes(bytes memory bz1, bytes memory bz2)
-        public
-        pure
-        returns (Ordering)
-    {
-        for (uint256 i = 0; i < bz1.length && i < bz2.length; i++) {
-            if (bz1[i] < bz2[i]) {
-                return Ordering.LT;
-            }
-            if (bz1[i] > bz2[i]) {
-                return Ordering.GT;
-            }
-        }
-        if (bz1.length == bz2.length) {
-            return Ordering.EQ;
-        }
-        if (bz1.length < bz2.length) {
-            return Ordering.LT;
-        }
-        if (bz1.length > bz2.length) {
-            return Ordering.GT;
-        }
-        revert("should not reach this line");
-    }
-
-    // ICS23 interface implementation
-
-    // verifyMembership is synonym for verifyExistence
-    function verifyMembership(
-        LeafOp memory spec,
-        bytes memory root,
-        ExistenceProof memory proof,
-        bytes memory key,
-        bytes memory value
-    ) public pure returns (bool) {
-        return verifyExistence(proof, spec, root, key, value);
-    }
-
-    function verifyNonMembership(
-        ProofSpec memory spec,
-        bytes memory root,
-        NonExistenceProof memory proof,
-        bytes memory key
-    ) public pure returns (bool) {
-        return verifyNonExistence(proof, spec, root, key);
     }
 }
