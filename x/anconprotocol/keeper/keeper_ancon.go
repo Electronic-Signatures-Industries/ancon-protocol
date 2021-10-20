@@ -2,23 +2,18 @@ package keeper
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/multiformats/go-multihash"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -351,34 +346,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			k := []byte(lnk.String())
 			v := buf.Bytes()
 			store.Set(k, v)
-
-			var h []byte
-			prefix := []byte("ancon")
-			h = append(h, prefix...)
-
-			pk := sha256.Sum256(k)
-			h = append(h, byte(sha256.New().Size()))
-			h = append(h, cast.ToString(pk)...)
-			pv := sha256.Sum256(v)
-			h = append(h, byte(sha256.New().Size()))
-			h = append(h, cast.ToString(pv)...)
-
-			h = []byte(cast.ToString(sha256.Sum256(h)))
-
-			ce := &ics23.CommitmentProof_Exist{
-				Exist: &ics23.ExistenceProof{
-					Key:   k,
-					Value: v,
-					Leaf:  ics23.IavlSpec.LeafSpec,
-				},
-			}
-
-			c := &ics23.CommitmentProof{ce}
-			r, _ := c.Calculate()
-
-			err := c.GetExist().Verify(ics23.IavlSpec, r, k, v)
-
-			return err
+			return nil
 		}, nil
 	}
 
@@ -390,7 +358,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	u := []string{}
 	json.Unmarshal([]byte(msg.Links), &u)
 	links := u
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, -1, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 10, func(na fluent.MapAssembler) {
 		// TODO:
 		na.AssembleEntry("name").AssignString(msg.Name)
 		na.AssembleEntry("description").AssignString(msg.Description)
@@ -495,58 +463,7 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	return n, err
 }
 
-func (k Keeper) GetMetadataProof(ctx sdk.Context, height int64, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
-	var id []byte
-	if path != "" {
-		id = append([]byte(hash), path...)
-	} else {
-		id = []byte(hash)
-	}
-	ctx.Logger().Error("id created")
-	kvstore := ctx.MultiStore().GetKVStore(sdk.NewKVStoreKey("anconprotocol"))
-	ctx.Logger().Error("id created")
-	ctx.Logger().Error("id created")
-
-	queryStore := kvstore.(store.Queryable)
-
-	ctx.Logger().Error("id created")
-
-	query := abci.RequestQuery{
-		Data:   id,
-		Path:   ("/key"),
-		Height: height - 1,
-		Prove:  true,
-	}
-	ctx.Logger().Error("query results created")
-	res := queryStore.Query(query)
-
-	mproofs, err := ibc.ConvertProofs(res.ProofOps)
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("proofs created")
-	r, err := mproofs.Proofs[0].Calculate()
-	root := ibc.MerkleRoot{
-		Hash: r,
-	}
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("root hash created")
-	value := kvstore.Get(id)
-
-	ps := []*ics23.ProofSpec{
-		ics23.IavlSpec,
-	}
-
-	err = mproofs.VerifyMembership(ps, root, ibc.NewMerklePath(string(id)), value)
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("verified membeship created")
-	return &root, &mproofs, nil
-}
-func (k *Keeper) GetMetadataProof2(ctx sdk.Context, proofOps *crypto.ProofOps, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
+func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -554,33 +471,22 @@ func (k *Keeper) GetMetadataProof2(ctx sdk.Context, proofOps *crypto.ProofOps, h
 		id = []byte(hash)
 	}
 
-	kvstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+	proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
 
-	mproofs, err := ibc.ConvertProofs(proofOps)
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("proofs created")
-	r, err := mproofs.Proofs[0].Calculate()
-	root := ibc.MerkleRoot{
-		Hash: r,
-	}
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("root hash created")
-	value := kvstore.Get(id)
+	if proofstore.Has(id) {
+		proof := &ics23.CommitmentProof{}
+		err := proof.Unmarshal(proofstore.Get(id))
 
-	ps := []*ics23.ProofSpec{
-		ics23.IavlSpec,
+		r, err := proof.Calculate()
+		if err != nil {
+			return nil, nil, err
+		}
+		return &ibc.MerkleRoot{Hash: r}, &ibc.MerkleProof{
+			Proofs: []*ics23.CommitmentProof{proof},
+		}, nil
 	}
 
-	err = mproofs.VerifyMembership(ps, root, ibc.NewMerklePath(string(id)), value)
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx.Logger().Error("verified membeship created")
-	return &root, &mproofs, nil
+	return nil, nil, nil
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 
@@ -590,24 +496,6 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 	if err != nil {
 		return "", err
 	}
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-	v := store.Get([]byte(hash))
-	ce1 := &ics23.CommitmentProof_Exist{
-		Exist: &ics23.ExistenceProof{
-			Key:   []byte(hash),
-			Value: v,
-			Leaf:  ics23.IavlSpec.LeafSpec,
-		},
-	}
-
-	c := &ics23.CommitmentProof{ce1}
-	r, _ := c.Calculate()
-
-	err = c.GetExist().Verify(ics23.IavlSpec, r, []byte(hash), v)
-	if err != nil {
-		return "", err
-	}
-
 	// owner update
 	n, err := traversal.FocusedTransform(
 		rootNode,
@@ -642,31 +530,34 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 		buf := bytes.Buffer{}
 		return &buf, func(lnk ipld.Link) error {
 			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
-			k := []byte(lnk.String())
+			key := []byte(lnk.String())
 			v := buf.Bytes()
-			store.Set(k, v)
-			ce2 := &ics23.CommitmentProof_Exist{
+			store.Set(key, v)
+
+			proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
+			ce1 := &ics23.CommitmentProof_Exist{
 				Exist: &ics23.ExistenceProof{
-					Key:   k,
+					Key:   key,
 					Value: v,
 					Leaf:  ics23.IavlSpec.LeafSpec,
 				},
 			}
-			ps := []*ics23.ProofSpec{
-				ics23.IavlSpec, ics23.IavlSpec,
-			}
-			combined := []*ics23.CommitmentProof{
-				{ce2},
-				{ce1},
-			}
-			//			c, err := ics23.CombineProofs(combined)
-			mp := ibc.MerkleProof{Proofs: combined}
-			mp.VerifyMembership(ps, ibc.MerkleRoot{Hash: r}, ibc.MerklePath{
-				KeyPath: strings.Split(string(k), "/"),
-			}, v)
-			///			err := c.GetExist().Verify(ics23.IavlSpec, r, k, v)
 
-			return err
+			c := &ics23.CommitmentProof{ce1}
+			r, _ := c.Calculate()
+
+			err = c.GetExist().Verify(ics23.IavlSpec, r, key, v)
+			if err != nil {
+				return err
+			}
+
+			proof, err := c.Marshal()
+			proofstore.Set(key, proof)
+			if err != nil {
+				return err
+			}
+
+			return nil
 		}, nil
 	}
 
