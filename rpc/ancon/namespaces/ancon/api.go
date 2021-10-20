@@ -3,7 +3,9 @@ package ancon
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"math/big"
+	"net/http"
 
 	"fmt"
 	"strings"
@@ -114,56 +116,38 @@ func GetLinkPrototype() ipld.LinkPrototype {
 }
 
 // GetProofs
-func (e *AnconAPIHandler) GetProofs(height int64, key string) (*sdk.ABCIMessageLogs, error) {
+func (e *AnconAPIHandler) GetProofs(key string) (*sdk.ABCIMessageLogs, error) {
 	e.logger.Debug("ancon_getProofs")
 
-	e.clientCtx = e.clientCtx.WithHeight(height)
-	v, pops, err := e.queryClient.GetProof(e.clientCtx, "anconprotocol", []byte(key))
+	res, err := http.Get(fmt.Sprintf("http://localhost:1317/ancon/proof/%s/", key))
+	if err != nil {
+		return nil, err
+	}
 
-	// _, err := e.clientCtx.Client.Block(context.Background(), &height)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	mproofs, err := ibc.ConvertProofs(pops)
+	var buf []byte
 
+	_, err = res.Body.Read(buf)
+	if err != nil {
+		return nil, err
+	}
+	var response map[string][]byte
+	err = json.Unmarshal(buf, &response)
+	if err != nil {
+		return nil, err
+	}
+	mp := &ibc.MerkleProof{}
+	mp.Unmarshal(response["proofs"])
+
+	response["proofs"], err = mp.GetProofs()[0].GetExist().Marshal()
 	if err != nil {
 		return nil, err
 	}
 	rspEventAppend := sdk.EmptyEvents()
-
-	ps := []*ics23.ProofSpec{
-		ics23.IavlSpec,
-		ics23.TendermintSpec,
-	}
-
-	key = fmt.Sprintf("store/anconprotocol/key/%s", key)
-
-	///	kp := ibc.NewMerklePath("store/anconprotocol/key", key)
-	h, err := mproofs.Proofs[0].Calculate()
-
-	err = mproofs.Proofs[0].GetExist().Verify(ps[0], h, mproofs.Proofs[0].GetExist().Key, mproofs.Proofs[0].GetExist().Value)
-	if err != nil {
-		return nil, err
-	}
-
-	comm, err := (mproofs).Marshal()
-	if err != nil {
-		return nil, err
-	}
-
-	xp, err := mproofs.Proofs[0].Marshal()
-
-	if err != nil {
-		return nil, err
-	}
-
 	rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
 		fmt.Sprintf("proof_path_%s", key),
-		sdk.NewAttribute("root", hexutil.Encode((h))),
-		sdk.NewAttribute("commitment", hexutil.Encode(comm)),
-		sdk.NewAttribute("value", hexutil.Encode(v)),
+		sdk.NewAttribute("root", string(response["root"])),
+		sdk.NewAttribute("proofs", hexutil.Encode(response["proofs"])),
 		sdk.NewAttribute("key", key),
-		sdk.NewAttribute("existence_proof", hexutil.Encode(xp)),
 	))
 
 	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)

@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	ReadMetadataProofQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"ancon", "proof", "height", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadMetadataProofQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "proof", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
 	ReadRoyaltyInfoQuery   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "royalty", "cid", "price"}, "", runtime.AssumeColonVerbOpt(true)))
 	ReadWithPathQuery      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
 	ReadQuery              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"ancon", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
@@ -45,17 +45,21 @@ func (k Keeper) ReadMetadataProof(goCtx context.Context, req *types.QueryProofMe
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	r, proof, err := k.GetMetadataProof(ctx, req.Height, req.Cid, req.Path)
+	r, proof, err := k.GetMetadataProof(ctx, req.Cid, req.Path)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "failed to get metadata")
 	}
 
-	output, err := k.cdc.MarshalJSON(proof)
+	if proof == nil {
+		return nil, status.Error(codes.InvalidArgument, "no proof found")
+	}
+
+	output, err := k.cdc.Marshal(proof)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "failed to  marshal metadata")
 	}
 	return &types.QueryProofResponse{
-		Root:  hexutil.Encode(r.Hash),
+		Root:  r,
 		Proof: hexutil.Encode(output),
 	}, nil
 }
@@ -162,16 +166,6 @@ func readMetadataProof(ctx context.Context, marshaler runtime.Marshaler, client 
 		err error
 		_   = err
 	)
-	val, ok = pathParams["height"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
-	}
-
-	protoReq.Height, err = runtime.Int64(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
-	}
 
 	val, ok = pathParams["cid"]
 	if !ok {

@@ -15,6 +15,7 @@ import (
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -463,7 +464,7 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	return n, err
 }
 
-func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (*ibc.MerkleRoot, *ibc.MerkleProof, error) {
+func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (string, *ibc.MerkleProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -479,14 +480,14 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (*ibc.Merkl
 
 		r, err := proof.Calculate()
 		if err != nil {
-			return nil, nil, err
+			return "", nil, err
 		}
-		return &ibc.MerkleRoot{Hash: r}, &ibc.MerkleProof{
+		return hexutil.Encode(r), &ibc.MerkleProof{
 			Proofs: []*ics23.CommitmentProof{proof},
 		}, nil
 	}
 
-	return nil, nil, nil
+	return "", nil, nil
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 

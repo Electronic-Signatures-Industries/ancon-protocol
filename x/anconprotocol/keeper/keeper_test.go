@@ -117,7 +117,7 @@ func Test_AddMetadata_JSON(t *testing.T) {
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: lnk}
 	om, _ := keeper.GetObject(ctx, x)
-	r, p, _ := keeper.GetMetadataProof(ctx, 2, fmt.Sprintf("ancon%s", lnk), "")
+	r, p, _ := keeper.GetMetadataProof(ctx, fmt.Sprintf("%s", lnk), "")
 
 	require.NotNil(t, r)
 	require.NotNil(t, p)
@@ -146,6 +146,11 @@ func Test_ChangeMetadata_JSON(t *testing.T) {
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
 	updlnk, _ := keeper.ChangeOwnerMetadata(ctx, lnk, f[0].Owner, f[0].Did, "", "")
+
+	r, p, _ := keeper.GetMetadataProof(ctx, fmt.Sprintf("%s", updlnk), "")
+
+	require.NotNil(t, r)
+	require.NotNil(t, p)
 
 	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
 	x := &types.QueryResourceRequest{Cid: updlnk}
