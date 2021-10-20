@@ -539,7 +539,7 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 				Exist: &ics23.ExistenceProof{
 					Key:   key,
 					Value: v,
-					Leaf:  ics23.IavlSpec.LeafSpec,
+					Leaf:  ics23.IavlSpec.GetLeafSpec(),
 				},
 			}
 
