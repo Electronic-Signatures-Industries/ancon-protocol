@@ -54,7 +54,7 @@ func (k Keeper) ReadMetadataProof(goCtx context.Context, req *types.QueryProofMe
 		return nil, status.Error(codes.InvalidArgument, "no proof found")
 	}
 
-	output, err := k.cdc.Marshal(proof)
+	output, err := k.cdc.MarshalJSON(proof.GetProofs()[0].GetExist())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "failed to  marshal metadata")
 	}

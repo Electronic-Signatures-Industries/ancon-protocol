@@ -3,9 +3,7 @@ package ancon
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
 	"math/big"
-	"net/http"
 
 	"fmt"
 	"strings"
@@ -113,52 +111,6 @@ func GetLinkPrototype() ipld.LinkPrototype {
 		MhType:   0x12, // sha2-256
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
-}
-
-// GetProofs
-func (e *AnconAPIHandler) GetProofs(key string) (*sdk.ABCIMessageLogs, error) {
-	e.logger.Debug("ancon_getProofs")
-
-	res, err := http.Get(fmt.Sprintf("http://localhost:1317/ancon/proof/%s/", key))
-	if err != nil {
-		return nil, err
-	}
-
-	var buf []byte
-
-	_, err = res.Body.Read(buf)
-	if err != nil {
-		return nil, err
-	}
-	var response map[string][]byte
-	err = json.Unmarshal(hexutil.MustDecode(string(buf)), &response)
-	if err != nil {
-		return nil, err
-	}
-	mp := &ibc.MerkleProof{}
-	mp.Unmarshal(response["proofs"])
-
-	response["proofs"], err = mp.GetProofs()[0].GetExist().Marshal()
-	if err != nil {
-		return nil, err
-	}
-	rspEventAppend := sdk.EmptyEvents()
-	rspEventAppend = rspEventAppend.AppendEvent(sdk.NewEvent(
-		fmt.Sprintf("proof_path_%s", key),
-		sdk.NewAttribute("root", string(response["root"])),
-		sdk.NewAttribute("proofs", hexutil.Encode(response["proofs"])),
-		sdk.NewAttribute("key", key),
-	))
-
-	l := sdk.NewABCIMessageLog(uint32(0), "proofs", rspEventAppend)
-
-	logs := sdk.ABCIMessageLogs{{
-		MsgIndex: l.MsgIndex,
-		Log:      l.Log,
-		Events:   l.Events,
-	}}
-
-	return &logs, nil
 }
 
 // VerifyMembership
