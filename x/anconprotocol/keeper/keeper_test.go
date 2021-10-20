@@ -101,8 +101,8 @@ func Test_AddMetadata_JSON(t *testing.T) {
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-	f[0].Links = "[]"
+	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
+	f[0].Links = []string{}
 	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
@@ -139,8 +139,8 @@ func Test_ChangeMetadata_JSON(t *testing.T) {
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-	f[0].Links = "[]"
+	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
+	f[0].Links = []string{}
 	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
@@ -174,8 +174,8 @@ func TestTrustedContent(t *testing.T) {
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-	f[0].Links = "[]"
+	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
+	f[0].Links = []string{}
 	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
@@ -216,8 +216,8 @@ func TestTrustedContent_CrossMint(t *testing.T) {
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-	f[0].Links = "[]"
+	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
+	f[0].Links = []string{}
 	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
@@ -264,8 +264,8 @@ func TestTrustedContent_Voucher(t *testing.T) {
 	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
 	f[0].Parent = ""
 	f[0].VerifiedCredentialRef = ""
-	f[0].Sources = "[\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\"]"
-	f[0].Links = "[]"
+	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
+	f[0].Links = []string{}
 	f[0].From = "gggggggggggggg"
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])

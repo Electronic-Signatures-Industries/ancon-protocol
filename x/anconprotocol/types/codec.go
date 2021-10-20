@@ -25,7 +25,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRevokeAttribute{}, "anconprotocol/RevokeAttribute", nil)
 
 	cdc.RegisterConcrete(&MsgMetadata{}, "anconprotocol/Metadata", nil)
-	cdc.RegisterConcrete(&MsgChangeMetadataOwnership{}, "anconprotocol/ChangeMetadataOwnership", nil)
+	cdc.RegisterConcrete(&MsgUpdateMetadataOwnership{}, "anconprotocol/MsgUpdateMetadataOwnership", nil)
 
 	cdc.RegisterConcrete(&MsgFile{}, "anconprotocol/File", nil)
 
@@ -53,7 +53,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateDid{},
 		&MsgUpdateDid{},
 		&MsgRevokeDid{},
-		&MsgChangeMetadataOwnership{},
+		&MsgUpdateMetadataOwnership{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

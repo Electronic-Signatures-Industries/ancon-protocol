@@ -7,9 +7,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// ChangeMetadataOwnership
+// UpdateMetadataOwnership
 //TODO: emit event
-func (k msgServer) ChangeMetadataOwnership(goCtx context.Context, msg *types.MsgChangeMetadataOwnership) (*types.MsgChangeMetadataOwnershipResponse, error) {
+func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.MsgUpdateMetadataOwnership) (*types.MsgUpdateMetadataOwnershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
@@ -21,7 +21,7 @@ func (k msgServer) ChangeMetadataOwnership(goCtx context.Context, msg *types.Msg
 		ctx, msg.Hash, msg.PreviousOwner, msg.NewOwner, msg.CurrentChainId, msg.RecipientChainId,
 	)
 
-	return &types.MsgChangeMetadataOwnershipResponse{
+	return &types.MsgUpdateMetadataOwnershipResponse{
 		Cid: lnk,
 	}, nil
 }

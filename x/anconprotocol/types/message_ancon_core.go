@@ -6,26 +6,26 @@ import (
 )
 
 var _ sdk.Msg = &MsgFile{}
-var _ sdk.Msg = &MsgChangeMetadataOwnership{}
+var _ sdk.Msg = &MsgUpdateMetadataOwnership{}
 var _ sdk.Msg = &MsgMetadata{}
 var _ sdk.Msg = &MsgMintTrustedContent{}
 
 // var _ sdk.Msg = &MsgRoyaltyInfo{}
 // var _ sdk.Msg = &MsgMintTrustedResource{}
 
-func NewMsgChangeMetadataOwnership(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgChangeMetadataOwnership {
-	return &MsgChangeMetadataOwnership{}
+func NewMsgChangeMetadataOwnership(creator string, path string, content string, mode string, time string, content_type string, did string, from string) *MsgUpdateMetadataOwnership {
+	return &MsgUpdateMetadataOwnership{}
 }
 
-func (msg *MsgChangeMetadataOwnership) Route() string {
+func (msg *MsgUpdateMetadataOwnership) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgChangeMetadataOwnership) Type() string {
-	return "ChangeMetadataOwnership"
+func (msg *MsgUpdateMetadataOwnership) Type() string {
+	return "UpdateMetadataOwnership"
 }
 
-func (msg *MsgChangeMetadataOwnership) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateMetadataOwnership) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
@@ -33,12 +33,12 @@ func (msg *MsgChangeMetadataOwnership) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgChangeMetadataOwnership) GetSignBytes() []byte {
+func (msg *MsgUpdateMetadataOwnership) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgChangeMetadataOwnership) ValidateBasic() error {
+func (msg *MsgUpdateMetadataOwnership) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
@@ -212,7 +212,8 @@ func (msg *MsgFile) ValidateBasic() error {
 	return nil
 }
 
-func NewMsgMetadata(creator string, name string, description string, image string, owner string, parent string, sources string, links string, verified_credential_ref string, did string, from string) *MsgMetadata {
+func NewMsgMetadata(creator, name, description, image, owner, parent string,
+	sources, links []string, verified_credential_ref, did, from string) *MsgMetadata {
 	return &MsgMetadata{
 		Creator:               creator,
 		Name:                  name,
@@ -220,7 +221,7 @@ func NewMsgMetadata(creator string, name string, description string, image strin
 		Image:                 image,
 		Owner:                 owner,
 		Parent:                parent,
-		Sources:               sources,
+		AdditionalSources:     sources,
 		Links:                 links,
 		VerifiedCredentialRef: verified_credential_ref,
 		Did:                   did,

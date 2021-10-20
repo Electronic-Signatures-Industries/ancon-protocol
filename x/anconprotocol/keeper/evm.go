@@ -127,18 +127,18 @@ func (h CreateMetadataHook) PostTxProcessing(ctx sdk.Context, txHash common.Hash
 		description := unpacked[3].(string)
 		image := unpacked[4].(string)
 		parent := unpacked[5].(string)
-		sources := unpacked[6].(string)
-		links := unpacked[7].(string)
+		// sources := unpacked[6].(string)
+		// links := unpacked[7].(string)
 
 		msg := types.MsgMetadata{
-			Creator:                owner.String(),
-			Name:                   name,
-			Description:            description,
-			Image:                  image,
-			Owner:                  owner.String(),
-			Parent:                 parent,
-			Sources:                sources,
-			Links:                  links,
+			Creator:     owner.String(),
+			Name:        name,
+			Description: description,
+			Image:       image,
+			Owner:       owner.String(),
+			Parent:      parent,
+			// AdditionaSources:                sources,
+			// Links:                  links,
 			VerifiedCredentialRef:  "",
 			Did:                    did,
 			From:                   "",

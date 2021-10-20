@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -352,13 +351,6 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 	}
 
 	// Add Document
-	v := []string{}
-	json.Unmarshal([]byte(msg.Sources), &v)
-	sources := v
-
-	u := []string{}
-	json.Unmarshal([]byte(msg.Links), &u)
-	links := u
 	n := fluent.MustBuildMap(basicnode.Prototype.Map, 10, func(na fluent.MapAssembler) {
 		// TODO:
 		na.AssembleEntry("name").AssignString(msg.Name)
@@ -381,11 +373,11 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 		na.AssembleEntry("kind").AssignString("metadata")
 		// Sources
-		if len(sources) > 0 {
+		if len(msg.AdditionalSources) > 0 {
 
-			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(sources)), func(la fluent.ListAssembler) {
-				for i := 0; i < len(sources); i++ {
-					lnk, err := ParseHashCidLink((sources[i]))
+			na.AssembleEntry("msg.AdditionalSources").CreateList(cast.ToInt64(len(msg.AdditionalSources)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(msg.AdditionalSources); i++ {
+					lnk, err := ParseHashCidLink((msg.AdditionalSources[i]))
 					if err != nil {
 						continue
 					}
@@ -394,12 +386,12 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			})
 		}
 		// Link
-		if len(links) > 0 {
+		if len(msg.Links) > 0 {
 
-			na.AssembleEntry("links").CreateList(cast.ToInt64(len(links)), func(la fluent.ListAssembler) {
-				for i := 0; i < len(links); i++ {
+			na.AssembleEntry("msg.Links").CreateList(cast.ToInt64(len(msg.Links)), func(la fluent.ListAssembler) {
+				for i := 0; i < len(msg.Links); i++ {
 
-					lnk, err := ParseHashCidLink((links[i]))
+					lnk, err := ParseHashCidLink((msg.Links[i]))
 					if err != nil {
 						continue
 					}
@@ -464,6 +456,7 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	return n, err
 }
 
+// GetMetadataProof
 func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (string, *ibc.MerkleProof, error) {
 	var id []byte
 	if path != "" {

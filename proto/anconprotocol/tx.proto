@@ -50,10 +50,10 @@ service Msg {
   // MintTrustedResource defines a method for minting a resource.
   rpc MintTrustedResource(MsgMintTrustedResource) returns (MsgMintTrustedResourceResponse);
   //Create ancon metadata
-  rpc ChangeMetadataOwnership(MsgChangeMetadataOwnership) returns (MsgChangeMetadataOwnershipResponse);
+  rpc UpdateMetadataOwnership(MsgUpdateMetadataOwnership) returns (MsgUpdateMetadataOwnershipResponse);
 }
 
-message MsgChangeMetadataOwnership {
+message MsgUpdateMetadataOwnership {
   string hash = 1;
   string previousOwner = 2; // did
   string newOwner = 3;      // did
@@ -62,7 +62,7 @@ message MsgChangeMetadataOwnership {
   string sender = 6;
 }
 
-message MsgChangeMetadataOwnershipResponse {
+message MsgUpdateMetadataOwnershipResponse {
   string cid = 1;
 }
 
@@ -454,8 +454,8 @@ message MsgMetadata {
   string image = 4;
   string owner = 5;   // did owner*eg. did:ancon:{hex-bech32}
   string parent = 6;  // change/diff , ancestor is parent, version
-  string sources = 7; // data sources
-  string links = 8;   // reference links
+  repeated string additional_sources = 7; // data sources
+  repeated string links = 8;   // reference links
   string verified_credential_ref = 9; // mutate
   string did = 10;    // did doc* #my_document
   string from = 11;   // reserved
