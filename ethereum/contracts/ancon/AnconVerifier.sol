@@ -35,7 +35,8 @@ contract AnconVerifier is ICS23 {
         bytes memory value,
         bytes memory _prefix,
         uint256[] memory _leafOpUint,
-        bytes[][] memory _innerOp
+        bytes[][] memory _innerOp,
+        uint256 existenceProofInnerOpHash
     ) public pure returns (ExistenceProof memory) {
         LeafOp memory leafOp = LeafOp(
             true,
@@ -43,21 +44,21 @@ contract AnconVerifier is ICS23 {
             HashOp((_leafOpUint[1])),
             HashOp((_leafOpUint[2])),
             LengthOp((_leafOpUint[3])),
-            hex"00"
+            _prefix
         );
 
         // // innerOpArr
         InnerOp[] memory innerOpArr;
 
-        // for (uint256 i = 0; i < _innerOp.length; i++) {
-        //     bytes[] memory temp = _innerOp[i];
-        //     innerOpArr[i] = InnerOp({
-        //         valid: true,
-        //         hash: HashOp(uint256(bytes2num(temp[0]))),
-        //         prefix: temp[1],
-        //         suffix: temp[2]
-        //     });
-        // }
+        for (uint256 i = 0; i < _innerOp.length; i++) {
+            bytes[] memory temp = _innerOp[i];
+            innerOpArr[i] = InnerOp({
+                valid: true,
+                hash: HashOp(existenceProofInnerOpHash),
+                prefix: temp[1],
+                suffix: temp[2]
+            });
+        }
         ExistenceProof memory proof = ExistenceProof({
             valid: true,
             key: key,
@@ -73,6 +74,7 @@ contract AnconVerifier is ICS23 {
         uint256[] memory leafOpUint,
         bytes memory prefix,
         bytes[][] memory existenceProofInnerOp,
+        uint256 existenceProofInnerOpHash,
         bytes memory existenceProofKey,
         bytes memory existenceProofValue
     ) public view returns (bytes memory) {
@@ -83,7 +85,8 @@ contract AnconVerifier is ICS23 {
             existenceProofValue,
             prefix,
             leafOpUint,
-            existenceProofInnerOp
+            existenceProofInnerOp,
+            existenceProofInnerOpHash
         );
         return bytes(calculate(proof));
     }
@@ -92,6 +95,7 @@ contract AnconVerifier is ICS23 {
         uint256[] memory leafOpUint,
         bytes memory prefix,
         bytes[][] memory existenceProofInnerOp,
+        uint256 existenceProofInnerOpHash,
         bytes memory existenceProofKey,
         bytes memory existenceProofValue,
         bytes memory root,
@@ -104,7 +108,8 @@ contract AnconVerifier is ICS23 {
             existenceProofValue,
             prefix,
             leafOpUint,
-            existenceProofInnerOp
+            existenceProofInnerOp,
+            existenceProofInnerOpHash
         );
         //        return bytes(calculate(proof));
         // Verify membership
@@ -122,33 +127,4 @@ contract AnconVerifier is ICS23 {
         // _release
     }
 
-    function printR(
-        uint256[] memory leafOpUint,
-        bytes memory prefix,
-        bytes[][] memory existenceProofInnerOp,
-        bytes memory existenceProofKey,
-        bytes memory existenceProofValue,
-        bytes memory root,
-        bytes memory key,
-        bytes memory value
-    ) public pure returns (bytes memory) {
-        // todo: verify not empty
-        ExistenceProof memory proof = convertProof(
-            existenceProofKey,
-            existenceProofValue,
-            prefix,
-            leafOpUint,
-            existenceProofInnerOp
-        );
-        return bytes(calculate(proof));
-        // Verify membership
-
-        //proof.key = xp.
-
-        // verify permit exists, has not revoked, has valid issuer and is not expired
-        //return this.verifyMembership(iavlSpec, root, xp, key, value);
-        // verify token exists
-        //_lock(vc.data);
-        // _release
-    }
 }

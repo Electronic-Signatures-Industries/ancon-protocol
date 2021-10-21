@@ -107,7 +107,7 @@ func Test_AddMetadata_JSON(t *testing.T) {
 
 	lnk, _ := keeper.AddMetadata(ctx, &f[0])
 
-	st := ctx.MultiStore().GetKVStore(keeper.storeKey).(*iavl.Store)
+	st := ctx.MultiStore().GetStore(keeper.storeKey).(*iavl.Store)
 	id := st.Commit()
 
 	lnk, _ = keeper.AddMetadata(ctx, &f[0])

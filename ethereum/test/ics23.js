@@ -14,37 +14,54 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
   // let controllerContract;
   // let documentMinterAddress;
   let anconVerifierContract
-  let toABI = (exists) => {
-    const innerOp = [[]]
+  let toABI = ({ exist }) => {
+    const innerOp = []
+    innerOp.push([
+      ethers.utils.toUtf8Bytes(exist.path[0].prefix),
+      ethers.utils.toUtf8Bytes(exist.path[0].suffix),
+    ])
     const leafOp = [
-      ics23.ics23.HashOp[exists.leaf.hash],
-      ics23.ics23.HashOp[exists.leaf.prehash_key],
-      ics23.ics23.HashOp[exists.leaf.prehash_value],
-      ics23.ics23.LengthOp[exists.leaf.length],
+      ics23.ics23.HashOp[exist.leaf.hash],
+      ics23.ics23.HashOp[exist.leaf.prehash_key],
+      ics23.ics23.HashOp[exist.leaf.prehash_value],
+      ics23.ics23.LengthOp[exist.leaf.length],
     ]
 
     return {
       leafOp,
-      prefix: exists.leaf.prefix,
+      prefix: exist.leaf.prefix,
       innerOp,
-      key: exists.key,
-      value: exists.value,
+      innerOpHash: ics23.ics23.HashOp[exist.path[0].hash],
+      key: exist.key,
+      value: exist.value,
     }
   }
-  let proof = {
-    key:
-      'YmFmeXJlaWNkNGd2cGJqcDR3ZWN0Yno0Mjc0YWd2ZnN4Mm4zd3J4cWR6dXA0M2V1azN0dWQyN2N4bWU=',
-    value:
-      'qmNkaWRgZGtpbmRobWV0YWRhdGFkbmFtZWp0ZW5kZXJtaW50ZWltYWdldWh0dHA6Ly9sb2NhbGhvc3Q6MTMxN2VsaW5rc4HYKlglAAFxEiAe9b351lHuEQAZl2qWbdxrvaLk6O7sh5TzqMDBMwQ3EmVvd25lcngzZGlkOmV0aHI6MHhlZUM1OEU4OTk5NjQ5NjY0MGM4YjU4OThBN2UwMjE4RTliNkU5MGNCZnBhcmVudGBnc291cmNlc4F4LlFtUVJXR3hvRGhnOEpNb0RaYU4xdDFLaVlDYzVkTTlOUFhZRVk3VzhrSjhKd2prZGVzY3JpcHRpb25qdGVuZGVybWludHV2ZXJpZmllZENyZWRlbnRpYWxSZWZg',
-    leaf: {
-      hash: 'SHA256',
-      prehash_key: 'NO_HASH',
-      prehash_value: 'SHA256',
-      length: 'VAR_PROTO',
-      prefix: 'AA==',
+
+  let proofs = [
+    {
+      exist: {
+        key:
+          'YW5jb25iYWZ5cmVpY2Q0Z3ZwYmpwNHdlY3RiejQyNzRhZ3Zmc3gybjN3cnhxZHp1cDQzZXVrM3R1ZDI3Y3htZQ==',
+        value:
+          'qmNkaWRgZGtpbmRobWV0YWRhdGFkbmFtZWp0ZW5kZXJtaW50ZWltYWdldWh0dHA6Ly9sb2NhbGhvc3Q6MTMxN2VsaW5rc4HYKlglAAFxEiAe9b351lHuEQAZl2qWbdxrvaLk6O7sh5TzqMDBMwQ3EmVvd25lcngzZGlkOmV0aHI6MHhlZUM1OEU4OTk5NjQ5NjY0MGM4YjU4OThBN2UwMjE4RTliNkU5MGNCZnBhcmVudGBnc291cmNlc4F4LlFtUVJXR3hvRGhnOEpNb0RaYU4xdDFLaVlDYzVkTTlOUFhZRVk3VzhrSjhKd2prZGVzY3JpcHRpb25qdGVuZGVybWludHV2ZXJpZmllZENyZWRlbnRpYWxSZWZg',
+        leaf: {
+          hash: 'SHA256',
+          prehash_key: 'NO_HASH',
+          prehash_value: 'SHA256',
+          length: 'VAR_PROTO',
+          prefix: 'AAKuAQ==',
+        },
+        path: [
+          {
+            hash: 'SHA256',
+            prefix: 'AgSuASA=',
+            suffix: 'IBN3CvefUfaGqLHZFtbYU5GnXPXOS5JL0wJ0Wv2XWjlP',
+          },
+        ],
+      },
     },
-    path: [],
-  }
+  ]
+
   // Initialize the contracts and make sure they exist
   before(async () => {
     ;({ anconVerifierContract } = await Bluebird.props({
@@ -56,23 +73,30 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
 
   describe('when requesting an ownership update to a NFT using an ics23 vector commitment proof', () => {
     it('should verify ownership ok', async () => {
-      const abiProof = toABI(proof)
+      const abiProof = toABI(proofs[0])
+
+      const r = ics23.calculateExistenceRoot(
+      proofs[0].exist,
+      )
+      console.log(ethers.utils.hexlify(r))
 
       const root = await anconVerifierContract.requestRoot(
         abiProof.leafOp,
         ethers.utils.toUtf8Bytes(abiProof.prefix),
         abiProof.innerOp,
+        (abiProof.innerOpHash),
         ethers.utils.toUtf8Bytes(abiProof.key),
-        ethers.utils.toUtf8Bytes(abiProof.value), {
+        ethers.utils.toUtf8Bytes(abiProof.value),
+        {
           from: accounts[0],
-        }
+        },
       )
-
 
       const res = await anconVerifierContract.changeOwnerWithProof(
         abiProof.leafOp,
         ethers.utils.toUtf8Bytes(abiProof.prefix),
         abiProof.innerOp,
+        (abiProof.innerOpHash),
         ethers.utils.toUtf8Bytes(abiProof.key),
         ethers.utils.toUtf8Bytes(abiProof.value),
         root,

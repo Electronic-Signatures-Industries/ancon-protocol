@@ -266,6 +266,7 @@ type App struct {
 	streamingListeners []streaming.StreamingListener
 
 	cms sdk.CommitMultiStore // Main (uncached) state
+
 }
 
 // SetStreamingService is used to set a streaming service into the BaseApp hooks and load the listeners into the multistore
@@ -306,8 +307,7 @@ func New(
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	cms := store.NewCommitMultiStore(db)
-
-	//	cms.MountStoreWithDB(sdk.NewKVStoreKey(anconprotocoltypes.StoreKey), sdk.StoreTypeIAVL, db)
+	iavlStoreKey := sdk.NewKVStoreKey(anconprotocoltypes.StoreKey)
 	bApp.SetCMS(cms)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
@@ -323,7 +323,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		aguaclaramoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
-		anconprotocoltypes.StoreKey,
+		// anconprotocoltypes.StoreKey,
 	)
 	// Add the EVM transient store key
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
@@ -453,13 +453,15 @@ func New(
 	)
 	app.AnconprotocolKeeper = anconprotocolkeeper.NewKeeper(
 		appCodec,
-		keys[anconprotocoltypes.StoreKey],
+		//keys[anconprotocoltypes.StoreKey],
+		iavlStoreKey,
 		keys[anconprotocoltypes.MemStoreKey],
 		app.GetSubspace(anconprotocoltypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		evmkeeperInstance,
 		app.ModuleAccountAddrs(),
+		app.cms,
 	)
 	anconprotocolModule := anconprotocol.NewAppModule(appCodec, app.AnconprotocolKeeper, app.AccountKeeper, app.BankKeeper)
 	app.EvmKeeper = evmkeeperInstance.SetHooks(evmkeeper.NewMultiEvmHooks(anconprotocolkeeper.NewSendCrossmintRequestHook(
@@ -578,7 +580,7 @@ func New(
 	app.MountKVStores(keys)
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
-
+	app.MountStore(iavlStoreKey, sdk.StoreTypeIAVL)
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)

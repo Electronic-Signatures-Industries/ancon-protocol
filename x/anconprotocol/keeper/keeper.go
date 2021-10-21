@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/iavl"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
@@ -33,9 +35,11 @@ type Keeper struct {
 	memKey        sdk.StoreKey
 	paramSpace    paramstypes.Subspace
 	accountKeeper types.AccountKeeper
+	iavltree      *iavl.ImmutableTree
 	bankKeeper    types.BankKeeper
 	evmKeeper     *evmkeeper.Keeper
 	blockedAddrs  map[string]bool
+	cms           store.CommitMultiStore
 	// this line is used by starport scaffolding # ibc/keeper/attribute
 }
 
@@ -71,6 +75,7 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	evmKeeper *evmkeeper.Keeper,
 	blockedAddrs map[string]bool,
+	cms store.CommitMultiStore,
 ) Keeper {
 
 	return Keeper{
@@ -82,6 +87,7 @@ func NewKeeper(
 		bankKeeper:    bankKeeper,
 		evmKeeper:     evmKeeper,
 		blockedAddrs:  blockedAddrs,
+		cms:           cms,
 	}
 }
 

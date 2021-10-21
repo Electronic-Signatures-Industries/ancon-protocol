@@ -54,12 +54,12 @@ func (k Keeper) ReadMetadataProof(goCtx context.Context, req *types.QueryProofMe
 		return nil, status.Error(codes.InvalidArgument, "no proof found")
 	}
 
-	output, err := k.cdc.MarshalJSON(proof.GetProofs()[0].GetExist())
+	output, err := k.cdc.MarshalJSON(proof)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "failed to  marshal metadata")
 	}
 	return &types.QueryProofResponse{
-		Root:  r,
+		Root:  hexutil.Encode(r),
 		Proof: hexutil.Encode(output),
 	}, nil
 }

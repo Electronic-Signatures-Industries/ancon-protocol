@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
@@ -13,23 +14,25 @@ import (
 
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/store/cache"
+	"github.com/cosmos/cosmos-sdk/store/iavl"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/linking"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/must"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/spf13/cast"
-
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	cid "github.com/ipfs/go-cid"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func (k Keeper) AddClaimSwap(ctx sdk.Context, msg *types.MsgClaimSwap) (string, error) {
@@ -460,8 +463,7 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	return n, err
 }
 
-// GetMetadataProof
-func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (string, *ibc.MerkleProof, error) {
+func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.MerkleProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -469,23 +471,69 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) (string, *i
 		id = []byte(hash)
 	}
 
-	proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
-
-	if proofstore.Has(id) {
-		proof := &ics23.CommitmentProof{}
-		err := proof.Unmarshal(proofstore.Get(id))
-
-		r, err := proof.Calculate()
-		if err != nil {
-			return "", nil, err
+	// used to catch panics
+	defer func() { //catch or finally
+		if err := recover(); err != nil { //catch
+			fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
+			os.Exit(1)
 		}
-		return hexutil.Encode(r), &ibc.MerkleProof{
-			Proofs: []*ics23.CommitmentProof{proof},
-		}, nil
+	}()
+
+	// create cache manager to unwrap
+	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
+	mngr.GetStoreCache(k.storeKey, k.cms.GetCommitKVStore(k.storeKey))
+	iavlstore := mngr.Unwrap(k.storeKey).(*iavl.Store)
+	queryableStore := store.Queryable(iavlstore)
+
+	key := fmt.Sprintf("ancon%s", id)
+	keyz := []byte(key)
+	res := queryableStore.Query(abci.RequestQuery{
+		Data:   []byte(keyz),
+		Path:   ("/key"),
+		Height: ctx.BlockHeader().Height,
+		Prove:  true,
+	})
+	mp, err := ibc.ConvertProofs(res.ProofOps)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return "", nil, nil
+	r, err := mp.Proofs[0].Calculate()
+	root := ibc.MerkleRoot{
+		Hash: r,
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+	// e := fmt.Sprintf("root hash created %s %s ", res.Info, res.GetValue())
+	// ctx.Logger().Info(e)
+
+	// ps := []*ics23.ProofSpec{
+	// 	ics23.IavlSpec,
+	// }
+
+	// err = mp.VerifyMembership(ps, root, ibc.NewMerklePath(key), res.Value)
+	// ok := ics23.VerifyMembership(ps[0], r, mp.GetProofs()[0], []byte(key), mp.GetProofs()[0].GetExist().Value)
+	// if err != nil {
+	// 	return "", nil, err
+	// }
+	ctx.Logger().Info("verified membeship created")
+	return (root.Hash), &mp, nil
 }
+func (k Keeper) GetLinkSystem() linking.LinkSystem {
+	return cidlink.DefaultLinkSystem()
+}
+
+func GetLinkPrototype() ipld.LinkPrototype {
+	// tip: 0x0129 dag-json
+	return cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    0x71, // dag-cbor
+		MhType:   0x12, // sha2-256
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
+	}}
+}
+
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 
 	lsys := k.GetLinkSystem()
@@ -532,28 +580,28 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 			v := buf.Bytes()
 			store.Set(key, v)
 
-			proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
-			ce1 := &ics23.CommitmentProof_Exist{
-				Exist: &ics23.ExistenceProof{
-					Key:   key,
-					Value: v,
-					Leaf:  ics23.IavlSpec.GetLeafSpec(),
-				},
-			}
+			// proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
+			// ce1 := &ics23.CommitmentProof_Exist{
+			// 	Exist: &ics23.ExistenceProof{
+			// 		Key:   key,
+			// 		Value: v,
+			// 		Leaf:  ics23.IavlSpec.GetLeafSpec(),
+			// 	},
+			// }
 
-			c := &ics23.CommitmentProof{ce1}
-			r, _ := c.Calculate()
+			// c := &ics23.CommitmentProof{ce1}
+			// r, _ := c.Calculate()
 
-			err = c.GetExist().Verify(ics23.IavlSpec, r, key, v)
-			if err != nil {
-				return err
-			}
+			// err = c.GetExist().Verify(ics23.IavlSpec, r, key, v)
+			// if err != nil {
+			// 	return err
+			// }
 
-			proof, err := c.Marshal()
-			proofstore.Set(key, proof)
-			if err != nil {
-				return err
-			}
+			// proof, err := c.Marshal()
+			// proofstore.Set(key, proof)
+			// if err != nil {
+			// 	return err
+			// }
 
 			return nil
 		}, nil
@@ -570,18 +618,4 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 
 	//	id, _ := cid.Decode(link.String())
 	return link.String(), nil
-}
-
-func (k Keeper) GetLinkSystem() linking.LinkSystem {
-	return cidlink.DefaultLinkSystem()
-}
-
-func GetLinkPrototype() ipld.LinkPrototype {
-	// tip: 0x0129 dag-json
-	return cidlink.LinkPrototype{cid.Prefix{
-		Version:  1,
-		Codec:    0x71, // dag-cbor
-		MhType:   0x12, // sha2-256
-		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
-	}}
 }
