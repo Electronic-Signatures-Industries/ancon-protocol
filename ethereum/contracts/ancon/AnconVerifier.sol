@@ -48,15 +48,15 @@ contract AnconVerifier is ICS23 {
         );
 
         // // innerOpArr
-        InnerOp[] memory innerOpArr;
+        InnerOp[] memory innerOpArr = new InnerOp[](_innerOp.length);
 
         for (uint256 i = 0; i < _innerOp.length; i++) {
             bytes[] memory temp = _innerOp[i];
             innerOpArr[i] = InnerOp({
                 valid: true,
                 hash: HashOp(existenceProofInnerOpHash),
-                prefix: temp[1],
-                suffix: temp[2]
+                prefix: temp[0],
+                suffix: temp[1]
             });
         }
         ExistenceProof memory proof = ExistenceProof({

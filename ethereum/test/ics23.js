@@ -17,8 +17,8 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
   let toABI = ({ exist }) => {
     const innerOp = []
     innerOp.push([
-      ethers.utils.toUtf8Bytes(exist.path[0].prefix),
-      ethers.utils.toUtf8Bytes(exist.path[0].suffix),
+      ethers.utils.base64.decode(exist.path[0].prefix),
+      ethers.utils.base64.decode(exist.path[0].suffix),
     ])
     const leafOp = [
       ics23.ics23.HashOp[exist.leaf.hash],
@@ -29,7 +29,7 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
 
     return {
       leafOp,
-      prefix: exist.leaf.prefix,
+      prefix: ethers.utils.base64.decode(exist.leaf.prefix),
       innerOp,
       innerOpHash: ics23.ics23.HashOp[exist.path[0].hash],
       key: exist.key,
@@ -75,14 +75,14 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
     it('should verify ownership ok', async () => {
       const abiProof = toABI(proofs[0])
 
-      const r = ics23.calculateExistenceRoot(
-      proofs[0].exist,
-      )
-      console.log(ethers.utils.hexlify(r))
+      // const r = ics23.calculateExistenceRoot(
+      // proofs[0].exist,
+      // )
+      // console.log(ethers.utils.hexlify(r))
 
       const root = await anconVerifierContract.requestRoot(
         abiProof.leafOp,
-        ethers.utils.toUtf8Bytes(abiProof.prefix),
+        (abiProof.prefix),
         abiProof.innerOp,
         (abiProof.innerOpHash),
         ethers.utils.toUtf8Bytes(abiProof.key),
@@ -91,10 +91,10 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
           from: accounts[0],
         },
       )
-
+console.log(root)
       const res = await anconVerifierContract.changeOwnerWithProof(
         abiProof.leafOp,
-        ethers.utils.toUtf8Bytes(abiProof.prefix),
+        (abiProof.prefix),
         abiProof.innerOp,
         (abiProof.innerOpHash),
         ethers.utils.toUtf8Bytes(abiProof.key),
