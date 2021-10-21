@@ -90,7 +90,9 @@ contract AnconVerifier is ICS23 {
         );
         return bytes(calculate(proof));
     }
-
+// claimed ics23 proofs
+// key = prefix + cid eg  ancon+cid
+// value = sha256(dagcbor)
     function changeOwnerWithProof(
         uint256[] memory leafOpUint,
         bytes memory prefix,

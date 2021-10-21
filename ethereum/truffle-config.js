@@ -37,7 +37,7 @@ module.exports = {
     development: {
       from: '0x32A21c1bB6E7C20F547e930b53dAC57f42cd25F6',
       host: 'localhost' ,
-      port: 8545,
+      port: 8646,
       network_id: '*' // Match any network id
     },
     ancon: {

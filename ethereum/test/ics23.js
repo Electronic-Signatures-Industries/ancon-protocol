@@ -49,13 +49,13 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
           prehash_key: 'NO_HASH',
           prehash_value: 'SHA256',
           length: 'VAR_PROTO',
-          prefix: 'AAKuAQ==',
+          prefix: 'AALEAg==',
         },
         path: [
           {
             hash: 'SHA256',
-            prefix: 'AgSuASA=',
-            suffix: 'IBN3CvefUfaGqLHZFtbYU5GnXPXOS5JL0wJ0Wv2XWjlP',
+            prefix: 'AgTEAiA=',
+            suffix: 'INIPC/ialnKao6gMD70kc1cjFB4KTNRMaxU5n+KxvbAV',
           },
         ],
       },
