@@ -307,7 +307,7 @@ func New(
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	cms := store.NewCommitMultiStore(db)
 
-	cms.MountStoreWithDB(sdk.NewKVStoreKey(anconprotocoltypes.StoreKey), sdk.StoreTypeIAVL, db)
+	//	cms.MountStoreWithDB(sdk.NewKVStoreKey(anconprotocoltypes.StoreKey), sdk.StoreTypeIAVL, db)
 	bApp.SetCMS(cms)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
@@ -323,7 +323,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		aguaclaramoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
-	//	anconprotocoltypes.StoreKey,
+		anconprotocoltypes.StoreKey,
 	)
 	// Add the EVM transient store key
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
