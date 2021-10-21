@@ -61,6 +61,30 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
       },
     },
   ]
+  let proofCombined = [
+    {
+      exist: {
+        key:
+          'YW5jb25iYWZ5cmVpY2Q0Z3ZwYmpwNHdlY3RiejQyNzRhZ3Zmc3gybjN3cnhxZHp1cDQzZXVrM3R1ZDI3Y3htZQ==',
+        value:
+          'qmNkaWRgZGtpbmRobWV0YWRhdGFkbmFtZWp0ZW5kZXJtaW50ZWltYWdldWh0dHA6Ly9sb2NhbGhvc3Q6MTMxN2VsaW5rc4HYKlglAAFxEiAe9b351lHuEQAZl2qWbdxrvaLk6O7sh5TzqMDBMwQ3EmVvd25lcngzZGlkOmV0aHI6MHhlZUM1OEU4OTk5NjQ5NjY0MGM4YjU4OThBN2UwMjE4RTliNkU5MGNCZnBhcmVudGBnc291cmNlc4F4LlFtUVJXR3hvRGhnOEpNb0RaYU4xdDFLaVlDYzVkTTlOUFhZRVk3VzhrSjhKd2prZGVzY3JpcHRpb25qdGVuZGVybWludHV2ZXJpZmllZENyZWRlbnRpYWxSZWZg',
+        leaf: {
+          hash: 'SHA256',
+          prehash_key: 'NO_HASH',
+          prehash_value: 'SHA256',
+          length: 'VAR_PROTO',
+          prefix: 'AAKSAQ==',
+        },
+        path: [
+          {
+            hash: 'SHA256',
+            prefix: 'AgSSASA=',
+            suffix: 'INdSgAXFKAv2D5wqrrbM+uSs2ynW0VuytR2UdOMuNagz',
+          },
+        ],
+      },
+    },
+  ]
 
   // Initialize the contracts and make sure they exist
   before(async () => {
@@ -73,7 +97,7 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
 
   describe('when requesting an ownership update to a NFT using an ics23 vector commitment proof', () => {
     it('should verify ownership ok', async () => {
-      const abiProof = toABI(proofs[0])
+      const abiProof = toABI(proofCombined[0])
 
       // const r = ics23.calculateExistenceRoot(
       // proofs[0].exist,
@@ -82,26 +106,26 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
 
       const root = await anconVerifierContract.requestRoot(
         abiProof.leafOp,
-        (abiProof.prefix),
+        abiProof.prefix,
         abiProof.innerOp,
-        (abiProof.innerOpHash),
-        ethers.utils.toUtf8Bytes(abiProof.key),
-        ethers.utils.toUtf8Bytes(abiProof.value),
+        abiProof.innerOpHash,
+        ethers.utils.base64.decode(abiProof.key),
+        ethers.utils.base64.decode(abiProof.value),
         {
           from: accounts[0],
         },
       )
-console.log(root)
+      console.log(root)
       const res = await anconVerifierContract.changeOwnerWithProof(
         abiProof.leafOp,
-        (abiProof.prefix),
+        abiProof.prefix,
         abiProof.innerOp,
-        (abiProof.innerOpHash),
-        ethers.utils.toUtf8Bytes(abiProof.key),
-        ethers.utils.toUtf8Bytes(abiProof.value),
+        abiProof.innerOpHash,
+        ethers.utils.base64.decode(abiProof.key),
+        ethers.utils.base64.decode(abiProof.value),
         root,
-        ethers.utils.toUtf8Bytes(abiProof.key),
-        ethers.utils.toUtf8Bytes(abiProof.value),
+        ethers.utils.base64.decode(abiProof.key),
+        ethers.utils.base64.decode(abiProof.value),
       )
       //   function changeOwnerWithProof(
       //     bytes[] memory existenceProofLeafOp,

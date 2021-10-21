@@ -483,6 +483,7 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
 	mngr.GetStoreCache(k.storeKey, k.cms.GetCommitKVStore(k.storeKey))
 	iavlstore := mngr.Unwrap(k.storeKey).(*iavl.Store)
+
 	queryableStore := store.Queryable(iavlstore)
 
 	key := fmt.Sprintf("ancon%s", id)
@@ -497,8 +498,12 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 	if err != nil {
 		return nil, nil, err
 	}
+	combined, err := ics23.CombineProofs(mp.Proofs)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	r, err := mp.Proofs[0].Calculate()
+	r, err := combined.Calculate()
 	root := ibc.MerkleRoot{
 		Hash: r,
 	}
@@ -517,7 +522,7 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 	// if err != nil {
 	// 	return "", nil, err
 	// }
-	ctx.Logger().Info("verified membeship created")
+	ctx.Logger().Info("verified membership created")
 	return (root.Hash), &mp, nil
 }
 func (k Keeper) GetLinkSystem() linking.LinkSystem {
