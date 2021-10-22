@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/confio/ics23/go v0.6.6
-	github.com/cosmos/cosmos-sdk v0.44.1
+	github.com/cosmos/cosmos-sdk v0.44.2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/iavl v0.17.1
 	github.com/cosmos/ibc-go v1.2.1
