@@ -92,14 +92,10 @@ contract XDVNFT is
         require(owned == from, "Invalid token id owner");
         (
             string memory _metadata,
-            address _to,
-            address _fromOwner,
-            address _newOwner,
-            uint256 _tokenId,
-            bool _isNew
+            uint256 _tokenId
         ) = abi.decode(
                 data,
-                (string, address, address, address, uint256, bool)
+                (string, uint256)
             );
         require(bytes(_metadata).length == 0, "Empty metadata");
 

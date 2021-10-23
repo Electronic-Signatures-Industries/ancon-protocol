@@ -41,7 +41,7 @@ import (
 	ethermint "github.com/tharsis/ethermint/types"
 )
 
-const EnvPrefix = "ETHERMINT"
+const EnvPrefix = "ANCON"
 
 var DefaultNodeHome string
 

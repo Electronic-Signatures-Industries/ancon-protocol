@@ -1,7 +1,7 @@
 {
   "contractName": "ICrossmint",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ICrossmint.sol\":\"ICrossmint\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ICrossmint.sol\":{\"keccak256\":\"0x19e9ff334f3b3d082509f8bf8f2aabd07c53cc3069a6b46e62bff3d2117cf95b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://d76f892fc17a9938c78b42ae4f6b3c2939b17cf793ab123fd6d523885ad24af9\",\"dweb:/ipfs/QmQtr1JyQuDXJBB1jdnddfdpPc7Cfb1M2DMKvSiMFTofvJ\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol\":\"ICrossmint\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol\":{\"keccak256\":\"0x19e9ff334f3b3d082509f8bf8f2aabd07c53cc3069a6b46e62bff3d2117cf95b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://d76f892fc17a9938c78b42ae4f6b3c2939b17cf793ab123fd6d523885ad24af9\",\"dweb:/ipfs/QmQtr1JyQuDXJBB1jdnddfdpPc7Cfb1M2DMKvSiMFTofvJ\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -10,20 +10,20 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier: UNLICENSED\n\npragma solidity ^0.8.7;\n\ninterface ICrossmint {\n}",
-  "sourcePath": "/home/dallant/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
+  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
   "ast": {
-    "absolutePath": "project:/contracts/ICrossmint.sol",
+    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
     "exportedSymbols": {
       "ICrossmint": [
-        4226
+        159
       ]
     },
-    "id": 4227,
+    "id": 160,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4225,
+        "id": 158,
         "literals": [
           "solidity",
           "^",
@@ -31,7 +31,7 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:30"
+        "src": "39:23:4"
       },
       {
         "abstract": false,
@@ -40,34 +40,34 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": true,
-        "id": 4226,
+        "id": 159,
         "linearizedBaseContracts": [
-          4226
+          159
         ],
         "name": "ICrossmint",
-        "nameLocation": "74:10:30",
+        "nameLocation": "74:10:4",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 4227,
-        "src": "64:24:30",
+        "scope": 160,
+        "src": "64:24:4",
         "usedErrors": []
       }
     ],
-    "src": "39:49:30"
+    "src": "39:49:4"
   },
   "legacyAST": {
-    "absolutePath": "project:/contracts/ICrossmint.sol",
+    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/ICrossmint.sol",
     "exportedSymbols": {
       "ICrossmint": [
-        4226
+        159
       ]
     },
-    "id": 4227,
+    "id": 160,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4225,
+        "id": 158,
         "literals": [
           "solidity",
           "^",
@@ -75,7 +75,7 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "39:23:30"
+        "src": "39:23:4"
       },
       {
         "abstract": false,
@@ -84,28 +84,28 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": true,
-        "id": 4226,
+        "id": 159,
         "linearizedBaseContracts": [
-          4226
+          159
         ],
         "name": "ICrossmint",
-        "nameLocation": "74:10:30",
+        "nameLocation": "74:10:4",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 4227,
-        "src": "64:24:30",
+        "scope": 160,
+        "src": "64:24:4",
         "usedErrors": []
       }
     ],
-    "src": "39:49:30"
+    "src": "39:49:4"
   },
   "compiler": {
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-19T14:20:42.968Z",
+  "schemaVersion": "3.4.0",
+  "updatedAt": "2021-10-22T17:17:01.676Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

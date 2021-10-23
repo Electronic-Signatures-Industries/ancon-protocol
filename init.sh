@@ -42,37 +42,6 @@ cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"][
 # Set gas limit in genesis
 cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
 
-# disable produce empty block
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.ancon-protocold/config/config.toml
-  else
-    sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.ancon-protocold/config/config.toml
-fi
-
-if [[ $1 == "pending" ]]; then
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
-  else
-      sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
-      sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.ancon-protocold/config/config.toml
-
-  fi
-fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
 ~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
@@ -91,12 +60,7 @@ if [[ $1 == "pending" ]]; then
   echo "pending mode is on, please wait for the first block committed."
 fi
 
-# Config app.toml
-sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
-sed -i 's/swagger = false/swagger = true/g' $HOME/.ancon-protocold/config/app.toml
-sed -i 's/enable = false/enable = true/g' $HOME/.ancon-protocold/config/app.toml
-sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.toml
-sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
+cp app.toml $HOME/.ancon-protocold/config/app.toml
 
 cp config.toml $HOME/.ancon-protocold/config/config.toml
 

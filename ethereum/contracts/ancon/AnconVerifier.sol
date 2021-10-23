@@ -93,6 +93,7 @@ contract AnconVerifier is ICS23 {
 // claimed ics23 proofs
 // key = prefix + cid eg  ancon+cid
 // value = sha256(dagcbor)
+// TODO: Change to verifyRelayMessage
     function changeOwnerWithProof(
         uint256[] memory leafOpUint,
         bytes memory prefix,
