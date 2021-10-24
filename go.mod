@@ -7,7 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.44.3
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/iavl v0.17.1
-	github.com/cosmos/ibc-go v1.2.1
+	github.com/cosmos/ibc-go v1.2.2
 	github.com/ethereum/go-ethereum v1.10.3
 	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
@@ -59,7 +59,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/pkg/errors v0.9.1
 	github.com/proofzero/go-ipld-linkstore v1.0.0
-	github.com/tharsis/ethermint v0.7.1
+	github.com/tharsis/ethermint v0.7.2
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

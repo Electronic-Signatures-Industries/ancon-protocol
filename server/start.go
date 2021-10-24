@@ -223,7 +223,11 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 	var cpuProfileCleanup func()
 
 	if cpuProfile := ctx.Viper.GetString(srvflags.CPUProfile); cpuProfile != "" {
-		f, err := os.Create(ethdebug.ExpandHome(cpuProfile))
+		ex, err := ethdebug.ExpandHome(cpuProfile)
+		if err != nil {
+			return err
+		}
+		f, err := os.Create(ex)
 		if err != nil {
 			return err
 		}
