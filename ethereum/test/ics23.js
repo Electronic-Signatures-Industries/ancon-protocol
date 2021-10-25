@@ -8,12 +8,17 @@ const AnconVerifier = artifacts.require('AnconVerifier')
 //const XDVController = artifacts.require("XDVController");
 const ics23 = require('@confio/ics23')
 const { base64 } = require('ethers/lib/utils')
+const Faucet = artifacts.require('Faucet')
+const Dai = artifacts.require('DAI')
 
 contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
   // let erc20Contract;
   // let controllerContract;
   // let documentMinterAddress;
   let anconVerifierContract
+  let faucetContract
+  let daiContract
+
   let toABI = ({ exist }) => {
     const innerOp = []
     innerOp.push([
@@ -88,10 +93,12 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
 
   // Initialize the contracts and make sure they exist
   before(async () => {
-    ;({ anconVerifierContract } = await Bluebird.props({
+    ; ({ anconVerifierContract, faucetContract, daiContract } = await Bluebird.props({
       anconVerifierContract: AnconVerifier.deployed(),
       //erc20Contract: TestUSDC.deployed(),
-      //controllerContract: XDVController.deployed(),
+      //con trollerContract: XDVController.deployed(),
+      faucetContract: Faucet.deployed(),
+      daiContract: Dai.deployed(),
     }))
   })
 
@@ -141,57 +148,14 @@ contract('Ancon - ICS23 Javascript to ABI', (accounts) => {
     })
   })
 
-  // describe("when requesting minting from a document issuing provider", () => {
-  //   let requestId;
+  describe('Requesting funds from faucet', () => {
+    it('should recieve tokens from faucet', async () => {
 
-  //   // Add some cash to the contracts
-  //   before(async () => {
-  //     const usdcAmount = new BigNumber(22 * 10e18);
-  //     const recipentAddresses = [
-  //       controllerContract.address,
-  //       anconVerifierContract.address,
-  //     ];
+      await daiContract.mint(faucetContract.address, BigInt(1e18));
 
-  //     await erc20Contract.mint(
-  //       accounts[2],
-  //       usdcAmount.times(recipentAddresses.length)
-  //     );
-  //     const coroutines = recipentAddresses.map((addr) =>
-  //       erc20Contract.approve(addr, usdcAmount, { from: accounts[2] })
-  //     );
-  //     await Bluebird.all(coroutines);
-  //   });
-
-  //   it("should anchor document and add it to request list", async () => {
-  //     const minterAccount = accounts[1];
-  //     const senderAccount = accounts[2];
-
-  //     const res = await controllerContract.requestDataProviderService(
-  //       `did:ethr:${minterAccount}`,
-  //       minterAccount,
-  //       `did:ethr:${senderAccount}`,
-  //       "https://ipfs.io/ipfs/xxxx",
-  //       "Notariar",
-  //       {
-  //         from: senderAccount,
-  //       }
-  //     );
-
-  //     requestId = res.logs[0].args.id;
-  //     assert.equal(requestId, 0);
-
-  //     await controllerContract.mint(
-  //       requestId,
-  //       senderAccount,
-  //       minterAccount,
-  //       `https://bobb.did.pa`,
-  //       {
-  //         from: minterAccount,
-  //       }
-  //     );
-
-  //     const bal = await anconVerifierContract.balanceOf(senderAccount);
-  //     assert.equal(bal, 1);
-  //   });
-  // });
+      await faucetContract.getTokenFromFaucet(accounts[1]);
+      const res = await daiContract.balanceOf(accounts[1]);
+      assert.equal(res, BigInt(1e18))
+    })
+  })
 })
