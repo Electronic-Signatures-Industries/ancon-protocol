@@ -16,16 +16,23 @@ Authenticity and provenance data economy decentralized chain<br/>
 
 ## Documentation (WIP)
 
-- https://ancon.dao.pa
 - https://docs.xdv.digital
+
+## DApps
+
+- https://ancon.did.pa/
 
 ## Getting Started
 - [Getting Started](https://github.com/Electronic-Signatures-Industries/ancon-protocol/blob/main/specs/Getting%20Started.md)
 
 ## Endpoints
 
-- **RPC**: ws://rpcancon.dao.pa:26657
-- **API**: https://apiancon.dao.pa
+- **RPC**: wss://ancon.did.pa:26657
+- **API**: https://ancon.did.pa:1318
+
+## Explorer
+
+- https://ancon.qr.pa/
 
 ## Installing a Node
 
@@ -175,4 +182,4 @@ The frontend app is built using the `@starport/vue` and `@starport/vuex` package
 
 ## Contribute
 
-### Copyright Industrias de Firmas Electronicas SA, Industrias DAO 2021
+### Copyright Industrias de Firmas Electronicas SA,  2021
