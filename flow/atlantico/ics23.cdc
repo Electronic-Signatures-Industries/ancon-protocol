@@ -1,286 +1,327 @@
-///*
-///ExistenceProof takes a key and a value and a set of steps to perform on it.
-///The result of peforming all these steps will provide a "root hash", which can
-///be compared to the value in a header.
-///
-///Since it is computationally infeasible to produce a hash collission for any of the used
-///cryptographic hash functions, if someone can provide a series of operations to transform
-///a given key and value into a root hash that matches some trusted root, these key and values
-///must be in the referenced merkle tree.
-///
-///The only possible issue is maliablity in LeafOp, such as providing extra prefix data,
-///which should be controlled by a spec. Eg. with lengthOp as NONE,
-///prefix = FOO, key = BAR, value = CHOICE
-///and
-///prefix = F, key = OOBAR, value = CHOICE
-///would produce the same value.
-///
-///With LengthOp this is tricker but not impossible. Which is why the "leafPrefixEqual" field
-///in the ProofSpec is valuable to prevent this mutability. And why all trees should
-///length-prefix the data before hashing it.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ExistenceProof {
-    #[prost(bytes = "vec", tag = "1")]
-    pub key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
-    pub value: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "3")]
-    pub leaf: ::core::option::Option<LeafOp>,
-    #[prost(message, repeated, tag = "4")]
-    pub path: ::prost::alloc::vec::Vec<InnerOp>,
-}
-///
-///NonExistenceProof takes a proof of two neighbors, one left of the desired key,
-///one right of the desired key. If both proofs are valid AND they are neighbors,
-///then there is no valid proof for the given key.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct NonExistenceProof {
-    /// TODO: remove this as unnecessary??? we prove a range
-    #[prost(bytes = "vec", tag = "1")]
-    pub key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "2")]
-    pub left: ::core::option::Option<ExistenceProof>,
-    #[prost(message, optional, tag = "3")]
-    pub right: ::core::option::Option<ExistenceProof>,
-}
-///
-///CommitmentProof is either an ExistenceProof or a NonExistenceProof, or a Batch of such messages
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CommitmentProof {
-    #[prost(oneof = "commitment_proof::Proof", tags = "1, 2, 3, 4")]
-    pub proof: ::core::option::Option<commitment_proof::Proof>,
-}
-/// Nested message and enum types in `CommitmentProof`.
-pub mod commitment_proof {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Proof {
-        #[prost(message, tag = "1")]
-        Exist(super::ExistenceProof),
-        #[prost(message, tag = "2")]
-        Nonexist(super::NonExistenceProof),
-        #[prost(message, tag = "3")]
-        Batch(super::BatchProof),
-        #[prost(message, tag = "4")]
-        Compressed(super::CompressedBatchProof),
-    }
-}
-///*
-///LeafOp represents the raw key-value data we wish to prove, and
-///must be flexible to represent the internal transformation from
-///the original key-value pairs into the basis hash, for many existing
-///merkle trees.
-///
-///key and value are passed in. So that the signature of this operation is:
-///leafOp(key, value) -> output
-///
-///To process this, first prehash the keys and values if needed (ANY means no hash in this case):
-///hkey = prehashKey(key)
-///hvalue = prehashValue(value)
-///
-///Then combine the bytes, and hash it
-///output = hash(prefix || length(hkey) || hkey || length(hvalue) || hvalue)
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct LeafOp {
-    #[prost(enumeration = "HashOp", tag = "1")]
-    pub hash: i32,
-    #[prost(enumeration = "HashOp", tag = "2")]
-    pub prehash_key: i32,
-    #[prost(enumeration = "HashOp", tag = "3")]
-    pub prehash_value: i32,
-    #[prost(enumeration = "LengthOp", tag = "4")]
-    pub length: i32,
-    /// prefix is a fixed bytes that may optionally be included at the beginning to differentiate
-    /// a leaf node from an inner node.
-    #[prost(bytes = "vec", tag = "5")]
-    pub prefix: ::prost::alloc::vec::Vec<u8>,
-}
-///*
-///InnerOp represents a merkle-proof step that is not a leaf.
-///It represents concatenating two children and hashing them to provide the next result.
-///
-///The result of the previous step is passed in, so the signature of this op is:
-///innerOp(child) -> output
-///
-///The result of applying InnerOp should be:
-///output = op.hash(op.prefix || child || op.suffix)
-///
-///where the || operator is concatenation of binary data,
-///and child is the result of hashing all the tree below this step.
-///
-///Any special data, like prepending child with the length, or prepending the entire operation with
-///some value to differentiate from leaf nodes, should be included in prefix and suffix.
-///If either of prefix or suffix is empty, we just treat it as an empty string
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct InnerOp {
-    #[prost(enumeration = "HashOp", tag = "1")]
-    pub hash: i32,
-    #[prost(bytes = "vec", tag = "2")]
-    pub prefix: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
-    pub suffix: ::prost::alloc::vec::Vec<u8>,
-}
-///*
-///ProofSpec defines what the expected parameters are for a given proof type.
-///This can be stored in the client and used to validate any incoming proofs.
-///
-///verify(ProofSpec, Proof) -> Proof | Error
-///
-///As demonstrated in tests, if we don't fix the algorithm used to calculate the
-///LeafHash for a given tree, there are many possible key-value pairs that can
-///generate a given hash (by interpretting the preimage differently).
-///We need this for proper security, requires client knows a priori what
-///tree format server uses. But not in code, rather a configuration object.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ProofSpec {
-    /// any field in the ExistenceProof must be the same as in this spec.
-    /// except Prefix, which is just the first bytes of prefix (spec can be longer)
-    #[prost(message, optional, tag = "1")]
-    pub leaf_spec: ::core::option::Option<LeafOp>,
-    #[prost(message, optional, tag = "2")]
-    pub inner_spec: ::core::option::Option<InnerSpec>,
-    /// max_depth (if > 0) is the maximum number of InnerOps allowed (mainly for fixed-depth tries)
-    #[prost(int32, tag = "3")]
-    pub max_depth: i32,
-    /// min_depth (if > 0) is the minimum number of InnerOps allowed (mainly for fixed-depth tries)
-    #[prost(int32, tag = "4")]
-    pub min_depth: i32,
-}
-///
-///InnerSpec contains all store-specific structure info to determine if two proofs from a
-///given store are neighbors.
-///
-///This enables:
-///
-///isLeftMost(spec: InnerSpec, op: InnerOp)
-///isRightMost(spec: InnerSpec, op: InnerOp)
-///isLeftNeighbor(spec: InnerSpec, left: InnerOp, right: InnerOp)
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct InnerSpec {
-    /// Child order is the ordering of the children node, must count from 0
-    /// iavl tree is [0, 1] (left then right)
-    /// merk is [0, 2, 1] (left, right, here)
-    #[prost(int32, repeated, tag = "1")]
-    pub child_order: ::prost::alloc::vec::Vec<i32>,
-    #[prost(int32, tag = "2")]
-    pub child_size: i32,
-    #[prost(int32, tag = "3")]
-    pub min_prefix_length: i32,
-    #[prost(int32, tag = "4")]
-    pub max_prefix_length: i32,
-    /// empty child is the prehash image that is used when one child is nil (eg. 20 bytes of 0)
-    #[prost(bytes = "vec", tag = "5")]
-    pub empty_child: ::prost::alloc::vec::Vec<u8>,
-    /// hash is the algorithm that must be used for each InnerOp
-    #[prost(enumeration = "HashOp", tag = "6")]
-    pub hash: i32,
-}
-///
-///BatchProof is a group of multiple proof types than can be compressed
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchProof {
-    #[prost(message, repeated, tag = "1")]
-    pub entries: ::prost::alloc::vec::Vec<BatchEntry>,
-}
-/// Use BatchEntry not CommitmentProof, to avoid recursion
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchEntry {
-    #[prost(oneof = "batch_entry::Proof", tags = "1, 2")]
-    pub proof: ::core::option::Option<batch_entry::Proof>,
-}
-/// Nested message and enum types in `BatchEntry`.
-pub mod batch_entry {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Proof {
-        #[prost(message, tag = "1")]
-        Exist(super::ExistenceProof),
-        #[prost(message, tag = "2")]
-        Nonexist(super::NonExistenceProof),
-    }
-}
-//***** all items here are compressed forms ******
 
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CompressedBatchProof {
-    #[prost(message, repeated, tag = "1")]
-    pub entries: ::prost::alloc::vec::Vec<CompressedBatchEntry>,
-    #[prost(message, repeated, tag = "2")]
-    pub lookup_inners: ::prost::alloc::vec::Vec<InnerOp>,
-}
-/// Use BatchEntry not CommitmentProof, to avoid recursion
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CompressedBatchEntry {
-    #[prost(oneof = "compressed_batch_entry::Proof", tags = "1, 2")]
-    pub proof: ::core::option::Option<compressed_batch_entry::Proof>,
-}
-/// Nested message and enum types in `CompressedBatchEntry`.
-pub mod compressed_batch_entry {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Proof {
-        #[prost(message, tag = "1")]
-        Exist(super::CompressedExistenceProof),
-        #[prost(message, tag = "2")]
-        Nonexist(super::CompressedNonExistenceProof),
+contract ICS23 {
+    // Data structures and helper functions
+
+    pub enum HashOp: uint8 {
+        pub NO_HASH
+        pub SHA256
+        pub SHA512
+        pub KECCAK
+        pub RIPEMD160
+        pub BITCOIN
     }
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CompressedExistenceProof {
-    #[prost(bytes = "vec", tag = "1")]
-    pub key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
-    pub value: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "3")]
-    pub leaf: ::core::option::Option<LeafOp>,
-    /// these are indexes into the lookup_inners table in CompressedBatchProof
-    #[prost(int32, repeated, tag = "4")]
-    pub path: ::prost::alloc::vec::Vec<i32>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CompressedNonExistenceProof {
-    /// TODO: remove this as unnecessary??? we prove a range
-    #[prost(bytes = "vec", tag = "1")]
-    pub key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "2")]
-    pub left: ::core::option::Option<CompressedExistenceProof>,
-    #[prost(message, optional, tag = "3")]
-    pub right: ::core::option::Option<CompressedExistenceProof>,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum HashOp {
-    /// NO_HASH is the default if no data passed. Note this is an illegal argument some places.
-    NoHash = 0,
-    Sha256 = 1,
-    Sha512 = 2,
-    Keccak = 3,
-    Ripemd160 = 4,
-    /// ripemd160(sha256(x))
-    Bitcoin = 5,
-    Sha512256 = 6,
-}
-///*
-///LengthOp defines how to process the key and value of the LeafOp
-///to include length information. After encoding the length with the given
-///algorithm, the length will be prepended to the key and value bytes.
-///(Each one with it's own encoded length)
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum LengthOp {
-    /// NO_PREFIX don't include any length info
-    NoPrefix = 0,
-    /// VAR_PROTO uses protobuf (and go-amino) varint encoding of the length
-    VarProto = 1,
-    /// VAR_RLP uses rlp int encoding of the length
-    VarRlp = 2,
-    /// FIXED32_BIG uses big-endian encoding of the length as a 32 bit integer
-    Fixed32Big = 3,
-    /// FIXED32_LITTLE uses little-endian encoding of the length as a 32 bit integer
-    Fixed32Little = 4,
-    /// FIXED64_BIG uses big-endian encoding of the length as a 64 bit integer
-    Fixed64Big = 5,
-    /// FIXED64_LITTLE uses little-endian encoding of the length as a 64 bit integer
-    Fixed64Little = 6,
-    /// REQUIRE_32_BYTES is like NONE, but will fail if the input is not exactly 32 bytes (sha256 output)
-    Require32Bytes = 7,
-    /// REQUIRE_64_BYTES is like NONE, but will fail if the input is not exactly 64 bytes (sha512 output)
-    Require64Bytes = 8,
+    enum LengthOp: uint8 {
+
+        pub NO_PREFIX
+        pub VAR_PROTO
+        pub VAR_RLP
+        pub FIXED32_BIG
+        pub FIXED32_LITTLE
+        pub FIXED64_BIG
+        pub FIXED64_LITTLE
+        pub REQUIRE_32_BYTES
+      pub  REQUIRE_64_BYTES
+    }
+
+   pub struct ExistenceProof {
+      pub var    valid: Bool
+      pub var  key: [Uint8]
+      pub var  value: [Uint8] 
+      pub var leaf: LeafOp
+      pub var  path:[InnerOp] 
+    }
+
+   pub struct NonExistenceProof {
+      pub var    valid
+      pub var  [Uint8] key
+      pub var  ExistenceProof left
+      pub var  ExistenceProof right
+    }
+
+   pub struct LeafOp {
+      pub var    valid
+      pub var  HashOp hash
+      pub var  HashOp prehash_key
+      pub var  HashOp prehash_value
+      pub var  LengthOp len
+      pub var  [Uint8] prefix
+    }
+
+   pub struct InnerOp {
+      pub var    valid
+      pub var  HashOp hash
+      pub var  [Uint8] prefix
+      pub var  [Uint8] suffix
+    }
+
+   pub struct ProofSpec {
+      pub var  LeafOp leafSpec
+      pub var  InnerSpec innerSpec
+      pub var  uint256 maxDepth
+      pub var  uint256 minDepth
+    }
+
+   pub struct InnerSpec {
+      pub var  uint256[] childOrder
+      pub var  uint256 childSize
+      pub var  uint256 minPrefixLength
+      pub var  uint256 maxPrefixLength
+      pub var  [Uint8] emptyChild
+      pub var  HashOp hash
+    }
+
+    fun getIavlSpec()    : (ProofSpec  ) {
+        ProofSpec   spec;
+
+        uint256[]   childOrder = new uint256[](2);
+        childOrder[0] = 0;
+        childOrder[1] = 1;
+
+        spec.leafSpec = LeafOp(
+            true,
+            HashOp.SHA256,
+            HashOp.NO_HASH,
+            HashOp.SHA256,
+            LengthOp.VAR_PROTO,
+            hex"00"
+        );
+
+        spec.innerSpec = InnerSpec(
+            childOrder,
+            33,
+            4,
+            12,
+            "",
+            HashOp.SHA256
+        );
+        return spec;
+    }
+
+    enum Ordering {
+        LT,
+        EQ,
+        GT
+    }
+
+    fun checkAgainstSpecLeafOp(LeafOp   op, ProofSpec   spec)
+         
+        
+    {
+        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
+        require(
+            op.prehash_key == spec.leafSpec.prehash_key,
+            "Unexpected PrehashKey"
+        );
+        require(
+            op.prehash_value == spec.leafSpec.prehash_value,
+            "Unexpected PrehashKey"
+        );
+        require(op.len == spec.leafSpec.len, "UnexpecteleafSpec LengthOp");
+        require(
+            Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
+            "LeafOpLib: wrong prefix"
+        );
+    }
+
+    fun applyValueLeafOp(
+        LeafOp   op,
+        [Uint8]   key,
+        [Uint8]   value
+    )    : ([Uint8]  ) {
+        require(key.length > 0, "Leaf op needs key");
+        require(value.length > 0, "Leaf op needs value");
+        [Uint8]   data = abi.encodePacked(
+            abi.encodePacked(
+                op.prefix,
+                prepareLeafData(op.prehash_key, op.len, key)
+            ),
+            prepareLeafData(op.prehash_value, op.len, value)
+        );
+        return doHash(op.hash, data);
+    }
+
+    fun prepareLeafData(
+        HashOp hashOp,
+        LengthOp lengthOp,
+        [Uint8]   data
+    )    : ([Uint8]  ) {
+        return doLength(lengthOp, doHashOrNoop(hashOp, data));
+    }
+
+    fun doHashOrNoop(HashOp hashOp, [Uint8]   data)
+        private
+        
+        : ([Uint8]  )
+    {
+        if (hashOp == HashOp.NO_HASH) {
+            return data;
+        }
+        return doHash(hashOp, data);
+    }
+
+    fun checkAgainstSpecInnerOp(InnerOp   op, ProofSpec   spec)
+         
+        
+    {
+        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
+        require(
+            !Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
+            "InnerOpLib: wrong prefix"
+        );
+        require(
+            op.prefix.length >= uint256(spec.innerSpec.minPrefixLength),
+            "InnerOp prefix too short"
+        );
+
+        uint256 maxLeftChildLen = (spec.innerSpec.childOrder.length - 1) *
+            uint256(spec.innerSpec.childSize);
+        require(
+            op.prefix.length <=
+                uint256(spec.innerSpec.maxPrefixLength) + maxLeftChildLen,
+            "InnerOp prefix too short"
+        );
+    }
+
+    fun applyValueInnerOp(InnerOp   op, [Uint8]   child)
+         
+        
+        : ([Uint8]  )
+    {
+        require(child.length > 0, "Inner op needs child value");
+        return
+            doHash(
+                op.hash,
+                abi.encodePacked(abi.encodePacked(op.prefix, child), op.suffix)
+            );
+    }
+
+    fun doHash(HashOp hashOp, [Uint8]   data)
+         
+        
+        : ([Uint8]  )
+    {
+        if (hashOp == HashOp.SHA256) {
+            return Bytes.fromBytes32(sha256(data));
+        }
+
+        if (hashOp == HashOp.SHA512) {
+            //TODO: implement sha512
+            revert("SHA512 not implemented");
+        }
+
+        if (hashOp == HashOp.RIPEMD160) {
+            return Bytes.fromBytes32(ripemd160(data));
+        }
+
+        if (hashOp == HashOp.BITCOIN) {
+            bytes32 hash = sha256(data);
+            return Bytes.fromBytes32(ripemd160(Bytes.fromBytes32(hash)));
+        }
+        revert("Unsupported hashop");
+    }
+
+    fun doLength(LengthOp lengthOp, [Uint8]   data)
+         
+        
+        : ([Uint8]  )
+    {
+        if (lengthOp == LengthOp.NO_PREFIX) {
+            return data;
+        }
+        if (lengthOp == LengthOp.VAR_PROTO) {
+            return abi.encodePacked(encodeVarintProto(uint64(data.length)), data);
+        }
+        if (lengthOp == LengthOp.REQUIRE_32_BYTES) {
+            require(data.length == 32, "Expected 32 [Uint8]");
+            return data;
+        }
+        if (lengthOp == LengthOp.REQUIRE_64_BYTES) {
+            require(data.length == 64, "Expected 64 [Uint8]");
+            return data;
+        }
+        revert("Unsupported lengthop");
+    }
+
+    fun encodeVarintProto(uint64 n)    : ([Uint8]  ) {
+        // Count the number of groups of 7 bits
+        // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
+        uint64 tmp = n;
+        uint64 num_bytes = 1;
+        while (tmp > 0x7F) {
+            tmp = tmp >> 7;
+            num_bytes += 1;
+        }
+
+        [Uint8]   buf = new [Uint8](num_bytes);
+
+        tmp = n;
+        for (uint64 i = 0; i < num_bytes; i++) {
+            // Set the first bit in the byte for each group of 7 bits
+            buf[i] = bytes1(0x80 | uint8(tmp & 0x7F));
+            tmp = tmp >> 7;
+        }
+        // Unset the first bit of the last byte
+        buf[num_bytes - 1] &= 0x7F;
+
+        return buf;
+    }
+
+    fun verify(
+        ExistenceProof   proof,
+        ProofSpec   spec,
+        [Uint8]   root,
+        [Uint8]   key,
+        [Uint8]   value
+    )    {
+        checkAgainstSpec(proof, spec);
+        require(
+            Bytes.equals(proof.key, key),
+            "Provided key doesn't match proof"
+        );
+        require(
+            Bytes.equals(proof.value, value),
+            "Provided value doesn't match proof"
+        );
+        require(
+            Bytes.equals(calculate(proof), root),
+            "Calculcated root doesn't match provided root"
+        );
+    }
+
+    fun checkAgainstSpec(ExistenceProof   proof, ProofSpec   spec)
+        private
+        
+    {
+        checkAgainstSpecLeafOp(proof.leaf, spec);
+        require(
+            spec.minDepth == 0 || proof.path.length >= uint256(spec.minDepth),
+            "InnerOps depth too short"
+        );
+        require(
+            spec.maxDepth == 0 || proof.path.length >= uint256(spec.maxDepth),
+            "InnerOps depth too short"
+        );
+
+        for (uint256 i = 0; i < proof.path.length; i++) {
+            checkAgainstSpecInnerOp(proof.path[i], spec);
+        }
+    }
+
+    // Calculate determines the root hash that matches the given proof.
+    // You must validate the result is what you have in a header.
+    // Returns error if the calculations cannot be performed.
+    fun calculate(ExistenceProof   p)
+         
+        
+        : ([Uint8]  )
+    {
+        // leaf step takes the key and value as input
+        [Uint8]   res = applyValueLeafOp(p.leaf, p.key, p.value);
+
+        // the rest just take the output of the last step (reducing it)
+        for (uint256 i = 0; i < p.path.length; i++) {
+            res = applyValueInnerOp(p.path[i], res);
+        }
+        return res;
+    }
 }
