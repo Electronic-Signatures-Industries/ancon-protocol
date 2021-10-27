@@ -1,327 +1,388 @@
+import Crypto
 
-contract ICS23 {
+
+pub contract ICS23 {
     // Data structures and helper functions
 
-    pub enum HashOp: uint8 {
-        pub NO_HASH
-        pub SHA256
-        pub SHA512
-        pub KECCAK
-        pub RIPEMD160
-        pub BITCOIN
+    pub enum HashOp: UInt8 {
+        pub case NO_HASH
+        pub case SHA256
+        pub case SHA512
+        pub case KECCAK
+        pub case RIPEMD160
+        pub case BITCOIN
     }
-    enum LengthOp: uint8 {
-
-        pub NO_PREFIX
-        pub VAR_PROTO
-        pub VAR_RLP
-        pub FIXED32_BIG
-        pub FIXED32_LITTLE
-        pub FIXED64_BIG
-        pub FIXED64_LITTLE
-        pub REQUIRE_32_BYTES
-      pub  REQUIRE_64_BYTES
+    pub enum LengthOp: UInt8 {
+        pub case NO_PREFIX
+        pub case VAR_PROTO
+        pub case VAR_RLP
+        pub case FIXED32_BIG
+        pub case FIXED32_LITTLE
+        pub case FIXED64_BIG
+        pub case FIXED64_LITTLE
+        pub case REQUIRE_32_BYTES
+        pub case  REQUIRE_64_BYTES
     }
 
    pub struct ExistenceProof {
-      pub var    valid: Bool
-      pub var  key: [Uint8]
-      pub var  value: [Uint8] 
-      pub var leaf: LeafOp
+      pub var  valid: Bool
+      pub var  key: [UInt8]
+      pub var  value: [UInt8] 
+      pub var  leaf: LeafOp
       pub var  path:[InnerOp] 
+
+      init(
+       valid: Bool,
+       key: [UInt8],
+       value: [UInt8] ,
+       leaf: LeafOp,
+       path:[InnerOp]           ,
+      ){
+            self.valid = valid
+            self.key = key
+            self.value = value
+            self.leaf = leaf
+            self.path = path
+      }
     }
 
    pub struct NonExistenceProof {
-      pub var    valid
-      pub var  [Uint8] key
-      pub var  ExistenceProof left
-      pub var  ExistenceProof right
+      pub var    valid: Bool
+      pub var   key:[UInt8]
+      pub var   left:ExistenceProof
+      pub var   right:ExistenceProof
+
+      init(
+                   valid: Bool,
+        key:[UInt8],
+        left:ExistenceProof,
+        right:ExistenceProof,
+      ) {
+          self.valid = valid
+          self.key = key
+          self.left = left
+          self.right = right
+      }
     }
 
    pub struct LeafOp {
-      pub var    valid
-      pub var  HashOp hash
-      pub var  HashOp prehash_key
-      pub var  HashOp prehash_value
-      pub var  LengthOp len
-      pub var  [Uint8] prefix
+      pub var    valid: Bool
+      pub var   hash:HashOp
+      pub var   prehash_key:HashOp
+      pub var   prehash_value:HashOp
+      pub var   len:LengthOp
+      pub var  prefix:  [UInt8]
+
+      init(
+          valid: Bool,
+         hash:HashOp,
+         prehash_key:HashOp,
+         prehash_value:HashOp,
+         len:LengthOp,
+        prefix:  [UInt8]
+
+      ) {
+          self.valid=valid
+          self.hash=hash
+          self.prehash_key=prehash_key
+          self.prehash_value=prehash_value
+          self.len=len
+          self.prefix=prefix
+      }
     }
+
+    
 
    pub struct InnerOp {
-      pub var    valid
-      pub var  HashOp hash
-      pub var  [Uint8] prefix
-      pub var  [Uint8] suffix
+      pub var    valid: Bool
+     pub var   hash:HashOp
+      pub var  prefix:  [UInt8]
+      pub var  suffix:  [UInt8]
+          init(
+          valid: Bool,
+         hash:HashOp,
+        prefix:  [UInt8],
+        suffix:  [UInt8],
+         
+
+      ) {
+          self.valid=valid
+          self.hash=hash
+          self.suffix=suffix
+          self.prefix=prefix
+      }
     }
+
+
 
    pub struct ProofSpec {
-      pub var  LeafOp leafSpec
-      pub var  InnerSpec innerSpec
-      pub var  uint256 maxDepth
-      pub var  uint256 minDepth
+      pub var leafSpec: LeafOp 
+      pub var innerSpec: InnerSpec 
+      pub var maxDepth: UInt256 
+      pub var minDepth: UInt256 
+          init(
+          leafSpec:  LeafOp,
+         innerSpec:InnerSpec,
+      ) {
+          self.leafSpec=leafSpec
+          self.innerSpec=innerSpec
+          self.maxDepth=0
+          self.minDepth=0
+      }
     }
+
+
 
    pub struct InnerSpec {
-      pub var  uint256[] childOrder
-      pub var  uint256 childSize
-      pub var  uint256 minPrefixLength
-      pub var  uint256 maxPrefixLength
-      pub var  [Uint8] emptyChild
-      pub var  HashOp hash
+      pub var childOrder: [Int] 
+      pub var childSize: Int 
+      pub var minPrefixLength: Int 
+      pub var maxPrefixLength: Int 
+      pub var emptyChild: [UInt8] 
+      pub var hash: HashOp 
+          init(
+ childOrder: [Int] ,
+       childSize: Int ,
+       minPrefixLength: Int ,
+       maxPrefixLength: Int ,
+       emptyChild: [UInt8] ,
+       hash: HashOp ,
+
+      ) {
+          self.childOrder=childOrder
+          self.childSize=childSize
+          self.minPrefixLength=minPrefixLength
+          self.maxPrefixLength=maxPrefixLength
+          self.emptyChild=emptyChild    
+          self.hash=hash
+      }
     }
 
-    fun getIavlSpec()    : (ProofSpec  ) {
-        ProofSpec   spec;
 
-        uint256[]   childOrder = new uint256[](2);
-        childOrder[0] = 0;
-        childOrder[1] = 1;
 
-        spec.leafSpec = LeafOp(
-            true,
-            HashOp.SHA256,
-            HashOp.NO_HASH,
-            HashOp.SHA256,
-            LengthOp.VAR_PROTO,
-            hex"00"
+   pub fun getIavlSpec()    : ProofSpec  {
+       
+
+    let  leafSpec = LeafOp(
+         valid:   true,
+            hash: HashOp.SHA256,
+            prehash_key: HashOp.NO_HASH,
+           prehash_value: HashOp.SHA256,
+         len:   LengthOp.VAR_PROTO,
+prefix: [0 as UInt8]
         );
 
-        spec.innerSpec = InnerSpec(
-            childOrder,
-            33,
-            4,
-            12,
-            "",
-            HashOp.SHA256
+    let  innerSpec = InnerSpec(
+        childOrder:    [0 as Int,1 as Int],
+           childSize: 33,
+           minPrefixLength: 4,
+           maxPrefixLength: 12,
+           emptyChild: [],
+         hash:   HashOp.SHA256
         );
-        return spec;
+       return   ProofSpec(leafSpec: leafSpec, innerSpec: innerSpec
+        )
+
     }
 
-    enum Ordering {
-        LT,
-        EQ,
-        GT
+    pub enum Ordering: UInt8{
+        pub case LT
+        pub case EQ
+        pub case GT
     }
 
-    fun checkAgainstSpecLeafOp(LeafOp   op, ProofSpec   spec)
-         
-        
+   pub fun checkAgainstSpecLeafOp(op: LeafOp, spec: ProofSpec)
     {
-        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
-        require(
+        assert(op.hash == spec.leafSpec.hash,message:  "Unexpected HashOp");
+        assert(
             op.prehash_key == spec.leafSpec.prehash_key,
-            "Unexpected PrehashKey"
+            message: "Unexpected PrehashKey"
         );
-        require(
+        assert(
             op.prehash_value == spec.leafSpec.prehash_value,
-            "Unexpected PrehashKey"
+            message: "Unexpected PrehashKey"
         );
-        require(op.len == spec.leafSpec.len, "UnexpecteleafSpec LengthOp");
-        require(
-            Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
-            "LeafOpLib: wrong prefix"
+        assert(op.len == spec.leafSpec.len,message:  "UnexpecteleafSpec LengthOp");
+        let leafSpecPrefix = String.encodeHex(spec.leafSpec.prefix)
+        let opPrefix = String.encodeHex(op.prefix)
+
+        assert(
+            spec.leafSpec.prefix.contains(op.prefix.removeFirst()),
+            message: "LeafOpLib: wrong prefix"
         );
     }
 
-    fun applyValueLeafOp(
-        LeafOp   op,
-        [Uint8]   key,
-        [Uint8]   value
-    )    : ([Uint8]  ) {
-        require(key.length > 0, "Leaf op needs key");
-        require(value.length > 0, "Leaf op needs value");
-        [Uint8]   data = abi.encodePacked(
-            abi.encodePacked(
-                op.prefix,
-                prepareLeafData(op.prehash_key, op.len, key)
-            ),
-            prepareLeafData(op.prehash_value, op.len, value)
+   pub fun applyValueLeafOp(
+        op:LeafOp,
+        key:[UInt8],
+        value:[UInt8],
+    )    : [UInt8] {
+        assert(key.length > 0, message: "Leaf op needs key");
+        assert(value.length > 0,message: "Leaf op needs value");
+        let data = 
+                op.prefix.concat(
+                self.prepareLeafData(hashOp:op.prehash_key, lengthOp :op.len, data: key)
+            ).concat(
+            self.prepareLeafData(hashOp:op.prehash_value, lengthOp :op.len, data: value)
         );
-        return doHash(op.hash, data);
+        return self.doHash(hashOp:op.hash, data: data);
     }
 
-    fun prepareLeafData(
-        HashOp hashOp,
-        LengthOp lengthOp,
-        [Uint8]   data
-    )    : ([Uint8]  ) {
-        return doLength(lengthOp, doHashOrNoop(hashOp, data));
+   pub fun prepareLeafData(
+        hashOp:HashOp,
+        lengthOp:LengthOp,
+        data:[UInt8]  ,
+    )    : [UInt8] {
+        return self.doLength(lengthOp: lengthOp, data :self.doHashOrNoop(hashOp: hashOp, data: data));
     }
 
-    fun doHashOrNoop(HashOp hashOp, [Uint8]   data)
-        private
-        
-        : ([Uint8]  )
+   pub fun doHashOrNoop(
+       hashOp:HashOp , 
+       data:[UInt8]   ,
+       )    : [UInt8]
     {
         if (hashOp == HashOp.NO_HASH) {
             return data;
         }
-        return doHash(hashOp, data);
+        return self.doHash(hashOp: hashOp, data: data);
     }
 
-    fun checkAgainstSpecInnerOp(InnerOp   op, ProofSpec   spec)
-         
-        
+   pub fun checkAgainstSpecInnerOp(op: InnerOp, spec: ProofSpec)
     {
-        require(op.hash == spec.leafSpec.hash, "Unexpected HashOp");
-        require(
-            !Bytes.hasPrefix(op.prefix, spec.leafSpec.prefix),
-            "InnerOpLib: wrong prefix"
+        assert(op.hash == spec.leafSpec.hash,message:  "Unexpected HashOp");
+        let leafSpecPrefix = String.encodeHex(spec.leafSpec.prefix)
+        let opPrefix = String.encodeHex(op.prefix)
+
+        assert(
+            spec.leafSpec.prefix.contains(op.prefix.removeFirst()),
+            message: "LeafOpLib: wrong prefix"
         );
-        require(
-            op.prefix.length >= uint256(spec.innerSpec.minPrefixLength),
-            "InnerOp prefix too short"
+        assert(
+            op.prefix.length >= spec.innerSpec.minPrefixLength,
+            message: "InnerOp prefix too short"
         );
 
-        uint256 maxLeftChildLen = (spec.innerSpec.childOrder.length - 1) *
-            uint256(spec.innerSpec.childSize);
-        require(
+        let maxLeftChildLen = (spec.innerSpec.childOrder.length - 1) * spec.innerSpec.childSize;
+        assert(
             op.prefix.length <=
-                uint256(spec.innerSpec.maxPrefixLength) + maxLeftChildLen,
-            "InnerOp prefix too short"
+                (spec.innerSpec.maxPrefixLength) + maxLeftChildLen,
+            message: "InnerOp prefix too short"
         );
     }
 
-    fun applyValueInnerOp(InnerOp   op, [Uint8]   child)
-         
-        
-        : ([Uint8]  )
+   pub fun applyValueInnerOp(op: InnerOp, child:[UInt8]): [UInt8]
     {
-        require(child.length > 0, "Inner op needs child value");
-        return
-            doHash(
-                op.hash,
-                abi.encodePacked(abi.encodePacked(op.prefix, child), op.suffix)
+        assert(child.length > 0, message: "Inner op needs child value");
+        return self.doHash(
+                hashOp: op.hash,
+                data: op.prefix.concat(child).concat(op.suffix)
             );
     }
 
-    fun doHash(HashOp hashOp, [Uint8]   data)
-         
-        
-        : ([Uint8]  )
+   pub fun doHash(hashOp: HashOp, data: [UInt8]):[UInt8] 
     {
         if (hashOp == HashOp.SHA256) {
-            return Bytes.fromBytes32(sha256(data));
+return HashAlgorithm.SHA3_256.hash(data)
         }
-
-        if (hashOp == HashOp.SHA512) {
-            //TODO: implement sha512
-            revert("SHA512 not implemented");
-        }
-
-        if (hashOp == HashOp.RIPEMD160) {
-            return Bytes.fromBytes32(ripemd160(data));
-        }
-
-        if (hashOp == HashOp.BITCOIN) {
-            bytes32 hash = sha256(data);
-            return Bytes.fromBytes32(ripemd160(Bytes.fromBytes32(hash)));
-        }
-        revert("Unsupported hashop");
+        panic("Unsupported hashop");
     }
 
-    fun doLength(LengthOp lengthOp, [Uint8]   data)
-         
-        
-        : ([Uint8]  )
+   pub fun doLength(lengthOp: LengthOp , data: [UInt8]): [UInt8]
     {
         if (lengthOp == LengthOp.NO_PREFIX) {
             return data;
         }
         if (lengthOp == LengthOp.VAR_PROTO) {
-            return abi.encodePacked(encodeVarintProto(uint64(data.length)), data);
+            return abi.encodePacked(self.encodeVarintProto(uint64(data.length)), data);
         }
         if (lengthOp == LengthOp.REQUIRE_32_BYTES) {
-            require(data.length == 32, "Expected 32 [Uint8]");
+            assert(data.length == 32, message: "Expected 32 [UInt8]");
             return data;
         }
         if (lengthOp == LengthOp.REQUIRE_64_BYTES) {
-            require(data.length == 64, "Expected 64 [Uint8]");
+            assert(data.length == 64, message: "Expected 64 [UInt8]");
             return data;
         }
-        revert("Unsupported lengthop");
+        panic("Unsupported lengthop");
     }
 
-    fun encodeVarintProto(uint64 n)    : ([Uint8]  ) {
-        // Count the number of groups of 7 bits
-        // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
-        uint64 tmp = n;
-        uint64 num_bytes = 1;
-        while (tmp > 0x7F) {
-            tmp = tmp >> 7;
-            num_bytes += 1;
-        }
+//    pub fun encodeVarintProto(n: Uint64)    : [UInt8]   {
+//         // Count the number of groups of 7 bits
+//         // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
+//         uint64 tmp = n;
+//         uint64 num_bytes = 1;
+//         while (tmp > 0x7F) {
+//             tmp = tmp >> 7;
+//             num_bytes += 1;
+//         }
 
-        [Uint8]   buf = new [Uint8](num_bytes);
+//         [UInt8]   buf = new [UInt8](num_bytes);
 
-        tmp = n;
-        for (uint64 i = 0; i < num_bytes; i++) {
-            // Set the first bit in the byte for each group of 7 bits
-            buf[i] = bytes1(0x80 | uint8(tmp & 0x7F));
-            tmp = tmp >> 7;
-        }
-        // Unset the first bit of the last byte
-        buf[num_bytes - 1] &= 0x7F;
+//         tmp = n;
+//         for (uint64 i = 0; i < num_bytes; i++) {
+//             // Set the first bit in the byte for each group of 7 bits
+//             buf[i] = bytes1(0x80 | UInt8(tmp & 0x7F));
+//             tmp = tmp >> 7;
+//         }
+//         // Unset the first bit of the last byte
+//         buf[num_bytes - 1] &= 0x7F;
 
-        return buf;
-    }
+//         return buf;
+//     }
 
-    fun verify(
-        ExistenceProof   proof,
-        ProofSpec   spec,
-        [Uint8]   root,
-        [Uint8]   key,
-        [Uint8]   value
+   pub fun verify(
+        proof: ExistenceProof,
+        spec: ProofSpec,
+        root: [UInt8],
+        key: [UInt8],
+        value: [UInt8],
     )    {
-        checkAgainstSpec(proof, spec);
-        require(
-            Bytes.equals(proof.key, key),
-            "Provided key doesn't match proof"
+        self.checkAgainstSpec(proof, spec);
+        assert(
+            String.encodeHex(proof.key) == String.encodeHex(key),
+            message: "Provided key doesn't match proof"
         );
-        require(
-            Bytes.equals(proof.value, value),
-            "Provided value doesn't match proof"
+        assert(
+            String.encodeHex(proof.value) == String.encodeHex(value),
+            message: "Provided value doesn't match proof"
         );
-        require(
-            Bytes.equals(calculate(proof), root),
-            "Calculcated root doesn't match provided root"
+        assert(
+            Bytes.equals(self.calculate(proof), root),
+            message: "Calculcated root doesn't match provided root"
         );
     }
 
-    fun checkAgainstSpec(ExistenceProof   proof, ProofSpec   spec)
-        private
-        
+   pub fun checkAgainstSpec(proof: ExistenceProof, spec: ProofSpec)            
     {
-        checkAgainstSpecLeafOp(proof.leaf, spec);
-        require(
-            spec.minDepth == 0 || proof.path.length >= uint256(spec.minDepth),
-            "InnerOps depth too short"
+        self.checkAgainstSpecLeafOp(op: proof.leaf, spec: spec);
+
+        assert(
+            spec.minDepth == 0 || proof.path.length >= (spec.minDepth),
+            message: "InnerOps depth too short"
         );
-        require(
-            spec.maxDepth == 0 || proof.path.length >= uint256(spec.maxDepth),
-            "InnerOps depth too short"
+        assert(
+            spec.maxDepth == 0 || proof.path.length >= (spec.maxDepth),
+            message: "InnerOps depth too short"
         );
 
-        for (uint256 i = 0; i < proof.path.length; i++) {
-            checkAgainstSpecInnerOp(proof.path[i], spec);
+        for path in proof.path {
+            self.checkAgainstSpecInnerOp(op: path, spec: spec);
         }
     }
 
     // Calculate determines the root hash that matches the given proof.
     // You must validate the result is what you have in a header.
     // Returns error if the calculations cannot be performed.
-    fun calculate(ExistenceProof   p)
-         
-        
-        : ([Uint8]  )
+   pub fun calculate(p: ExistenceProof) : [UInt8]
     {
         // leaf step takes the key and value as input
-        [Uint8]   res = applyValueLeafOp(p.leaf, p.key, p.value);
+        var res = self.applyValueLeafOp(op: p.leaf, key: p.key, value: p.value);
 
         // the rest just take the output of the last step (reducing it)
-        for (uint256 i = 0; i < p.path.length; i++) {
-            res = applyValueInnerOp(p.path[i], res);
+        for path in p.path {
+            res = self.applyValueInnerOp(op: path, child: res);
         }
         return res;
     }
 }
+ 
