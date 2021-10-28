@@ -1,5 +1,7 @@
 main
 vue/node_modules
+flow/atlantico/node_modules
+flow/node_modules
 vue/dist
 secret.yml
 .idea/
