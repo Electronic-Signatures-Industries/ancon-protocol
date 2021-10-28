@@ -1,9 +1,7 @@
 import Crypto
 
-
-pub contract ICS23 {
+access(all) contract ICS23 {
     // Data structures and helper functions
-
     pub enum HashOp: UInt8 {
         pub case NO_HASH
         pub case SHA256
@@ -118,8 +116,8 @@ pub contract ICS23 {
    pub struct ProofSpec {
       pub var leafSpec: LeafOp 
       pub var innerSpec: InnerSpec 
-      pub var maxDepth: UInt256 
-      pub var minDepth: UInt256 
+      pub var maxDepth: Int 
+      pub var minDepth: Int 
           init(
           leafSpec:  LeafOp,
          innerSpec:InnerSpec,
@@ -281,9 +279,12 @@ prefix: [0 as UInt8]
 
    pub fun doHash(hashOp: HashOp, data: [UInt8]):[UInt8] 
     {
+    
+    
+       let a =  Crypto.hash(data, algorithm: HashAlgorithm.SHA3_256)
         if (hashOp == HashOp.SHA256) {
-return HashAlgorithm.SHA3_256.hash(data)
-        }
+        return a
+    }
         panic("Unsupported hashop");
     }
 
@@ -293,7 +294,7 @@ return HashAlgorithm.SHA3_256.hash(data)
             return data;
         }
         if (lengthOp == LengthOp.VAR_PROTO) {
-            return abi.encodePacked(self.encodeVarintProto(uint64(data.length)), data);
+            return self.encodeVarintProto(n:  data.length).concat(data);
         }
         if (lengthOp == LengthOp.REQUIRE_32_BYTES) {
             assert(data.length == 32, message: "Expected 32 [UInt8]");
@@ -306,29 +307,31 @@ return HashAlgorithm.SHA3_256.hash(data)
         panic("Unsupported lengthop");
     }
 
-//    pub fun encodeVarintProto(n: Uint64)    : [UInt8]   {
-//         // Count the number of groups of 7 bits
-//         // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
-//         uint64 tmp = n;
-//         uint64 num_bytes = 1;
-//         while (tmp > 0x7F) {
-//             tmp = tmp >> 7;
-//             num_bytes += 1;
-//         }
+   pub fun encodeVarintProto(n: Int)    : [UInt8]   {
+        // Count the number of groups of 7 bits
+        // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
+        var tmp: Int = n
+        var num_bytes: Int = 1
+        while (tmp > 0x7F) {
+            tmp = tmp >> 7
+            num_bytes = num_bytes + 1
+        }
 
-//         [UInt8]   buf = new [UInt8](num_bytes);
+        var buf: [UInt8] = []
 
-//         tmp = n;
-//         for (uint64 i = 0; i < num_bytes; i++) {
-//             // Set the first bit in the byte for each group of 7 bits
-//             buf[i] = bytes1(0x80 | UInt8(tmp & 0x7F));
-//             tmp = tmp >> 7;
-//         }
-//         // Unset the first bit of the last byte
-//         buf[num_bytes - 1] &= 0x7F;
+        tmp = n
+        var i: Int = 0
+        while (i < num_bytes) {
+            // Set the first bit in the byte for each group of 7 bits
+            buf[i] = (0x80 | UInt8(tmp & 0x7F))
+            tmp = tmp >> 7
+            i = i + 1
+        }
+        // Unset the first bit of the last byte
+        buf[num_bytes - 1] = buf[num_bytes - 1] & 0x7F
 
-//         return buf;
-//     }
+        return buf
+    }
 
    pub fun verify(
         proof: ExistenceProof,
@@ -337,36 +340,36 @@ return HashAlgorithm.SHA3_256.hash(data)
         key: [UInt8],
         value: [UInt8],
     )    {
-        self.checkAgainstSpec(proof, spec);
+        self.checkAgainstSpec(proof: proof, spec: spec);
         assert(
             String.encodeHex(proof.key) == String.encodeHex(key),
             message: "Provided key doesn't match proof"
-        );
+        )
         assert(
             String.encodeHex(proof.value) == String.encodeHex(value),
             message: "Provided value doesn't match proof"
-        );
+        )
         assert(
-            Bytes.equals(self.calculate(proof), root),
+            String.encodeHex(self.calculate(p: proof)) == String.encodeHex(root),
             message: "Calculcated root doesn't match provided root"
-        );
+        )
     }
 
    pub fun checkAgainstSpec(proof: ExistenceProof, spec: ProofSpec)            
     {
-        self.checkAgainstSpecLeafOp(op: proof.leaf, spec: spec);
+        self.checkAgainstSpecLeafOp(op: proof.leaf, spec: spec)
 
         assert(
             spec.minDepth == 0 || proof.path.length >= (spec.minDepth),
             message: "InnerOps depth too short"
-        );
+        )
         assert(
             spec.maxDepth == 0 || proof.path.length >= (spec.maxDepth),
             message: "InnerOps depth too short"
-        );
+        )
 
         for path in proof.path {
-            self.checkAgainstSpecInnerOp(op: path, spec: spec);
+            self.checkAgainstSpecInnerOp(op: path, spec: spec)
         }
     }
 
@@ -376,13 +379,14 @@ return HashAlgorithm.SHA3_256.hash(data)
    pub fun calculate(p: ExistenceProof) : [UInt8]
     {
         // leaf step takes the key and value as input
-        var res = self.applyValueLeafOp(op: p.leaf, key: p.key, value: p.value);
+        var res = self.applyValueLeafOp(op: p.leaf, key: p.key, value: p.value)
 
         // the rest just take the output of the last step (reducing it)
         for path in p.path {
-            res = self.applyValueInnerOp(op: path, child: res);
+            res = self.applyValueInnerOp(op: path, child: res)
         }
-        return res;
+        return res
     }
+
 }
  
