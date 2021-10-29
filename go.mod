@@ -58,6 +58,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/pkg/errors v0.9.1
 	github.com/proofzero/go-ipld-linkstore v1.0.0
+	github.com/spf13/pflag v1.0.5
 	github.com/tharsis/ethermint v0.7.2
 )
 

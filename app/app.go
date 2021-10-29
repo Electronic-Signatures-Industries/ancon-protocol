@@ -22,6 +22,7 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/docs"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/streaming"
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/token"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -113,6 +114,10 @@ import (
 	// "github.com/tharsis/ethermint/x/feemarket"
 	// feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
 
+	tokenmodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/token"
+	tokenmodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/token/keeper"
+	tokenmoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/token/types"
+
 	aguaclaramodule "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara"
 	aguaclaramodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
 	aguaclaramoduletypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
@@ -175,12 +180,14 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
+		tokenmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		distrtypes.ModuleName:          nil,
+		tokenmoduletypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
@@ -243,6 +250,7 @@ type App struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
+	TokenKeeper      tokenmodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -322,6 +330,7 @@ func New(
 		feemarkettypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		aguaclaramoduletypes.StoreKey,
+		tokenmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey,
 		// anconprotocoltypes.StoreKey,
 	)
@@ -428,6 +437,15 @@ func New(
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
+
+	app.TokenKeeper = tokenmodulekeeper.NewKeeper(
+		appCodec,
+		keys[tokenmoduletypes.StoreKey],
+		app.GetSubspace(tokenmoduletypes.ModuleName),
+		app.BankKeeper,
+		app.ModuleAccountAddrs(),
+		authtypes.FeeCollectorName,
+	)
 	scopedAguaclaraKeeper := app.CapabilityKeeper.ScopeToModule(aguaclaramoduletypes.ModuleName)
 	app.ScopedAguaclaraKeeper = scopedAguaclaraKeeper
 	app.AguaclaraKeeper = *aguaclaramodulekeeper.NewKeeper(
@@ -521,6 +539,7 @@ func New(
 		aguaclaraModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		anconprotocolModule,
+		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -559,6 +578,7 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		tokenmoduletypes.ModuleName,
 		authz.ModuleName, feegrant.ModuleName,
 		// Ethermint modules
 		evmtypes.ModuleName,
@@ -796,6 +816,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
+	paramsKeeper.Subspace(tokenmoduletypes.ModuleName)
 	return paramsKeeper
 }
 
