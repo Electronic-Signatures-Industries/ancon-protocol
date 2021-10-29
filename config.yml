@@ -2,9 +2,9 @@
   
 accounts:
   - name: alice
-    coins: ["100000000uatom", "100000000000000000000aphoton", "10000000000000000stake"]
+    coins: ["100000000uatom", "100000000000000000000aancon", "10000000000000000stake"]
   - name: bob
-    coins: ["5000000000000aphoton", "10000000000000000stake"]
+    coins: ["5000000000000aancon", "10000000000000000stake"]
   # - name: faucet
   #   coins: ["1000000000000000000000000000uatom", "10000000000000000stake"]
 validator:
@@ -39,15 +39,15 @@ genesis:
         bond_denom: "stake"
     mint:
       params:
-        mint_denom: "aphoton"
+        mint_denom: "aancon"
     crisis:
       constant_fee:
-        denom: "aphoton"
+        denom: "aancon"
     gov:
       deposit_params:
         min_deposit:
           - amount: "10000000"
-            denom: "aphoton"
+            denom: "aancon"
     evm:
       params:
-        evm_denom: "aphoton"
+        evm_denom: "aancon"

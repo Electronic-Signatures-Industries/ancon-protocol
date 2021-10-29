@@ -15,6 +15,9 @@ import (
 )
 
 const (
+	// DefaultGraphsyncAddress is the default address the graphsync server binds to.
+	DefaultGraphsyncAddress = "/ip4/0.0.0.0/tcp/9977"
+
 	// DefaultGRPCAddress is the default address the gRPC server binds to.
 	DefaultGRPCAddress = "0.0.0.0:9900"
 
@@ -37,9 +40,18 @@ var evmTracers = []string{DefaultEVMTracer, "markdown", "struct", "access_list"}
 type Config struct {
 	config.Config
 
-	EVM     EVMConfig     `mapstructure:"evm"`
-	JSONRPC JSONRPCConfig `mapstructure:"json-rpc"`
-	TLS     TLSConfig     `mapstructure:"tls"`
+	EVM       EVMConfig       `mapstructure:"evm"`
+	JSONRPC   JSONRPCConfig   `mapstructure:"json-rpc"`
+	TLS       TLSConfig       `mapstructure:"tls"`
+	Graphsync GraphsyncConfig `mapstructure:"graphsync"`
+}
+
+// GraphsyncConfig defines configuration for the Graphsync server.
+type GraphsyncConfig struct {
+	// Address defines the HTTP server to listen on
+	Address string `mapstructure:"address"`
+	// Enable defines if the EVM RPC server should be enabled.
+	Enable bool `mapstructure:"enable"`
 }
 
 // EVMConfig defines the application configuration values for the EVM.
@@ -95,10 +107,11 @@ func AppConfig(denom string) (string, interface{}) {
 	}
 
 	customAppConfig := Config{
-		Config:  *srvCfg,
-		EVM:     *DefaultEVMConfig(),
-		JSONRPC: *DefaultJSONRPCConfig(),
-		TLS:     *DefaultTLSConfig(),
+		Config:    *srvCfg,
+		EVM:       *DefaultEVMConfig(),
+		JSONRPC:   *DefaultJSONRPCConfig(),
+		TLS:       *DefaultTLSConfig(),
+		Graphsync: *DefaultGraphsyncConfig(),
 	}
 
 	customAppTemplate := config.DefaultConfigTemplate + DefaultConfigTemplate
@@ -134,7 +147,15 @@ func (c EVMConfig) Validate() error {
 
 // GetDefaultAPINamespaces returns the default list of JSON-RPC namespaces that should be enabled
 func GetDefaultAPINamespaces() []string {
-	return []string{"eth", "net", "web3"}
+	return []string{"eth", "net", "web3", "ancon", "graphsync"}
+}
+
+// DefaultGraphsyncConfig returns an EVM config with the JSON-RPC API enabled by default
+func DefaultGraphsyncConfig() *GraphsyncConfig {
+	return &GraphsyncConfig{
+		Enable:  true,
+		Address: DefaultGraphsyncAddress,
+	}
 }
 
 // DefaultJSONRPCConfig returns an EVM config with the JSON-RPC API enabled by default
@@ -211,6 +232,10 @@ func GetConfig(v *viper.Viper) Config {
 		TLS: TLSConfig{
 			CertificatePath: v.GetString("tls.certificate-path"),
 			KeyPath:         v.GetString("tls.key-path"),
+		},
+		Graphsync: GraphsyncConfig{
+			Address: v.GetString("graphsync.address"),
+			Enable:  v.GetBool("graphsync.enable"),
 		},
 	}
 }

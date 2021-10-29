@@ -27,11 +27,11 @@ ancon-protocold config chain-id $CHAINID  --home ~/.ancon-protocold
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 ancon-protocold init $MONIKER --chain-id $CHAINID  --home ~/.ancon-protocold
 
-# Change parameter token denominations to aphoton
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+# Change parameter token denominations to aancon
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
 
 # increase block time (?)
 cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
@@ -72,10 +72,10 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
 
 # Sign genesis transaction
-ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
+ancon-protocold gentx $KEY 1000000000000000000000aancon  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
 
 # Collect genesis tx
 ancon-protocold collect-gentxs  --home ~/.ancon-protocold
@@ -88,11 +88,11 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Config app.toml
-sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/minimum-gas-prices = "0aancon"/minimum_gas_prices = "0.001aancon"/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/swagger = false/swagger = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/enable = false/enable = true/g' $HOME/.ancon-protocold/config/app.toml
 sed -i 's/rosetta = false/rosetta = true/g' $HOME/.ancon-protocold/config/app.toml
-sed -i 's/minimum-gas-prices = "0aphoton"/minimum_gas_prices = "0.001aphoton"/g' $HOME/.ancon-protocold/config/app.toml
+sed -i 's/minimum-gas-prices = "0aancon"/minimum_gas_prices = "0.001aancon"/g' $HOME/.ancon-protocold/config/app.toml
 echo '' >> $HOME/.ancon-protocold/config/app.toml
 echo '[store]' >> $HOME/.ancon-protocold/config/app.toml
 echo 'streamers = ["dagcosmos",]' >> $HOME/.ancon-protocold/config/app.toml
@@ -111,5 +111,5 @@ echo 'prefix = "dagbridge"' >> $HOME/.ancon-protocold/config/app.toml
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
 ancon-protocold start --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
 
-#ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
-#ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton
+#ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aancon
+#ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aancon

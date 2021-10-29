@@ -41,10 +41,11 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/server/config"
 	ethlog "github.com/ethereum/go-ethereum/log"
 	"github.com/tharsis/ethermint/log"
 	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
-	"github.com/tharsis/ethermint/server/config"
+
 	srvflags "github.com/tharsis/ethermint/server/flags"
 )
 
@@ -156,6 +157,8 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().String(srvflags.JSONRPCAddress, config.DefaultJSONRPCAddress, "the JSON-RPC server address to listen on")
 	cmd.Flags().String(srvflags.JSONWsAddress, config.DefaultJSONRPCWsAddress, "the JSON-RPC WS server address to listen on")
 	cmd.Flags().Uint64(srvflags.JSONRPCGasCap, config.DefaultGasCap, "Sets a cap on gas that can be used in eth_call/estimateGas (0=infinite)")
+	cmd.Flags().Bool("graphsync.enable", true, "Define if the Graphsync server should be enabled")
+	cmd.Flags().String("graphsync.address", config.DefaultGraphsyncAddress, "the Graphsync server address to listen on")
 
 	cmd.Flags().String(srvflags.EVMTracer, config.DefaultEVMTracer, "the EVM tracer type to collect execution traces from the EVM transaction execution (json|struct|access_list|markdown)")
 
@@ -414,7 +417,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 		tmEndpoint := "/websocket"
 		tmRPCAddr := cfg.RPC.ListenAddress
 		httpSrv, httpSrvDone, err = StartJSONRPC(ctx, clientCtx, tmRPCAddr, tmEndpoint, config)
-		err = StartGraphsync(ctx, clientCtx, tmRPCAddr, tmEndpoint, config)
+		///		err = StartGraphsync(ctx, clientCtx, tmRPCAddr, tmEndpoint, config)
 		if err != nil {
 			return err
 		}

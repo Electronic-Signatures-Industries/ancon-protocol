@@ -1,7 +1,8 @@
 package ancon
 
 import (
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon/namespaces/ancon"
+	ancon "github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon/namespaces/ancon"
+	gsync "github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon/namespaces/graphsync"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -35,23 +36,13 @@ func GetRPCAPIs(ctx *server.Context,
 			Service:   ancon.NewAPIHandler(ctx, ctx.Logger, clientCtx, evmBackend),
 			Public:    true,
 		},
+		rpc.API{
+			Namespace: GraphsyncNamespace,
+			Version:   apiVersion,
+			Service:   gsync.NewAPIHandler(ctx, ctx.Logger, clientCtx, evmBackend),
+			Public:    true,
+		},
 	)
-
-	// case GraphsyncNamespace:
-	// 	apis = append(apis,
-	// 		rpc.API{
-	// 			Namespace: GraphsyncNamespace,
-	// 			Version:   apiVersion,
-	// 			Service:   eth.NewPublicAPI(ctx.Logger, clientCtx, evmBackend, nonceLock),
-	// 			Public:    true,
-	// 		},
-	// 		rpc.API{
-	// 			Namespace: EthNamespace,
-	// 			Version:   apiVersion,
-	// 			Service:   filters.NewPublicAPI(ctx.Logger, tmWSClient, evmBackend),
-	// 			Public:    true,
-	// 		},
-	// 	)
 
 	return apis
 }

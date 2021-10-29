@@ -29,13 +29,13 @@ module.exports = {
       skipDryRun: false
     },
     localhost: {
-      from: '0x32A21c1bB6E7C20F547e930b53dAC57f42cd25F6',
+      from: '0xBF53B34e8a49F34c772690575CA555A6f1e43c1e',
       host: 'localhost',
       port: 8545,
-      network_id: '10' // Match any network id
+      network_id: '*' // Match any network id
     },
     development: {
-      from: '0x32A21c1bB6E7C20F547e930b53dAC57f42cd25F6',
+      from: '0xBF53B34e8a49F34c772690575CA555A6f1e43c1e',
       host: 'localhost' ,
       port: 8646,
       network_id: '*' // Match any network id

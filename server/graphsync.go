@@ -17,10 +17,10 @@ import (
 	"github.com/libp2p/go-libp2p"
 	connmgr "github.com/libp2p/go-libp2p-connmgr"
 	peer "github.com/libp2p/go-libp2p-core/peer"
-	crypto "github.com/libp2p/go-libp2p-crypto"
 	host "github.com/libp2p/go-libp2p-host"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	kaddht "github.com/libp2p/go-libp2p-kad-dht"
+
 	noise "github.com/libp2p/go-libp2p-noise"
 	routing "github.com/libp2p/go-libp2p-routing"
 	linkstore "github.com/proofzero/go-ipld-linkstore"
@@ -34,34 +34,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
-
-	"github.com/tharsis/ethermint/server/config"
 )
-
-// StartGraphsync starts the JSON-RPC server
-func StartGraphsync(ctx *server.Context, clientCtx client.Context, tmRPCAddr, tmEndpoint string, config config.Config) error {
-	tmWsClient := ConnectTmWS(tmRPCAddr, tmEndpoint, ctx.Logger)
-	outChan := tmWsClient.ResponsesCh
-
-	c := context.Background()
-	host := NewPeer(c, "/ip4/0.0.0.0/tcp/7779")
-
-	router := NewRouter(c, host)
-	q := "tm.event='Tx'" /// AND ethereum.recipient='hexAddress'"
-	tmWsClient.Subscribe(c, q)
-	go func() {
-		for {
-			select {
-			case msg := <-outChan:
-				ReceivedTxMessage(ctx, &msg, router)
-			default:
-
-			}
-		}
-	}()
-
-	return nil
-}
 
 func BuildTx(tx evmtypes.MsgEthereumTx) datamodel.Node {
 	data := tx.AsTransaction()
@@ -91,31 +64,37 @@ func ReceivedTxMessage(ctx *server.Context, evt *jsonrpc.RPCResponse, router gsy
 	return nil, nil
 }
 
-func NewPeer(ctx context.Context, addr string) host.Host {
-	// Set your own keypair
-	priv, _, err := crypto.GenerateKeyPair(
-		crypto.Ed25519, // Select your key type. Ed25519 are nice short
-		-1,             // Select key length when possible (i.e. RSA).
-	)
-	if err != nil {
-		panic(err)
+type GraphsyncServer struct {
+	ctx     *server.Context
+	address string
+	host    host.Host
+	client  client.Context
+
+	exchange gsync.GraphExchange
+}
+
+func NewGraphsyncHost(ctx *server.Context, clientCtx client.Context, address string) *GraphsyncServer {
+	c := context.Background()
+	gs := GraphsyncServer{
+		ctx:     ctx,
+		address: address,
+		client:  clientCtx,
 	}
 
-	var dht *kaddht.IpfsDHT
+	var r *kaddht.IpfsDHT
 	newDHT := func(h host.Host) (routing.PeerRouting, error) {
 		var err error
-		dht, err = kaddht.New(ctx, h)
-		return dht, err
+		r, err = kaddht.New(c, h)
+		return r, err
 	}
 
 	gsynchost, err := libp2p.New(
-		ctx,
+		c,
 		// Use the keypair we generated
-		libp2p.Identity(priv),
+		// libp2p.RandomIdentity(),
 		libp2p.Security(noise.ID, noise.New),
 		// Multiple listen addresses
-		libp2p.ListenAddrStrings(addr),
-
+		libp2p.ListenAddrStrings(gs.address),
 		// support TLS connections
 		// Let's prevent our peer from having too many
 		// connections by attaching a connection manager.
@@ -143,7 +122,71 @@ func NewPeer(ctx context.Context, addr string) host.Host {
 	if err != nil {
 		panic(err)
 	}
-	return gsynchost
+
+	gs.host = gsynchost
+	return &gs
+
+}
+
+func (gs *GraphsyncServer) ListenAndServe() error {
+	c := context.Background()
+	// This connects to public bootstrappers
+	var pi *peer.AddrInfo
+	for _, addr := range dht.DefaultBootstrapPeers {
+		pi, _ = peer.AddrInfoFromP2pAddr(addr)
+		// We ignore errors as some bootstrap peers may be down
+		// and that is fine.
+		gs.host.Connect(c, *pi)
+	}
+
+	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
+	network := gsnet.NewFromLibp2pHost(gs.host)
+
+	//add carv1
+	gs.exchange = graphsync.New(c, network, sls.LinkSystem)
+
+	finalResponseStatusChan := make(chan gsync.ResponseStatusCode, 1)
+	gs.exchange.RegisterCompletedResponseListener(func(p peer.ID, request gsync.RequestData, status gsync.ResponseStatusCode) {
+		select {
+		case finalResponseStatusChan <- status:
+			fmt.Sprintf("%s", status)
+		default:
+		}
+	})
+
+	defer gs.host.Close()
+
+	gs.ctx.Logger.Info("%s/p2p/%s", gs.host.Addrs()[0].String(), gs.host.ID().Pretty())
+
+	var received gsmsg.GraphSyncMessage
+	var receivedBlocks []blocks.Block
+	go func() {
+		for {
+			var message net.ReceivedMessage
+
+			sender := message.Sender
+			received = message.Message
+
+			receivedBlocks = append(receivedBlocks, received.Blocks()...)
+			receivedResponses := received.Responses()
+			if len(receivedResponses) == 0 {
+				continue
+			}
+			gs.ctx.Logger.Info("Received from sender: %s %s", sender.String(), received)
+			gs.ctx.Logger.Info("Status: %s", receivedResponses[0].Status())
+			if receivedResponses[0].Status() != gsync.PartialResponse {
+				break
+			}
+
+			buidl := gsmsg.NewBuilder(gsmsg.Topic(0x9))
+			buidl.AddBlock(blocks.NewBlock([]byte{}))
+			mm, _ := buidl.Build()
+			s, _ := network.NewMessageSender(c, message.Sender)
+			s.SendMsg(c, mm)
+		}
+	}()
+
+	return nil
 }
 
 //WriteCAR
@@ -235,66 +278,4 @@ func PrintProgress(ctx context.Context, pgChan <-chan gsync.ResponseProgress) {
 		case <-ctx.Done():
 		}
 	}
-}
-
-func NewRouter(ctx context.Context, gsynchost host.Host) gsync.GraphExchange {
-
-	// This connects to public bootstrappers
-	var pi *peer.AddrInfo
-	for _, addr := range dht.DefaultBootstrapPeers {
-		pi, _ = peer.AddrInfoFromP2pAddr(addr)
-		// We ignore errors as some bootstrap peers may be down
-		// and that is fine.
-		gsynchost.Connect(ctx, *pi)
-	}
-
-	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
-	network := gsnet.NewFromLibp2pHost(gsynchost)
-
-	//add carv1
-	var exchange gsync.GraphExchange
-	exchange = graphsync.New(ctx, network, sls.LinkSystem)
-
-	finalResponseStatusChan := make(chan gsync.ResponseStatusCode, 1)
-	exchange.RegisterCompletedResponseListener(func(p peer.ID, request gsync.RequestData, status gsync.ResponseStatusCode) {
-		select {
-		case finalResponseStatusChan <- status:
-			fmt.Sprintf("%s", status)
-		default:
-		}
-	})
-
-	defer gsynchost.Close()
-
-	a := fmt.Sprintf("%s/p2p/%s", gsynchost.Addrs()[0].String(), gsynchost.ID().Pretty())
-	fmt.Printf("Hello World, my hosts ID is %s\n", a)
-
-	var received gsmsg.GraphSyncMessage
-	var receivedBlocks []blocks.Block
-	go func() {
-		for {
-			var message net.ReceivedMessage
-
-			sender := message.Sender
-			received = message.Message
-			fmt.Sprintf("%s %s", sender.String(), received)
-			receivedBlocks = append(receivedBlocks, received.Blocks()...)
-			receivedResponses := received.Responses()
-			if len(receivedResponses) == 0 {
-				continue
-			}
-			fmt.Sprintf("%s", receivedResponses[0].Status())
-			if receivedResponses[0].Status() != gsync.PartialResponse {
-				break
-			}
-
-			buidl := gsmsg.NewBuilder(gsmsg.Topic(0x9))
-			buidl.AddBlock(blocks.NewBlock([]byte{}))
-			mm, _ := buidl.Build()
-			s, _ := network.NewMessageSender(ctx, message.Sender)
-			s.SendMsg(ctx, mm)
-		}
-	}()
-	return exchange
-
 }
