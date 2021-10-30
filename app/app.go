@@ -361,6 +361,7 @@ func New(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
+	scopedAguaclaraKeeper := app.CapabilityKeeper.ScopeToModule(aguaclaramoduletypes.ModuleName)
 
 	// add keepers
 	// use custom Ethermint account for contracts
@@ -446,7 +447,7 @@ func New(
 		app.ModuleAccountAddrs(),
 		authtypes.FeeCollectorName,
 	)
-	scopedAguaclaraKeeper := app.CapabilityKeeper.ScopeToModule(aguaclaramoduletypes.ModuleName)
+	//	scopedAguaclaraKeeper := app.CapabilityKeeper.ScopeToModule(aguaclaramoduletypes.ModuleName)
 	app.ScopedAguaclaraKeeper = scopedAguaclaraKeeper
 	app.AguaclaraKeeper = *aguaclaramodulekeeper.NewKeeper(
 		appCodec,
@@ -478,6 +479,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		evmkeeperInstance,
+		app.AguaclaraKeeper,
 		app.ModuleAccountAddrs(),
 		app.cms,
 	)

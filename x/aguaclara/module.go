@@ -1,7 +1,6 @@
 package aguaclara
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
@@ -15,7 +14,6 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/client/cli"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/network"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -104,7 +102,6 @@ type AppModule struct {
 	AppModuleBasic
 
 	keeper keeper.Keeper
-	agent  *network.AnconIPLDSync
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
@@ -137,11 +134,6 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-}
-
-func (am AppModule) RegisterGraphsync(ctx context.Context) {
-	am.agent = network.NewAnconIPLDSync(ctx, "", "")
-
 }
 
 // RegisterInvariants registers the capability module's invariants.
