@@ -1,0 +1,14 @@
+{
+  "chain": {
+    "@type": "/relayer.chains.tendermint.config.ChainConfig",
+    "key": "mykey",
+    "chain_id": "aguaclara-cosmos-0",
+    "rpc_addr": "http://localhost:26657",
+    "account_prefix": "ancon",
+    "gas_adjustment": 1.5,
+    "gas_prices": "0.025aancon"
+  },
+  "prover": {
+    "@type": "/relayer.provers.mock.config.ProverConfig"
+  }
+}

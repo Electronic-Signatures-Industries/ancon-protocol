@@ -3,6 +3,8 @@ package keeper
 import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
@@ -52,4 +54,32 @@ func (k Keeper) AuthenticateCapability(ctx sdk.Context, cap *capabilitytypes.Cap
 // ClaimCapability allows the module that can claim a capability that IBC module passes to it
 func (k Keeper) ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error {
 	return k.scopedKeeper.ClaimCapability(ctx, cap, name)
+}
+
+func (k Keeper) TrasmitIbcPacket(ctx sdk.Context,
+	sourcePort, sourceChannel string,
+	destinationPort, destinationChannel string,
+	timeoutHeight clienttypes.Height,
+	timeoutTimestamp, sequence uint64,
+	packetData *types.AguaclaraPacketData, chanCap *capabilitytypes.Capability) *sdkerrors.Error {
+
+	encoded := packetData.EthereumEncode()
+
+	packet := channeltypes.NewPacket(
+		encoded,
+		sequence,
+		sourcePort,
+		sourceChannel,
+		destinationPort,
+		destinationChannel,
+		timeoutHeight,
+		timeoutTimestamp,
+	)
+
+	err := k.channelKeeper.SendPacket(ctx, chanCap, packet)
+
+	if err != nil {
+		return channeltypes.ErrInvalidPacket
+	}
+	return nil
 }

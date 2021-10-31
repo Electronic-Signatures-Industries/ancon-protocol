@@ -585,29 +585,6 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 			v := buf.Bytes()
 			store.Set(key, v)
 
-			// proofstore := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("anconproof"))
-			// ce1 := &ics23.CommitmentProof_Exist{
-			// 	Exist: &ics23.ExistenceProof{
-			// 		Key:   key,
-			// 		Value: v,
-			// 		Leaf:  ics23.IavlSpec.GetLeafSpec(),
-			// 	},
-			// }
-
-			// c := &ics23.CommitmentProof{ce1}
-			// r, _ := c.Calculate()
-
-			// err = c.GetExist().Verify(ics23.IavlSpec, r, key, v)
-			// if err != nil {
-			// 	return err
-			// }
-
-			// proof, err := c.Marshal()
-			// proofstore.Set(key, proof)
-			// if err != nil {
-			// 	return err
-			// }
-
 			return nil
 		}, nil
 	}

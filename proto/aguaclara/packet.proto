@@ -6,10 +6,11 @@ package ElectronicSignaturesIndustries.anconprotocol.aguaclara;
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types";
 
 message AguaclaraPacketData {
-    oneof packet {
-        NoData noData = 1;
-        // this line is used by starport scaffolding # ibc/packet/proto/field
-    }
+    string creator = 1;
+    string tokenAddress = 2;
+    string tokenId = 3;
+    string didRecipient = 4;
+    string toMetadata = 5;
 }
 
 message NoData {
