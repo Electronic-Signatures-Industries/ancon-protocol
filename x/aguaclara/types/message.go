@@ -14,14 +14,6 @@ func NewMsgSendMetadataOwnership(creator string, path string, content string, mo
 	return &MsgSendMetadataOwnership{}
 }
 
-func (s *AguaclaraPacketData) EthereumDecode(data []byte) {
-
-}
-
-func (s *AguaclaraPacketData) EthereumEncode() []byte {
-	return []byte{}
-}
-
 func (msg *MsgSendMetadataOwnership) Route() string {
 	return RouterKey
 }
