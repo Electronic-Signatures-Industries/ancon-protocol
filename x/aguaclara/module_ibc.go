@@ -137,7 +137,7 @@ func (am AppModule) OnRecvPacket(
 
 	modulePacketData := &types.AguaclaraPacketData{}
 
-	modulePacketData.EthereumDecode(modulePacket.Data)
+	modulePacketData.ToAbiUnpacked(modulePacket.Data)
 
 	// process
 	ctx.Logger().Info("RECV Packet from Ethereum", modulePacket.Data)

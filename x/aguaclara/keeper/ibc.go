@@ -63,7 +63,7 @@ func (k Keeper) TrasmitIbcPacket(ctx sdk.Context,
 	timeoutTimestamp, sequence uint64,
 	packetData *types.AguaclaraPacketData, chanCap *capabilitytypes.Capability) *sdkerrors.Error {
 
-	encoded := packetData.EthereumEncode()
+	encoded, _ := packetData.ToAbiPacked(packetData.Creator)
 
 	packet := channeltypes.NewPacket(
 		encoded,
