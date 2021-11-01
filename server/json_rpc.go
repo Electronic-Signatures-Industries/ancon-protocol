@@ -22,6 +22,7 @@ import (
 	aguaclaratypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/server/config"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
@@ -162,14 +163,23 @@ func setPacketInterval(clientCtx client.Context, ctx *server.Context) {
 		},
 	}
 
-	out, err := msgSendMeta.Marshal()
+	txbuilder := clientCtx.TxConfig.NewTxBuilder()
+
+	txbuilder.SetMsgs(&msgSendMeta)
+	txbuilder.SetMemo("")
+	txbuilder.SetFeeAmount(sdk.Coins{{
+		Denom:  "aancon",
+		Amount: sdk.NewInt(2000),
+	}})
+
+	bs, err := clientCtx.TxConfig.TxEncoder()(txbuilder.GetTx())
 
 	if err != nil {
 		fmt.Errorf("invalid TxRawBytes %s: %v", &msgSendMeta, err)
 	}
 
 	syncCtx := clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	rsp, err := syncCtx.BroadcastTx(out)
+	rsp, err := syncCtx.BroadcastTx(bs)
 
 	if err != nil || rsp.Code != 0 {
 		if err == nil {

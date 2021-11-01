@@ -18,7 +18,7 @@ command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https
 # remove existing daemon and client
 rm -rf ~/.ancon-protocold*
 
-~/go/bin/ancon-protocold config keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold config keyring-backend $KEYRING  --home ~/.ancon-protocold 
 ~/go/bin/ancon-protocold config chain-id $CHAINID  --home ~/.ancon-protocold
 
 # if $KEY exists it should be deleted
@@ -44,8 +44,8 @@ cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"][
 
 
 # Allocate genesis accounts (cosmos formatted addresses)
-~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
-~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account $KEY 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
+#~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
 
 # Sign genesis transaction
 ~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aancon  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
