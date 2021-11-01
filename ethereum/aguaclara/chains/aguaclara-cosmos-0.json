@@ -6,7 +6,7 @@
     "rpc_addr": "http://localhost:26657",
     "account_prefix": "ancon",
     "gas_adjustment": 1.5,
-    "gas_prices": "0.025aancon"
+    "gas_prices": "0.05aphoton"
   },
   "prover": {
     "@type": "/relayer.provers.mock.config.ProverConfig"

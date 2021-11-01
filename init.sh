@@ -30,11 +30,11 @@ rm -rf ~/.ancon-protocold*
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 ~/go/bin/ancon-protocold init $MONIKER --chain-id $CHAINID  --home ~/.ancon-protocold
 
-# Change parameter token denominations to aancon
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
-cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aancon"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+# Change parameter token denominations to aphoton
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
+cat $HOME/.ancon-protocold/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
 
 # increase block time (?)
 cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.ancon-protocold/config/tmp_genesis.json && mv $HOME/.ancon-protocold/config/tmp_genesis.json $HOME/.ancon-protocold/config/genesis.json
@@ -44,11 +44,11 @@ cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"][
 
 
 # Allocate genesis accounts (cosmos formatted addresses)
-~/go/bin/ancon-protocold add-genesis-account $KEY 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
-#~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aancon --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 
 # Sign genesis transaction
-~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aancon  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
 
 # Collect genesis tx
 ~/go/bin/ancon-protocold collect-gentxs  --home ~/.ancon-protocold
@@ -72,5 +72,5 @@ cp config.toml $HOME/.ancon-protocold/config/config.toml
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
 ~/go/bin/ancon-protocold start --node tcp://0.0.0.0:26657 --pruning=nothing $TRACE --log_level $LOGLEVEL --rpc.unsafe=true  --json-rpc.api  eth,txpool,personal,net,debug,web3,miner --home ~/.ancon-protocold --keyring-backend $KEYRING
 
-#~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aancon
-#~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aancon
+#~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 10000aphoton
+#~/go/bin/ancon-protocold tx bank send ethm1jrclh4kgf3467e9aueudn9fflaz04mftahgun3 ethm1yf7eqee4l9hen2g3q799j92k638e98lfq84635 10000aphoton

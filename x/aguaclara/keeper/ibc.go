@@ -64,7 +64,7 @@ func (k Keeper) TrasmitIbcPacket(ctx sdk.Context,
 	timeoutTimestamp, sequence uint64,
 	packetData *types.AguaclaraPacketData, chanCap *capabilitytypes.Capability) *sdkerrors.Error {
 
-	encoded, _ := packetData.ToAbiPacked("0xdafe400A87e82f7C72f7caA5f571815ffD1a4d7A", packetData.TokenAddress, cast.ToInt(packetData.TokenId), packetData.DidRecipient, packetData.ToMetadata)
+	encoded, _ := packetData.ToAbiPacked("ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d", packetData.TokenAddress, cast.ToInt(packetData.TokenId), packetData.DidRecipient, packetData.ToMetadata)
 
 	packet := channeltypes.NewPacket(
 		encoded,
