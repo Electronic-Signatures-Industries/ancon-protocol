@@ -1,6 +1,8 @@
 package server
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -8,6 +10,7 @@ import (
 	"github.com/rs/cors"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/types"
 	ethrpc "github.com/ethereum/go-ethereum/rpc"
@@ -15,6 +18,8 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/rpc/ancon"
 	"github.com/tharsis/ethermint/rpc"
 	evmconfig "github.com/tharsis/ethermint/server/config"
+
+	aguaclaratypes "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/server/config"
 )
@@ -132,5 +137,45 @@ func StartJSONRPC(ctx *server.Context, clientCtx client.Context, tmRPCAddr, tmEn
 	tmWsClient = ConnectTmWS(tmRPCAddr, tmEndpoint, ctx.Logger)
 	wsSrv := rpc.NewWebsocketsServer(ctx.Logger, tmWsClient, *ethconfig)
 	wsSrv.Start()
+
+	aguaclaratypes.SetInterval(func() {
+		setPacketInterval(clientCtx, ctx)
+	}, 5000, true)
+
 	return httpSrv, httpSrvDone, nil
+}
+
+func setPacketInterval(clientCtx client.Context, ctx *server.Context) {
+
+	//clientCtx.BroadcastTx()
+
+	msgSendMeta := aguaclaratypes.MsgSendMetadataOwnership{
+		Creator:   string(clientCtx.FromAddress),
+		PortId:    "cross-metadata-ownership",
+		ChannelId: "channel-0",
+		Data: &aguaclaratypes.AguaclaraPacketData{
+			Creator:      "0xFA24605D4023b0bf847034Da72D25e1b8daC0E34",
+			TokenAddress: "0xFA24605D4023b0bf847034Da72D25e1b8daC0E34",
+			TokenId:      "3",
+			DidRecipient: "",
+			ToMetadata:   "",
+		},
+	}
+
+	out, err := msgSendMeta.Marshal()
+
+	if err != nil {
+		fmt.Errorf("invalid TxRawBytes %s: %v", &msgSendMeta, err)
+	}
+
+	syncCtx := clientCtx.WithBroadcastMode(flags.BroadcastSync)
+	rsp, err := syncCtx.BroadcastTx(out)
+
+	if err != nil || rsp.Code != 0 {
+		if err == nil {
+			err = errors.New(rsp.RawLog)
+		}
+		ctx.Logger.Error("failed to broadcast tx", "error", err.Error())
+	}
+
 }
