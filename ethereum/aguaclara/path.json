@@ -1,21 +1,21 @@
 {
   "src": {
-    "chain-id": "aguaclara-cosmos-0",
+    "chain-id": "anconprotocol_9000-1",
     "client-id": "mock-client-0",
     "connection-id": "connection-0",
     "channel-id": "channel-0",
-    "port-id": "cross-metadata-ownership",
+    "port-id": "aguaclara",
     "order": "unordered",
-    "version": "ics20-1"
+    "version": "aguaclara-1"
   },
   "dst": {
     "chain-id": "aguaclara-evm-1",
     "client-id": "mock-client-0",
     "connection-id": "connection-0",
     "channel-id": "channel-0",
-    "port-id": "cross-metadata-ownership",
+    "port-id": "aguaclara",
     "order": "unordered",
-    "version": "ics20-1"
+    "version": "aguaclara-1"
   },
   "strategy": {
     "type": "naive"

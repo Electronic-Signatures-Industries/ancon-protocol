@@ -46,7 +46,7 @@ cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"][
 # Allocate genesis accounts (cosmos formatted addresses)
 ~/go/bin/ancon-protocold add-genesis-account ethm1x23pcxakulpq74r7jv948kk90apv6f0k7s943z 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 ~/go/bin/ancon-protocold add-genesis-account ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
-
+~/go/bin/ancon-protocold add-genesis-account ethm1h8mfzjn5zhu6mpn6n3fhgudydhag22aw4dyenj 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 # Sign genesis transaction
 ~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
 
