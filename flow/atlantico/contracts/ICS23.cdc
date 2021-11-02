@@ -307,29 +307,16 @@ prefix: [0 as UInt8]
     }
 
    pub fun encodeVarintProto(n: Int)    : [UInt8]   {
-        // Count the number of groups of 7 bits
-        // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
-        var tmp: Int = n
-        var num_bytes: Int = 1
-        while (tmp > 0x7F) {
-            tmp = tmp >> 7
-            num_bytes = num_bytes + 1
+        // Inspired by: https://github.com/confio/ics23/blob/17c3466679ba7b65e1207406951e50577b4dfb05/js/src/ops.ts#L148
+        let enc: [UInt8] = [];
+        var l = n;
+        while (l >= 128) {
+            let b = UInt8((l % 128) + 128);
+            enc.append(b);
+            l = l / 128;
         }
-
-        var buf: [UInt8] = []
-
-        tmp = n
-        var i: Int = 0
-        while (i < num_bytes) {
-            // Set the first bit in the byte for each group of 7 bits
-            buf[i] = (0x80 | UInt8(tmp & 0x7F))
-            tmp = tmp >> 7
-            i = i + 1
-        }
-        // Unset the first bit of the last byte
-        buf[num_bytes - 1] = buf[num_bytes - 1] & 0x7F
-
-        return buf
+        enc.append(UInt8(l));
+        return enc;
     }
 
    pub fun verify(
