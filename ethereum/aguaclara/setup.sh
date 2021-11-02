@@ -5,4 +5,4 @@ uly config init --home .
 uly chains add-dir chains --home .
 uly paths add anconprotocol_9000-1 aguaclara-evm-1 aguaclara-relayer -f path.json  --home .
 uly tendermint keys restore anconprotocol_9000-1 mykey "$KEY" --home .
-uly service start aguaclara-relayer --home .
+uly service start aguaclara-relayer -d --home .

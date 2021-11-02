@@ -7,58 +7,58 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "133:3432:24:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;133:3432:24;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "133:3432:24:-:0;;;;;;;;",
+  "sourceMap": "133:3432:15:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;133:3432:15;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "133:3432:15:-:0;;;;;;;;",
   "source": "pragma solidity ^0.8.9;\n\nimport \"./types/Connection.sol\";\nimport \"./types/Channel.sol\";\n\n/*\nIBCMsgs defines Datagrams in ics-026.\n*/\nlibrary IBCMsgs {\n\n    /// Client ///\n\n    struct MsgCreateClient {\n        string clientType;\n        uint64 height;\n        bytes clientStateBytes;\n        bytes consensusStateBytes;\n    }\n\n    struct MsgUpdateClient {\n        string clientId;\n        bytes header;\n    }\n\n    /// Connection handshake ///\n\n    struct MsgConnectionOpenInit {\n        string clientId;\n        Counterparty.Data counterparty;\n        uint64 delayPeriod;\n    }\n\n    struct MsgConnectionOpenTry {\n        string previousConnectionId;\n        Counterparty.Data counterparty; // counterpartyConnectionIdentifier, counterpartyPrefix and counterpartyClientIdentifier\n        uint64 delayPeriod;\n        string clientId; // clientID of chainA\n        bytes clientStateBytes; // clientState that chainA has for chainB\n        Version.Data[] counterpartyVersions; // supported versions of chain A\n        bytes proofInit; // proof that chainA stored connectionEnd in state (on ConnOpenInit)\n        bytes proofClient; // proof that chainA stored a light client of chainB\n        bytes proofConsensus; // proof that chainA stored chainB's consensus state at consensus height\n        uint64 proofHeight; // height at which relayer constructs proof of A storing connectionEnd in state\n        uint64 consensusHeight; // latest height of chain B which chain A has stored in its chain B client\n    }\n\n    struct MsgConnectionOpenAck {\n        string connectionId;\n        bytes clientStateBytes; // client state for chainA on chainB\n        Version.Data version; // version that ChainB chose in ConnOpenTry\n        string counterpartyConnectionID;\n        bytes proofTry; // proof that connectionEnd was added to ChainB state in ConnOpenTry\n        bytes proofClient; // proof of client state on chainB for chainA\n        bytes proofConsensus; // proof that chainB has stored ConsensusState of chainA on its client\n        uint64 proofHeight; // height that relayer constructed proofTry\n        uint64 consensusHeight; // latest height of chainA that chainB has stored on its chainA client\n    }\n\n    struct MsgConnectionOpenConfirm {\n        string connectionId;\n        bytes proofAck;\n        uint64 proofHeight;\n    }\n\n    /// Channel handshake ///\n\n    struct MsgChannelOpenInit {\n        string portId;\n        Channel.Data channel;\n    }\n\n    struct MsgChannelOpenTry {\n        string portId;\n        string previousChannelId;\n        Channel.Data channel;\n        string counterpartyVersion;\n        bytes proofInit;\n        uint64 proofHeight;\n    }\n\n    struct MsgChannelOpenAck {\n        string portId;\n        string channelId;\n        string counterpartyVersion;\n        string counterpartyChannelId;\n        bytes proofTry;\n        uint64 proofHeight;\n    }\n\n    struct MsgChannelOpenConfirm {\n        string portId;\n        string channelId;\n        bytes proofAck;\n        uint64 proofHeight;\n    }\n\n    /// Channel closing ///\n\n    struct MsgChannelCloseInit {\n        string portId;\n        string channelId;\n    }\n\n    struct MsgChannelCloseConfirm {\n        string portId;\n        string channelId;\n        bytes proofInit;\n        uint64 proofHeight;\n    }\n\n    /// Packet ///\n\n    struct MsgPacketRecv {\n        Packet.Data packet;\n        bytes proof;\n        uint64 proofHeight;\n    }\n\n    struct MsgPacketAcknowledgement {\n        Packet.Data packet;\n        bytes acknowledgement;\n        bytes proof;\n        uint64 proofHeight;\n    }\n}\n",
   "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCMsgs.sol",
   "ast": {
     "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCMsgs.sol",
     "exportedSymbols": {
       "Channel": [
-        15031
+        11859
       ],
       "ChannelCounterparty": [
-        15727
+        12555
       ],
       "ChannelIdentifiedChannel": [
-        17529
+        14357
       ],
       "ConnectionEnd": [
-        22330
+        19158
       ],
       "Counterparty": [
-        23199
-      ],
-      "GoogleProtobufAny": [
-        25346
-      ],
-      "Height": [
-        20699
-      ],
-      "IBCMsgs": [
-        9573
-      ],
-      "MerklePrefix": [
-        23745
-      ],
-      "Packet": [
-        19070
-      ],
-      "PacketState": [
         20027
       ],
+      "GoogleProtobufAny": [
+        22174
+      ],
+      "Height": [
+        17527
+      ],
+      "IBCMsgs": [
+        6401
+      ],
+      "MerklePrefix": [
+        20573
+      ],
+      "Packet": [
+        15898
+      ],
+      "PacketState": [
+        16855
+      ],
       "ProtoBufRuntime": [
-        37508
+        34336
       ],
       "Version": [
-        24705
+        21533
       ]
     },
-    "id": 9574,
+    "id": 6402,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9421,
+        "id": 6249,
         "literals": [
           "solidity",
           "^",
@@ -66,29 +66,29 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:24"
+        "src": "0:23:15"
       },
       {
         "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Connection.sol",
         "file": "./types/Connection.sol",
-        "id": 9422,
+        "id": 6250,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 9574,
-        "sourceUnit": 24706,
-        "src": "25:32:24",
+        "scope": 6402,
+        "sourceUnit": 21534,
+        "src": "25:32:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Channel.sol",
         "file": "./types/Channel.sol",
-        "id": 9423,
+        "id": 6251,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 9574,
-        "sourceUnit": 20700,
-        "src": "58:29:24",
+        "scope": 6402,
+        "sourceUnit": 17528,
+        "src": "58:29:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -99,27 +99,27 @@
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 9573,
+        "id": 6401,
         "linearizedBaseContracts": [
-          9573
+          6401
         ],
         "name": "IBCMsgs",
-        "nameLocation": "141:7:24",
+        "nameLocation": "141:7:15",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "IBCMsgs.MsgCreateClient",
-            "id": 9432,
+            "id": 6260,
             "members": [
               {
                 "constant": false,
-                "id": 9425,
+                "id": 6253,
                 "mutability": "mutable",
                 "name": "clientType",
-                "nameLocation": "216:10:24",
+                "nameLocation": "216:10:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "209:17:24",
+                "scope": 6260,
+                "src": "209:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -127,10 +127,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9424,
+                  "id": 6252,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "209:6:24",
+                  "src": "209:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -140,13 +140,13 @@
               },
               {
                 "constant": false,
-                "id": 9427,
+                "id": 6255,
                 "mutability": "mutable",
                 "name": "height",
-                "nameLocation": "243:6:24",
+                "nameLocation": "243:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "236:13:24",
+                "scope": 6260,
+                "src": "236:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -154,10 +154,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9426,
+                  "id": 6254,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "236:6:24",
+                  "src": "236:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -167,13 +167,13 @@
               },
               {
                 "constant": false,
-                "id": 9429,
+                "id": 6257,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "265:16:24",
+                "nameLocation": "265:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "259:22:24",
+                "scope": 6260,
+                "src": "259:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -181,10 +181,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9428,
+                  "id": 6256,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "259:5:24",
+                  "src": "259:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -194,13 +194,13 @@
               },
               {
                 "constant": false,
-                "id": 9431,
+                "id": 6259,
                 "mutability": "mutable",
                 "name": "consensusStateBytes",
-                "nameLocation": "297:19:24",
+                "nameLocation": "297:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "291:25:24",
+                "scope": 6260,
+                "src": "291:25:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -208,10 +208,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9430,
+                  "id": 6258,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "291:5:24",
+                  "src": "291:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -221,25 +221,25 @@
               }
             ],
             "name": "MsgCreateClient",
-            "nameLocation": "183:15:24",
+            "nameLocation": "183:15:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "176:147:24",
+            "scope": 6401,
+            "src": "176:147:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgUpdateClient",
-            "id": 9437,
+            "id": 6265,
             "members": [
               {
                 "constant": false,
-                "id": 9434,
+                "id": 6262,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "369:8:24",
+                "nameLocation": "369:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9437,
-                "src": "362:15:24",
+                "scope": 6265,
+                "src": "362:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -247,10 +247,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9433,
+                  "id": 6261,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "362:6:24",
+                  "src": "362:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -260,13 +260,13 @@
               },
               {
                 "constant": false,
-                "id": 9436,
+                "id": 6264,
                 "mutability": "mutable",
                 "name": "header",
-                "nameLocation": "393:6:24",
+                "nameLocation": "393:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9437,
-                "src": "387:12:24",
+                "scope": 6265,
+                "src": "387:12:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -274,10 +274,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9435,
+                  "id": 6263,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "387:5:24",
+                  "src": "387:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -287,25 +287,25 @@
               }
             ],
             "name": "MsgUpdateClient",
-            "nameLocation": "336:15:24",
+            "nameLocation": "336:15:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "329:77:24",
+            "scope": 6401,
+            "src": "329:77:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenInit",
-            "id": 9445,
+            "id": 6273,
             "members": [
               {
                 "constant": false,
-                "id": 9439,
+                "id": 6267,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "492:8:24",
+                "nameLocation": "492:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "485:15:24",
+                "scope": 6273,
+                "src": "485:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -313,10 +313,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9438,
+                  "id": 6266,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "485:6:24",
+                  "src": "485:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -326,33 +326,33 @@
               },
               {
                 "constant": false,
-                "id": 9442,
+                "id": 6270,
                 "mutability": "mutable",
                 "name": "counterparty",
-                "nameLocation": "528:12:24",
+                "nameLocation": "528:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "510:30:24",
+                "scope": 6273,
+                "src": "510:30:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                   "typeString": "struct Counterparty.Data"
                 },
                 "typeName": {
-                  "id": 9441,
+                  "id": 6269,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9440,
+                    "id": 6268,
                     "name": "Counterparty.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 22338,
-                    "src": "510:17:24"
+                    "referencedDeclaration": 19166,
+                    "src": "510:17:15"
                   },
-                  "referencedDeclaration": 22338,
-                  "src": "510:17:24",
+                  "referencedDeclaration": 19166,
+                  "src": "510:17:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                     "typeString": "struct Counterparty.Data"
                   }
                 },
@@ -360,13 +360,13 @@
               },
               {
                 "constant": false,
-                "id": 9444,
+                "id": 6272,
                 "mutability": "mutable",
                 "name": "delayPeriod",
-                "nameLocation": "557:11:24",
+                "nameLocation": "557:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "550:18:24",
+                "scope": 6273,
+                "src": "550:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -374,10 +374,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9443,
+                  "id": 6271,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "550:6:24",
+                  "src": "550:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -387,25 +387,25 @@
               }
             ],
             "name": "MsgConnectionOpenInit",
-            "nameLocation": "453:21:24",
+            "nameLocation": "453:21:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "446:129:24",
+            "scope": 6401,
+            "src": "446:129:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenTry",
-            "id": 9471,
+            "id": 6299,
             "members": [
               {
                 "constant": false,
-                "id": 9447,
+                "id": 6275,
                 "mutability": "mutable",
                 "name": "previousConnectionId",
-                "nameLocation": "626:20:24",
+                "nameLocation": "626:20:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "619:27:24",
+                "scope": 6299,
+                "src": "619:27:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -413,10 +413,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9446,
+                  "id": 6274,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "619:6:24",
+                  "src": "619:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -426,33 +426,33 @@
               },
               {
                 "constant": false,
-                "id": 9450,
+                "id": 6278,
                 "mutability": "mutable",
                 "name": "counterparty",
-                "nameLocation": "674:12:24",
+                "nameLocation": "674:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "656:30:24",
+                "scope": 6299,
+                "src": "656:30:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                   "typeString": "struct Counterparty.Data"
                 },
                 "typeName": {
-                  "id": 9449,
+                  "id": 6277,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9448,
+                    "id": 6276,
                     "name": "Counterparty.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 22338,
-                    "src": "656:17:24"
+                    "referencedDeclaration": 19166,
+                    "src": "656:17:15"
                   },
-                  "referencedDeclaration": 22338,
-                  "src": "656:17:24",
+                  "referencedDeclaration": 19166,
+                  "src": "656:17:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                     "typeString": "struct Counterparty.Data"
                   }
                 },
@@ -460,13 +460,13 @@
               },
               {
                 "constant": false,
-                "id": 9452,
+                "id": 6280,
                 "mutability": "mutable",
                 "name": "delayPeriod",
-                "nameLocation": "792:11:24",
+                "nameLocation": "792:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "785:18:24",
+                "scope": 6299,
+                "src": "785:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -474,10 +474,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9451,
+                  "id": 6279,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "785:6:24",
+                  "src": "785:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -487,13 +487,13 @@
               },
               {
                 "constant": false,
-                "id": 9454,
+                "id": 6282,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "820:8:24",
+                "nameLocation": "820:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "813:15:24",
+                "scope": 6299,
+                "src": "813:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -501,10 +501,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9453,
+                  "id": 6281,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "813:6:24",
+                  "src": "813:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -514,13 +514,13 @@
               },
               {
                 "constant": false,
-                "id": 9456,
+                "id": 6284,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "866:16:24",
+                "nameLocation": "866:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "860:22:24",
+                "scope": 6299,
+                "src": "860:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -528,10 +528,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9455,
+                  "id": 6283,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "860:5:24",
+                  "src": "860:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -541,42 +541,42 @@
               },
               {
                 "constant": false,
-                "id": 9460,
+                "id": 6288,
                 "mutability": "mutable",
                 "name": "counterpartyVersions",
-                "nameLocation": "949:20:24",
+                "nameLocation": "949:20:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "934:35:24",
+                "scope": 6299,
+                "src": "934:35:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_Data_$23751_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_Data_$20579_storage_$dyn_storage_ptr",
                   "typeString": "struct Version.Data[]"
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 9458,
+                    "id": 6286,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 9457,
+                      "id": 6285,
                       "name": "Version.Data",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 23751,
-                      "src": "934:12:24"
+                      "referencedDeclaration": 20579,
+                      "src": "934:12:15"
                     },
-                    "referencedDeclaration": 23751,
-                    "src": "934:12:24",
+                    "referencedDeclaration": 20579,
+                    "src": "934:12:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                       "typeString": "struct Version.Data"
                     }
                   },
-                  "id": 9459,
+                  "id": 6287,
                   "nodeType": "ArrayTypeName",
-                  "src": "934:14:24",
+                  "src": "934:14:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Data_$23751_storage_$dyn_storage_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Data_$20579_storage_$dyn_storage_ptr",
                     "typeString": "struct Version.Data[]"
                   }
                 },
@@ -584,13 +584,13 @@
               },
               {
                 "constant": false,
-                "id": 9462,
+                "id": 6290,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "1018:9:24",
+                "nameLocation": "1018:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1012:15:24",
+                "scope": 6299,
+                "src": "1012:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -598,10 +598,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9461,
+                  "id": 6289,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1012:5:24",
+                  "src": "1012:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -611,13 +611,13 @@
               },
               {
                 "constant": false,
-                "id": 9464,
+                "id": 6292,
                 "mutability": "mutable",
                 "name": "proofClient",
-                "nameLocation": "1112:11:24",
+                "nameLocation": "1112:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1106:17:24",
+                "scope": 6299,
+                "src": "1106:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -625,10 +625,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9463,
+                  "id": 6291,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1106:5:24",
+                  "src": "1106:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -638,13 +638,13 @@
               },
               {
                 "constant": false,
-                "id": 9466,
+                "id": 6294,
                 "mutability": "mutable",
                 "name": "proofConsensus",
-                "nameLocation": "1192:14:24",
+                "nameLocation": "1192:14:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1186:20:24",
+                "scope": 6299,
+                "src": "1186:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -652,10 +652,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9465,
+                  "id": 6293,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1186:5:24",
+                  "src": "1186:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -665,13 +665,13 @@
               },
               {
                 "constant": false,
-                "id": 9468,
+                "id": 6296,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "1296:11:24",
+                "nameLocation": "1296:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1289:18:24",
+                "scope": 6299,
+                "src": "1289:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -679,10 +679,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9467,
+                  "id": 6295,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1289:6:24",
+                  "src": "1289:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -692,13 +692,13 @@
               },
               {
                 "constant": false,
-                "id": 9470,
+                "id": 6298,
                 "mutability": "mutable",
                 "name": "consensusHeight",
-                "nameLocation": "1404:15:24",
+                "nameLocation": "1404:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1397:22:24",
+                "scope": 6299,
+                "src": "1397:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -706,10 +706,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9469,
+                  "id": 6297,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1397:6:24",
+                  "src": "1397:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -719,25 +719,25 @@
               }
             ],
             "name": "MsgConnectionOpenTry",
-            "nameLocation": "588:20:24",
+            "nameLocation": "588:20:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "581:920:24",
+            "scope": 6401,
+            "src": "581:920:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenAck",
-            "id": 9491,
+            "id": 6319,
             "members": [
               {
                 "constant": false,
-                "id": 9473,
+                "id": 6301,
                 "mutability": "mutable",
                 "name": "connectionId",
-                "nameLocation": "1552:12:24",
+                "nameLocation": "1552:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1545:19:24",
+                "scope": 6319,
+                "src": "1545:19:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -745,10 +745,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9472,
+                  "id": 6300,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1545:6:24",
+                  "src": "1545:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -758,13 +758,13 @@
               },
               {
                 "constant": false,
-                "id": 9475,
+                "id": 6303,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "1580:16:24",
+                "nameLocation": "1580:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1574:22:24",
+                "scope": 6319,
+                "src": "1574:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -772,10 +772,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9474,
+                  "id": 6302,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1574:5:24",
+                  "src": "1574:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -785,33 +785,33 @@
               },
               {
                 "constant": false,
-                "id": 9478,
+                "id": 6306,
                 "mutability": "mutable",
                 "name": "version",
-                "nameLocation": "1656:7:24",
+                "nameLocation": "1656:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1643:20:24",
+                "scope": 6319,
+                "src": "1643:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                   "typeString": "struct Version.Data"
                 },
                 "typeName": {
-                  "id": 9477,
+                  "id": 6305,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9476,
+                    "id": 6304,
                     "name": "Version.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 23751,
-                    "src": "1643:12:24"
+                    "referencedDeclaration": 20579,
+                    "src": "1643:12:15"
                   },
-                  "referencedDeclaration": 23751,
-                  "src": "1643:12:24",
+                  "referencedDeclaration": 20579,
+                  "src": "1643:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                     "typeString": "struct Version.Data"
                   }
                 },
@@ -819,13 +819,13 @@
               },
               {
                 "constant": false,
-                "id": 9480,
+                "id": 6308,
                 "mutability": "mutable",
                 "name": "counterpartyConnectionID",
-                "nameLocation": "1724:24:24",
+                "nameLocation": "1724:24:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1717:31:24",
+                "scope": 6319,
+                "src": "1717:31:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -833,10 +833,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9479,
+                  "id": 6307,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1717:6:24",
+                  "src": "1717:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -846,13 +846,13 @@
               },
               {
                 "constant": false,
-                "id": 9482,
+                "id": 6310,
                 "mutability": "mutable",
                 "name": "proofTry",
-                "nameLocation": "1764:8:24",
+                "nameLocation": "1764:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1758:14:24",
+                "scope": 6319,
+                "src": "1758:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -860,10 +860,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9481,
+                  "id": 6309,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1758:5:24",
+                  "src": "1758:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -873,13 +873,13 @@
               },
               {
                 "constant": false,
-                "id": 9484,
+                "id": 6312,
                 "mutability": "mutable",
                 "name": "proofClient",
-                "nameLocation": "1857:11:24",
+                "nameLocation": "1857:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1851:17:24",
+                "scope": 6319,
+                "src": "1851:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -887,10 +887,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9483,
+                  "id": 6311,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1851:5:24",
+                  "src": "1851:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -900,13 +900,13 @@
               },
               {
                 "constant": false,
-                "id": 9486,
+                "id": 6314,
                 "mutability": "mutable",
                 "name": "proofConsensus",
-                "nameLocation": "1930:14:24",
+                "nameLocation": "1930:14:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1924:20:24",
+                "scope": 6319,
+                "src": "1924:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -914,10 +914,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9485,
+                  "id": 6313,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1924:5:24",
+                  "src": "1924:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -927,13 +927,13 @@
               },
               {
                 "constant": false,
-                "id": 9488,
+                "id": 6316,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2032:11:24",
+                "nameLocation": "2032:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "2025:18:24",
+                "scope": 6319,
+                "src": "2025:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -941,10 +941,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9487,
+                  "id": 6315,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2025:6:24",
+                  "src": "2025:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -954,13 +954,13 @@
               },
               {
                 "constant": false,
-                "id": 9490,
+                "id": 6318,
                 "mutability": "mutable",
                 "name": "consensusHeight",
-                "nameLocation": "2104:15:24",
+                "nameLocation": "2104:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "2097:22:24",
+                "scope": 6319,
+                "src": "2097:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -968,10 +968,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9489,
+                  "id": 6317,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2097:6:24",
+                  "src": "2097:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -981,25 +981,25 @@
               }
             ],
             "name": "MsgConnectionOpenAck",
-            "nameLocation": "1514:20:24",
+            "nameLocation": "1514:20:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "1507:690:24",
+            "scope": 6401,
+            "src": "1507:690:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenConfirm",
-            "id": 9498,
+            "id": 6326,
             "members": [
               {
                 "constant": false,
-                "id": 9493,
+                "id": 6321,
                 "mutability": "mutable",
                 "name": "connectionId",
-                "nameLocation": "2252:12:24",
+                "nameLocation": "2252:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2245:19:24",
+                "scope": 6326,
+                "src": "2245:19:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1007,10 +1007,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9492,
+                  "id": 6320,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2245:6:24",
+                  "src": "2245:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1020,13 +1020,13 @@
               },
               {
                 "constant": false,
-                "id": 9495,
+                "id": 6323,
                 "mutability": "mutable",
                 "name": "proofAck",
-                "nameLocation": "2280:8:24",
+                "nameLocation": "2280:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2274:14:24",
+                "scope": 6326,
+                "src": "2274:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1034,10 +1034,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9494,
+                  "id": 6322,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2274:5:24",
+                  "src": "2274:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1047,13 +1047,13 @@
               },
               {
                 "constant": false,
-                "id": 9497,
+                "id": 6325,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2305:11:24",
+                "nameLocation": "2305:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2298:18:24",
+                "scope": 6326,
+                "src": "2298:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1061,10 +1061,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9496,
+                  "id": 6324,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2298:6:24",
+                  "src": "2298:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1074,25 +1074,25 @@
               }
             ],
             "name": "MsgConnectionOpenConfirm",
-            "nameLocation": "2210:24:24",
+            "nameLocation": "2210:24:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2203:120:24",
+            "scope": 6401,
+            "src": "2203:120:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenInit",
-            "id": 9504,
+            "id": 6332,
             "members": [
               {
                 "constant": false,
-                "id": 9500,
+                "id": 6328,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2403:6:24",
+                "nameLocation": "2403:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9504,
-                "src": "2396:13:24",
+                "scope": 6332,
+                "src": "2396:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1100,10 +1100,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9499,
+                  "id": 6327,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2396:6:24",
+                  "src": "2396:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1113,33 +1113,33 @@
               },
               {
                 "constant": false,
-                "id": 9503,
+                "id": 6331,
                 "mutability": "mutable",
                 "name": "channel",
-                "nameLocation": "2432:7:24",
+                "nameLocation": "2432:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9504,
-                "src": "2419:20:24",
+                "scope": 6332,
+                "src": "2419:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                   "typeString": "struct Channel.Data"
                 },
                 "typeName": {
-                  "id": 9502,
+                  "id": 6330,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9501,
+                    "id": 6329,
                     "name": "Channel.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 13562,
-                    "src": "2419:12:24"
+                    "referencedDeclaration": 10390,
+                    "src": "2419:12:15"
                   },
-                  "referencedDeclaration": 13562,
-                  "src": "2419:12:24",
+                  "referencedDeclaration": 10390,
+                  "src": "2419:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                     "typeString": "struct Channel.Data"
                   }
                 },
@@ -1147,25 +1147,25 @@
               }
             ],
             "name": "MsgChannelOpenInit",
-            "nameLocation": "2367:18:24",
+            "nameLocation": "2367:18:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2360:86:24",
+            "scope": 6401,
+            "src": "2360:86:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenTry",
-            "id": 9518,
+            "id": 6346,
             "members": [
               {
                 "constant": false,
-                "id": 9506,
+                "id": 6334,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2494:6:24",
+                "nameLocation": "2494:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2487:13:24",
+                "scope": 6346,
+                "src": "2487:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1173,10 +1173,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9505,
+                  "id": 6333,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2487:6:24",
+                  "src": "2487:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1186,13 +1186,13 @@
               },
               {
                 "constant": false,
-                "id": 9508,
+                "id": 6336,
                 "mutability": "mutable",
                 "name": "previousChannelId",
-                "nameLocation": "2517:17:24",
+                "nameLocation": "2517:17:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2510:24:24",
+                "scope": 6346,
+                "src": "2510:24:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1200,10 +1200,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9507,
+                  "id": 6335,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2510:6:24",
+                  "src": "2510:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1213,33 +1213,33 @@
               },
               {
                 "constant": false,
-                "id": 9511,
+                "id": 6339,
                 "mutability": "mutable",
                 "name": "channel",
-                "nameLocation": "2557:7:24",
+                "nameLocation": "2557:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2544:20:24",
+                "scope": 6346,
+                "src": "2544:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                   "typeString": "struct Channel.Data"
                 },
                 "typeName": {
-                  "id": 9510,
+                  "id": 6338,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9509,
+                    "id": 6337,
                     "name": "Channel.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 13562,
-                    "src": "2544:12:24"
+                    "referencedDeclaration": 10390,
+                    "src": "2544:12:15"
                   },
-                  "referencedDeclaration": 13562,
-                  "src": "2544:12:24",
+                  "referencedDeclaration": 10390,
+                  "src": "2544:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                     "typeString": "struct Channel.Data"
                   }
                 },
@@ -1247,13 +1247,13 @@
               },
               {
                 "constant": false,
-                "id": 9513,
+                "id": 6341,
                 "mutability": "mutable",
                 "name": "counterpartyVersion",
-                "nameLocation": "2581:19:24",
+                "nameLocation": "2581:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2574:26:24",
+                "scope": 6346,
+                "src": "2574:26:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1261,10 +1261,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9512,
+                  "id": 6340,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2574:6:24",
+                  "src": "2574:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1274,13 +1274,13 @@
               },
               {
                 "constant": false,
-                "id": 9515,
+                "id": 6343,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "2616:9:24",
+                "nameLocation": "2616:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2610:15:24",
+                "scope": 6346,
+                "src": "2610:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1288,10 +1288,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9514,
+                  "id": 6342,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2610:5:24",
+                  "src": "2610:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1301,13 +1301,13 @@
               },
               {
                 "constant": false,
-                "id": 9517,
+                "id": 6345,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2642:11:24",
+                "nameLocation": "2642:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2635:18:24",
+                "scope": 6346,
+                "src": "2635:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1315,10 +1315,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9516,
+                  "id": 6344,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2635:6:24",
+                  "src": "2635:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1328,25 +1328,25 @@
               }
             ],
             "name": "MsgChannelOpenTry",
-            "nameLocation": "2459:17:24",
+            "nameLocation": "2459:17:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2452:208:24",
+            "scope": 6401,
+            "src": "2452:208:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenAck",
-            "id": 9531,
+            "id": 6359,
             "members": [
               {
                 "constant": false,
-                "id": 9520,
+                "id": 6348,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2708:6:24",
+                "nameLocation": "2708:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2701:13:24",
+                "scope": 6359,
+                "src": "2701:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1354,10 +1354,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9519,
+                  "id": 6347,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2701:6:24",
+                  "src": "2701:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1367,13 +1367,13 @@
               },
               {
                 "constant": false,
-                "id": 9522,
+                "id": 6350,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "2731:9:24",
+                "nameLocation": "2731:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2724:16:24",
+                "scope": 6359,
+                "src": "2724:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1381,10 +1381,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9521,
+                  "id": 6349,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2724:6:24",
+                  "src": "2724:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1394,13 +1394,13 @@
               },
               {
                 "constant": false,
-                "id": 9524,
+                "id": 6352,
                 "mutability": "mutable",
                 "name": "counterpartyVersion",
-                "nameLocation": "2757:19:24",
+                "nameLocation": "2757:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2750:26:24",
+                "scope": 6359,
+                "src": "2750:26:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1408,10 +1408,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9523,
+                  "id": 6351,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2750:6:24",
+                  "src": "2750:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1421,13 +1421,13 @@
               },
               {
                 "constant": false,
-                "id": 9526,
+                "id": 6354,
                 "mutability": "mutable",
                 "name": "counterpartyChannelId",
-                "nameLocation": "2793:21:24",
+                "nameLocation": "2793:21:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2786:28:24",
+                "scope": 6359,
+                "src": "2786:28:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1435,10 +1435,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9525,
+                  "id": 6353,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2786:6:24",
+                  "src": "2786:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1448,13 +1448,13 @@
               },
               {
                 "constant": false,
-                "id": 9528,
+                "id": 6356,
                 "mutability": "mutable",
                 "name": "proofTry",
-                "nameLocation": "2830:8:24",
+                "nameLocation": "2830:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2824:14:24",
+                "scope": 6359,
+                "src": "2824:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1462,10 +1462,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9527,
+                  "id": 6355,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2824:5:24",
+                  "src": "2824:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1475,13 +1475,13 @@
               },
               {
                 "constant": false,
-                "id": 9530,
+                "id": 6358,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2855:11:24",
+                "nameLocation": "2855:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2848:18:24",
+                "scope": 6359,
+                "src": "2848:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1489,10 +1489,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9529,
+                  "id": 6357,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2848:6:24",
+                  "src": "2848:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1502,25 +1502,25 @@
               }
             ],
             "name": "MsgChannelOpenAck",
-            "nameLocation": "2673:17:24",
+            "nameLocation": "2673:17:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2666:207:24",
+            "scope": 6401,
+            "src": "2666:207:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenConfirm",
-            "id": 9540,
+            "id": 6368,
             "members": [
               {
                 "constant": false,
-                "id": 9533,
+                "id": 6361,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2925:6:24",
+                "nameLocation": "2925:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2918:13:24",
+                "scope": 6368,
+                "src": "2918:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1528,10 +1528,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9532,
+                  "id": 6360,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2918:6:24",
+                  "src": "2918:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1541,13 +1541,13 @@
               },
               {
                 "constant": false,
-                "id": 9535,
+                "id": 6363,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "2948:9:24",
+                "nameLocation": "2948:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2941:16:24",
+                "scope": 6368,
+                "src": "2941:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1555,10 +1555,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9534,
+                  "id": 6362,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2941:6:24",
+                  "src": "2941:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1568,13 +1568,13 @@
               },
               {
                 "constant": false,
-                "id": 9537,
+                "id": 6365,
                 "mutability": "mutable",
                 "name": "proofAck",
-                "nameLocation": "2973:8:24",
+                "nameLocation": "2973:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2967:14:24",
+                "scope": 6368,
+                "src": "2967:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1582,10 +1582,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9536,
+                  "id": 6364,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2967:5:24",
+                  "src": "2967:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1595,13 +1595,13 @@
               },
               {
                 "constant": false,
-                "id": 9539,
+                "id": 6367,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2998:11:24",
+                "nameLocation": "2998:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2991:18:24",
+                "scope": 6368,
+                "src": "2991:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1609,10 +1609,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9538,
+                  "id": 6366,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2991:6:24",
+                  "src": "2991:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1622,25 +1622,25 @@
               }
             ],
             "name": "MsgChannelOpenConfirm",
-            "nameLocation": "2886:21:24",
+            "nameLocation": "2886:21:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2879:137:24",
+            "scope": 6401,
+            "src": "2879:137:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelCloseInit",
-            "id": 9545,
+            "id": 6373,
             "members": [
               {
                 "constant": false,
-                "id": 9542,
+                "id": 6370,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "3095:6:24",
+                "nameLocation": "3095:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9545,
-                "src": "3088:13:24",
+                "scope": 6373,
+                "src": "3088:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1648,10 +1648,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9541,
+                  "id": 6369,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3088:6:24",
+                  "src": "3088:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1661,13 +1661,13 @@
               },
               {
                 "constant": false,
-                "id": 9544,
+                "id": 6372,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "3118:9:24",
+                "nameLocation": "3118:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9545,
-                "src": "3111:16:24",
+                "scope": 6373,
+                "src": "3111:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1675,10 +1675,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9543,
+                  "id": 6371,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3111:6:24",
+                  "src": "3111:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1688,25 +1688,25 @@
               }
             ],
             "name": "MsgChannelCloseInit",
-            "nameLocation": "3058:19:24",
+            "nameLocation": "3058:19:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3051:83:24",
+            "scope": 6401,
+            "src": "3051:83:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelCloseConfirm",
-            "id": 9554,
+            "id": 6382,
             "members": [
               {
                 "constant": false,
-                "id": 9547,
+                "id": 6375,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "3187:6:24",
+                "nameLocation": "3187:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3180:13:24",
+                "scope": 6382,
+                "src": "3180:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1714,10 +1714,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9546,
+                  "id": 6374,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3180:6:24",
+                  "src": "3180:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1727,13 +1727,13 @@
               },
               {
                 "constant": false,
-                "id": 9549,
+                "id": 6377,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "3210:9:24",
+                "nameLocation": "3210:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3203:16:24",
+                "scope": 6382,
+                "src": "3203:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1741,10 +1741,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9548,
+                  "id": 6376,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3203:6:24",
+                  "src": "3203:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1754,13 +1754,13 @@
               },
               {
                 "constant": false,
-                "id": 9551,
+                "id": 6379,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "3235:9:24",
+                "nameLocation": "3235:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3229:15:24",
+                "scope": 6382,
+                "src": "3229:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1768,10 +1768,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9550,
+                  "id": 6378,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3229:5:24",
+                  "src": "3229:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1781,13 +1781,13 @@
               },
               {
                 "constant": false,
-                "id": 9553,
+                "id": 6381,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3261:11:24",
+                "nameLocation": "3261:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3254:18:24",
+                "scope": 6382,
+                "src": "3254:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1795,10 +1795,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9552,
+                  "id": 6380,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3254:6:24",
+                  "src": "3254:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1808,45 +1808,45 @@
               }
             ],
             "name": "MsgChannelCloseConfirm",
-            "nameLocation": "3147:22:24",
+            "nameLocation": "3147:22:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3140:139:24",
+            "scope": 6401,
+            "src": "3140:139:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgPacketRecv",
-            "id": 9562,
+            "id": 6390,
             "members": [
               {
                 "constant": false,
-                "id": 9557,
+                "id": 6385,
                 "mutability": "mutable",
                 "name": "packet",
-                "nameLocation": "3348:6:24",
+                "nameLocation": "3348:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3336:18:24",
+                "scope": 6390,
+                "src": "3336:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                   "typeString": "struct Packet.Data"
                 },
                 "typeName": {
-                  "id": 9556,
+                  "id": 6384,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9555,
+                    "id": 6383,
                     "name": "Packet.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 17547,
-                    "src": "3336:11:24"
+                    "referencedDeclaration": 14375,
+                    "src": "3336:11:15"
                   },
-                  "referencedDeclaration": 17547,
-                  "src": "3336:11:24",
+                  "referencedDeclaration": 14375,
+                  "src": "3336:11:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                     "typeString": "struct Packet.Data"
                   }
                 },
@@ -1854,13 +1854,13 @@
               },
               {
                 "constant": false,
-                "id": 9559,
+                "id": 6387,
                 "mutability": "mutable",
                 "name": "proof",
-                "nameLocation": "3370:5:24",
+                "nameLocation": "3370:5:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3364:11:24",
+                "scope": 6390,
+                "src": "3364:11:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1868,10 +1868,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9558,
+                  "id": 6386,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3364:5:24",
+                  "src": "3364:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1881,13 +1881,13 @@
               },
               {
                 "constant": false,
-                "id": 9561,
+                "id": 6389,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3392:11:24",
+                "nameLocation": "3392:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3385:18:24",
+                "scope": 6390,
+                "src": "3385:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1895,10 +1895,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9560,
+                  "id": 6388,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3385:6:24",
+                  "src": "3385:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -1908,45 +1908,45 @@
               }
             ],
             "name": "MsgPacketRecv",
-            "nameLocation": "3312:13:24",
+            "nameLocation": "3312:13:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3305:105:24",
+            "scope": 6401,
+            "src": "3305:105:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgPacketAcknowledgement",
-            "id": 9572,
+            "id": 6400,
             "members": [
               {
                 "constant": false,
-                "id": 9565,
+                "id": 6393,
                 "mutability": "mutable",
                 "name": "packet",
-                "nameLocation": "3470:6:24",
+                "nameLocation": "3470:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3458:18:24",
+                "scope": 6400,
+                "src": "3458:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                   "typeString": "struct Packet.Data"
                 },
                 "typeName": {
-                  "id": 9564,
+                  "id": 6392,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9563,
+                    "id": 6391,
                     "name": "Packet.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 17547,
-                    "src": "3458:11:24"
+                    "referencedDeclaration": 14375,
+                    "src": "3458:11:15"
                   },
-                  "referencedDeclaration": 17547,
-                  "src": "3458:11:24",
+                  "referencedDeclaration": 14375,
+                  "src": "3458:11:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                     "typeString": "struct Packet.Data"
                   }
                 },
@@ -1954,13 +1954,13 @@
               },
               {
                 "constant": false,
-                "id": 9567,
+                "id": 6395,
                 "mutability": "mutable",
                 "name": "acknowledgement",
-                "nameLocation": "3492:15:24",
+                "nameLocation": "3492:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3486:21:24",
+                "scope": 6400,
+                "src": "3486:21:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1968,10 +1968,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9566,
+                  "id": 6394,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3486:5:24",
+                  "src": "3486:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -1981,13 +1981,13 @@
               },
               {
                 "constant": false,
-                "id": 9569,
+                "id": 6397,
                 "mutability": "mutable",
                 "name": "proof",
-                "nameLocation": "3523:5:24",
+                "nameLocation": "3523:5:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3517:11:24",
+                "scope": 6400,
+                "src": "3517:11:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1995,10 +1995,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9568,
+                  "id": 6396,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3517:5:24",
+                  "src": "3517:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2008,13 +2008,13 @@
               },
               {
                 "constant": false,
-                "id": 9571,
+                "id": 6399,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3545:11:24",
+                "nameLocation": "3545:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3538:18:24",
+                "scope": 6400,
+                "src": "3538:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2022,10 +2022,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9570,
+                  "id": 6398,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3538:6:24",
+                  "src": "3538:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2035,68 +2035,68 @@
               }
             ],
             "name": "MsgPacketAcknowledgement",
-            "nameLocation": "3423:24:24",
+            "nameLocation": "3423:24:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3416:147:24",
+            "scope": 6401,
+            "src": "3416:147:15",
             "visibility": "public"
           }
         ],
-        "scope": 9574,
-        "src": "133:3432:24",
+        "scope": 6402,
+        "src": "133:3432:15",
         "usedErrors": []
       }
     ],
-    "src": "0:3566:24"
+    "src": "0:3566:15"
   },
   "legacyAST": {
     "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCMsgs.sol",
     "exportedSymbols": {
       "Channel": [
-        15031
+        11859
       ],
       "ChannelCounterparty": [
-        15727
+        12555
       ],
       "ChannelIdentifiedChannel": [
-        17529
+        14357
       ],
       "ConnectionEnd": [
-        22330
+        19158
       ],
       "Counterparty": [
-        23199
-      ],
-      "GoogleProtobufAny": [
-        25346
-      ],
-      "Height": [
-        20699
-      ],
-      "IBCMsgs": [
-        9573
-      ],
-      "MerklePrefix": [
-        23745
-      ],
-      "Packet": [
-        19070
-      ],
-      "PacketState": [
         20027
       ],
+      "GoogleProtobufAny": [
+        22174
+      ],
+      "Height": [
+        17527
+      ],
+      "IBCMsgs": [
+        6401
+      ],
+      "MerklePrefix": [
+        20573
+      ],
+      "Packet": [
+        15898
+      ],
+      "PacketState": [
+        16855
+      ],
       "ProtoBufRuntime": [
-        37508
+        34336
       ],
       "Version": [
-        24705
+        21533
       ]
     },
-    "id": 9574,
+    "id": 6402,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9421,
+        "id": 6249,
         "literals": [
           "solidity",
           "^",
@@ -2104,29 +2104,29 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:24"
+        "src": "0:23:15"
       },
       {
         "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Connection.sol",
         "file": "./types/Connection.sol",
-        "id": 9422,
+        "id": 6250,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 9574,
-        "sourceUnit": 24706,
-        "src": "25:32:24",
+        "scope": 6402,
+        "sourceUnit": 21534,
+        "src": "25:32:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Channel.sol",
         "file": "./types/Channel.sol",
-        "id": 9423,
+        "id": 6251,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 9574,
-        "sourceUnit": 20700,
-        "src": "58:29:24",
+        "scope": 6402,
+        "sourceUnit": 17528,
+        "src": "58:29:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -2137,27 +2137,27 @@
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 9573,
+        "id": 6401,
         "linearizedBaseContracts": [
-          9573
+          6401
         ],
         "name": "IBCMsgs",
-        "nameLocation": "141:7:24",
+        "nameLocation": "141:7:15",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "IBCMsgs.MsgCreateClient",
-            "id": 9432,
+            "id": 6260,
             "members": [
               {
                 "constant": false,
-                "id": 9425,
+                "id": 6253,
                 "mutability": "mutable",
                 "name": "clientType",
-                "nameLocation": "216:10:24",
+                "nameLocation": "216:10:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "209:17:24",
+                "scope": 6260,
+                "src": "209:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2165,10 +2165,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9424,
+                  "id": 6252,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "209:6:24",
+                  "src": "209:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2178,13 +2178,13 @@
               },
               {
                 "constant": false,
-                "id": 9427,
+                "id": 6255,
                 "mutability": "mutable",
                 "name": "height",
-                "nameLocation": "243:6:24",
+                "nameLocation": "243:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "236:13:24",
+                "scope": 6260,
+                "src": "236:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2192,10 +2192,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9426,
+                  "id": 6254,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "236:6:24",
+                  "src": "236:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2205,13 +2205,13 @@
               },
               {
                 "constant": false,
-                "id": 9429,
+                "id": 6257,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "265:16:24",
+                "nameLocation": "265:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "259:22:24",
+                "scope": 6260,
+                "src": "259:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2219,10 +2219,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9428,
+                  "id": 6256,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "259:5:24",
+                  "src": "259:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2232,13 +2232,13 @@
               },
               {
                 "constant": false,
-                "id": 9431,
+                "id": 6259,
                 "mutability": "mutable",
                 "name": "consensusStateBytes",
-                "nameLocation": "297:19:24",
+                "nameLocation": "297:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9432,
-                "src": "291:25:24",
+                "scope": 6260,
+                "src": "291:25:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2246,10 +2246,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9430,
+                  "id": 6258,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "291:5:24",
+                  "src": "291:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2259,25 +2259,25 @@
               }
             ],
             "name": "MsgCreateClient",
-            "nameLocation": "183:15:24",
+            "nameLocation": "183:15:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "176:147:24",
+            "scope": 6401,
+            "src": "176:147:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgUpdateClient",
-            "id": 9437,
+            "id": 6265,
             "members": [
               {
                 "constant": false,
-                "id": 9434,
+                "id": 6262,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "369:8:24",
+                "nameLocation": "369:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9437,
-                "src": "362:15:24",
+                "scope": 6265,
+                "src": "362:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2285,10 +2285,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9433,
+                  "id": 6261,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "362:6:24",
+                  "src": "362:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2298,13 +2298,13 @@
               },
               {
                 "constant": false,
-                "id": 9436,
+                "id": 6264,
                 "mutability": "mutable",
                 "name": "header",
-                "nameLocation": "393:6:24",
+                "nameLocation": "393:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9437,
-                "src": "387:12:24",
+                "scope": 6265,
+                "src": "387:12:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2312,10 +2312,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9435,
+                  "id": 6263,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "387:5:24",
+                  "src": "387:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2325,25 +2325,25 @@
               }
             ],
             "name": "MsgUpdateClient",
-            "nameLocation": "336:15:24",
+            "nameLocation": "336:15:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "329:77:24",
+            "scope": 6401,
+            "src": "329:77:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenInit",
-            "id": 9445,
+            "id": 6273,
             "members": [
               {
                 "constant": false,
-                "id": 9439,
+                "id": 6267,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "492:8:24",
+                "nameLocation": "492:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "485:15:24",
+                "scope": 6273,
+                "src": "485:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2351,10 +2351,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9438,
+                  "id": 6266,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "485:6:24",
+                  "src": "485:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2364,33 +2364,33 @@
               },
               {
                 "constant": false,
-                "id": 9442,
+                "id": 6270,
                 "mutability": "mutable",
                 "name": "counterparty",
-                "nameLocation": "528:12:24",
+                "nameLocation": "528:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "510:30:24",
+                "scope": 6273,
+                "src": "510:30:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                   "typeString": "struct Counterparty.Data"
                 },
                 "typeName": {
-                  "id": 9441,
+                  "id": 6269,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9440,
+                    "id": 6268,
                     "name": "Counterparty.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 22338,
-                    "src": "510:17:24"
+                    "referencedDeclaration": 19166,
+                    "src": "510:17:15"
                   },
-                  "referencedDeclaration": 22338,
-                  "src": "510:17:24",
+                  "referencedDeclaration": 19166,
+                  "src": "510:17:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                     "typeString": "struct Counterparty.Data"
                   }
                 },
@@ -2398,13 +2398,13 @@
               },
               {
                 "constant": false,
-                "id": 9444,
+                "id": 6272,
                 "mutability": "mutable",
                 "name": "delayPeriod",
-                "nameLocation": "557:11:24",
+                "nameLocation": "557:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9445,
-                "src": "550:18:24",
+                "scope": 6273,
+                "src": "550:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2412,10 +2412,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9443,
+                  "id": 6271,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "550:6:24",
+                  "src": "550:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2425,25 +2425,25 @@
               }
             ],
             "name": "MsgConnectionOpenInit",
-            "nameLocation": "453:21:24",
+            "nameLocation": "453:21:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "446:129:24",
+            "scope": 6401,
+            "src": "446:129:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenTry",
-            "id": 9471,
+            "id": 6299,
             "members": [
               {
                 "constant": false,
-                "id": 9447,
+                "id": 6275,
                 "mutability": "mutable",
                 "name": "previousConnectionId",
-                "nameLocation": "626:20:24",
+                "nameLocation": "626:20:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "619:27:24",
+                "scope": 6299,
+                "src": "619:27:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2451,10 +2451,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9446,
+                  "id": 6274,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "619:6:24",
+                  "src": "619:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2464,33 +2464,33 @@
               },
               {
                 "constant": false,
-                "id": 9450,
+                "id": 6278,
                 "mutability": "mutable",
                 "name": "counterparty",
-                "nameLocation": "674:12:24",
+                "nameLocation": "674:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "656:30:24",
+                "scope": 6299,
+                "src": "656:30:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                   "typeString": "struct Counterparty.Data"
                 },
                 "typeName": {
-                  "id": 9449,
+                  "id": 6277,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9448,
+                    "id": 6276,
                     "name": "Counterparty.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 22338,
-                    "src": "656:17:24"
+                    "referencedDeclaration": 19166,
+                    "src": "656:17:15"
                   },
-                  "referencedDeclaration": 22338,
-                  "src": "656:17:24",
+                  "referencedDeclaration": 19166,
+                  "src": "656:17:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$22338_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$19166_storage_ptr",
                     "typeString": "struct Counterparty.Data"
                   }
                 },
@@ -2498,13 +2498,13 @@
               },
               {
                 "constant": false,
-                "id": 9452,
+                "id": 6280,
                 "mutability": "mutable",
                 "name": "delayPeriod",
-                "nameLocation": "792:11:24",
+                "nameLocation": "792:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "785:18:24",
+                "scope": 6299,
+                "src": "785:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2512,10 +2512,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9451,
+                  "id": 6279,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "785:6:24",
+                  "src": "785:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2525,13 +2525,13 @@
               },
               {
                 "constant": false,
-                "id": 9454,
+                "id": 6282,
                 "mutability": "mutable",
                 "name": "clientId",
-                "nameLocation": "820:8:24",
+                "nameLocation": "820:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "813:15:24",
+                "scope": 6299,
+                "src": "813:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2539,10 +2539,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9453,
+                  "id": 6281,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "813:6:24",
+                  "src": "813:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2552,13 +2552,13 @@
               },
               {
                 "constant": false,
-                "id": 9456,
+                "id": 6284,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "866:16:24",
+                "nameLocation": "866:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "860:22:24",
+                "scope": 6299,
+                "src": "860:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2566,10 +2566,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9455,
+                  "id": 6283,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "860:5:24",
+                  "src": "860:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2579,42 +2579,42 @@
               },
               {
                 "constant": false,
-                "id": 9460,
+                "id": 6288,
                 "mutability": "mutable",
                 "name": "counterpartyVersions",
-                "nameLocation": "949:20:24",
+                "nameLocation": "949:20:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "934:35:24",
+                "scope": 6299,
+                "src": "934:35:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_Data_$23751_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_Data_$20579_storage_$dyn_storage_ptr",
                   "typeString": "struct Version.Data[]"
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 9458,
+                    "id": 6286,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 9457,
+                      "id": 6285,
                       "name": "Version.Data",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 23751,
-                      "src": "934:12:24"
+                      "referencedDeclaration": 20579,
+                      "src": "934:12:15"
                     },
-                    "referencedDeclaration": 23751,
-                    "src": "934:12:24",
+                    "referencedDeclaration": 20579,
+                    "src": "934:12:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                       "typeString": "struct Version.Data"
                     }
                   },
-                  "id": 9459,
+                  "id": 6287,
                   "nodeType": "ArrayTypeName",
-                  "src": "934:14:24",
+                  "src": "934:14:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Data_$23751_storage_$dyn_storage_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Data_$20579_storage_$dyn_storage_ptr",
                     "typeString": "struct Version.Data[]"
                   }
                 },
@@ -2622,13 +2622,13 @@
               },
               {
                 "constant": false,
-                "id": 9462,
+                "id": 6290,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "1018:9:24",
+                "nameLocation": "1018:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1012:15:24",
+                "scope": 6299,
+                "src": "1012:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2636,10 +2636,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9461,
+                  "id": 6289,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1012:5:24",
+                  "src": "1012:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2649,13 +2649,13 @@
               },
               {
                 "constant": false,
-                "id": 9464,
+                "id": 6292,
                 "mutability": "mutable",
                 "name": "proofClient",
-                "nameLocation": "1112:11:24",
+                "nameLocation": "1112:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1106:17:24",
+                "scope": 6299,
+                "src": "1106:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2663,10 +2663,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9463,
+                  "id": 6291,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1106:5:24",
+                  "src": "1106:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2676,13 +2676,13 @@
               },
               {
                 "constant": false,
-                "id": 9466,
+                "id": 6294,
                 "mutability": "mutable",
                 "name": "proofConsensus",
-                "nameLocation": "1192:14:24",
+                "nameLocation": "1192:14:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1186:20:24",
+                "scope": 6299,
+                "src": "1186:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2690,10 +2690,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9465,
+                  "id": 6293,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1186:5:24",
+                  "src": "1186:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2703,13 +2703,13 @@
               },
               {
                 "constant": false,
-                "id": 9468,
+                "id": 6296,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "1296:11:24",
+                "nameLocation": "1296:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1289:18:24",
+                "scope": 6299,
+                "src": "1289:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2717,10 +2717,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9467,
+                  "id": 6295,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1289:6:24",
+                  "src": "1289:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2730,13 +2730,13 @@
               },
               {
                 "constant": false,
-                "id": 9470,
+                "id": 6298,
                 "mutability": "mutable",
                 "name": "consensusHeight",
-                "nameLocation": "1404:15:24",
+                "nameLocation": "1404:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9471,
-                "src": "1397:22:24",
+                "scope": 6299,
+                "src": "1397:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2744,10 +2744,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9469,
+                  "id": 6297,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1397:6:24",
+                  "src": "1397:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2757,25 +2757,25 @@
               }
             ],
             "name": "MsgConnectionOpenTry",
-            "nameLocation": "588:20:24",
+            "nameLocation": "588:20:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "581:920:24",
+            "scope": 6401,
+            "src": "581:920:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenAck",
-            "id": 9491,
+            "id": 6319,
             "members": [
               {
                 "constant": false,
-                "id": 9473,
+                "id": 6301,
                 "mutability": "mutable",
                 "name": "connectionId",
-                "nameLocation": "1552:12:24",
+                "nameLocation": "1552:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1545:19:24",
+                "scope": 6319,
+                "src": "1545:19:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2783,10 +2783,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9472,
+                  "id": 6300,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1545:6:24",
+                  "src": "1545:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2796,13 +2796,13 @@
               },
               {
                 "constant": false,
-                "id": 9475,
+                "id": 6303,
                 "mutability": "mutable",
                 "name": "clientStateBytes",
-                "nameLocation": "1580:16:24",
+                "nameLocation": "1580:16:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1574:22:24",
+                "scope": 6319,
+                "src": "1574:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2810,10 +2810,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9474,
+                  "id": 6302,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1574:5:24",
+                  "src": "1574:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2823,33 +2823,33 @@
               },
               {
                 "constant": false,
-                "id": 9478,
+                "id": 6306,
                 "mutability": "mutable",
                 "name": "version",
-                "nameLocation": "1656:7:24",
+                "nameLocation": "1656:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1643:20:24",
+                "scope": 6319,
+                "src": "1643:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                   "typeString": "struct Version.Data"
                 },
                 "typeName": {
-                  "id": 9477,
+                  "id": 6305,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9476,
+                    "id": 6304,
                     "name": "Version.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 23751,
-                    "src": "1643:12:24"
+                    "referencedDeclaration": 20579,
+                    "src": "1643:12:15"
                   },
-                  "referencedDeclaration": 23751,
-                  "src": "1643:12:24",
+                  "referencedDeclaration": 20579,
+                  "src": "1643:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$23751_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$20579_storage_ptr",
                     "typeString": "struct Version.Data"
                   }
                 },
@@ -2857,13 +2857,13 @@
               },
               {
                 "constant": false,
-                "id": 9480,
+                "id": 6308,
                 "mutability": "mutable",
                 "name": "counterpartyConnectionID",
-                "nameLocation": "1724:24:24",
+                "nameLocation": "1724:24:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1717:31:24",
+                "scope": 6319,
+                "src": "1717:31:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2871,10 +2871,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9479,
+                  "id": 6307,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1717:6:24",
+                  "src": "1717:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -2884,13 +2884,13 @@
               },
               {
                 "constant": false,
-                "id": 9482,
+                "id": 6310,
                 "mutability": "mutable",
                 "name": "proofTry",
-                "nameLocation": "1764:8:24",
+                "nameLocation": "1764:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1758:14:24",
+                "scope": 6319,
+                "src": "1758:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2898,10 +2898,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9481,
+                  "id": 6309,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1758:5:24",
+                  "src": "1758:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2911,13 +2911,13 @@
               },
               {
                 "constant": false,
-                "id": 9484,
+                "id": 6312,
                 "mutability": "mutable",
                 "name": "proofClient",
-                "nameLocation": "1857:11:24",
+                "nameLocation": "1857:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1851:17:24",
+                "scope": 6319,
+                "src": "1851:17:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2925,10 +2925,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9483,
+                  "id": 6311,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1851:5:24",
+                  "src": "1851:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2938,13 +2938,13 @@
               },
               {
                 "constant": false,
-                "id": 9486,
+                "id": 6314,
                 "mutability": "mutable",
                 "name": "proofConsensus",
-                "nameLocation": "1930:14:24",
+                "nameLocation": "1930:14:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "1924:20:24",
+                "scope": 6319,
+                "src": "1924:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2952,10 +2952,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9485,
+                  "id": 6313,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1924:5:24",
+                  "src": "1924:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -2965,13 +2965,13 @@
               },
               {
                 "constant": false,
-                "id": 9488,
+                "id": 6316,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2032:11:24",
+                "nameLocation": "2032:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "2025:18:24",
+                "scope": 6319,
+                "src": "2025:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2979,10 +2979,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9487,
+                  "id": 6315,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2025:6:24",
+                  "src": "2025:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -2992,13 +2992,13 @@
               },
               {
                 "constant": false,
-                "id": 9490,
+                "id": 6318,
                 "mutability": "mutable",
                 "name": "consensusHeight",
-                "nameLocation": "2104:15:24",
+                "nameLocation": "2104:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9491,
-                "src": "2097:22:24",
+                "scope": 6319,
+                "src": "2097:22:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3006,10 +3006,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9489,
+                  "id": 6317,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2097:6:24",
+                  "src": "2097:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3019,25 +3019,25 @@
               }
             ],
             "name": "MsgConnectionOpenAck",
-            "nameLocation": "1514:20:24",
+            "nameLocation": "1514:20:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "1507:690:24",
+            "scope": 6401,
+            "src": "1507:690:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgConnectionOpenConfirm",
-            "id": 9498,
+            "id": 6326,
             "members": [
               {
                 "constant": false,
-                "id": 9493,
+                "id": 6321,
                 "mutability": "mutable",
                 "name": "connectionId",
-                "nameLocation": "2252:12:24",
+                "nameLocation": "2252:12:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2245:19:24",
+                "scope": 6326,
+                "src": "2245:19:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3045,10 +3045,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9492,
+                  "id": 6320,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2245:6:24",
+                  "src": "2245:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3058,13 +3058,13 @@
               },
               {
                 "constant": false,
-                "id": 9495,
+                "id": 6323,
                 "mutability": "mutable",
                 "name": "proofAck",
-                "nameLocation": "2280:8:24",
+                "nameLocation": "2280:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2274:14:24",
+                "scope": 6326,
+                "src": "2274:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3072,10 +3072,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9494,
+                  "id": 6322,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2274:5:24",
+                  "src": "2274:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3085,13 +3085,13 @@
               },
               {
                 "constant": false,
-                "id": 9497,
+                "id": 6325,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2305:11:24",
+                "nameLocation": "2305:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9498,
-                "src": "2298:18:24",
+                "scope": 6326,
+                "src": "2298:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3099,10 +3099,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9496,
+                  "id": 6324,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2298:6:24",
+                  "src": "2298:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3112,25 +3112,25 @@
               }
             ],
             "name": "MsgConnectionOpenConfirm",
-            "nameLocation": "2210:24:24",
+            "nameLocation": "2210:24:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2203:120:24",
+            "scope": 6401,
+            "src": "2203:120:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenInit",
-            "id": 9504,
+            "id": 6332,
             "members": [
               {
                 "constant": false,
-                "id": 9500,
+                "id": 6328,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2403:6:24",
+                "nameLocation": "2403:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9504,
-                "src": "2396:13:24",
+                "scope": 6332,
+                "src": "2396:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3138,10 +3138,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9499,
+                  "id": 6327,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2396:6:24",
+                  "src": "2396:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3151,33 +3151,33 @@
               },
               {
                 "constant": false,
-                "id": 9503,
+                "id": 6331,
                 "mutability": "mutable",
                 "name": "channel",
-                "nameLocation": "2432:7:24",
+                "nameLocation": "2432:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9504,
-                "src": "2419:20:24",
+                "scope": 6332,
+                "src": "2419:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                   "typeString": "struct Channel.Data"
                 },
                 "typeName": {
-                  "id": 9502,
+                  "id": 6330,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9501,
+                    "id": 6329,
                     "name": "Channel.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 13562,
-                    "src": "2419:12:24"
+                    "referencedDeclaration": 10390,
+                    "src": "2419:12:15"
                   },
-                  "referencedDeclaration": 13562,
-                  "src": "2419:12:24",
+                  "referencedDeclaration": 10390,
+                  "src": "2419:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                     "typeString": "struct Channel.Data"
                   }
                 },
@@ -3185,25 +3185,25 @@
               }
             ],
             "name": "MsgChannelOpenInit",
-            "nameLocation": "2367:18:24",
+            "nameLocation": "2367:18:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2360:86:24",
+            "scope": 6401,
+            "src": "2360:86:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenTry",
-            "id": 9518,
+            "id": 6346,
             "members": [
               {
                 "constant": false,
-                "id": 9506,
+                "id": 6334,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2494:6:24",
+                "nameLocation": "2494:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2487:13:24",
+                "scope": 6346,
+                "src": "2487:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3211,10 +3211,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9505,
+                  "id": 6333,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2487:6:24",
+                  "src": "2487:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3224,13 +3224,13 @@
               },
               {
                 "constant": false,
-                "id": 9508,
+                "id": 6336,
                 "mutability": "mutable",
                 "name": "previousChannelId",
-                "nameLocation": "2517:17:24",
+                "nameLocation": "2517:17:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2510:24:24",
+                "scope": 6346,
+                "src": "2510:24:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3238,10 +3238,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9507,
+                  "id": 6335,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2510:6:24",
+                  "src": "2510:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3251,33 +3251,33 @@
               },
               {
                 "constant": false,
-                "id": 9511,
+                "id": 6339,
                 "mutability": "mutable",
                 "name": "channel",
-                "nameLocation": "2557:7:24",
+                "nameLocation": "2557:7:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2544:20:24",
+                "scope": 6346,
+                "src": "2544:20:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                   "typeString": "struct Channel.Data"
                 },
                 "typeName": {
-                  "id": 9510,
+                  "id": 6338,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9509,
+                    "id": 6337,
                     "name": "Channel.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 13562,
-                    "src": "2544:12:24"
+                    "referencedDeclaration": 10390,
+                    "src": "2544:12:15"
                   },
-                  "referencedDeclaration": 13562,
-                  "src": "2544:12:24",
+                  "referencedDeclaration": 10390,
+                  "src": "2544:12:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13562_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$10390_storage_ptr",
                     "typeString": "struct Channel.Data"
                   }
                 },
@@ -3285,13 +3285,13 @@
               },
               {
                 "constant": false,
-                "id": 9513,
+                "id": 6341,
                 "mutability": "mutable",
                 "name": "counterpartyVersion",
-                "nameLocation": "2581:19:24",
+                "nameLocation": "2581:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2574:26:24",
+                "scope": 6346,
+                "src": "2574:26:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3299,10 +3299,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9512,
+                  "id": 6340,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2574:6:24",
+                  "src": "2574:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3312,13 +3312,13 @@
               },
               {
                 "constant": false,
-                "id": 9515,
+                "id": 6343,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "2616:9:24",
+                "nameLocation": "2616:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2610:15:24",
+                "scope": 6346,
+                "src": "2610:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3326,10 +3326,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9514,
+                  "id": 6342,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2610:5:24",
+                  "src": "2610:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3339,13 +3339,13 @@
               },
               {
                 "constant": false,
-                "id": 9517,
+                "id": 6345,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2642:11:24",
+                "nameLocation": "2642:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9518,
-                "src": "2635:18:24",
+                "scope": 6346,
+                "src": "2635:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3353,10 +3353,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9516,
+                  "id": 6344,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2635:6:24",
+                  "src": "2635:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3366,25 +3366,25 @@
               }
             ],
             "name": "MsgChannelOpenTry",
-            "nameLocation": "2459:17:24",
+            "nameLocation": "2459:17:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2452:208:24",
+            "scope": 6401,
+            "src": "2452:208:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenAck",
-            "id": 9531,
+            "id": 6359,
             "members": [
               {
                 "constant": false,
-                "id": 9520,
+                "id": 6348,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2708:6:24",
+                "nameLocation": "2708:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2701:13:24",
+                "scope": 6359,
+                "src": "2701:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3392,10 +3392,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9519,
+                  "id": 6347,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2701:6:24",
+                  "src": "2701:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3405,13 +3405,13 @@
               },
               {
                 "constant": false,
-                "id": 9522,
+                "id": 6350,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "2731:9:24",
+                "nameLocation": "2731:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2724:16:24",
+                "scope": 6359,
+                "src": "2724:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3419,10 +3419,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9521,
+                  "id": 6349,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2724:6:24",
+                  "src": "2724:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3432,13 +3432,13 @@
               },
               {
                 "constant": false,
-                "id": 9524,
+                "id": 6352,
                 "mutability": "mutable",
                 "name": "counterpartyVersion",
-                "nameLocation": "2757:19:24",
+                "nameLocation": "2757:19:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2750:26:24",
+                "scope": 6359,
+                "src": "2750:26:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3446,10 +3446,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9523,
+                  "id": 6351,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2750:6:24",
+                  "src": "2750:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3459,13 +3459,13 @@
               },
               {
                 "constant": false,
-                "id": 9526,
+                "id": 6354,
                 "mutability": "mutable",
                 "name": "counterpartyChannelId",
-                "nameLocation": "2793:21:24",
+                "nameLocation": "2793:21:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2786:28:24",
+                "scope": 6359,
+                "src": "2786:28:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3473,10 +3473,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9525,
+                  "id": 6353,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2786:6:24",
+                  "src": "2786:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3486,13 +3486,13 @@
               },
               {
                 "constant": false,
-                "id": 9528,
+                "id": 6356,
                 "mutability": "mutable",
                 "name": "proofTry",
-                "nameLocation": "2830:8:24",
+                "nameLocation": "2830:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2824:14:24",
+                "scope": 6359,
+                "src": "2824:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3500,10 +3500,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9527,
+                  "id": 6355,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2824:5:24",
+                  "src": "2824:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3513,13 +3513,13 @@
               },
               {
                 "constant": false,
-                "id": 9530,
+                "id": 6358,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2855:11:24",
+                "nameLocation": "2855:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9531,
-                "src": "2848:18:24",
+                "scope": 6359,
+                "src": "2848:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3527,10 +3527,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9529,
+                  "id": 6357,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2848:6:24",
+                  "src": "2848:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3540,25 +3540,25 @@
               }
             ],
             "name": "MsgChannelOpenAck",
-            "nameLocation": "2673:17:24",
+            "nameLocation": "2673:17:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2666:207:24",
+            "scope": 6401,
+            "src": "2666:207:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelOpenConfirm",
-            "id": 9540,
+            "id": 6368,
             "members": [
               {
                 "constant": false,
-                "id": 9533,
+                "id": 6361,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "2925:6:24",
+                "nameLocation": "2925:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2918:13:24",
+                "scope": 6368,
+                "src": "2918:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3566,10 +3566,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9532,
+                  "id": 6360,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2918:6:24",
+                  "src": "2918:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3579,13 +3579,13 @@
               },
               {
                 "constant": false,
-                "id": 9535,
+                "id": 6363,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "2948:9:24",
+                "nameLocation": "2948:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2941:16:24",
+                "scope": 6368,
+                "src": "2941:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3593,10 +3593,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9534,
+                  "id": 6362,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2941:6:24",
+                  "src": "2941:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3606,13 +3606,13 @@
               },
               {
                 "constant": false,
-                "id": 9537,
+                "id": 6365,
                 "mutability": "mutable",
                 "name": "proofAck",
-                "nameLocation": "2973:8:24",
+                "nameLocation": "2973:8:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2967:14:24",
+                "scope": 6368,
+                "src": "2967:14:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3620,10 +3620,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9536,
+                  "id": 6364,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2967:5:24",
+                  "src": "2967:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3633,13 +3633,13 @@
               },
               {
                 "constant": false,
-                "id": 9539,
+                "id": 6367,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "2998:11:24",
+                "nameLocation": "2998:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9540,
-                "src": "2991:18:24",
+                "scope": 6368,
+                "src": "2991:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3647,10 +3647,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9538,
+                  "id": 6366,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2991:6:24",
+                  "src": "2991:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3660,25 +3660,25 @@
               }
             ],
             "name": "MsgChannelOpenConfirm",
-            "nameLocation": "2886:21:24",
+            "nameLocation": "2886:21:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "2879:137:24",
+            "scope": 6401,
+            "src": "2879:137:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelCloseInit",
-            "id": 9545,
+            "id": 6373,
             "members": [
               {
                 "constant": false,
-                "id": 9542,
+                "id": 6370,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "3095:6:24",
+                "nameLocation": "3095:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9545,
-                "src": "3088:13:24",
+                "scope": 6373,
+                "src": "3088:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3686,10 +3686,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9541,
+                  "id": 6369,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3088:6:24",
+                  "src": "3088:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3699,13 +3699,13 @@
               },
               {
                 "constant": false,
-                "id": 9544,
+                "id": 6372,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "3118:9:24",
+                "nameLocation": "3118:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9545,
-                "src": "3111:16:24",
+                "scope": 6373,
+                "src": "3111:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3713,10 +3713,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9543,
+                  "id": 6371,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3111:6:24",
+                  "src": "3111:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3726,25 +3726,25 @@
               }
             ],
             "name": "MsgChannelCloseInit",
-            "nameLocation": "3058:19:24",
+            "nameLocation": "3058:19:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3051:83:24",
+            "scope": 6401,
+            "src": "3051:83:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgChannelCloseConfirm",
-            "id": 9554,
+            "id": 6382,
             "members": [
               {
                 "constant": false,
-                "id": 9547,
+                "id": 6375,
                 "mutability": "mutable",
                 "name": "portId",
-                "nameLocation": "3187:6:24",
+                "nameLocation": "3187:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3180:13:24",
+                "scope": 6382,
+                "src": "3180:13:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3752,10 +3752,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9546,
+                  "id": 6374,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3180:6:24",
+                  "src": "3180:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3765,13 +3765,13 @@
               },
               {
                 "constant": false,
-                "id": 9549,
+                "id": 6377,
                 "mutability": "mutable",
                 "name": "channelId",
-                "nameLocation": "3210:9:24",
+                "nameLocation": "3210:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3203:16:24",
+                "scope": 6382,
+                "src": "3203:16:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3779,10 +3779,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 9548,
+                  "id": 6376,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3203:6:24",
+                  "src": "3203:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -3792,13 +3792,13 @@
               },
               {
                 "constant": false,
-                "id": 9551,
+                "id": 6379,
                 "mutability": "mutable",
                 "name": "proofInit",
-                "nameLocation": "3235:9:24",
+                "nameLocation": "3235:9:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3229:15:24",
+                "scope": 6382,
+                "src": "3229:15:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3806,10 +3806,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9550,
+                  "id": 6378,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3229:5:24",
+                  "src": "3229:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3819,13 +3819,13 @@
               },
               {
                 "constant": false,
-                "id": 9553,
+                "id": 6381,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3261:11:24",
+                "nameLocation": "3261:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9554,
-                "src": "3254:18:24",
+                "scope": 6382,
+                "src": "3254:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3833,10 +3833,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9552,
+                  "id": 6380,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3254:6:24",
+                  "src": "3254:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3846,45 +3846,45 @@
               }
             ],
             "name": "MsgChannelCloseConfirm",
-            "nameLocation": "3147:22:24",
+            "nameLocation": "3147:22:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3140:139:24",
+            "scope": 6401,
+            "src": "3140:139:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgPacketRecv",
-            "id": 9562,
+            "id": 6390,
             "members": [
               {
                 "constant": false,
-                "id": 9557,
+                "id": 6385,
                 "mutability": "mutable",
                 "name": "packet",
-                "nameLocation": "3348:6:24",
+                "nameLocation": "3348:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3336:18:24",
+                "scope": 6390,
+                "src": "3336:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                   "typeString": "struct Packet.Data"
                 },
                 "typeName": {
-                  "id": 9556,
+                  "id": 6384,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9555,
+                    "id": 6383,
                     "name": "Packet.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 17547,
-                    "src": "3336:11:24"
+                    "referencedDeclaration": 14375,
+                    "src": "3336:11:15"
                   },
-                  "referencedDeclaration": 17547,
-                  "src": "3336:11:24",
+                  "referencedDeclaration": 14375,
+                  "src": "3336:11:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                     "typeString": "struct Packet.Data"
                   }
                 },
@@ -3892,13 +3892,13 @@
               },
               {
                 "constant": false,
-                "id": 9559,
+                "id": 6387,
                 "mutability": "mutable",
                 "name": "proof",
-                "nameLocation": "3370:5:24",
+                "nameLocation": "3370:5:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3364:11:24",
+                "scope": 6390,
+                "src": "3364:11:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3906,10 +3906,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9558,
+                  "id": 6386,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3364:5:24",
+                  "src": "3364:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -3919,13 +3919,13 @@
               },
               {
                 "constant": false,
-                "id": 9561,
+                "id": 6389,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3392:11:24",
+                "nameLocation": "3392:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9562,
-                "src": "3385:18:24",
+                "scope": 6390,
+                "src": "3385:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -3933,10 +3933,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9560,
+                  "id": 6388,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3385:6:24",
+                  "src": "3385:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -3946,45 +3946,45 @@
               }
             ],
             "name": "MsgPacketRecv",
-            "nameLocation": "3312:13:24",
+            "nameLocation": "3312:13:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3305:105:24",
+            "scope": 6401,
+            "src": "3305:105:15",
             "visibility": "public"
           },
           {
             "canonicalName": "IBCMsgs.MsgPacketAcknowledgement",
-            "id": 9572,
+            "id": 6400,
             "members": [
               {
                 "constant": false,
-                "id": 9565,
+                "id": 6393,
                 "mutability": "mutable",
                 "name": "packet",
-                "nameLocation": "3470:6:24",
+                "nameLocation": "3470:6:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3458:18:24",
+                "scope": 6400,
+                "src": "3458:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                  "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                   "typeString": "struct Packet.Data"
                 },
                 "typeName": {
-                  "id": 9564,
+                  "id": 6392,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 9563,
+                    "id": 6391,
                     "name": "Packet.Data",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 17547,
-                    "src": "3458:11:24"
+                    "referencedDeclaration": 14375,
+                    "src": "3458:11:15"
                   },
-                  "referencedDeclaration": 17547,
-                  "src": "3458:11:24",
+                  "referencedDeclaration": 14375,
+                  "src": "3458:11:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$17547_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$14375_storage_ptr",
                     "typeString": "struct Packet.Data"
                   }
                 },
@@ -3992,13 +3992,13 @@
               },
               {
                 "constant": false,
-                "id": 9567,
+                "id": 6395,
                 "mutability": "mutable",
                 "name": "acknowledgement",
-                "nameLocation": "3492:15:24",
+                "nameLocation": "3492:15:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3486:21:24",
+                "scope": 6400,
+                "src": "3486:21:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -4006,10 +4006,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9566,
+                  "id": 6394,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3486:5:24",
+                  "src": "3486:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -4019,13 +4019,13 @@
               },
               {
                 "constant": false,
-                "id": 9569,
+                "id": 6397,
                 "mutability": "mutable",
                 "name": "proof",
-                "nameLocation": "3523:5:24",
+                "nameLocation": "3523:5:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3517:11:24",
+                "scope": 6400,
+                "src": "3517:11:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -4033,10 +4033,10 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 9568,
+                  "id": 6396,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3517:5:24",
+                  "src": "3517:5:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes_storage_ptr",
                     "typeString": "bytes"
@@ -4046,13 +4046,13 @@
               },
               {
                 "constant": false,
-                "id": 9571,
+                "id": 6399,
                 "mutability": "mutable",
                 "name": "proofHeight",
-                "nameLocation": "3545:11:24",
+                "nameLocation": "3545:11:15",
                 "nodeType": "VariableDeclaration",
-                "scope": 9572,
-                "src": "3538:18:24",
+                "scope": 6400,
+                "src": "3538:18:15",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -4060,10 +4060,10 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 9570,
+                  "id": 6398,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
-                  "src": "3538:6:24",
+                  "src": "3538:6:15",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint64",
                     "typeString": "uint64"
@@ -4073,27 +4073,47 @@
               }
             ],
             "name": "MsgPacketAcknowledgement",
-            "nameLocation": "3423:24:24",
+            "nameLocation": "3423:24:15",
             "nodeType": "StructDefinition",
-            "scope": 9573,
-            "src": "3416:147:24",
+            "scope": 6401,
+            "src": "3416:147:15",
             "visibility": "public"
           }
         ],
-        "scope": 9574,
-        "src": "133:3432:24",
+        "scope": 6402,
+        "src": "133:3432:15",
         "usedErrors": []
       }
     ],
-    "src": "0:3566:24"
+    "src": "0:3566:15"
   },
   "compiler": {
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1635854119653": {
+      "events": {},
+      "links": {},
+      "address": "0x361552A65C96621003C62C5971b910a1fdC9ba78",
+      "transactionHash": "0x96bebf84471fa92701964711a5ba69fc0621437eca6276b5c5ceed6d62014d00"
+    },
+    "1635854524842": {
+      "events": {},
+      "links": {},
+      "address": "0x361552A65C96621003C62C5971b910a1fdC9ba78",
+      "transactionHash": "0x96bebf84471fa92701964711a5ba69fc0621437eca6276b5c5ceed6d62014d00"
+    },
+    "1635856666936": {
+      "events": {},
+      "links": {},
+      "address": "0x361552A65C96621003C62C5971b910a1fdC9ba78",
+      "transactionHash": "0x96bebf84471fa92701964711a5ba69fc0621437eca6276b5c5ceed6d62014d00"
+    }
+  },
   "schemaVersion": "3.4.0",
-  "updatedAt": "2021-10-29T23:56:50.684Z",
+  "updatedAt": "2021-11-02T12:42:28.441Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

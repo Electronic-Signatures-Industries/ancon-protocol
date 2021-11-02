@@ -94,7 +94,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -137,7 +138,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -150,7 +152,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -211,7 +214,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -224,7 +228,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -237,7 +242,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -7167,9 +7173,29 @@
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1635854119653": {
+      "events": {},
+      "links": {},
+      "address": "0xa7f733a4fEA1071f58114b203F57444969b86524",
+      "transactionHash": "0x87fbdb0c4fb074e05c2b5ef050523451ec6d5d4566c15f220579cac05118d882"
+    },
+    "1635854524842": {
+      "events": {},
+      "links": {},
+      "address": "0xa7f733a4fEA1071f58114b203F57444969b86524",
+      "transactionHash": "0x87fbdb0c4fb074e05c2b5ef050523451ec6d5d4566c15f220579cac05118d882"
+    },
+    "1635856666936": {
+      "events": {},
+      "links": {},
+      "address": "0xa7f733a4fEA1071f58114b203F57444969b86524",
+      "transactionHash": "0x87fbdb0c4fb074e05c2b5ef050523451ec6d5d4566c15f220579cac05118d882"
+    }
+  },
   "schemaVersion": "3.4.0",
-  "updatedAt": "2021-10-29T23:56:50.585Z",
+  "updatedAt": "2021-11-02T12:42:28.453Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

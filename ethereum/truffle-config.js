@@ -48,7 +48,7 @@ module.exports = {
       network_id: '*', // Match any network id
     },
     development: {
-      from: '0xBF53B34e8a49F34c772690575CA555A6f1e43c1e',
+      from: '0xa89F47C6b463f74d87572b058427dA0A13ec5425',
       host: 'localhost',
       port: 8646,
       network_id: '*', // Match any network id
