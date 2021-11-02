@@ -216,12 +216,11 @@ prefix: [0 as UInt8]
     )    : [UInt8] {
         assert(key.length > 0, message: "Leaf op needs key");
         assert(value.length > 0,message: "Leaf op needs value");
-        let data = 
-                op.prefix.concat(
-                self.prepareLeafData(hashOp:op.prehash_key, lengthOp :op.len, data: key)
-            ).concat(
-            self.prepareLeafData(hashOp:op.prehash_value, lengthOp :op.len, data: value)
-        );
+
+        let keyLeafData = self.prepareLeafData(hashOp:op.prehash_key, lengthOp :op.len, data: key);
+        let valueLeafData = self.prepareLeafData(hashOp:op.prehash_value, lengthOp :op.len, data: value);
+
+        let data = op.prefix.concat(keyLeafData).concat(valueLeafData);
         return self.doHash(hashOp:op.hash, data: data);
     }
 
@@ -278,13 +277,8 @@ prefix: [0 as UInt8]
 
    pub fun doHash(hashOp: HashOp, data: [UInt8]):[UInt8] 
     {
-    
-    
-       let a =  Crypto.hash(data, algorithm: HashAlgorithm.SHA3_256)
-        if (hashOp == HashOp.SHA256) {
-        return a
-    }
-        panic("Unsupported hashop");
+        // The only available hashing function available right now is SHA256.
+        return HashAlgorithm.SHA2_256.hash(data);
     }
 
    pub fun doLength(lengthOp: LengthOp , data: [UInt8]): [UInt8]
