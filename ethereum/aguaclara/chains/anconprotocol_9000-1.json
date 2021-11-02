@@ -9,6 +9,7 @@
     "gas_prices": "0.05aphoton"
   },
   "prover": {
-    "@type": "/relayer.provers.ethermint.config.ProverConfig"
+    "@type": "/relayer.chains.ethermint.config.ProverConfig",
+    "trusting_period": "336h"
   }
 }
