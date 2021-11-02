@@ -9,6 +9,7 @@ import {
 } from 'flow-js-testing'
 const ics23 = require('@confio/ics23')
 const ethers = require('ethers')
+const { assert } = require('chai');
 
 let toABI = ({ exist }) => {
   const innerOp = []
@@ -137,8 +138,11 @@ describe('ics23', () => {
       Array.from(proof.innerOp[0].prefix),
       Array.from(proof.innerOp[0].suffix),
     ]
-    const result = await executeScript({ code, args })
-    console.log({ result })
+    const result = await executeScript({ code, args });
+    assert.equal(
+      ethers.utils.hexlify(result),
+      '0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc'
+    );
 
     //   function changeOwnerWithProof(
     //     bytes[] memory existenceProofLeafOp,
