@@ -8,8 +8,6 @@ import {
   deployContractByName,
 } from 'flow-js-testing'
 const ics23 = require('@confio/ics23')
-const { base64 } = require('ethers/lib/utils')
-const Web3 = require('web3')
 const ethers = require('ethers')
 
 let toABI = ({ exist }) => {
@@ -66,8 +64,9 @@ const proofCombined = [
 
 // Increase timeout if your tests failing due to timeout
 jest.setTimeout(10000)
-let ics23Contract
 describe('ics23', () => {
+  let contractAddress;
+
   beforeEach(async () => {
     const basePath = path.resolve(__dirname, '../atlantico')
     // You can specify different port to parallelize execution of describe blocks
@@ -78,14 +77,11 @@ describe('ics23', () => {
     await init(basePath, { port })
     await emulator.start(port, logging)
 
-    try {
-      const to = await getAccountAddress('Alice')
+    contractAddress = await getContractAddress('ICS23')
+    if (!contractAddress) {
+      const to = await getAccountAddress('emulator-account')
       const name = `ICS23`
-      const deploymentResult = await deployContractByName({ to, name })
-      console.log({ deploymentResult })
-    } catch (e) {
-      // If we encounter any errors during teployment, we can catch and process them here
-      console.log(e)
+      await deployContractByName({ to, name })
     }
   })
 
@@ -95,42 +91,52 @@ describe('ics23', () => {
   })
 
   test('when requesting an ownership update to a NFT using an ics23 vector commitment proof, return  ok', async () => {
-    const contract = await getContractAddress('ICS23')
-    console.log({ contract })
     const code = `
-      import ICS23 from ${contract}
+      import ICS23 from ${contractAddress}
+
       pub fun main(
         key: [UInt8],
         value: [UInt8],
         leafPrefix: [UInt8],
         pathPrefix: [UInt8],
         pathSuffix: [UInt8],
-        leaf: {
-          String: AnyStruct        },
-        path: [{
-String: AnyStruct
-        }]
-        
-        ): String?{
+      ): [UInt8] {
+        let leafStruct = ICS23.LeafOp(
+          valid: true,
+          hash: ICS23.HashOp.SHA256,
+          prehash_key: ICS23.HashOp.NO_HASH,
+          prehash_value: ICS23.HashOp.SHA256,
+          len: ICS23.LengthOp.VAR_PROTO,
+          prefix: leafPrefix
+        )
 
-          let p =  ICS23.ExistenceProof(
-            valid:  true,
-            key: key,
-            value: value,
-            leaf: leaf,
-            path:   path
+        let pathStruct = ICS23.InnerOp(
+          valid: true,
+          hash: ICS23.HashOp.SHA256,
+          prefix: pathPrefix,
+          suffix: pathSuffix,
+        )
 
-          )
+        let p = ICS23.ExistenceProof(
+          valid: true,
+          key: key,
+          value: value,
+          leaf: leafStruct,
+          path: [pathStruct]
+        )
         return ICS23.calculate(p:p)
       }
-    }
     `
-    const Alice = await getAccountAddress('Alice')
-    ///   const signers = [Alice]
 
     const proof = toABI(proofCombined[0])
-    const args = [proof.key, proof.value, proof.leafOp, proof.innerOp]
-    console.log(args)
+
+    const args = [
+      Array.from(proof.key),
+      Array.from(proof.value),
+      Array.from(proof.leafOp.prefix),
+      Array.from(proof.innerOp[0].prefix),
+      Array.from(proof.innerOp[0].suffix),
+    ]
     const result = await executeScript({ code, args })
     console.log({ result })
 
@@ -144,6 +150,6 @@ String: AnyStruct
     //     bytes memory value
     // ) public returns (bool) {
 
-    assert.equal(res, true)
+    // assert.equal(res, true)
   })
 })
