@@ -1,7 +1,7 @@
 {
   "src": {
     "chain-id": "anconprotocol_9000-1",
-    "client-id": "mock-client-0",
+    "client-id": "07-tendermint-0",
     "connection-id": "connection-0",
     "channel-id": "channel-0",
     "port-id": "aguaclara",

@@ -1,6 +1,6 @@
 {
   "chain": {
-    "@type": "/relayer.chains.tendermint.config.ChainConfig",
+    "@type": "/relayer.chains.ethermint.config.ChainConfig",
     "key": "mykey",
     "chain_id": "anconprotocol_9000-1",
     "rpc_addr": "http://localhost:26657",
@@ -9,6 +9,6 @@
     "gas_prices": "0.05aphoton"
   },
   "prover": {
-    "@type": "/relayer.provers.mock.config.ProverConfig"
+    "@type": "/relayer.provers.ethermint.config.ProverConfig"
   }
 }
