@@ -158,14 +158,26 @@ describe('AnconVerifier', () => {
         existenceProofInnerOpHash: UInt8,
         existenceProofKey: [UInt8],
         existenceProofValue: [UInt8],
-      ): [UInt8] {
-        return AnconVerifier.requestRoot(
+      ): AnyStruct {
+        let root = AnconVerifier.requestRoot(
           leafOpUint: leafOp,
           prefix: prefix,
           existenceProofInnerOp: existenceProofInnerOp,
           existenceProofInnerOpHash: existenceProofInnerOpHash,
           existenceProofKey: existenceProofKey,
           existenceProofValue: existenceProofValue,
+        );
+
+        return AnconVerifier.changeOwnerWithProof(
+          leafOpUint: leafOp,
+          prefix: prefix,
+          existenceProofInnerOp: existenceProofInnerOp,
+          existenceProofInnerOpHash: existenceProofInnerOpHash,
+          existenceProofKey: existenceProofKey,
+          existenceProofValue: existenceProofValue,
+          root: root,
+          key: existenceProofKey,
+          value: existenceProofValue,
         );
       }
     `;
@@ -188,9 +200,6 @@ describe('AnconVerifier', () => {
     ]
 
     const result = await executeScript({ code, args });
-    assert.equal(
-      ethers.utils.hexlify(result),
-      PRECALCULATED_MERKLE_ROOT
-    );
+    assert.isTrue(result, "Must have Validated");
   });
 })

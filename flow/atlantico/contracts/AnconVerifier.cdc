@@ -248,11 +248,9 @@ prefix: [0 as UInt8]
    pub fun checkAgainstSpecInnerOp(op: InnerOp, spec: ProofSpec)
     {
         assert(op.hash == spec.leafSpec.hash,message:  "Unexpected HashOp");
-        let leafSpecPrefix = String.encodeHex(spec.leafSpec.prefix)
-        let opPrefix = String.encodeHex(op.prefix)
 
         assert(
-            spec.leafSpec.prefix.contains(op.prefix.removeFirst()),
+            !spec.leafSpec.prefix.contains(op.prefix[0]),
             message: "LeafOpLib: wrong prefix"
         );
         assert(
@@ -406,15 +404,13 @@ prefix: [0 as UInt8]
             i = i + 1;
         }
 
-        let proof = ExistenceProof(
+        return ExistenceProof(
             valid: true,
             key: key,
             value: value,
             leaf: leafOp,
             path: innerOpArr
         );
-
-        return proof;
     }
 
     pub fun requestRoot(
