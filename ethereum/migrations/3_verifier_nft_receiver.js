@@ -4,7 +4,7 @@ const fs = require('fs')
 const XDVNFT = artifacts.require('XDVNFT')
 const DAI = artifacts.require('DAI')
 
-const AnconMetadataOwnableBridge = artifacts.require("AnconMetadataOwnableBridge");
+const AguaclaraRouter = artifacts.require("AguaclaraRouter");
 
 const Web3 = require("web3");
 const ContractImportBuilder = require('../contract-import-builder');
@@ -47,6 +47,10 @@ module.exports = async (deployer, network, accounts) => {
   await Faucet.deployed()
   const verifier = await AnconVerifier.deployed();
 
+  await deployer.deploy(AguaclaraRouter, "AguaclaraRouter", "AguaclaraRouter", stableCoinAddress, verifier.address);
+
+  xdvnft = await AguaclaraRouter.deployed();
+  
 
   // Deploy NFT
   await deployer.deploy(XDVNFT, "XDVNFT", "XDVNFT", stableCoinAddress, verifier.address);
