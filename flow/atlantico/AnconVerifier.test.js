@@ -64,8 +64,7 @@ const proofCombined = [
 ]
 
 // Increase timeout if your tests failing due to timeout
-jest.setTimeout(10000)
-describe('ics23', () => {
+describe('AnconVerifier', () => {
   let contractAddress;
 
   beforeEach(async () => {
@@ -78,10 +77,10 @@ describe('ics23', () => {
     await init(basePath, { port })
     await emulator.start(port, logging)
 
-    contractAddress = await getContractAddress('ICS23')
+    const name = `AnconVerifier`
+    contractAddress = await getContractAddress(name)
     if (!contractAddress) {
       const to = await getAccountAddress('emulator-account')
-      const name = `ICS23`
       await deployContractByName({ to, name })
     }
   })
@@ -93,7 +92,7 @@ describe('ics23', () => {
 
   test('when requesting an ownership update to a NFT using an ics23 vector commitment proof, return  ok', async () => {
     const code = `
-      import ICS23 from ${contractAddress}
+      import AnconVerifier from ${contractAddress}
 
       pub fun main(
         key: [UInt8],
@@ -102,30 +101,30 @@ describe('ics23', () => {
         pathPrefix: [UInt8],
         pathSuffix: [UInt8],
       ): [UInt8] {
-        let leafStruct = ICS23.LeafOp(
+        let leafStruct = AnconVerifier.LeafOp(
           valid: true,
-          hash: ICS23.HashOp.SHA256,
-          prehash_key: ICS23.HashOp.NO_HASH,
-          prehash_value: ICS23.HashOp.SHA256,
-          len: ICS23.LengthOp.VAR_PROTO,
+          hash: AnconVerifier.HashOp.SHA256,
+          prehash_key: AnconVerifier.HashOp.NO_HASH,
+          prehash_value: AnconVerifier.HashOp.SHA256,
+          len: AnconVerifier.LengthOp.VAR_PROTO,
           prefix: leafPrefix
         )
 
-        let pathStruct = ICS23.InnerOp(
+        let pathStruct = AnconVerifier.InnerOp(
           valid: true,
-          hash: ICS23.HashOp.SHA256,
+          hash: AnconVerifier.HashOp.SHA256,
           prefix: pathPrefix,
           suffix: pathSuffix,
         )
 
-        let p = ICS23.ExistenceProof(
+        let p = AnconVerifier.ExistenceProof(
           valid: true,
           key: key,
           value: value,
           leaf: leafStruct,
           path: [pathStruct]
         )
-        return ICS23.calculate(p:p)
+        return AnconVerifier.calculate(p:p)
       }
     `
 

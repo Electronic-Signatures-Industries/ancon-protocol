@@ -1,6 +1,8 @@
 import Crypto
 
-access(all) contract ICS23 {
+pub contract AnconVerifier {
+    // address public whitelisted;
+
     // Data structures and helper functions
     pub enum HashOp: UInt8 {
         pub case NO_HASH
@@ -368,5 +370,105 @@ prefix: [0 as UInt8]
         return res
     }
 
+    //Separate arguments to not convert from uint 256 to byte
+    pub fun convertProof(
+        key: [UInt8],
+        value: [UInt8],
+        _prefix: [UInt8],
+        _leafOpUint: [UInt8; 4],
+        _innerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8
+    ): ExistenceProof {
+        assert(
+            _leafOpUint.length >= 4,
+            message: "Not enough values packed inside leafOpUInt"
+        );
+        let leafOp = LeafOp(
+            valid: true,
+            hash: HashOp(rawValue: _leafOpUint[0])!,
+            prehash_key: HashOp(rawValue: _leafOpUint[1])!,
+            prehash_value: HashOp(rawValue: _leafOpUint[2])!,
+            len: LengthOp(rawValue: _leafOpUint[3])!,
+            prefix: _prefix
+        );
+
+        let innerOpArr: [InnerOp] = [];
+
+        var i = 0;
+        while (i < _innerOp.length) {
+            var temp: [[UInt8]] = _innerOp[i];
+            innerOpArr.append(InnerOp(
+                valid: true,
+                hash: HashOp(rawValue: existenceProofInnerOpHash)!,
+                prefix: temp[0],
+                suffix: temp[1]
+            ));
+            i = i + 1;
+        }
+
+        let proof = ExistenceProof(
+            valid: true,
+            key: key,
+            value: value,
+            leaf: leafOp,
+            path: innerOpArr
+        );
+
+        return proof;
+    }
+
+    pub fun requestRoot(
+        leafOpUint: [UInt8; 4],
+        prefix: [UInt8],
+        existenceProofInnerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8,
+        existenceProofKey: [UInt8],
+        existenceProofValue: [UInt8]
+    ): [UInt8] {
+        // assert(msg.sender == whitelisted, "Must be whitelisted or registered");
+        let proof: ExistenceProof = self.convertProof(
+            key: existenceProofKey,
+            value: existenceProofValue,
+            _prefix: prefix,
+            _leafOpUint: leafOpUint,
+            _innerOp: existenceProofInnerOp,
+            existenceProofInnerOpHash: existenceProofInnerOpHash
+        );
+        return self.calculate(p: proof);
+    }
+
+    // claimed ics23 proofs
+    // key = prefix + cid eg  ancon+cid
+    // value = sha256(dagcbor)
+    pub fun changeOwnerWithProof(
+        leafOpUint: [UInt8; 4],
+        prefix: [UInt8],
+        existenceProofInnerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8,
+        existenceProofKey: [UInt8],
+        existenceProofValue: [UInt8],
+        root: [UInt8],
+        key: [UInt8],
+        value: [UInt8]
+    ): Bool {
+        let proof = self.convertProof(
+            key: existenceProofKey,
+            value: existenceProofValue,
+            _prefix: prefix,
+            _leafOpUint: leafOpUint,
+            _innerOp: existenceProofInnerOp,
+            existenceProofInnerOpHash: existenceProofInnerOpHash
+        );
+
+        self.verify(
+            proof: proof,
+            spec: self.getIavlSpec(),
+            root: root,
+            key: key,
+            value: value
+        );
+
+        return true;
+    }
+
 }
- 
