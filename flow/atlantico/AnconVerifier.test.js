@@ -16,8 +16,8 @@ let toABI = ({ exist }) => {
   innerOp.push({
     valid: true,
     hash: ics23.ics23.HashOp[exist.path[0].hash],
-    prefix: ethers.utils.base64.decode(exist.path[0].prefix),
-    suffix: ethers.utils.base64.decode(exist.path[0].suffix),
+    prefix: Array.from(ethers.utils.base64.decode(exist.path[0].prefix)),
+    suffix: Array.from(ethers.utils.base64.decode(exist.path[0].suffix)),
   })
   const leafOp = {
     valid: true,
@@ -26,15 +26,16 @@ let toABI = ({ exist }) => {
     prehash_value: ics23.ics23.HashOp[exist.leaf.prehash_value],
     //  length: ics23.ics23.LengthOp[exist.leaf.length],
     len: ics23.ics23.LengthOp[exist.leaf.length],
-    prefix: ethers.utils.base64.decode(exist.leaf.prefix),
+    prefix: Array.from(ethers.utils.base64.decode(exist.leaf.prefix)),
   }
 
   return {
     leafOp,
     innerOp,
+    prefix: Array.from(ethers.utils.base64.decode(exist.leaf.prefix)),
     innerOpHash: ics23.ics23.HashOp[exist.path[0].hash],
-    key:         ethers.utils.base64.decode(exist.key),
-    value:         ethers.utils.base64.decode(exist.value),
+    key: Array.from(ethers.utils.base64.decode(exist.key)),
+    value: Array.from(ethers.utils.base64.decode(exist.value)),
   }
 }
 
@@ -63,12 +64,14 @@ const proofCombined = [
   },
 ]
 
+const PRECALCULATED_MERKLE_ROOT = '0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc'
+
 // Increase timeout if your tests failing due to timeout
 describe('AnconVerifier', () => {
   let contractAddress;
 
   beforeEach(async () => {
-    const basePath = path.resolve(__dirname, '../atlantico')
+    const basePath = path.resolve(__dirname)
     // You can specify different port to parallelize execution of describe blocks
     const port = 8080
     // Setting logging flag to true will pipe emulator output to console
@@ -90,7 +93,7 @@ describe('AnconVerifier', () => {
     return emulator.stop()
   })
 
-  test('when requesting an ownership update to a NFT using an ics23 vector commitment proof, return  ok', async () => {
+  test('should calculate manually ICS23 Merkle Proofs', async () => {
     const code = `
       import AnconVerifier from ${contractAddress}
 
@@ -131,28 +134,63 @@ describe('AnconVerifier', () => {
     const proof = toABI(proofCombined[0])
 
     const args = [
-      Array.from(proof.key),
-      Array.from(proof.value),
-      Array.from(proof.leafOp.prefix),
-      Array.from(proof.innerOp[0].prefix),
-      Array.from(proof.innerOp[0].suffix),
+      proof.key,
+      proof.value,
+      proof.leafOp.prefix,
+      proof.innerOp[0].prefix,
+      proof.innerOp[0].suffix,
     ]
     const result = await executeScript({ code, args });
     assert.equal(
       ethers.utils.hexlify(result),
-      '0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc'
+      PRECALCULATED_MERKLE_ROOT
     );
+  });
 
-    //   function changeOwnerWithProof(
-    //     bytes[] memory existenceProofLeafOp,
-    //     bytes[][] memory existenceProofInnerOp,
-    //     bytes memory existenceProofKey,
-    //     bytes memory existenceProofValue,
-    //     bytes memory rootBz,
-    //     bytes memory pathBz,
-    //     bytes memory value
-    // ) public returns (bool) {
+  test('should correctly verify ownership via ICS23', async () => {
+    const code = `
+      import AnconVerifier from ${contractAddress}
 
-    // assert.equal(res, true)
-  })
+      pub fun main(
+        leafOp: [UInt8],
+        prefix: [UInt8],
+        existenceProofInnerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8,
+        existenceProofKey: [UInt8],
+        existenceProofValue: [UInt8],
+      ): [UInt8] {
+        return AnconVerifier.requestRoot(
+          leafOpUint: leafOp,
+          prefix: prefix,
+          existenceProofInnerOp: existenceProofInnerOp,
+          existenceProofInnerOpHash: existenceProofInnerOpHash,
+          existenceProofKey: existenceProofKey,
+          existenceProofValue: existenceProofValue,
+        );
+      }
+    `;
+
+    const proof = toABI(proofCombined[0]);
+    const leafOps = [
+      proof.leafOp.hash,
+      proof.leafOp.prehash_key,
+      proof.leafOp.prehash_value,
+      proof.leafOp.len
+    ]
+    const mappedInnerOp = proof.innerOp.map(io => [io.prefix, io.suffix]);
+    const args = [
+      leafOps,
+      proof.prefix,
+      mappedInnerOp,
+      proof.innerOpHash,
+      proof.value,
+      proof.value,
+    ]
+
+    const result = await executeScript({ code, args });
+    assert.equal(
+      ethers.utils.hexlify(result),
+      PRECALCULATED_MERKLE_ROOT
+    );
+  });
 })

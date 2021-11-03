@@ -375,7 +375,7 @@ prefix: [0 as UInt8]
         key: [UInt8],
         value: [UInt8],
         _prefix: [UInt8],
-        _leafOpUint: [UInt8; 4],
+        _leafOpUint: [UInt8],
         _innerOp: [[[UInt8]]],
         existenceProofInnerOpHash: UInt8
     ): ExistenceProof {
@@ -418,7 +418,7 @@ prefix: [0 as UInt8]
     }
 
     pub fun requestRoot(
-        leafOpUint: [UInt8; 4],
+        leafOpUint: [UInt8],
         prefix: [UInt8],
         existenceProofInnerOp: [[[UInt8]]],
         existenceProofInnerOpHash: UInt8,
@@ -441,7 +441,7 @@ prefix: [0 as UInt8]
     // key = prefix + cid eg  ancon+cid
     // value = sha256(dagcbor)
     pub fun changeOwnerWithProof(
-        leafOpUint: [UInt8; 4],
+        leafOpUint: [UInt8],
         prefix: [UInt8],
         existenceProofInnerOp: [[[UInt8]]],
         existenceProofInnerOpHash: UInt8,
