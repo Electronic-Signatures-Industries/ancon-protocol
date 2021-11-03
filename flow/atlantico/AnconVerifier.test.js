@@ -183,7 +183,7 @@ describe('AnconVerifier', () => {
       proof.prefix,
       mappedInnerOp,
       proof.innerOpHash,
-      proof.value,
+      proof.key,
       proof.value,
     ]
 
