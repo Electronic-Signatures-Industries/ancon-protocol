@@ -4,7 +4,6 @@ import (
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	"github.com/spf13/cast"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -64,24 +63,5 @@ func (k Keeper) TrasmitIbcPacket(ctx sdk.Context,
 	timeoutTimestamp, sequence uint64,
 	packetData *types.AguaclaraPacketData, chanCap *capabilitytypes.Capability) *sdkerrors.Error {
 
-	encoded, _ := packetData.ToAbiPacked("ethm1x73r96c85nage2y05cpqlzth8ak2qg9p0vqc4d", packetData.TokenAddress, cast.ToInt(packetData.TokenId), packetData.DidRecipient, packetData.ToMetadata)
-
-	packet := channeltypes.NewPacket(
-		encoded,
-		sequence,
-		sourcePort,
-		sourceChannel,
-		destinationPort,
-		destinationChannel,
-		timeoutHeight,
-		timeoutTimestamp,
-	)
-
-	err := k.channelKeeper.SendPacket(ctx, chanCap, packet)
-	ctx.Logger().Error("Send Packet Error", err)
-
-	if err != nil {
-		return channeltypes.ErrInvalidPacket
-	}
 	return nil
 }

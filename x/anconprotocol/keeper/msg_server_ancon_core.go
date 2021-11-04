@@ -7,6 +7,25 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// SendMetadataOwnership
+//TODO: emit event
+func (k msgServer) SendMetadataOwnership(goCtx context.Context, msg *types.MsgSendMetadataOwnership) (*types.MsgSendMetadataOwnershipResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	lnk, _ := k.CreateSendMetadataPacket(
+		ctx, sdk.AccAddress(msg.Creator), msg.Data,
+	)
+
+	return &types.MsgSendMetadataOwnershipResponse{
+		Cid: lnk,
+	}, nil
+}
+
 // UpdateMetadataOwnership
 //TODO: emit event
 func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.MsgUpdateMetadataOwnership) (*types.MsgUpdateMetadataOwnershipResponse, error) {

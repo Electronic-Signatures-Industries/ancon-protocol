@@ -9,8 +9,8 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ics23 "github.com/confio/ics23/go"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
@@ -45,7 +45,7 @@ func (k Keeper) ReadMetadataProof(goCtx context.Context, req *types.QueryProofMe
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	r, proof, err := k.GetMetadataProof(ctx, req.Cid, req.Path)
+	r, proof, err := k.GetProof(ctx, req.Cid, req.Path)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "failed to get metadata")
 	}
@@ -92,17 +92,6 @@ func (k Keeper) Resource(goCtx context.Context, req *types.QueryResourceRequest)
 
 	// TODO: get ipld object (path traversal later)
 	return k.GetObject(ctx, req)
-}
-
-// GetVoucher returns stored voucher
-func (k Keeper) GetVoucher(ctx sdk.Context, voucherID string) (*types.Voucher, error) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VoucherStoreKey))
-
-	buf := store.Get([]byte(voucherID))
-	var voucher types.Voucher
-	k.cdc.MustUnmarshalJSON(buf, &voucher)
-
-	return &voucher, nil
 }
 
 // GetVoucherProof returns stored voucher proof

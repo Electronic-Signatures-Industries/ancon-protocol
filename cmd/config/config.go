@@ -8,7 +8,7 @@ import (
 
 const (
 	// Bech32Prefix defines the Bech32 prefix used for EthAccounts
-	Bech32Prefix = "ethm"
+	Bech32Prefix = "ancon"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -26,7 +26,7 @@ const (
 
 const (
 	// DisplayDenom defines the denomination displayed to users in client applications.
-	DisplayDenom = "photon"
+	DisplayDenom = "ancon"
 )
 
 // SetBech32Prefixes sets the global prefixes to be used when serializing addresses and public keys to Bech32 strings.
@@ -49,7 +49,7 @@ func RegisterDenoms() {
 		panic(err)
 	}
 
-	if err := sdk.RegisterDenom(ethermint.AttoPhoton, sdk.NewDecWithPrec(1, ethermint.BaseDenomUnit)); err != nil {
+	if err := sdk.RegisterDenom("aancon", sdk.NewDecWithPrec(1, ethermint.BaseDenomUnit)); err != nil {
 		panic(err)
 	}
 }

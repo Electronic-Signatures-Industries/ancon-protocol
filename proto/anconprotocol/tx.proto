@@ -12,6 +12,8 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Msg defines the Msg service.
 service Msg {
+// Send cross chain message 
+rpc SendMetadataOwnership(MsgSendMetadataOwnership) returns (MsgSendMetadataOwnershipResponse);
   // CreateDid
   rpc CreateDid(MsgCreateDid) returns (MsgCreateDidResponse);
   // UpdateDid
@@ -19,7 +21,7 @@ service Msg {
   // RevokeDid
   rpc RevokeDid(MsgRevokeDid) returns (MsgRevokeDidResponse);    
   // RoyaltyInfo defines a metadata CID royalty info
-//  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
+  rpc RoyaltyInfo(MsgRoyaltyInfo) returns (MsgRoyaltyInfoResponse);
   // ChangeOwer TODO
   rpc ChangeOwner(MsgChangeOwner) returns (MsgChangeOwnerResponse);
 //  rpc ValidDelegate(MsgValidDelegate) returns (MsgValidDelegateResponse);
@@ -236,10 +238,11 @@ message MsgRoyaltyInfo {
   option (gogoproto.equal) = true;
 
   string creator = 1;
-  string receiver = 2;
-  uint64 royalty_fee_percentage =3;  
-  string metadata_ref = 4;
-  string denom_id = 5;  
+  string id = 2;
+  string receiver = 3;
+  uint64 royalty_fee_percentage = 4;  
+  string metadata_ref = 5;
+  string denom_id = 6;  
 }
 
 
@@ -482,4 +485,22 @@ message MsgFile {
 
 message MsgFileResponse {
   string hash = 1;
+}
+
+
+message MsgSendMetadataOwnership {
+  string creator = 1;
+  AguaclaraPacketData data = 2;
+
+}
+
+message MsgSendMetadataOwnershipResponse {
+  string cid = 1;
+}
+message AguaclaraPacketData {
+  string creator = 1;
+  string tokenAddress = 2;
+  string tokenId = 3;
+  string didRecipient = 4;
+  string toMetadata = 5;
 }
