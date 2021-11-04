@@ -85,8 +85,7 @@ contract XDVNFT is
     ) external returns (bytes4) {
         // Verify operator
         require(operator == verifierAddress, "Invalid verifier");
-
-// verify proof value sha256 <> packet or latest metadata
+        
         // Verify owner owns token id
         address owned = ownerOf(tokenId);
         require(owned == from, "Invalid token id owner");

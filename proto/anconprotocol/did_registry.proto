@@ -7,34 +7,12 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
-// BaseNFT defines a non-fungible token
-message Voucher {
-  option (gogoproto.equal) = true;
-
-
-  // details
-  string token_name = 1;
-  string token_symbol = 2;
-  string uri = 3 [ (gogoproto.customname) = "URI" ];
-  string owner = 4;
-  string did_recipient = 5;
-  uint64 price = 6;
-
-  // sig(details)
-  string r = 7;
-  string s = 8;
-  uint64 v = 9;
-
-}
-
 message DIDOwner {
   string identity = 1;
   string owner = 2;
-  string did_ancon = 3;  // internal use eg. did:ancon:{hex-bech32}
-  string did_key = 4[ (gogoproto.nullable) = true ];
-  string did_web = 5[ (gogoproto.nullable) = true ];
-  bool did_web_deactivated = 6[ (gogoproto.nullable) = true];
-  string vanity_name = 7;
+  string cid = 3;
+  bool did_web_deactivated = 4[ (gogoproto.nullable) = true];
+  string vanity_name = 5;
 }
 
 message DIDWebRoute {

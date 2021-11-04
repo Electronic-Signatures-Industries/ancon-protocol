@@ -13,14 +13,13 @@ import (
 	"google.golang.org/grpc/status"
 
 	ics23 "github.com/confio/ics23/go"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/cache"
 	"github.com/cosmos/cosmos-sdk/store/iavl"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/crypto"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -35,15 +34,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func (k Keeper) AddClaimSwap(ctx sdk.Context, msg *types.MsgClaimSwap) (string, error) {
-	return "", nil
-}
-func (k Keeper) AddInitiateSwap(ctx sdk.Context, msg *types.MsgInitiateSwap) (string, error) {
-	return "", nil
-}
-func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (string, error) {
-	return "", nil
-}
 func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
 
 	// Add Metadata Cid to NFT
@@ -112,154 +102,6 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 
 }
 
-func (k Keeper) verifySenderIAVLProof(ctx sdk.Context, key string, value string, proof ics23.ExistenceProof) bool {
-	// TODO: Previously stored root
-	root := []byte{0, 0, 0, 0}
-	proofCommitment := ics23.CommitmentProof_Exist{
-		Exist: &proof,
-	}
-	voucherProof := ics23.CommitmentProof{
-		Proof: &proofCommitment,
-	}
-	// Cosmos IAVL
-	spec := ics23.IavlSpec
-	res := ics23.VerifyMembership(spec, root, &voucherProof, []byte(key), []byte(value))
-	return res
-}
-
-func (k Keeper) hasRelayPermit(ctx sdk.Context, creator string, prefix string) bool {
-	// prefix with abi
-	methodSig := abi.NewMethod(
-		"InitiateSwap",
-		"InitiateSwap",
-		abi.Function,
-		"nonpayable",
-		false,
-		false,
-		abi.Arguments{
-			{
-				Name:    "voucherId",
-				Type:    abi.Type{},
-				Indexed: false,
-			},
-		},
-		abi.Arguments{},
-	)
-	hash := append([]byte(methodSig.Sig), []byte(creator)...)
-	return fmt.Sprint(hash) == prefix
-}
-
-// InitiateSwap starts swap to Chain B, sends a voucher, prefix and proof
-func (k Keeper) InitiateSwap(ctx sdk.Context, voucherId string, creator string) (*types.RelayMessageNFTMintSwap, error) {
-	// prefix with abi
-	methodSig := abi.NewMethod(
-		"InitiateSwap",
-		"InitiateSwap",
-		abi.Function,
-		"nonpayable",
-		false,
-		false,
-		abi.Arguments{
-			{
-				Name:    "voucherId",
-				Type:    abi.Type{},
-				Indexed: false,
-			},
-		},
-		abi.Arguments{},
-	)
-
-	voucher, err := k.GetVoucher(ctx, voucherId)
-	if err != nil {
-		return nil, err
-	}
-	value := k.cdc.MustMarshalJSON(voucher)
-	hash := append([]byte(methodSig.Sig), []byte(creator)...)
-	return &types.RelayMessageNFTMintSwap{
-		Value:  string(value),
-		Key:    voucherId,
-		Prefix: fmt.Sprint(hash),
-	}, nil
-
-}
-
-func (k Keeper) getRelayer(ctx sdk.Context, prefix string) (uint64, error) {
-	return 1, nil
-}
-
-func (k Keeper) InitiateSwap_offchain(ctx sdk.Context, creator string, value string, key string, prefix string) (*types.MsgInitiateSwapResponse, error) {
-	if k.hasRelayPermit(ctx, creator, prefix) {
-		relayTo, err := k.getRelayer(ctx, prefix)
-		if err != nil {
-			return nil, err
-		}
-		return &types.MsgInitiateSwapResponse{
-			RelayTo: relayTo,
-			Voucher: value,
-			Key:     key,
-		}, nil
-	} else {
-		return nil, fmt.Errorf("unauthorized")
-	}
-}
-
-// InitiateSwapWithProof - onchain
-func (k Keeper) InitiateSwapWithProof(ctx sdk.Context, alg string, ownerPub []byte, key string, value string, proof ics23.ExistenceProof) (*types.InitiateSwapWithProofResponse, error) {
-
-	var voucher types.Voucher
-	k.cdc.MustUnmarshalJSON([]byte(value), &voucher)
-	if k.verifySenderIAVLProof(ctx, key, value, proof) {
-		// get next token id
-		tokenID := fmt.Sprint(k.GetTotalSupply(ctx, voucher.TokenSymbol))
-		// verify signature, should send did-web pub key
-		if alg == "secp256k1" {
-			pub := secp256k1.PubKey{
-				Key: ownerPub,
-			}
-			list := make([][]byte, 6)
-			list[0] = []byte(voucher.TokenName)
-			list[1] = []byte(voucher.TokenSymbol)
-			list[2] = []byte(voucher.URI)
-			list[3] = []byte(voucher.Owner)
-			list[4] = []byte(voucher.DidRecipient)
-			list[5] = []byte(cast.ToString(voucher.Price))
-			var digest []byte
-			for i := range list {
-				digest = append(digest, list[i]...)
-			}
-			res := pub.VerifySignature(
-				digest,
-				append([]byte(voucher.R), []byte(voucher.S)...),
-			)
-			if !res {
-				return nil, fmt.Errorf("invalid owner signature")
-			}
-		}
-
-		k.setNFT(
-			ctx,
-			voucher.TokenSymbol,
-			types.NewBaseNFT(
-				tokenID,
-				voucher.TokenName,
-				sdk.AccAddress(voucher.DidRecipient),
-				voucher.URI,
-				voucher.DidRecipient,
-			),
-		)
-		k.setOwner(ctx, voucher.TokenSymbol, tokenID, sdk.AccAddress(voucher.DidRecipient))
-		// TODO: transfer
-		k.increaseSupply(ctx, voucher.TokenSymbol)
-		return &types.InitiateSwapWithProofResponse{
-			TokenID: tokenID,
-		}, nil
-	}
-	return &types.InitiateSwapWithProofResponse{}, nil
-}
-
-func (k Keeper) ClaimSwap(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
-	return "", nil
-}
 func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	lsys := k.GetLinkSystem()
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
@@ -313,20 +155,19 @@ func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
 	return link.String(), nil
 }
 
-// CreateHashCidLink takes a hash eg ethereum hash and converts it to cid multihash
-func CreateHashCidLink(hash []byte) cidlink.Link {
+// CreateCidLink takes a hash eg ethereum hash and converts it to cid multihash
+func CreateCidLink(hash []byte) cidlink.Link {
 	lchMh, err := multihash.Encode(hash, GetLinkPrototype().(cidlink.LinkPrototype).MhType)
 	if err != nil {
 		return cidlink.Link{}
 	}
-	// TODO: switch to use CommitTree codec type
 	lcCID := cid.NewCidV1(GetLinkPrototype().(cidlink.LinkPrototype).Codec, lchMh)
 	lcLinkCID := cidlink.Link{Cid: lcCID}
 	return lcLinkCID
 }
 
-// ParseHashCidLink parses a string cid multihash into a cidLink
-func ParseHashCidLink(hash string) (cidlink.Link, error) {
+// ParseCidLink parses a string cid multihash into a cidLink
+func ParseCidLink(hash string) (cidlink.Link, error) {
 	lnk, err := cid.Parse(hash)
 	if err != nil {
 		return cidlink.Link{}, status.Error(
@@ -380,7 +221,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 
 			na.AssembleEntry("sources").CreateList(cast.ToInt64(len(msg.AdditionalSources)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(msg.AdditionalSources); i++ {
-					lnk, err := ParseHashCidLink((msg.AdditionalSources[i]))
+					lnk, err := ParseCidLink((msg.AdditionalSources[i]))
 					if err != nil {
 						continue
 					}
@@ -396,7 +237,7 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 			na.AssembleEntry("links").CreateList(cast.ToInt64(len(msg.Links)), func(la fluent.ListAssembler) {
 				for i := 0; i < len(msg.Links); i++ {
 
-					lnk, err := ParseHashCidLink((msg.Links[i]))
+					lnk, err := ParseCidLink((msg.Links[i]))
 					if err != nil {
 						continue
 					}
@@ -525,6 +366,68 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 	ctx.Logger().Info("verified membership created")
 	return (root.Hash), &mp, nil
 }
+
+func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.MerkleProof, error) {
+	var id []byte
+	if path != "" {
+		id = append([]byte(hash), path...)
+	} else {
+		id = []byte(hash)
+	}
+
+	// used to catch panics
+	defer func() { //catch or finally
+		if err := recover(); err != nil { //catch
+			fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
+			os.Exit(1)
+		}
+	}()
+
+	// create cache manager to unwrap
+	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
+	mngr.GetStoreCache(k.storeKey, k.cms.GetCommitKVStore(k.storeKey))
+	iavlstore := mngr.Unwrap(k.storeKey).(*iavl.Store)
+
+	queryableStore := store.Queryable(iavlstore)
+
+	keyz := []byte(id)
+	res := queryableStore.Query(abci.RequestQuery{
+		Data:   []byte(keyz),
+		Path:   ("/key"),
+		Height: ctx.BlockHeader().Height,
+		Prove:  true,
+	})
+	mp, err := ibc.ConvertProofs(res.ProofOps)
+	if err != nil {
+		return nil, nil, err
+	}
+	combined, err := ics23.CombineProofs(mp.Proofs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	r, err := combined.Calculate()
+	root := ibc.MerkleRoot{
+		Hash: r,
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+	// e := fmt.Sprintf("root hash created %s %s ", res.Info, res.GetValue())
+	// ctx.Logger().Info(e)
+
+	// ps := []*ics23.ProofSpec{
+	// 	ics23.IavlSpec,
+	// }
+
+	// err = mp.VerifyMembership(ps, root, ibc.NewMerklePath(key), res.Value)
+	// ok := ics23.VerifyMembership(ps[0], r, mp.GetProofs()[0], []byte(key), mp.GetProofs()[0].GetExist().Value)
+	// if err != nil {
+	// 	return "", nil, err
+	// }
+	ctx.Logger().Info("verified membership created")
+	return (root.Hash), &mp, nil
+}
 func (k Keeper) GetLinkSystem() linking.LinkSystem {
 	return cidlink.DefaultLinkSystem()
 }
@@ -539,6 +442,16 @@ func GetLinkPrototype() ipld.LinkPrototype {
 	}}
 }
 
+func (k Keeper) CreateSendMetadataPacket(ctx sdk.Context, sender sdk.AccAddress, packet *types.AguaclaraPacketData) (string, error) {
+	// Store message to cross chain metadata
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("packet"))
+	hash := crypto.Keccak256([]byte(packet.Creator), []byte(packet.DidRecipient), []byte(packet.ToMetadata), []byte(packet.TokenAddress), []byte(packet.TokenId))
+	lnk := CreateCidLink(hash)
+	v := k.cdc.MustMarshal(packet)
+	store.Set(lnk.Bytes(), v)
+
+	return lnk.String(), nil
+}
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 
 	lsys := k.GetLinkSystem()
@@ -571,7 +484,7 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 		func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			nb := prev.Prototype().NewBuilder()
 			// set previous hash, not current
-			l, _ := ParseHashCidLink(hash)
+			l, _ := ParseCidLink(hash)
 			nb.AssignLink(l)
 			return nb.Build(), nil
 		}, false)
@@ -588,6 +501,46 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 			return nil
 		}, nil
 	}
+
+	link, err := lsys.Store(
+		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		GetLinkPrototype(),
+		n, // And here's our data.
+	)
+	if err != nil {
+		return "", err
+	}
+
+	//	id, _ := cid.Decode(link.String())
+	return link.String(), nil
+}
+
+func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (string, error) {
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("royalty"))
+	lsys := k.GetLinkSystem()
+
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			k := []byte(lnk.String())
+			v := buf.Bytes()
+			store.Set(k, v)
+			return nil
+		}, nil
+	}
+
+	// Add Document
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 6, func(na fluent.MapAssembler) {
+		l, _ := ParseCidLink(msg.MetadataRef)
+		na.AssembleEntry("sender").AssignString(msg.Creator)
+		na.AssembleEntry("tokenId").AssignString(msg.DenomId)
+		na.AssembleEntry("metadataRef").AssignLink(l)
+		na.AssembleEntry("didReceiver").AssignString(msg.Receiver)
+		na.AssembleEntry("id").AssignString(msg.Id)
+		na.AssembleEntry("royaltyFeePercentage").AssignInt(int64(msg.RoyaltyFeePercentage))
+	})
 
 	link, err := lsys.Store(
 		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.

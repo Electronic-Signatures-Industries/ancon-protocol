@@ -1,5 +1,6 @@
-TODO
+## Ancon Protocol Aguaclara Cross Chain Ownership 
+### Relayer setup
 
-1. Install and compile `yui-relayer`
-2. uly scripts
-3. Integration tests
+1. Compile `github.com/hyperledger-labs/yui-relayer` and copy `uly` to `/usr/local/bin`
+2. Run uly scripts `setup.sh`
+3. Run Integration tests `tests.sh`

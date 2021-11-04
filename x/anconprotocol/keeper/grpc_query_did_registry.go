@@ -1,13 +1,16 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"net/http"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -15,6 +18,10 @@ import (
 )
 
 var (
+	ReadResolveDidWebQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"user", "name", "did.json"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadDidKeyQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "didregistry", "name"}, "", runtime.AssumeColonVerbOpt(true)))
+
 	ReadIdentifyOwnerQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "didregistry", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadGetAttributesQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"ancon", "didregistry", "address", "attributes"}, "", runtime.AssumeColonVerbOpt(true)))
@@ -27,6 +34,8 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 	mux.Handle("GET", ReadIdentifyOwnerQuery, wrapJsonResult(ctx, mux, client, readIdentifyOwner))
 	mux.Handle("GET", ReadGetAttributesQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
 	mux.Handle("GET", ReadDelegateQuery, wrapJsonResult(ctx, mux, client, readDelegate))
+	mux.Handle("GET", ReadDidKeyQuery, wrapDagCborResult(ctx, mux, client, readDidKey))
+	mux.Handle("GET", ReadResolveDidWebQuery, wrapDagCborResult(ctx, mux, client, readResolveWeb))
 
 	return nil
 }
@@ -53,6 +62,33 @@ func readIdentifyOwner(ctx context.Context, marshaler runtime.Marshaler, client 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "address", err)
 	}
 	msg, err := client.IdentifyOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func readResolveWeb(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq types.QueryDidWebRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+
+	protoReq.Name, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := client.ResolveDidWeb(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -174,28 +210,41 @@ func (k Keeper) ReadDelegate(goCtx context.Context, req *types.QueryGetDelegateR
 	return &types.QueryGetDelegateResponse{}, nil
 }
 
-func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryGetDidResponse, error) {
+func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryResourceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	node, err := k.GetDidRoute(ctx, req.Name)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, "Missing did route")
+	}
+	var bufdata bytes.Buffer
+	_ = dagcbor.Encode(node, &bufdata)
 
-	return &types.QueryGetDidResponse{}, nil
+	return &types.QueryResourceResponse{
+		Data: base64.RawStdEncoding.EncodeToString(bufdata.Bytes()),
+	}, nil
 }
 
-func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryDidWebResponse, error) {
+func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryResourceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	node, err := k.GetDidRoute(ctx, req.Name)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, "Missing did route")
+	}
 
-	return &types.QueryDidWebResponse{}, nil
+	var bufdata bytes.Buffer
+	_ = dagcbor.Encode(node, &bufdata)
+
+	return &types.QueryResourceResponse{
+		Data: base64.RawStdEncoding.EncodeToString(bufdata.Bytes()),
+	}, nil
 }

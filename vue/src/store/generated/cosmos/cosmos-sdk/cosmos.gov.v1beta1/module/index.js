@@ -4,13 +4,13 @@ import { Registry } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
 import { MsgVoteWeighted } from "./types/cosmos/gov/v1beta1/tx";
 import { MsgVote } from "./types/cosmos/gov/v1beta1/tx";
-import { MsgSubmitProposal } from "./types/cosmos/gov/v1beta1/tx";
 import { MsgDeposit } from "./types/cosmos/gov/v1beta1/tx";
+import { MsgSubmitProposal } from "./types/cosmos/gov/v1beta1/tx";
 const types = [
     ["/cosmos.gov.v1beta1.MsgVoteWeighted", MsgVoteWeighted],
     ["/cosmos.gov.v1beta1.MsgVote", MsgVote],
-    ["/cosmos.gov.v1beta1.MsgSubmitProposal", MsgSubmitProposal],
     ["/cosmos.gov.v1beta1.MsgDeposit", MsgDeposit],
+    ["/cosmos.gov.v1beta1.MsgSubmitProposal", MsgSubmitProposal],
 ];
 export const MissingWalletError = new Error("wallet is required");
 const registry = new Registry(types);
@@ -27,8 +27,8 @@ const txClient = async (wallet, { addr: addr } = { addr: "http://localhost:26657
         signAndBroadcast: (msgs, { fee, memo } = { fee: defaultFee, memo: "" }) => client.signAndBroadcast(address, msgs, fee, memo),
         msgVoteWeighted: (data) => ({ typeUrl: "/cosmos.gov.v1beta1.MsgVoteWeighted", value: data }),
         msgVote: (data) => ({ typeUrl: "/cosmos.gov.v1beta1.MsgVote", value: data }),
-        msgSubmitProposal: (data) => ({ typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal", value: data }),
         msgDeposit: (data) => ({ typeUrl: "/cosmos.gov.v1beta1.MsgDeposit", value: data }),
+        msgSubmitProposal: (data) => ({ typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal", value: data }),
     };
 };
 const queryClient = async ({ addr: addr } = { addr: "http://localhost:1317" }) => {

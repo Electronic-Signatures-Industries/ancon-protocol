@@ -1,10 +1,8 @@
 package keeper
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 
 	aguaclaramodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
 
@@ -12,12 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/iavl"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
-	"github.com/ipfs/go-cid"
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/spf13/cast"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -165,14 +158,6 @@ func (k *Keeper) GetDelegates(ctx sdk.Context, delegate string, delegateType str
 	return found
 }
 
-func (k *Keeper) GetDidWebRoute(ctx sdk.Context, route string) types.DIDWebRoute {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	var found types.DIDWebRoute
-	id := []byte(route)
-	k.cdc.Unmarshal(store.Get(id), &found)
-	return found
-}
-
 func (k *Keeper) SetOwner(ctx sdk.Context, o types.DIDOwner) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
 	res := k.cdc.MustMarshal(&o)
@@ -237,20 +222,16 @@ func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) (ty
 }
 
 func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwner, error) {
-	didAncon, err := BuildDidAncon(ctx, msg.Creator)
 
-	if err != nil {
-		return nil, err
-	}
-
+	var didDoc *did.Doc
+	var err error
 	didOwner := types.DIDOwner{
 		Identity: msg.Creator,
 		Owner:    msg.Creator,
-		DidAncon: string(didAncon),
 	}
 
 	if msg.DidType == "web" {
-		didDoc, err := BuildDidWeb(ctx, msg.Creator)
+		didDoc, err = k.BuildDidWeb(ctx, msg.Creator)
 		if err != nil {
 			return nil, err
 		}
@@ -258,30 +239,48 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 		if k.HasDidWebName(ctx, msg.VanityName) {
 			return nil, fmt.Errorf("vanity name exists: %v", msg.VanityName)
 		}
-		didOwner.DidWeb = didDoc.ID
-		didOwner.DidWebDeactivated = false
-		k.SetOwner(ctx, didOwner)
-		cid, err := k.SetDid(ctx, didDoc)
+
+	} else if msg.DidType == "key" {
+		didDoc, err = k.BuildDidKey(ctx, msg.Creator)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		return nil, fmt.Errorf("Must create a did")
+	}
+	cid, err := k.SetDid(ctx, didDoc)
+	if err != nil {
+		return nil, err
+	}
+	if msg.DidType == "web" {
 		didWebRoute := &types.DIDWebRoute{
 			Name:  didOwner.VanityName,
 			Route: "optional",
 			Cid:   cid,
 		}
 		k.SetDidWebRoute(ctx, didWebRoute)
-
-	} else if msg.DidType == "key" {
-		didDoc, err := BuildDidKey(ctx, msg.Creator)
-		if err != nil {
-			return nil, err
-		}
-		didOwner.DidKey = didDoc.ID
-		k.SetOwner(ctx, didOwner)
-		k.SetDid(ctx, didDoc)
 	} else {
-		return nil, fmt.Errorf("Must create a did")
-	}
 
+		didWebRoute := &types.DIDWebRoute{
+			Name:  didDoc.ID,
+			Route: "optional",
+			Cid:   cid,
+		}
+		k.SetDidWebRoute(ctx, didWebRoute)
+	}
+	didOwner.Cid = cid
+	k.SetOwner(ctx, didOwner)
 	return &didOwner, nil
+}
+
+func (k *Keeper) GetDidWebRoute(ctx sdk.Context, vanityName string) types.DIDWebRoute {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	var found types.DIDWebRoute
+	id := []byte(vanityName)
+	k.cdc.Unmarshal(store.Get(id), &found)
+
+	return found
 }
 
 func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
@@ -347,81 +346,6 @@ func (k *Keeper) toIpldProofList(proofs []did.Proof) func(fluent.ListAssembler) 
 			assembler.AssembleValue().AssignBytes(jsonByte)
 		}
 	}
-}
-
-//IPLD Store DID Type is Web
-func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
-	lsys := cidlink.DefaultLinkSystem()
-
-	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
-	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
-		// change prefix
-		buf := bytes.Buffer{}
-		//path := msg.Path
-		return &buf, func(lnk ipld.Link) error {
-			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/index.html
-			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/index.html
-			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy/json/xml/index.html
-			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy
-			//id := append([]byte(lnk.String()), path...)
-			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidIPLDStoreKey))
-			store.Set([]byte(msg.ID), buf.Bytes())
-			return nil
-		}, nil
-	}
-	// type Doc struct {
-	// 	Context              []string
-	// 	ID                   string
-	// 	VerificationMethod   []VerificationMethod
-	// 	Service              []Service
-	// 	Authentication       []Verification
-	// 	AssertionMethod      []Verification
-	// 	CapabilityDelegation []Verification
-	// 	CapabilityInvocation []Verification
-	// 	KeyAgreement         []Verification
-	// 	Created              *time.Time
-	// 	Updated              *time.Time
-	// 	Proof                []Proof
-	// 	processingMeta       processingMeta
-	// }
-
-	// Add Document
-	// Basic Node
-	n := fluent.MustBuildMap(basicnode.Prototype.Map, 12, func(na fluent.MapAssembler) {
-		na.AssembleEntry("context").CreateList(cast.ToInt64(len(msg.Context)), k.toIpldStringList(msg.Context))
-		na.AssembleEntry("id").AssignString(msg.ID)
-		na.AssembleEntry("verificationMethod").CreateList(cast.ToInt64(len(msg.VerificationMethod)), k.toIpldVerMethodList(msg.VerificationMethod))
-		na.AssembleEntry("service").CreateList(cast.ToInt64(len(msg.Service)), k.toIpldServiceList(msg.Service))
-		na.AssembleEntry("authentication").CreateList(cast.ToInt64(len(msg.Authentication)), k.toIpldVerificationList(msg.Authentication))
-		na.AssembleEntry("assertionMethod").CreateList(cast.ToInt64(len(msg.AssertionMethod)), k.toIpldVerificationList(msg.AssertionMethod))
-		na.AssembleEntry("capabilityDelegation").CreateList(cast.ToInt64(len(msg.CapabilityDelegation)), k.toIpldVerificationList(msg.CapabilityDelegation))
-		na.AssembleEntry("capabilityInvocation").CreateList(cast.ToInt64(len(msg.CapabilityInvocation)), k.toIpldVerificationList(msg.CapabilityInvocation))
-		na.AssembleEntry("keyAgreement").CreateList(cast.ToInt64(len(msg.KeyAgreement)), k.toIpldVerificationList(msg.KeyAgreement))
-		na.AssembleEntry("created").AssignString(msg.Created.String())
-		na.AssembleEntry("updated").AssignString(msg.Updated.String())
-		na.AssembleEntry("proof").CreateList(cast.ToInt64(len(msg.Proof)), k.toIpldProofList(msg.Proof))
-
-	})
-
-	// tip: 0x0129 dag-json
-	lp := cidlink.LinkPrototype{cid.Prefix{
-		Version:  1,
-		Codec:    0x71, // dag-cbor
-		MhType:   0x12, // sha2-256
-		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
-	}}
-
-	link, err := lsys.Store(
-		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
-		lp,                 // The LinkPrototype says what codec and hashing to use.
-		n,                  // And here's our data.
-	)
-	if err != nil {
-		return "", err
-	}
-
-	// id, _ := cid.Decode(link.String())
-	return link.String(), nil
 }
 
 func (k *Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgGrantAttribute) (types.Change, error) {

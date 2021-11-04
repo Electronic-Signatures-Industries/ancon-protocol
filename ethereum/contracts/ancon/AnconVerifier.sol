@@ -3,33 +3,16 @@ pragma solidity ^0.8.7;
 
 import "./ics23.sol";
 
+/// @title A title that should describe the contract/interface
+/// @author The name of the author
+/// @notice Explain to an end user what this does
+/// @dev Explain to a developer any extra details
 contract AnconVerifier is ICS23 {
-    address public whitelisted;
+    address public owner;
 
     constructor(address onlyOwner) public {
-        whitelisted = onlyOwner;
+        owner = onlyOwner;
     }
-
-    //Gotten from https://stackoverflow.com/a/69007075
-    function st2num(string memory numString) public pure returns (uint256) {
-        uint256 val = 0;
-        bytes memory stringBytes = bytes(numString);
-        for (uint256 i = 0; i < stringBytes.length; i++) {
-            uint256 exp = stringBytes.length - i;
-            bytes1 ival = stringBytes[i];
-            uint8 uval = uint8(ival);
-            uint256 jval = uval - uint256(0x30);
-
-            val += (uint256(jval) * (10**(exp - 1)));
-        }
-        return val;
-    }
-
-    function bytes2num(bytes memory numBytes) public pure returns (uint256) {
-        return st2num(string(numBytes));
-    }
-
-    //Separate arguments to not convert from uint 256 to byte
     function convertProof(
         bytes memory key,
         bytes memory value,
@@ -70,7 +53,7 @@ contract AnconVerifier is ICS23 {
         return proof;
     }
 
-    function requestRoot(
+    function queryRootCalculation(
         uint256[] memory leafOpUint,
         bytes memory prefix,
         bytes[][] memory existenceProofInnerOp,
@@ -78,8 +61,6 @@ contract AnconVerifier is ICS23 {
         bytes memory existenceProofKey,
         bytes memory existenceProofValue
     ) public view returns (bytes memory) {
-        require(msg.sender == whitelisted, "Must be whitelisted or registered");
-        // todo: verify not empty
         ExistenceProof memory proof = convertProof(
             existenceProofKey,
             existenceProofValue,
@@ -90,11 +71,8 @@ contract AnconVerifier is ICS23 {
         );
         return bytes(calculate(proof));
     }
-// claimed ics23 proofs
-// key = prefix + cid eg  ancon+cid
-// value = sha256(dagcbor)
-// TODO: Change to verifyRelayMessage
-    function changeOwnerWithProof(
+
+    function verifyProof(
         uint256[] memory leafOpUint,
         bytes memory prefix,
         bytes[][] memory existenceProofInnerOp,
@@ -114,20 +92,10 @@ contract AnconVerifier is ICS23 {
             existenceProofInnerOp,
             existenceProofInnerOpHash
         );
-        //        return bytes(calculate(proof));
-        // Verify membership
 
+        // Verify membership
         verify(proof, getIavlSpec(), root, key, value);
 
         return true;
-
-        //proof.key = xp.
-
-        // verify permit exists, has not revoked, has valid issuer and is not expired
-        //return this.verifyMembership(iavlSpec, root, xp, key, value);
-        // verify token exists
-        //_lock(vc.data);
-        // _release
     }
-
 }
