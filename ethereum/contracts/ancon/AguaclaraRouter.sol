@@ -34,6 +34,37 @@ contract AguaclaraRouter {
         return true;
     }
 
+    function verifyOwnershipReference(
+           // -- existence proof
+        uint256[] memory leafOpUint,
+        bytes memory prefix,
+        bytes[][] memory existenceProofInnerOp,
+        uint256 existenceProofInnerOpHash,
+        bytes memory existenceProofKey,
+        bytes memory existenceProofValue,
+        bytes memory key,
+        bytes memory value,
+        bytes memory packetMetadataUri
+    ) returns (bytes32) {
+        // 1. Verify
+        bytes memory calculatedHash = verifier.queryRootCalculation(
+            leafOpUint,
+            prefix,
+            existenceProofInnerOp,
+            existenceProofInnerOpHash,
+            existenceProofKey,
+            existenceProofValue
+        );
+        // https://github.com/smartcontractkit/solidity-cborutils
+        // Use https://github.com/chrisdotn/jsmnSol
+        require(
+            keccak256(value) == keccak256(packetMetadataUri),
+            "Invalid Proof for key"
+        );
+
+        return true;
+    }
+
     function sendMetadataOwnership(
         // -- existence proof
         uint256[] memory leafOpUint,
@@ -73,7 +104,7 @@ contract AguaclaraRouter {
         //     // todo: should mint
         // } else {
         nft.safeTransferFrom(
-             msg.sender,
+            msg.sender,
             to,
             tokenId,
             abi.encodePacked(metadata, tokenId)
