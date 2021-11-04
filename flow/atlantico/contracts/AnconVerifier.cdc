@@ -1,7 +1,42 @@
 import Crypto
 
 pub contract AnconVerifier {
-    // address public whitelisted;
+    pub resource interface IQueryRoot {
+        pub fun queryRootCalculation(
+            leafOpUint: [UInt8],
+            prefix: [UInt8],
+            existenceProofInnerOp: [[[UInt8]]],
+            existenceProofInnerOpHash: UInt8,
+            existenceProofKey: [UInt8],
+            existenceProofValue: [UInt8]
+         ): [UInt8];
+    }
+
+    pub resource QueryRoot {
+        pub fun queryRootCalculation(
+            leafOpUint: [UInt8],
+            prefix: [UInt8],
+            existenceProofInnerOp: [[[UInt8]]],
+            existenceProofInnerOpHash: UInt8,
+            existenceProofKey: [UInt8],
+            existenceProofValue: [UInt8]
+         ): [UInt8] {
+            return self.queryRootCalculation(
+                leafOpUint: leafOpUint,
+                prefix: prefix,
+                existenceProofInnerOp: existenceProofInnerOp,
+                existenceProofInnerOpHash: existenceProofInnerOpHash,
+                existenceProofKey: existenceProofKey,
+                existenceProofValue: existenceProofValue,
+            );
+        }
+    }
+
+    init() {
+        // Publish the "Verifier" resource, so that any client can use it.
+        self.account.save(<- create QueryRoot(), to: /storage/AnconQueryRoot);
+        self.account.link<&{IQueryRoot}>(/public/AnconQueryRoot, target: /storage/AnconVerifier);
+    }
 
     // Data structures and helper functions
     pub enum HashOp: UInt8 {
@@ -413,7 +448,7 @@ prefix: [0 as UInt8]
         );
     }
 
-    pub fun requestRoot(
+    pub fun queryRootCalculation(
         leafOpUint: [UInt8],
         prefix: [UInt8],
         existenceProofInnerOp: [[[UInt8]]],
@@ -421,7 +456,6 @@ prefix: [0 as UInt8]
         existenceProofKey: [UInt8],
         existenceProofValue: [UInt8]
     ): [UInt8] {
-        // assert(msg.sender == whitelisted, "Must be whitelisted or registered");
         let proof: ExistenceProof = self.convertProof(
             key: existenceProofKey,
             value: existenceProofValue,

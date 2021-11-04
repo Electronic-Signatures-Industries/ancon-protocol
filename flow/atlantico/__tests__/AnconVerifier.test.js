@@ -156,7 +156,7 @@ describe("AnconVerifier", () => {
         existenceProofKey: [UInt8],
         existenceProofValue: [UInt8],
       ): AnyStruct {
-        let root = AnconVerifier.requestRoot(
+        let root = AnconVerifier.queryRootCalculation(
           leafOpUint: leafOp,
           prefix: prefix,
           existenceProofInnerOp: existenceProofInnerOp,
