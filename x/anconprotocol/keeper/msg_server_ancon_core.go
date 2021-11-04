@@ -5,6 +5,8 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	// "github.com/hyperledger/aries-framework-go/pkg/vdr"
+	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
 
 // SendMetadataOwnership
@@ -39,9 +41,9 @@ func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.Msg
 	lnk, _ := k.ChangeOwnerMetadata(
 		ctx, msg.Hash, msg.PreviousOwner, msg.NewOwner, msg.CurrentChainId, msg.RecipientChainId,
 	)
-
+	// httpbinding.New()
 	lnkPacket, err := k.CreateSendMetadataPacket(ctx,
-		sdk.AccAddress(msg.PreviousOwner), &types.AguaclaraPacketData{
+		sdk.AccAddress(msg.Sender), &types.AguaclaraPacketData{
 			Creator:      msg.PreviousOwner,
 			TokenAddress: msg.TokenAddress,
 			TokenId:      msg.TokenId,
