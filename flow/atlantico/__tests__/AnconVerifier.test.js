@@ -1,33 +1,36 @@
-import path from 'path'
-import {
+const path = require("path");
+const {
   init,
   emulator,
   getContractAddress,
   executeScript,
   getAccountAddress,
   deployContractByName,
-} from 'flow-js-testing'
-const ics23 = require('@confio/ics23')
-const ethers = require('ethers')
-const { assert } = require('chai');
+  mintFlow,
+  shallResolve,
+} = require("flow-js-testing");
+const ics23 = require("@confio/ics23");
+const ethers = require("ethers");
+const { assert } = require("chai");
 
-let toABI = ({ exist }) => {
-  const innerOp = []
-  innerOp.push({
-    valid: true,
-    hash: ics23.ics23.HashOp[exist.path[0].hash],
-    prefix: Array.from(ethers.utils.base64.decode(exist.path[0].prefix)),
-    suffix: Array.from(ethers.utils.base64.decode(exist.path[0].suffix)),
-  })
+function toABI({ exist }) {
+  const innerOp = [
+    {
+      valid: true,
+      hash: ics23.ics23.HashOp[exist.path[0].hash],
+      prefix: Array.from(ethers.utils.base64.decode(exist.path[0].prefix)),
+      suffix: Array.from(ethers.utils.base64.decode(exist.path[0].suffix)),
+    },
+  ];
+
   const leafOp = {
     valid: true,
     hash: ics23.ics23.HashOp[exist.leaf.hash],
     prehash_key: ics23.ics23.HashOp[exist.leaf.prehash_key],
     prehash_value: ics23.ics23.HashOp[exist.leaf.prehash_value],
-    //  length: ics23.ics23.LengthOp[exist.leaf.length],
     len: ics23.ics23.LengthOp[exist.leaf.length],
     prefix: Array.from(ethers.utils.base64.decode(exist.leaf.prefix)),
-  }
+  };
 
   return {
     leafOp,
@@ -36,64 +39,61 @@ let toABI = ({ exist }) => {
     innerOpHash: ics23.ics23.HashOp[exist.path[0].hash],
     key: Array.from(ethers.utils.base64.decode(exist.key)),
     value: Array.from(ethers.utils.base64.decode(exist.value)),
-  }
+  };
 }
 
 const proofCombined = [
   {
     exist: {
-      key:
-        'YW5jb25iYWZ5cmVpY2Q0Z3ZwYmpwNHdlY3RiejQyNzRhZ3Zmc3gybjN3cnhxZHp1cDQzZXVrM3R1ZDI3Y3htZQ==',
+      key: "YW5jb25iYWZ5cmVpY2Q0Z3ZwYmpwNHdlY3RiejQyNzRhZ3Zmc3gybjN3cnhxZHp1cDQzZXVrM3R1ZDI3Y3htZQ==",
       value:
-        'qmNkaWRgZGtpbmRobWV0YWRhdGFkbmFtZWp0ZW5kZXJtaW50ZWltYWdldWh0dHA6Ly9sb2NhbGhvc3Q6MTMxN2VsaW5rc4HYKlglAAFxEiAe9b351lHuEQAZl2qWbdxrvaLk6O7sh5TzqMDBMwQ3EmVvd25lcngzZGlkOmV0aHI6MHhlZUM1OEU4OTk5NjQ5NjY0MGM4YjU4OThBN2UwMjE4RTliNkU5MGNCZnBhcmVudGBnc291cmNlc4F4LlFtUVJXR3hvRGhnOEpNb0RaYU4xdDFLaVlDYzVkTTlOUFhZRVk3VzhrSjhKd2prZGVzY3JpcHRpb25qdGVuZGVybWludHV2ZXJpZmllZENyZWRlbnRpYWxSZWZg',
+        "qmNkaWRgZGtpbmRobWV0YWRhdGFkbmFtZWp0ZW5kZXJtaW50ZWltYWdldWh0dHA6Ly9sb2NhbGhvc3Q6MTMxN2VsaW5rc4HYKlglAAFxEiAe9b351lHuEQAZl2qWbdxrvaLk6O7sh5TzqMDBMwQ3EmVvd25lcngzZGlkOmV0aHI6MHhlZUM1OEU4OTk5NjQ5NjY0MGM4YjU4OThBN2UwMjE4RTliNkU5MGNCZnBhcmVudGBnc291cmNlc4F4LlFtUVJXR3hvRGhnOEpNb0RaYU4xdDFLaVlDYzVkTTlOUFhZRVk3VzhrSjhKd2prZGVzY3JpcHRpb25qdGVuZGVybWludHV2ZXJpZmllZENyZWRlbnRpYWxSZWZg",
       leaf: {
-        hash: 'SHA256',
-        prehash_key: 'NO_HASH',
-        prehash_value: 'SHA256',
-        length: 'VAR_PROTO',
-        prefix: 'AAKSAQ==',
+        hash: "SHA256",
+        prehash_key: "NO_HASH",
+        prehash_value: "SHA256",
+        length: "VAR_PROTO",
+        prefix: "AAKSAQ==",
       },
       path: [
         {
-          hash: 'SHA256',
-          prefix: 'AgSSASA=',
-          suffix: 'INdSgAXFKAv2D5wqrrbM+uSs2ynW0VuytR2UdOMuNagz',
+          hash: "SHA256",
+          prefix: "AgSSASA=",
+          suffix: "INdSgAXFKAv2D5wqrrbM+uSs2ynW0VuytR2UdOMuNagz",
         },
       ],
     },
   },
-]
+];
 
-const PRECALCULATED_MERKLE_ROOT = '0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc'
+const PRECALCULATED_MERKLE_ROOT =
+  "0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc";
 
-// Increase timeout if your tests failing due to timeout
-describe('AnconVerifier', () => {
+describe("AnconVerifier", () => {
   let contractAddress;
 
-  beforeEach(async () => {
-    const basePath = path.resolve(__dirname)
-    // You can specify different port to parallelize execution of describe blocks
-    const port = 8080
-    // Setting logging flag to true will pipe emulator output to console
-    const logging = false
+  beforeAll(async () => {
+    const basePath = path.resolve(__dirname, "..");
+    const port = 8080;
 
-    await init(basePath, { port })
-    await emulator.start(port, logging)
+    await init(basePath, { port });
+    await emulator.start(port, false);
 
-    const name = `AnconVerifier`
-    contractAddress = await getContractAddress(name)
-    if (!contractAddress) {
-      const to = await getAccountAddress('emulator-account')
-      await deployContractByName({ to, name })
-    }
-  })
+    // We need to have FLOW to be able to store the contract:
+    // Source: https://docs.onflow.org/concepts/storage/#storage-capacity
+    const address = await getAccountAddress("emulator-account");
+    await mintFlow(address, "1000.0");
 
-  // Stop emulator, so it could be restarted
-  afterEach(async () => {
-    return emulator.stop()
-  })
+    const contractName = `AnconVerifier`;
+    await deployContractByName({ to: address, name: contractName });
+    contractAddress = await getContractAddress(contractName);
+  });
 
-  test('should calculate manually ICS23 Merkle Proofs', async () => {
+  afterAll(async () => {
+    return emulator.stop();
+  });
+
+  it("should calculate manually ICS23 Merkle Proofs", async () => {
     const code = `
       import AnconVerifier from ${contractAddress}
 
@@ -129,9 +129,9 @@ describe('AnconVerifier', () => {
         )
         return AnconVerifier.calculate(p:p)
       }
-    `
+    `;
 
-    const proof = toABI(proofCombined[0])
+    const proof = toABI(proofCombined[0]);
 
     const args = [
       proof.key,
@@ -139,15 +139,12 @@ describe('AnconVerifier', () => {
       proof.leafOp.prefix,
       proof.innerOp[0].prefix,
       proof.innerOp[0].suffix,
-    ]
-    const result = await executeScript({ code, args });
-    assert.equal(
-      ethers.utils.hexlify(result),
-      PRECALCULATED_MERKLE_ROOT
-    );
+    ];
+    const result = await shallResolve(executeScript({ code, args }));
+    assert.equal(ethers.utils.hexlify(result), PRECALCULATED_MERKLE_ROOT);
   });
 
-  test('should correctly verify ownership via ICS23', async () => {
+  it("should correctly verify ownership via ICS23", async () => {
     const code = `
       import AnconVerifier from ${contractAddress}
 
@@ -187,9 +184,9 @@ describe('AnconVerifier', () => {
       proof.leafOp.hash,
       proof.leafOp.prehash_key,
       proof.leafOp.prehash_value,
-      proof.leafOp.len
-    ]
-    const mappedInnerOp = proof.innerOp.map(io => [io.prefix, io.suffix]);
+      proof.leafOp.len,
+    ];
+    const mappedInnerOp = proof.innerOp.map((io) => [io.prefix, io.suffix]);
     const args = [
       leafOps,
       proof.prefix,
@@ -197,9 +194,9 @@ describe('AnconVerifier', () => {
       proof.innerOpHash,
       proof.key,
       proof.value,
-    ]
+    ];
 
-    const result = await executeScript({ code, args });
+    const result = await shallResolve(executeScript({ code, args }));
     assert.isTrue(result, "Must have Validated");
   });
-})
+});
