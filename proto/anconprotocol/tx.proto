@@ -62,10 +62,14 @@ message MsgUpdateMetadataOwnership {
   string currentChainId = 4; // optional
   string recipientChainId = 5;  // optional
   string sender = 6;
+  string tokenAddress = 7;
+  string tokenId = 8;
+
 }
 
 message MsgUpdateMetadataOwnershipResponse {
-  string cid = 1;
+  string metadataRef = 1;
+  string packetRef = 2;
 }
 
 message MsgRegisterRelay {

@@ -40,8 +40,18 @@ func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.Msg
 		ctx, msg.Hash, msg.PreviousOwner, msg.NewOwner, msg.CurrentChainId, msg.RecipientChainId,
 	)
 
+	lnkPacket, err := k.CreateSendMetadataPacket(ctx,
+		sdk.AccAddress(msg.PreviousOwner), &types.AguaclaraPacketData{
+			Creator:      msg.PreviousOwner,
+			TokenAddress: msg.TokenAddress,
+			TokenId:      msg.TokenId,
+			DidRecipient: msg.NewOwner,
+			ToMetadata:   lnk,
+		})
+
 	return &types.MsgUpdateMetadataOwnershipResponse{
-		Cid: lnk,
+		MetadataRef: lnk,
+		PacketRef:   lnkPacket,
 	}, nil
 }
 
