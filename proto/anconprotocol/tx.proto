@@ -507,4 +507,7 @@ message AguaclaraPacketData {
   string tokenId = 3;
   string didRecipient = 4;
   string toMetadata = 5;
+  string hash = 6;
+  string currentChainId = 7;
+  string recipientChainId = 8;
 }

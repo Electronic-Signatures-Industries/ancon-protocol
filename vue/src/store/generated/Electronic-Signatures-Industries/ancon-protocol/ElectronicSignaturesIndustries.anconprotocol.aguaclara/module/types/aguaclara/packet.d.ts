@@ -6,6 +6,9 @@ export interface AguaclaraPacketData {
     tokenId: string;
     didRecipient: string;
     toMetadata: string;
+    hash: string;
+    currentChainId: string;
+    recipientChainId: string;
 }
 export interface NoData {
 }

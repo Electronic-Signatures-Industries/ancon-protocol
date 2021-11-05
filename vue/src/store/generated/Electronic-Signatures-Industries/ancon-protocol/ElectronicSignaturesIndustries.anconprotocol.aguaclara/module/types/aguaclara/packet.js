@@ -1,7 +1,16 @@
 /* eslint-disable */
 import { Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.aguaclara';
-const baseAguaclaraPacketData = { creator: '', tokenAddress: '', tokenId: '', didRecipient: '', toMetadata: '' };
+const baseAguaclaraPacketData = {
+    creator: '',
+    tokenAddress: '',
+    tokenId: '',
+    didRecipient: '',
+    toMetadata: '',
+    hash: '',
+    currentChainId: '',
+    recipientChainId: ''
+};
 export const AguaclaraPacketData = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -18,6 +27,15 @@ export const AguaclaraPacketData = {
         }
         if (message.toMetadata !== '') {
             writer.uint32(42).string(message.toMetadata);
+        }
+        if (message.hash !== '') {
+            writer.uint32(50).string(message.hash);
+        }
+        if (message.currentChainId !== '') {
+            writer.uint32(58).string(message.currentChainId);
+        }
+        if (message.recipientChainId !== '') {
+            writer.uint32(66).string(message.recipientChainId);
         }
         return writer;
     },
@@ -42,6 +60,15 @@ export const AguaclaraPacketData = {
                     break;
                 case 5:
                     message.toMetadata = reader.string();
+                    break;
+                case 6:
+                    message.hash = reader.string();
+                    break;
+                case 7:
+                    message.currentChainId = reader.string();
+                    break;
+                case 8:
+                    message.recipientChainId = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -82,6 +109,24 @@ export const AguaclaraPacketData = {
         else {
             message.toMetadata = '';
         }
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = String(object.hash);
+        }
+        else {
+            message.hash = '';
+        }
+        if (object.currentChainId !== undefined && object.currentChainId !== null) {
+            message.currentChainId = String(object.currentChainId);
+        }
+        else {
+            message.currentChainId = '';
+        }
+        if (object.recipientChainId !== undefined && object.recipientChainId !== null) {
+            message.recipientChainId = String(object.recipientChainId);
+        }
+        else {
+            message.recipientChainId = '';
+        }
         return message;
     },
     toJSON(message) {
@@ -91,6 +136,9 @@ export const AguaclaraPacketData = {
         message.tokenId !== undefined && (obj.tokenId = message.tokenId);
         message.didRecipient !== undefined && (obj.didRecipient = message.didRecipient);
         message.toMetadata !== undefined && (obj.toMetadata = message.toMetadata);
+        message.hash !== undefined && (obj.hash = message.hash);
+        message.currentChainId !== undefined && (obj.currentChainId = message.currentChainId);
+        message.recipientChainId !== undefined && (obj.recipientChainId = message.recipientChainId);
         return obj;
     },
     fromPartial(object) {
@@ -124,6 +172,24 @@ export const AguaclaraPacketData = {
         }
         else {
             message.toMetadata = '';
+        }
+        if (object.hash !== undefined && object.hash !== null) {
+            message.hash = object.hash;
+        }
+        else {
+            message.hash = '';
+        }
+        if (object.currentChainId !== undefined && object.currentChainId !== null) {
+            message.currentChainId = object.currentChainId;
+        }
+        else {
+            message.currentChainId = '';
+        }
+        if (object.recipientChainId !== undefined && object.recipientChainId !== null) {
+            message.recipientChainId = object.recipientChainId;
+        }
+        else {
+            message.recipientChainId = '';
         }
         return message;
     }

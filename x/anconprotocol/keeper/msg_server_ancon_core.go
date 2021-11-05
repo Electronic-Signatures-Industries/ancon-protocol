@@ -44,11 +44,14 @@ func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.Msg
 	// httpbinding.New()
 	lnkPacket, err := k.CreateSendMetadataPacket(ctx,
 		sdk.AccAddress(msg.Sender), &types.AguaclaraPacketData{
-			Creator:      msg.PreviousOwner,
-			TokenAddress: msg.TokenAddress,
-			TokenId:      msg.TokenId,
-			DidRecipient: msg.NewOwner,
-			ToMetadata:   lnk,
+			Creator:          msg.PreviousOwner,
+			TokenAddress:     msg.TokenAddress,
+			TokenId:          msg.TokenId,
+			DidRecipient:     msg.NewOwner,
+			ToMetadata:       lnk,
+			Hash:             msg.Hash,
+			CurrentChainId:   msg.CurrentChainId,
+			RecipientChainId: msg.CurrentChainId,
 		})
 
 	return &types.MsgUpdateMetadataOwnershipResponse{

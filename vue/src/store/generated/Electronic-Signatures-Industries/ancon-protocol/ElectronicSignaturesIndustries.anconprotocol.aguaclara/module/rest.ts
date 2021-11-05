@@ -15,6 +15,9 @@ export interface AguaclaraAguaclaraPacketData {
   tokenId?: string;
   didRecipient?: string;
   toMetadata?: string;
+  hash?: string;
+  currentChainId?: string;
+  recipientChainId?: string;
 }
 
 export interface AguaclaraMsgSendMetadataOwnershipResponse {
