@@ -70,7 +70,8 @@ const PRECALCULATED_MERKLE_ROOT =
   "0x16dbcad17f5eff1b8fc04ea7527023811794839765764a6e62e41bb79ebac2cc";
 
 describe("AnconVerifier", () => {
-  let contractAddress;
+  const contractName = `AnconVerifier`;
+  let accountAddress;
 
   beforeAll(async () => {
     const basePath = path.resolve(__dirname, "..");
@@ -81,21 +82,24 @@ describe("AnconVerifier", () => {
 
     // We need to have FLOW to be able to store the contract:
     // Source: https://docs.onflow.org/concepts/storage/#storage-capacity
-    const address = await getAccountAddress("emulator-account");
-    await mintFlow(address, "1000.0");
+    accountAddress = await getAccountAddress("emulator-account");
+    await mintFlow(accountAddress, "1000.0");
 
-    const contractName = `AnconVerifier`;
-    await deployContractByName({ to: address, name: contractName });
-    contractAddress = await getContractAddress(contractName);
+    await deployContractByName({ to: accountAddress, name: contractName});
   });
 
   afterAll(async () => {
     return emulator.stop();
   });
 
+  it("should have deployed correctly", async () => {
+    const contractAddress = await getContractAddress(contractName);
+    assert.equal(contractAddress, accountAddress);
+  });
+
   it("should calculate manually ICS23 Merkle Proofs", async () => {
     const code = `
-      import AnconVerifier from ${contractAddress}
+      import AnconVerifier from ${accountAddress}
 
       pub fun main(
         key: [UInt8],
@@ -146,7 +150,7 @@ describe("AnconVerifier", () => {
 
   it("should correctly verify ownership via ICS23", async () => {
     const code = `
-      import AnconVerifier from ${contractAddress}
+      import AnconVerifier from ${accountAddress}
 
       pub fun main(
         leafOp: [UInt8],
@@ -200,3 +204,4 @@ describe("AnconVerifier", () => {
     assert.isTrue(result, "Must have Validated");
   });
 });
+ 
