@@ -56,7 +56,11 @@ pub contract XDVNFT: NonFungibleToken {
     }
   }
 
-  pub resource DocumentMinter {
+  pub resource interface IDocumentMinter {
+    pub fun mintNFT(recipient: &{NonFungibleToken.CollectionPublic}, metadata: String);
+  }
+
+  pub resource DocumentMinter: IDocumentMinter {
     pub fun mintNFT(recipient: &{NonFungibleToken.CollectionPublic}, metadata: String) {
       var newDocument <- create NFT(
         initId: XDVNFT.totalSupply,
@@ -80,6 +84,11 @@ pub contract XDVNFT: NonFungibleToken {
 
     let minter <- create DocumentMinter();
     self.account.save(<- minter, to:/storage/XDVNFTMinter)
+    // NOTE: Minter has public access!
+    self.account.link<&{IDocumentMinter}>(
+      /public/XDVNFTMinter,
+      target: /storage/XDVNFTMinter
+    );
 
     emit ContractInitialized();
   }
