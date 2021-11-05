@@ -5,8 +5,8 @@ pub contract AtlanticoRouter {
   pub let verifier: Address;
   pub var headers: {String: [UInt8]};
 
-  init(initialVerifier: Address, initialCollection: Address) {
-    self.verifier = initialVerifier;
+  init(verifierLocation: Address) {
+    self.verifier = verifierLocation;
     self.headers = {};
   }
 
