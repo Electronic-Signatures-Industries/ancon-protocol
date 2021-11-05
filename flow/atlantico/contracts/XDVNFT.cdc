@@ -71,7 +71,7 @@ pub contract XDVNFT: NonFungibleToken {
     }
   }
 
-  init (verifierContract: Address) {
+  init () {
     self.totalSupply = 0;
 
     let collection <- create Collection();
