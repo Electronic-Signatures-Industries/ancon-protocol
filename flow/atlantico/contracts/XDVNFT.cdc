@@ -1,8 +1,4 @@
-// Note: Change the import according to the network!
-// Source: https://docs.onflow.org/core-contracts/non-fungible-token/
-import NonFungibleToken from "./NonFungibleToken.cdc"; // Emulator
-// import NonFungibleToken from 0x631e88ae7f1d7c20; // Testnet
-// import NonFungibleToken from 0x1d7e57aa55817448; // Mainnet
+import NonFungibleToken from "./NonFungibleToken.cdc";
 
 // Note: Contract inspired by the official NFT implementation:
 // https://github.com/onflow/flow-nft/blob/master/contracts/ExampleNFT.cdc
