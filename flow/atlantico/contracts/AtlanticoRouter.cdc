@@ -42,9 +42,11 @@ pub contract AtlanticoRouter {
       existenceProofValue: existenceProofValue
     );
 
-    let currentKeyHash = HashAlgorithm.SHA3_256.hash(key);
-    let currentHeader = self.headers[currentKeyHash];
+    let currentKeyHash = String.encodeHex(HashAlgorithm.SHA3_256.hash(key));
+    let currentHeader = self.headers[currentKeyHash] ?? [];
 
-    return HashAlgorithm.SHA3_256.hash(currentHeader) == HashAlgorithm.SHA3_256.hash(calculatedHash);
+    let parsedCurrent = String.encodeHex(HashAlgorithm.SHA3_256.hash(currentHeader))
+    let parsedCalculated = String.encodeHex(HashAlgorithm.SHA3_256.hash(calculatedHash));
+    return parsedCurrent == parsedCalculated;
   }
 }

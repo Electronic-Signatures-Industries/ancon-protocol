@@ -33,9 +33,9 @@ pub contract AnconVerifier {
     }
 
     init() {
-        // Publish the "Verifier" resource, so that any client can use it.
+        // Publish the "QueryRoot" resource, so that any client can use it.
         self.account.save(<- create QueryRoot(), to: /storage/AnconQueryRoot);
-        self.account.link<&{IQueryRoot}>(/public/AnconQueryRoot, target: /storage/AnconVerifier);
+        self.account.link<&{IQueryRoot}>(/public/AnconQueryRoot, target: /storage/AnconQueryRoot);
     }
 
     // Data structures and helper functions
