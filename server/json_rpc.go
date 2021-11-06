@@ -167,7 +167,7 @@ func setPacketInterval(clientCtx client.Context, ctx *server.Context) {
 	txbuilder.SetMsgs(&msgSendMeta)
 	txbuilder.SetMemo("")
 	txbuilder.SetFeeAmount(sdk.Coins{{
-		Denom:  "aancon",
+		Denom:  "aphoton",
 		Amount: sdk.NewInt(200000),
 	}})
 

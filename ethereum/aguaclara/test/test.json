@@ -6,7 +6,7 @@
     "rpc_addr": "http://localhost:26557",
     "account_prefix": "ethm",
     "gas_adjustment": 1.5,
-    "gas_prices": "0.025aancon"
+    "gas_prices": "0.025aphoton"
   },
   "prover": {
     "@type": "/relayer.chains.ethermint.config.ProverConfig",
