@@ -7,8 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.44.3
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/iavl v0.17.1
-	github.com/cosmos/ibc-go v1.2.2
-	github.com/ethereum/go-ethereum v1.10.3
+	github.com/ethereum/go-ethereum v1.10.11
 	github.com/fxamacker/cbor/v2 v2.3.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -35,7 +34,7 @@ require (
 	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
-	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af
+	google.golang.org/genproto v0.0.0-20211021150943-2b146023228c
 	google.golang.org/grpc v1.41.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -43,7 +42,7 @@ require (
 
 require (
 	github.com/Electronic-Signatures-Industries/ancon-ipld-router-sync v0.0.0-20211005122235-25fc5ac8f59f
-	github.com/datachainlab/ibc-mock-client v0.0.0-20210801020446-f9dbe7320294
+	github.com/cosmos/ibc-go/v2 v2.0.0-rc0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-graphsync v0.9.3
@@ -65,4 +64,8 @@ require (
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
+replace github.com/tharsis/ethermint => github.com/tharsis/ethermint v0.0.0-20211103110122-d82b5c20c0c4
+
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+replace github.com/ethereum/go-ethereum => github.com/ethereum/go-ethereum v1.10.11

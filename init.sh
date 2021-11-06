@@ -1,8 +1,8 @@
 #!/bin/bash
 
 KEY="mykey"
-CHAINID="anconprotocol_9000-1"
-MONIKER="localtestnet"
+CHAINID="evmos_9000-1"
+MONIKER="anconprotocol"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
@@ -44,7 +44,8 @@ cat $HOME/.ancon-protocold/config/genesis.json | jq '.consensus_params["block"][
 
 
 # Allocate genesis accounts (cosmos formatted addresses)
-~/go/bin/ancon-protocold add-genesis-account ancon1x23pcxakulpq74r7jv948kk90apv6f0kpzgp83 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account evmos1plc66geee3un5377d0ltyphyvrpdhsez9l7jr2 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
+~/go/bin/ancon-protocold add-genesis-account evmos1x23pcxakulpq74r7jv948kk90apv6f0k8l6egg 100000000000000000000000000aphoton --keyring-backend $KEYRING  --home ~/.ancon-protocold
 # Sign genesis transaction
 ~/go/bin/ancon-protocold gentx $KEY 1000000000000000000000aphoton  --keyring-backend $KEYRING --chain-id $CHAINID  --home ~/.ancon-protocold
 

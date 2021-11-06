@@ -160,6 +160,10 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Bool("graphsync.enable", true, "Define if the Graphsync server should be enabled")
 	cmd.Flags().String("graphsync.address", config.DefaultGraphsyncAddress, "the Graphsync server address to listen on")
 
+	// cmd.Flags().Float64(srvflags.JSONRPCTxFeeCap, evmconfig.DefaultTxFeeCap, "Sets a cap on transaction fee that can be sent via the RPC APIs (1 = default 1 photon)")
+	//	cmd.Flags().Int32(srvflags.JSONRPCFilterCap, evmconfig.DefaultFilterCap, "Sets the global cap for total number of filters that can be created")
+	//	cmd.Flags().Duration(srvflags.JSONRPCEVMTimeout, evmconfig.DefaultEVMTimeout, "Sets a timeout used for eth_call (0=infinite)")
+
 	cmd.Flags().String(srvflags.EVMTracer, config.DefaultEVMTracer, "the EVM tracer type to collect execution traces from the EVM transaction execution (json|struct|access_list|markdown)")
 
 	cmd.Flags().String(srvflags.TLSCertPath, "", "the cert.pem file path for the server TLS configuration")

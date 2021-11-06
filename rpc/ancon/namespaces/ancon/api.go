@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
+	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"

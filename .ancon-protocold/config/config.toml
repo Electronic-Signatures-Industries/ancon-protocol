@@ -15,7 +15,7 @@
 proxy_app = "tcp://127.0.0.1:26658"
 
 # A custom human readable name for this node
-moniker = "tensta"
+moniker = "rogelio-GT72-2QE"
 
 # If this node is many blocks behind the tip of the chain, FastSync
 # allows them to catchup quickly by downloading blocks in parallel
@@ -93,7 +93,7 @@ laddr = "tcp://127.0.0.1:26657"
 # A list of origins a cross-domain request can be executed from
 # Default value '[]' disables cors support
 # Use '["*"]' to allow any origin
-cors_allowed_origins = ["*"]
+cors_allowed_origins = []
 
 # A list of methods the client is allowed to use with cross-domain requests
 cors_allowed_methods = ["HEAD", "GET", "POST", ]
@@ -181,11 +181,11 @@ laddr = "tcp://0.0.0.0:26656"
 # example: 159.89.10.97:26656
 external_address = ""
 
-# # Comma separated list of seed nodes to connect to
-# seeds = "c36cec90ded95d162b85f8ecd00ecd7c8849ca75@arsiamons.seed.evmos.org:26656"
+# Comma separated list of seed nodes to connect to
+seeds = ""
 
-# # Comma separated list of nodes to keep persistent connections to
-# persistent_peers = "be7593d1d2cae15a574537f9107f525200824767@194.163.187.94:26656"
+# Comma separated list of nodes to keep persistent connections to
+persistent_peers = ""
 
 # UPNP port forwarding
 upnp = false
