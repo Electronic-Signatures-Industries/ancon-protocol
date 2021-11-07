@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-public contract AguaclaraRouter {
+ contract AguaclaraRouter {
     address public owner;
     AnconVerifier public verifier;
     mapping(bytes32 => bytes) public headers;
@@ -45,7 +45,7 @@ public contract AguaclaraRouter {
         bytes memory key,
         bytes memory value,
         bytes memory packetMetadataUri
-    ) returns (bool) {
+    ) public view returns (bool) {
         // 1. Verify
         bytes memory calculatedHash = verifier.queryRootCalculation(
             leafOpUint,

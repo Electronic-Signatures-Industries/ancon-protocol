@@ -42,13 +42,13 @@ module.exports = {
       skipDryRun: false,
     },
     localhost: {
-      from: '0xBF53B34e8a49F34c772690575CA555A6f1e43c1e',
+      from: '0x28D6A581C2793BE9095925F8462D9E556A9E822A',
       host: 'localhost',
       port: 8545,
       network_id: '*', // Match any network id
     },
     development: {
-      from: '0xa89F47C6b463f74d87572b058427dA0A13ec5425',
+      from: '0x28D6A581C2793BE9095925F8462D9E556A9E822A',
       host: 'localhost',
       port: 8646,
       network_id: '*', // Match any network id
@@ -56,7 +56,7 @@ module.exports = {
     ancon: {
       provider: () =>
         new HDWalletProvider(process.env.MNEMONIC, process.env.ANCON),
-      network_id: '*',
+      network_id: '9000',
       gas: 7000000,
       gasPrice: 30000000,
     },

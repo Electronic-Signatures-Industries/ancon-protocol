@@ -1,0 +1,2493 @@
+{
+  "contractName": "IModuleCallbacks",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "enum Channel.Order",
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string[]",
+          "name": "connectionHops",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "port_id",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "channel_id",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ChannelCounterparty.Data",
+          "name": "counterparty",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "version",
+          "type": "string"
+        }
+      ],
+      "name": "onChanOpenInit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum Channel.Order",
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string[]",
+          "name": "connectionHops",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "port_id",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "channel_id",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ChannelCounterparty.Data",
+          "name": "counterparty",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "version",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "counterpartyVersion",
+          "type": "string"
+        }
+      ],
+      "name": "onChanOpenTry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "counterpartyVersion",
+          "type": "string"
+        }
+      ],
+      "name": "onChanOpenAck",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        }
+      ],
+      "name": "onChanOpenConfirm",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        }
+      ],
+      "name": "onChanCloseInit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "portId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "channelId",
+          "type": "string"
+        }
+      ],
+      "name": "onChanCloseConfirm",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "sequence",
+              "type": "uint64"
+            },
+            {
+              "internalType": "string",
+              "name": "source_port",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "source_channel",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "destination_port",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "destination_channel",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint64",
+                  "name": "revision_number",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "revision_height",
+                  "type": "uint64"
+                }
+              ],
+              "internalType": "struct Height.Data",
+              "name": "timeout_height",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint64",
+              "name": "timeout_timestamp",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct Packet.Data",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "name": "onRecvPacket",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "sequence",
+              "type": "uint64"
+            },
+            {
+              "internalType": "string",
+              "name": "source_port",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "source_channel",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "destination_port",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "destination_channel",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint64",
+                  "name": "revision_number",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "revision_height",
+                  "type": "uint64"
+                }
+              ],
+              "internalType": "struct Height.Data",
+              "name": "timeout_height",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint64",
+              "name": "timeout_timestamp",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct Packet.Data",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes",
+          "name": "acknowledgement",
+          "type": "bytes"
+        }
+      ],
+      "name": "onAcknowledgementPacket",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"source_port\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"source_channel\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination_port\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination_channel\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"struct Height.Data\",\"name\":\"timeout_height\",\"type\":\"tuple\"},{\"internalType\":\"uint64\",\"name\":\"timeout_timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct Packet.Data\",\"name\":\"\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"acknowledgement\",\"type\":\"bytes\"}],\"name\":\"onAcknowledgementPacket\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"}],\"name\":\"onChanCloseConfirm\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"}],\"name\":\"onChanCloseInit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"counterpartyVersion\",\"type\":\"string\"}],\"name\":\"onChanOpenAck\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"}],\"name\":\"onChanOpenConfirm\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum Channel.Order\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"string[]\",\"name\":\"connectionHops\",\"type\":\"string[]\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"port_id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channel_id\",\"type\":\"string\"}],\"internalType\":\"struct ChannelCounterparty.Data\",\"name\":\"counterparty\",\"type\":\"tuple\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"}],\"name\":\"onChanOpenInit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum Channel.Order\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"string[]\",\"name\":\"connectionHops\",\"type\":\"string[]\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"port_id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channel_id\",\"type\":\"string\"}],\"internalType\":\"struct ChannelCounterparty.Data\",\"name\":\"counterparty\",\"type\":\"tuple\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"counterpartyVersion\",\"type\":\"string\"}],\"name\":\"onChanOpenTry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"source_port\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"source_channel\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination_port\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination_channel\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"struct Height.Data\",\"name\":\"timeout_height\",\"type\":\"tuple\"},{\"internalType\":\"uint64\",\"name\":\"timeout_timestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct Packet.Data\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"onRecvPacket\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCModule.sol\":\"IModuleCallbacks\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1000},\"remappings\":[]},\"sources\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCModule.sol\":{\"keccak256\":\"0x408fa0b1f4f3dfe38052d8c11d70556056eb4ec78fe0ba2d33c35c6696429afb\",\"urls\":[\"bzz-raw://880073ab839ef7fa84b1cf1d8623d123ca98e298aa25055c601991998f62f365\",\"dweb:/ipfs/QmYh7gctgEZnRNog6o3jKyRykbjjnQTmejpSu61zuj84uT\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Channel.sol\":{\"keccak256\":\"0xcfadd417c7020b44cc9443022d047134604ebcba53252cac5eff904930146200\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://7b5c520a125000f73a26dc7d393540ddf698eae038b84dd976ed33efc1c469e2\",\"dweb:/ipfs/QmaVvegAQTnKxfV8KGr7JkqvNEr3hKqsyAyLk9LRVVTgf9\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/GoogleProtobufAny.sol\":{\"keccak256\":\"0x23ebb4c95744ea143cfb3c012f8d8af3c9ed5055ff7602e7167519f444416fa9\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://17747d0f8278bed9f3d394ca5eb7133a083dfb2eaf5ae57823597bc9a0ebdc5d\",\"dweb:/ipfs/QmZ9gZ4nE5ciJzt23ihaxEq8TGfQPQzY1vSciQxm6Rt1xD\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/ProtoBufRuntime.sol\":{\"keccak256\":\"0xee9746319ff21ceccb99a5d69ebf33a51b23d5459e3ace3d32a73644ec886514\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://2e6f67b63b8de53458fd4d27ddc4b73536a49db8f379d3e28b80d7efd09e3bca\",\"dweb:/ipfs/QmSnUM95vvJW6H53iXdmeEazudG5pkhahGSKYaiB7TorRH\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/gogoproto/gogo.sol\":{\"keccak256\":\"0x035dcb1ce9a72b605de470e6ce6e6e99cd6edbc93234840c21164a51dda4d614\",\"urls\":[\"bzz-raw://917d189dffa0c637704b466af1b43bfde8cfdd204ba41b9a283020b3830a0868\",\"dweb:/ipfs/QmUzke4ozYdGaMxwbBeTEwxevwL7Dq41zZBcVh5nh7hUAK\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.8.9;\n\nimport \"./types/Channel.sol\";\n\ninterface IModuleCallbacks {\n    function onChanOpenInit(Channel.Order, string[] calldata connectionHops, string calldata portId, string calldata channelId, ChannelCounterparty.Data calldata counterparty, string calldata version) external;\n    function onChanOpenTry(Channel.Order, string[] calldata connectionHops, string calldata portId, string calldata channelId, ChannelCounterparty.Data calldata counterparty, string calldata version, string calldata counterpartyVersion) external;\n    function onChanOpenAck(string calldata portId, string calldata channelId, string calldata counterpartyVersion) external;\n    function onChanOpenConfirm(string calldata portId, string calldata channelId) external;\n    function onChanCloseInit(string calldata portId, string calldata channelId) external;\n    function onChanCloseConfirm(string calldata portId, string calldata channelId) external;\n\n    function onRecvPacket(Packet.Data calldata) external returns(bytes memory);\n    function onAcknowledgementPacket(Packet.Data calldata, bytes calldata acknowledgement) external;\n}\n",
+  "sourcePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCModule.sol",
+  "ast": {
+    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCModule.sol",
+    "exportedSymbols": {
+      "Channel": [
+        11858
+      ],
+      "ChannelCounterparty": [
+        12554
+      ],
+      "ChannelIdentifiedChannel": [
+        14356
+      ],
+      "GoogleProtobufAny": [
+        22173
+      ],
+      "Height": [
+        17526
+      ],
+      "IModuleCallbacks": [
+        6246
+      ],
+      "Packet": [
+        15897
+      ],
+      "PacketState": [
+        16854
+      ],
+      "ProtoBufRuntime": [
+        34335
+      ]
+    },
+    "id": 6247,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6160,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:13"
+      },
+      {
+        "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Channel.sol",
+        "file": "./types/Channel.sol",
+        "id": 6161,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 6247,
+        "sourceUnit": 17527,
+        "src": "25:29:13",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IModuleCallbacks",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 6246,
+        "linearizedBaseContracts": [
+          6246
+        ],
+        "name": "IModuleCallbacks",
+        "nameLocation": "66:16:13",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "44dd9638",
+            "id": 6179,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenInit",
+            "nameLocation": "98:14:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6177,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6164,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "113:13:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Order_$10302",
+                    "typeString": "enum Channel.Order"
+                  },
+                  "typeName": {
+                    "id": 6163,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6162,
+                      "name": "Channel.Order",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10302,
+                      "src": "113:13:13"
+                    },
+                    "referencedDeclaration": 10302,
+                    "src": "113:13:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Order_$10302",
+                      "typeString": "enum Channel.Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6167,
+                  "mutability": "mutable",
+                  "name": "connectionHops",
+                  "nameLocation": "146:14:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "128:32:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "string[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6165,
+                      "name": "string",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "128:6:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage_ptr",
+                        "typeString": "string"
+                      }
+                    },
+                    "id": 6166,
+                    "nodeType": "ArrayTypeName",
+                    "src": "128:8:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                      "typeString": "string[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6169,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "178:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "162:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6168,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "162:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6171,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "202:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "186:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6170,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "186:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6174,
+                  "mutability": "mutable",
+                  "name": "counterparty",
+                  "nameLocation": "247:12:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "213:46:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$11863_calldata_ptr",
+                    "typeString": "struct ChannelCounterparty.Data"
+                  },
+                  "typeName": {
+                    "id": 6173,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6172,
+                      "name": "ChannelCounterparty.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 11863,
+                      "src": "213:24:13"
+                    },
+                    "referencedDeclaration": 11863,
+                    "src": "213:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$11863_storage_ptr",
+                      "typeString": "struct ChannelCounterparty.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6176,
+                  "mutability": "mutable",
+                  "name": "version",
+                  "nameLocation": "277:7:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "261:23:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6175,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "261:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "112:173:13"
+            },
+            "returnParameters": {
+              "id": 6178,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "294:0:13"
+            },
+            "scope": 6246,
+            "src": "89:206:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "981389f2",
+            "id": 6199,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenTry",
+            "nameLocation": "309:13:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6197,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6182,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "323:13:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Order_$10302",
+                    "typeString": "enum Channel.Order"
+                  },
+                  "typeName": {
+                    "id": 6181,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6180,
+                      "name": "Channel.Order",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10302,
+                      "src": "323:13:13"
+                    },
+                    "referencedDeclaration": 10302,
+                    "src": "323:13:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Order_$10302",
+                      "typeString": "enum Channel.Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6185,
+                  "mutability": "mutable",
+                  "name": "connectionHops",
+                  "nameLocation": "356:14:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "338:32:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "string[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6183,
+                      "name": "string",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "338:6:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage_ptr",
+                        "typeString": "string"
+                      }
+                    },
+                    "id": 6184,
+                    "nodeType": "ArrayTypeName",
+                    "src": "338:8:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                      "typeString": "string[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6187,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "388:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "372:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6186,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "372:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6189,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "412:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "396:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6188,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "396:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6192,
+                  "mutability": "mutable",
+                  "name": "counterparty",
+                  "nameLocation": "457:12:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "423:46:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$11863_calldata_ptr",
+                    "typeString": "struct ChannelCounterparty.Data"
+                  },
+                  "typeName": {
+                    "id": 6191,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6190,
+                      "name": "ChannelCounterparty.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 11863,
+                      "src": "423:24:13"
+                    },
+                    "referencedDeclaration": 11863,
+                    "src": "423:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$11863_storage_ptr",
+                      "typeString": "struct ChannelCounterparty.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6194,
+                  "mutability": "mutable",
+                  "name": "version",
+                  "nameLocation": "487:7:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "471:23:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6193,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "471:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6196,
+                  "mutability": "mutable",
+                  "name": "counterpartyVersion",
+                  "nameLocation": "512:19:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "496:35:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6195,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "496:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "322:210:13"
+            },
+            "returnParameters": {
+              "id": 6198,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "541:0:13"
+            },
+            "scope": 6246,
+            "src": "300:242:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4942d1ac",
+            "id": 6208,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenAck",
+            "nameLocation": "556:13:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6206,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6201,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "586:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "570:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6200,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "570:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6203,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "610:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "594:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6202,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "594:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6205,
+                  "mutability": "mutable",
+                  "name": "counterpartyVersion",
+                  "nameLocation": "637:19:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "621:35:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6204,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "621:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "569:88:13"
+            },
+            "returnParameters": {
+              "id": 6207,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "666:0:13"
+            },
+            "scope": 6246,
+            "src": "547:120:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "a113e411",
+            "id": 6215,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenConfirm",
+            "nameLocation": "681:17:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6210,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "715:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6215,
+                  "src": "699:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6209,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "699:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6212,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "739:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6215,
+                  "src": "723:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6211,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "723:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "698:51:13"
+            },
+            "returnParameters": {
+              "id": 6214,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "758:0:13"
+            },
+            "scope": 6246,
+            "src": "672:87:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "e74a1ac2",
+            "id": 6222,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanCloseInit",
+            "nameLocation": "773:15:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6220,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6217,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "805:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6222,
+                  "src": "789:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6216,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "789:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6219,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "829:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6222,
+                  "src": "813:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6218,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "813:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "788:51:13"
+            },
+            "returnParameters": {
+              "id": 6221,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "848:0:13"
+            },
+            "scope": 6246,
+            "src": "764:85:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ef4776d2",
+            "id": 6229,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanCloseConfirm",
+            "nameLocation": "863:18:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6227,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6224,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "898:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6229,
+                  "src": "882:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6223,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "882:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6226,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "922:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6229,
+                  "src": "906:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6225,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "906:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "881:51:13"
+            },
+            "returnParameters": {
+              "id": 6228,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "941:0:13"
+            },
+            "scope": 6246,
+            "src": "854:88:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "5550b656",
+            "id": 6237,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onRecvPacket",
+            "nameLocation": "957:12:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6233,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6232,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6237,
+                  "src": "970:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$14374_calldata_ptr",
+                    "typeString": "struct Packet.Data"
+                  },
+                  "typeName": {
+                    "id": 6231,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6230,
+                      "name": "Packet.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 14374,
+                      "src": "970:11:13"
+                    },
+                    "referencedDeclaration": 14374,
+                    "src": "970:11:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$14374_storage_ptr",
+                      "typeString": "struct Packet.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "969:22:13"
+            },
+            "returnParameters": {
+              "id": 6236,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6235,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6237,
+                  "src": "1009:12:13",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6234,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1009:5:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1008:14:13"
+            },
+            "scope": 6246,
+            "src": "948:75:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "da7b08a7",
+            "id": 6245,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAcknowledgementPacket",
+            "nameLocation": "1037:23:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6243,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6240,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6245,
+                  "src": "1061:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$14374_calldata_ptr",
+                    "typeString": "struct Packet.Data"
+                  },
+                  "typeName": {
+                    "id": 6239,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6238,
+                      "name": "Packet.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 14374,
+                      "src": "1061:11:13"
+                    },
+                    "referencedDeclaration": 14374,
+                    "src": "1061:11:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$14374_storage_ptr",
+                      "typeString": "struct Packet.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6242,
+                  "mutability": "mutable",
+                  "name": "acknowledgement",
+                  "nameLocation": "1098:15:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6245,
+                  "src": "1083:30:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6241,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1083:5:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1060:54:13"
+            },
+            "returnParameters": {
+              "id": 6244,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1123:0:13"
+            },
+            "scope": 6246,
+            "src": "1028:96:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6247,
+        "src": "56:1070:13",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:1127:13"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/IBCModule.sol",
+    "exportedSymbols": {
+      "Channel": [
+        11858
+      ],
+      "ChannelCounterparty": [
+        12554
+      ],
+      "ChannelIdentifiedChannel": [
+        14356
+      ],
+      "GoogleProtobufAny": [
+        22173
+      ],
+      "Height": [
+        17526
+      ],
+      "IModuleCallbacks": [
+        6246
+      ],
+      "Packet": [
+        15897
+      ],
+      "PacketState": [
+        16854
+      ],
+      "ProtoBufRuntime": [
+        34335
+      ]
+    },
+    "id": 6247,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6160,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:13"
+      },
+      {
+        "absolutePath": "/home/rogelio/Code/ancon-protocol/ethereum/contracts/yui-ibc-solidity/core/types/Channel.sol",
+        "file": "./types/Channel.sol",
+        "id": 6161,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 6247,
+        "sourceUnit": 17527,
+        "src": "25:29:13",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IModuleCallbacks",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 6246,
+        "linearizedBaseContracts": [
+          6246
+        ],
+        "name": "IModuleCallbacks",
+        "nameLocation": "66:16:13",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "44dd9638",
+            "id": 6179,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenInit",
+            "nameLocation": "98:14:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6177,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6164,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "113:13:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Order_$10302",
+                    "typeString": "enum Channel.Order"
+                  },
+                  "typeName": {
+                    "id": 6163,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6162,
+                      "name": "Channel.Order",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10302,
+                      "src": "113:13:13"
+                    },
+                    "referencedDeclaration": 10302,
+                    "src": "113:13:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Order_$10302",
+                      "typeString": "enum Channel.Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6167,
+                  "mutability": "mutable",
+                  "name": "connectionHops",
+                  "nameLocation": "146:14:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "128:32:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "string[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6165,
+                      "name": "string",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "128:6:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage_ptr",
+                        "typeString": "string"
+                      }
+                    },
+                    "id": 6166,
+                    "nodeType": "ArrayTypeName",
+                    "src": "128:8:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                      "typeString": "string[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6169,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "178:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "162:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6168,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "162:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6171,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "202:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "186:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6170,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "186:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6174,
+                  "mutability": "mutable",
+                  "name": "counterparty",
+                  "nameLocation": "247:12:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "213:46:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$11863_calldata_ptr",
+                    "typeString": "struct ChannelCounterparty.Data"
+                  },
+                  "typeName": {
+                    "id": 6173,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6172,
+                      "name": "ChannelCounterparty.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 11863,
+                      "src": "213:24:13"
+                    },
+                    "referencedDeclaration": 11863,
+                    "src": "213:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$11863_storage_ptr",
+                      "typeString": "struct ChannelCounterparty.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6176,
+                  "mutability": "mutable",
+                  "name": "version",
+                  "nameLocation": "277:7:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6179,
+                  "src": "261:23:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6175,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "261:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "112:173:13"
+            },
+            "returnParameters": {
+              "id": 6178,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "294:0:13"
+            },
+            "scope": 6246,
+            "src": "89:206:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "981389f2",
+            "id": 6199,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenTry",
+            "nameLocation": "309:13:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6197,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6182,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "323:13:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Order_$10302",
+                    "typeString": "enum Channel.Order"
+                  },
+                  "typeName": {
+                    "id": 6181,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6180,
+                      "name": "Channel.Order",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 10302,
+                      "src": "323:13:13"
+                    },
+                    "referencedDeclaration": 10302,
+                    "src": "323:13:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Order_$10302",
+                      "typeString": "enum Channel.Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6185,
+                  "mutability": "mutable",
+                  "name": "connectionHops",
+                  "nameLocation": "356:14:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "338:32:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "string[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6183,
+                      "name": "string",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "338:6:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage_ptr",
+                        "typeString": "string"
+                      }
+                    },
+                    "id": 6184,
+                    "nodeType": "ArrayTypeName",
+                    "src": "338:8:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                      "typeString": "string[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6187,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "388:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "372:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6186,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "372:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6189,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "412:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "396:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6188,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "396:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6192,
+                  "mutability": "mutable",
+                  "name": "counterparty",
+                  "nameLocation": "457:12:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "423:46:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$11863_calldata_ptr",
+                    "typeString": "struct ChannelCounterparty.Data"
+                  },
+                  "typeName": {
+                    "id": 6191,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6190,
+                      "name": "ChannelCounterparty.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 11863,
+                      "src": "423:24:13"
+                    },
+                    "referencedDeclaration": 11863,
+                    "src": "423:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$11863_storage_ptr",
+                      "typeString": "struct ChannelCounterparty.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6194,
+                  "mutability": "mutable",
+                  "name": "version",
+                  "nameLocation": "487:7:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "471:23:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6193,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "471:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6196,
+                  "mutability": "mutable",
+                  "name": "counterpartyVersion",
+                  "nameLocation": "512:19:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6199,
+                  "src": "496:35:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6195,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "496:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "322:210:13"
+            },
+            "returnParameters": {
+              "id": 6198,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "541:0:13"
+            },
+            "scope": 6246,
+            "src": "300:242:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4942d1ac",
+            "id": 6208,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenAck",
+            "nameLocation": "556:13:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6206,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6201,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "586:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "570:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6200,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "570:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6203,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "610:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "594:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6202,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "594:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6205,
+                  "mutability": "mutable",
+                  "name": "counterpartyVersion",
+                  "nameLocation": "637:19:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6208,
+                  "src": "621:35:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6204,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "621:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "569:88:13"
+            },
+            "returnParameters": {
+              "id": 6207,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "666:0:13"
+            },
+            "scope": 6246,
+            "src": "547:120:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "a113e411",
+            "id": 6215,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanOpenConfirm",
+            "nameLocation": "681:17:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6210,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "715:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6215,
+                  "src": "699:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6209,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "699:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6212,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "739:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6215,
+                  "src": "723:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6211,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "723:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "698:51:13"
+            },
+            "returnParameters": {
+              "id": 6214,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "758:0:13"
+            },
+            "scope": 6246,
+            "src": "672:87:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "e74a1ac2",
+            "id": 6222,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanCloseInit",
+            "nameLocation": "773:15:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6220,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6217,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "805:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6222,
+                  "src": "789:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6216,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "789:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6219,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "829:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6222,
+                  "src": "813:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6218,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "813:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "788:51:13"
+            },
+            "returnParameters": {
+              "id": 6221,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "848:0:13"
+            },
+            "scope": 6246,
+            "src": "764:85:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ef4776d2",
+            "id": 6229,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onChanCloseConfirm",
+            "nameLocation": "863:18:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6227,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6224,
+                  "mutability": "mutable",
+                  "name": "portId",
+                  "nameLocation": "898:6:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6229,
+                  "src": "882:22:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6223,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "882:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6226,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "922:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6229,
+                  "src": "906:25:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6225,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "906:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "881:51:13"
+            },
+            "returnParameters": {
+              "id": 6228,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "941:0:13"
+            },
+            "scope": 6246,
+            "src": "854:88:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "5550b656",
+            "id": 6237,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onRecvPacket",
+            "nameLocation": "957:12:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6233,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6232,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6237,
+                  "src": "970:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$14374_calldata_ptr",
+                    "typeString": "struct Packet.Data"
+                  },
+                  "typeName": {
+                    "id": 6231,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6230,
+                      "name": "Packet.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 14374,
+                      "src": "970:11:13"
+                    },
+                    "referencedDeclaration": 14374,
+                    "src": "970:11:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$14374_storage_ptr",
+                      "typeString": "struct Packet.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "969:22:13"
+            },
+            "returnParameters": {
+              "id": 6236,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6235,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6237,
+                  "src": "1009:12:13",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6234,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1009:5:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1008:14:13"
+            },
+            "scope": 6246,
+            "src": "948:75:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "da7b08a7",
+            "id": 6245,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAcknowledgementPacket",
+            "nameLocation": "1037:23:13",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6243,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6240,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6245,
+                  "src": "1061:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Data_$14374_calldata_ptr",
+                    "typeString": "struct Packet.Data"
+                  },
+                  "typeName": {
+                    "id": 6239,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6238,
+                      "name": "Packet.Data",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 14374,
+                      "src": "1061:11:13"
+                    },
+                    "referencedDeclaration": 14374,
+                    "src": "1061:11:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Data_$14374_storage_ptr",
+                      "typeString": "struct Packet.Data"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6242,
+                  "mutability": "mutable",
+                  "name": "acknowledgement",
+                  "nameLocation": "1098:15:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6245,
+                  "src": "1083:30:13",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6241,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1083:5:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1060:54:13"
+            },
+            "returnParameters": {
+              "id": 6244,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1123:0:13"
+            },
+            "scope": 6246,
+            "src": "1028:96:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6247,
+        "src": "56:1070:13",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:1127:13"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.0",
+  "updatedAt": "2021-11-07T20:15:35.940Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
