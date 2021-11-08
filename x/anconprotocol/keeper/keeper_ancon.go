@@ -19,7 +19,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/ethereum/go-ethereum/crypto"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -443,14 +442,46 @@ func GetLinkPrototype() ipld.LinkPrototype {
 }
 
 func (k Keeper) CreateSendMetadataPacket(ctx sdk.Context, sender sdk.AccAddress, packet *types.AguaclaraPacketData) (string, error) {
-	// Store message to cross chain metadata
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("packet"))
-	hash := crypto.Keccak256([]byte(packet.Creator), []byte(packet.DidRecipient), []byte(packet.ToMetadata), []byte(packet.TokenAddress), []byte(packet.TokenId))
-	lnk := CreateCidLink(hash)
-	v := k.cdc.MustMarshal(packet)
-	store.Set(lnk.Bytes(), v)
+	lsys := k.GetLinkSystem()
+	prefixstore := "packet"
+	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		// change prefix
+		buf := bytes.Buffer{}
+		return &buf, func(lnk ipld.Link) error {
+			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(prefixstore))
+			k := []byte(lnk.String())
+			v := buf.Bytes()
+			store.Set(k, v)
+			return nil
+		}, nil
+	}
 
-	return lnk.String(), nil
+	// Add Document
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 8, func(na fluent.MapAssembler) {
+		lnk, _ := ParseCidLink(packet.ToMetadata)
+		na.AssembleEntry("creator").AssignString(packet.Creator)
+		na.AssembleEntry("tokenAddress").AssignString(packet.TokenAddress)
+		na.AssembleEntry("tokenId").AssignString(packet.TokenId)
+		na.AssembleEntry("didRecipient").AssignString(packet.DidRecipient)
+		na.AssembleEntry("toMetadata").AssignLink(lnk)
+		na.AssembleEntry("hash").AssignString(packet.Hash)
+		na.AssembleEntry("currentChainId").AssignString(packet.CurrentChainId)
+		na.AssembleEntry("recipientChainId").AssignString(packet.RecipientChainId)
+
+	})
+
+	link, err := lsys.Store(
+		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		GetLinkPrototype(),
+		n, // And here's our data.
+	)
+	if err != nil {
+		return "", err
+	}
+
+	//	id, _ := cid.Decode(link.String())
+	return link.String(), nil
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 

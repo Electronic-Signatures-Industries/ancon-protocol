@@ -55,12 +55,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
             existenceProofKey,
             existenceProofValue
         );
-        // https://github.com/smartcontractkit/solidity-cborutils
-        // Use https://github.com/chrisdotn/jsmnSol
-        require(
-            keccak256(value) == keccak256(packetMetadataUri),
-            "Invalid Proof for key"
-        );
+        // // https://github.com/smartcontractkit/solidity-cborutils
+        // // Use https://github.com/chrisdotn/jsmnSol
+        // require(
+        //     keccak256(value) == keccak256(packetMetadataUri),
+        //     "Invalid Proof for key"
+        // );
 
         return true;
     }
@@ -76,6 +76,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
         bytes memory key,
         bytes memory value,
         // -- ics23 packet
+        // bytes memory packet, (abiDecoder de ethers)
         string memory metadata,
         uint256 tokenId,
         address tokenAddress,
@@ -111,6 +112,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
         );
         //        }
 
+// Ics23 
+// packet - dag toMetadata => link
+// evm verifies ics23
+// browser  verifies packet is child of ics23 metadata
         emit MetadataOwnershipChanged(to, metadata, tokenId);
 
         return true;
