@@ -1,6 +1,43 @@
 import Crypto
 
-access(all) contract ICS23 {
+pub contract AnconVerifier {
+    pub resource interface IQueryRoot {
+        pub fun queryRootCalculation(
+            leafOpUint: [UInt8],
+            prefix: [UInt8],
+            existenceProofInnerOp: [[[UInt8]]],
+            existenceProofInnerOpHash: UInt8,
+            existenceProofKey: [UInt8],
+            existenceProofValue: [UInt8]
+         ): [UInt8];
+    }
+
+    pub resource QueryRoot {
+        pub fun queryRootCalculation(
+            leafOpUint: [UInt8],
+            prefix: [UInt8],
+            existenceProofInnerOp: [[[UInt8]]],
+            existenceProofInnerOpHash: UInt8,
+            existenceProofKey: [UInt8],
+            existenceProofValue: [UInt8]
+         ): [UInt8] {
+            return self.queryRootCalculation(
+                leafOpUint: leafOpUint,
+                prefix: prefix,
+                existenceProofInnerOp: existenceProofInnerOp,
+                existenceProofInnerOpHash: existenceProofInnerOpHash,
+                existenceProofKey: existenceProofKey,
+                existenceProofValue: existenceProofValue,
+            );
+        }
+    }
+
+    init() {
+        // Publish the "QueryRoot" resource, so that any client can use it.
+        self.account.save(<- create QueryRoot(), to: /storage/AnconQueryRoot);
+        self.account.link<&{IQueryRoot}>(/public/AnconQueryRoot, target: /storage/AnconQueryRoot);
+    }
+
     // Data structures and helper functions
     pub enum HashOp: UInt8 {
         pub case NO_HASH
@@ -216,12 +253,11 @@ prefix: [0 as UInt8]
     )    : [UInt8] {
         assert(key.length > 0, message: "Leaf op needs key");
         assert(value.length > 0,message: "Leaf op needs value");
-        let data = 
-                op.prefix.concat(
-                self.prepareLeafData(hashOp:op.prehash_key, lengthOp :op.len, data: key)
-            ).concat(
-            self.prepareLeafData(hashOp:op.prehash_value, lengthOp :op.len, data: value)
-        );
+
+        let keyLeafData = self.prepareLeafData(hashOp:op.prehash_key, lengthOp :op.len, data: key);
+        let valueLeafData = self.prepareLeafData(hashOp:op.prehash_value, lengthOp :op.len, data: value);
+
+        let data = op.prefix.concat(keyLeafData).concat(valueLeafData);
         return self.doHash(hashOp:op.hash, data: data);
     }
 
@@ -247,11 +283,9 @@ prefix: [0 as UInt8]
    pub fun checkAgainstSpecInnerOp(op: InnerOp, spec: ProofSpec)
     {
         assert(op.hash == spec.leafSpec.hash,message:  "Unexpected HashOp");
-        let leafSpecPrefix = String.encodeHex(spec.leafSpec.prefix)
-        let opPrefix = String.encodeHex(op.prefix)
 
         assert(
-            spec.leafSpec.prefix.contains(op.prefix.removeFirst()),
+            !spec.leafSpec.prefix.contains(op.prefix[0]),
             message: "LeafOpLib: wrong prefix"
         );
         assert(
@@ -278,13 +312,8 @@ prefix: [0 as UInt8]
 
    pub fun doHash(hashOp: HashOp, data: [UInt8]):[UInt8] 
     {
-    
-    
-       let a =  Crypto.hash(data, algorithm: HashAlgorithm.SHA3_256)
-        if (hashOp == HashOp.SHA256) {
-        return a
-    }
-        panic("Unsupported hashop");
+        // The only available hashing function available right now is SHA256.
+        return HashAlgorithm.SHA2_256.hash(data);
     }
 
    pub fun doLength(lengthOp: LengthOp , data: [UInt8]): [UInt8]
@@ -307,29 +336,16 @@ prefix: [0 as UInt8]
     }
 
    pub fun encodeVarintProto(n: Int)    : [UInt8]   {
-        // Count the number of groups of 7 bits
-        // We need this pre-processing step since Solidity doesn't allow dynamic   resizing
-        var tmp: Int = n
-        var num_bytes: Int = 1
-        while (tmp > 0x7F) {
-            tmp = tmp >> 7
-            num_bytes = num_bytes + 1
+        // Inspired by: https://github.com/confio/ics23/blob/17c3466679ba7b65e1207406951e50577b4dfb05/js/src/ops.ts#L148
+        let enc: [UInt8] = [];
+        var l = n;
+        while (l >= 128) {
+            let b = UInt8((l % 128) + 128);
+            enc.append(b);
+            l = l / 128;
         }
-
-        var buf: [UInt8] = []
-
-        tmp = n
-        var i: Int = 0
-        while (i < num_bytes) {
-            // Set the first bit in the byte for each group of 7 bits
-            buf[i] = (0x80 | UInt8(tmp & 0x7F))
-            tmp = tmp >> 7
-            i = i + 1
-        }
-        // Unset the first bit of the last byte
-        buf[num_bytes - 1] = buf[num_bytes - 1] & 0x7F
-
-        return buf
+        enc.append(UInt8(l));
+        return enc;
     }
 
    pub fun verify(
@@ -387,5 +403,102 @@ prefix: [0 as UInt8]
         return res
     }
 
+    //Separate arguments to not convert from uint 256 to byte
+    pub fun convertProof(
+        key: [UInt8],
+        value: [UInt8],
+        _prefix: [UInt8],
+        _leafOpUint: [UInt8],
+        _innerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8
+    ): ExistenceProof {
+        assert(
+            _leafOpUint.length >= 4,
+            message: "Not enough values packed inside leafOpUInt"
+        );
+        let leafOp = LeafOp(
+            valid: true,
+            hash: HashOp(rawValue: _leafOpUint[0])!,
+            prehash_key: HashOp(rawValue: _leafOpUint[1])!,
+            prehash_value: HashOp(rawValue: _leafOpUint[2])!,
+            len: LengthOp(rawValue: _leafOpUint[3])!,
+            prefix: _prefix
+        );
+
+        let innerOpArr: [InnerOp] = [];
+
+        var i = 0;
+        while (i < _innerOp.length) {
+            var temp: [[UInt8]] = _innerOp[i];
+            innerOpArr.append(InnerOp(
+                valid: true,
+                hash: HashOp(rawValue: existenceProofInnerOpHash)!,
+                prefix: temp[0],
+                suffix: temp[1]
+            ));
+            i = i + 1;
+        }
+
+        return ExistenceProof(
+            valid: true,
+            key: key,
+            value: value,
+            leaf: leafOp,
+            path: innerOpArr
+        );
+    }
+
+    pub fun queryRootCalculation(
+        leafOpUint: [UInt8],
+        prefix: [UInt8],
+        existenceProofInnerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8,
+        existenceProofKey: [UInt8],
+        existenceProofValue: [UInt8]
+    ): [UInt8] {
+        let proof: ExistenceProof = self.convertProof(
+            key: existenceProofKey,
+            value: existenceProofValue,
+            _prefix: prefix,
+            _leafOpUint: leafOpUint,
+            _innerOp: existenceProofInnerOp,
+            existenceProofInnerOpHash: existenceProofInnerOpHash
+        );
+        return self.calculate(p: proof);
+    }
+
+    // claimed ics23 proofs
+    // key = prefix + cid eg  ancon+cid
+    // value = sha256(dagcbor)
+    pub fun changeOwnerWithProof(
+        leafOpUint: [UInt8],
+        prefix: [UInt8],
+        existenceProofInnerOp: [[[UInt8]]],
+        existenceProofInnerOpHash: UInt8,
+        existenceProofKey: [UInt8],
+        existenceProofValue: [UInt8],
+        root: [UInt8],
+        key: [UInt8],
+        value: [UInt8]
+    ): Bool {
+        let proof = self.convertProof(
+            key: existenceProofKey,
+            value: existenceProofValue,
+            _prefix: prefix,
+            _leafOpUint: leafOpUint,
+            _innerOp: existenceProofInnerOp,
+            existenceProofInnerOpHash: existenceProofInnerOpHash
+        );
+
+        self.verify(
+            proof: proof,
+            spec: self.getIavlSpec(),
+            root: root,
+            key: key,
+            value: value
+        );
+
+        return true;
+    }
+
 }
- 
