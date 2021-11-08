@@ -47,9 +47,9 @@ module.exports = async (deployer, network, accounts) => {
   await Faucet.deployed()
   const verifier = await AnconVerifier.deployed();
 
-  await deployer.deploy(AguaclaraRouter, "AguaclaraRouter", "AguaclaraRouter", stableCoinAddress, verifier.address);
+  await deployer.deploy(AguaclaraRouter,  accounts[0], verifier.address);
 
-  xdvnft = await AguaclaraRouter.deployed();
+  const r = await AguaclaraRouter.deployed();
   
 
   // Deploy NFT

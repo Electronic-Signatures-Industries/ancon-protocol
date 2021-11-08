@@ -109,7 +109,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -122,7 +123,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -322,7 +324,8 @@
       "name": "verify",
       "outputs": [],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -447,7 +450,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -491,7 +495,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -550,7 +555,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"onlyOwner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"_prefix\",\"type\":\"bytes\"},{\"internalType\":\"uint256[]\",\"name\":\"_leafOpUint\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes[][]\",\"name\":\"_innerOp\",\"type\":\"bytes[][]\"},{\"internalType\":\"uint256\",\"name\":\"existenceProofInnerOpHash\",\"type\":\"uint256\"}],\"name\":\"convertProof\",\"outputs\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_key\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_value\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.LengthOp\",\"name\":\"len\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.LeafOp\",\"name\":\"leaf\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"suffix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.InnerOp[]\",\"name\":\"path\",\"type\":\"tuple[]\"}],\"internalType\":\"struct ICS23.ExistenceProof\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getIavlSpec\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_key\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_value\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.LengthOp\",\"name\":\"len\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.LeafOp\",\"name\":\"leafSpec\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256[]\",\"name\":\"childOrder\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"childSize\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minPrefixLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxPrefixLength\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"emptyChild\",\"type\":\"bytes\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"}],\"internalType\":\"struct ICS23.InnerSpec\",\"name\":\"innerSpec\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"maxDepth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minDepth\",\"type\":\"uint256\"}],\"internalType\":\"struct ICS23.ProofSpec\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"leafOpUint\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes[][]\",\"name\":\"existenceProofInnerOp\",\"type\":\"bytes[][]\"},{\"internalType\":\"uint256\",\"name\":\"existenceProofInnerOpHash\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"existenceProofKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"existenceProofValue\",\"type\":\"bytes\"}],\"name\":\"queryRootCalculation\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_key\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_value\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.LengthOp\",\"name\":\"len\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.LeafOp\",\"name\":\"leaf\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"suffix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.InnerOp[]\",\"name\":\"path\",\"type\":\"tuple[]\"}],\"internalType\":\"struct ICS23.ExistenceProof\",\"name\":\"proof\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"valid\",\"type\":\"bool\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_key\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"prehash_value\",\"type\":\"uint8\"},{\"internalType\":\"enum ICS23.LengthOp\",\"name\":\"len\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"internalType\":\"struct ICS23.LeafOp\",\"name\":\"leafSpec\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256[]\",\"name\":\"childOrder\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"childSize\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minPrefixLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxPrefixLength\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"emptyChild\",\"type\":\"bytes\"},{\"internalType\":\"enum ICS23.HashOp\",\"name\":\"hash\",\"type\":\"uint8\"}],\"internalType\":\"struct ICS23.InnerSpec\",\"name\":\"innerSpec\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"maxDepth\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minDepth\",\"type\":\"uint256\"}],\"internalType\":\"struct ICS23.ProofSpec\",\"name\":\"spec\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"root\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"name\":\"verify\",\"outputs\":[],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"leafOpUint\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes[][]\",\"name\":\"existenceProofInnerOp\",\"type\":\"bytes[][]\"},{\"internalType\":\"uint256\",\"name\":\"existenceProofInnerOpHash\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"existenceProofKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"existenceProofValue\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"root\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"name\":\"verifyProof\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"The name of the author\",\"details\":\"Explain to a developer any extra details\",\"kind\":\"dev\",\"methods\":{},\"title\":\"A title that should describe the contract/interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Explain to an end user what this does\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/AnconVerifier.sol\":\"AnconVerifier\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1000},\"remappings\":[]},\"sources\":{\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/AnconVerifier.sol\":{\"keccak256\":\"0xb6982aa3e4218f03c80c51fa07c140126faa00266f963a807cf9325765b0b0bc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://35f5e10c67b7452d2b10b1f7a9055e0fc388b806cd30e087889ffcc25c0fb4d8\",\"dweb:/ipfs/QmddxpMX5i7ez1awPmVr1wfFtSdmdXP6KJ7yLPppTVVyaK\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/Bytes.sol\":{\"keccak256\":\"0x794f2e9f602d786f1430cfe99262dcaba5c480a1340febd47ac5e34febf5729b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://1b307b2b8f570183d3ebe8f4b9705843579176ea6579fbbcf61c2a5eef8ae11b\",\"dweb:/ipfs/QmeK3ZbMTKyeWfphUpVcc7wafe9A2EKbkkTAdjMbx3G2vQ\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/Memory.sol\":{\"keccak256\":\"0xc013fadb6d8fd7ee5404e0606753f931df025e356bda7981b828e910777d07d2\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://fb442f68426886eea16b6eef022c7380d3d80d05e5998cdba1560dc801794485\",\"dweb:/ipfs/QmbzsoLG1FyXs8Ze9qBiyJqBDdjoc4g1KynAcbpVQv5oWc\"]},\"/home/rogelio/Code/ancon-protocol/ethereum/contracts/ancon/ics23.sol\":{\"keccak256\":\"0xb894d4f1a23ad8d75d7be8424937e31e4c3b272acb50658ab07a4bf70be4a6a8\",\"urls\":[\"bzz-raw://a417b3428be6422365655a8e36d991e848d4bdbf672c7478603258d9e09c5f75\",\"dweb:/ipfs/QmePY8HY9ibSMufRMPCXZknrr6XXmSqezPnTJDy8pVRMhr\"]}},\"version\":1}",
@@ -29280,9 +29286,17 @@
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "9000": {
+      "events": {},
+      "links": {},
+      "address": "0xb73b2A186B8ff0d00bEe950108e668DF9347a070",
+      "transactionHash": "0x1a9d1be454727647085b04dc029cc2bc26321ff94fd27954f06aa18a5acc69e9"
+    }
+  },
   "schemaVersion": "3.4.0",
-  "updatedAt": "2021-11-07T20:06:22.633Z",
+  "updatedAt": "2021-11-08T12:00:01.187Z",
+  "networkType": "ethereum",
   "devdoc": {
     "author": "The name of the author",
     "details": "Explain to a developer any extra details",
