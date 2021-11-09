@@ -7,6 +7,7 @@ secret.yml
 .idea/
 gen
 ethereum/node_modules
+ethereum/build/contracts
 .env
 ethereum/.env
 .vscode
