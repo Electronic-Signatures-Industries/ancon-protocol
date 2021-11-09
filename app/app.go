@@ -482,7 +482,7 @@ func New(
 		app.GetSubspace(anconprotocoltypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.AguaclaraKeeper,
+		// app.AguaclaraKeeper,
 		app.ModuleAccountAddrs(),
 		app.cms,
 	)

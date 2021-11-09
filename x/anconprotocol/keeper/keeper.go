@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	aguaclaramodulekeeper "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/keeper"
-
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/iavl"
@@ -24,16 +22,16 @@ import (
 )
 
 type Keeper struct {
-	cdc             codec.Codec
-	storeKey        sdk.StoreKey
-	memKey          sdk.StoreKey
-	paramSpace      paramstypes.Subspace
-	accountKeeper   types.AccountKeeper
-	iavltree        *iavl.ImmutableTree
-	bankKeeper      types.BankKeeper
-	aguaclaraKeeper aguaclaramodulekeeper.Keeper
-	blockedAddrs    map[string]bool
-	cms             store.CommitMultiStore
+	cdc           codec.Codec
+	storeKey      sdk.StoreKey
+	memKey        sdk.StoreKey
+	paramSpace    paramstypes.Subspace
+	accountKeeper types.AccountKeeper
+	iavltree      *iavl.ImmutableTree
+	bankKeeper    types.BankKeeper
+	// aguaclaraKeeper aguaclaramodulekeeper.Keeper
+	blockedAddrs map[string]bool
+	cms          store.CommitMultiStore
 	// this line is used by starport scaffolding # ibc/keeper/attribute
 }
 
@@ -44,7 +42,7 @@ func NewTestKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	aguaclaraKeeper aguaclaramodulekeeper.Keeper,
+	// aguaclaraKeeper aguaclaramodulekeeper.Keeper,
 	blockedAddrs map[string]bool,
 ) Keeper {
 
@@ -66,21 +64,21 @@ func NewKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	aguaclaraKeeper aguaclaramodulekeeper.Keeper,
+	// aguaclaraKeeper aguaclaramodulekeeper.Keeper,
 	blockedAddrs map[string]bool,
 	cms store.CommitMultiStore,
 ) Keeper {
 
 	return Keeper{
-		storeKey:        key,
-		cdc:             cdc,
-		memKey:          memKey,
-		paramSpace:      paramSpace,
-		accountKeeper:   accountKeeper,
-		bankKeeper:      bankKeeper,
-		aguaclaraKeeper: aguaclaraKeeper,
-		blockedAddrs:    blockedAddrs,
-		cms:             cms,
+		storeKey:      key,
+		cdc:           cdc,
+		memKey:        memKey,
+		paramSpace:    paramSpace,
+		accountKeeper: accountKeeper,
+		bankKeeper:    bankKeeper,
+		// aguaclaraKeeper: aguaclaraKeeper,
+		blockedAddrs: blockedAddrs,
+		cms:          cms,
 	}
 }
 
