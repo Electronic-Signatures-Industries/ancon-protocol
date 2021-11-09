@@ -20,7 +20,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
@@ -32,7 +31,6 @@ type Keeper struct {
 	accountKeeper   types.AccountKeeper
 	iavltree        *iavl.ImmutableTree
 	bankKeeper      types.BankKeeper
-	evmKeeper       *evmkeeper.Keeper
 	aguaclaraKeeper aguaclaramodulekeeper.Keeper
 	blockedAddrs    map[string]bool
 	cms             store.CommitMultiStore
@@ -46,7 +44,6 @@ func NewTestKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	evmKeeper *evmkeeper.Keeper,
 	aguaclaraKeeper aguaclaramodulekeeper.Keeper,
 	blockedAddrs map[string]bool,
 ) Keeper {
@@ -58,7 +55,6 @@ func NewTestKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
-		evmKeeper:     evmKeeper,
 		blockedAddrs:  blockedAddrs,
 	}
 }
@@ -70,7 +66,6 @@ func NewKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	evmKeeper *evmkeeper.Keeper,
 	aguaclaraKeeper aguaclaramodulekeeper.Keeper,
 	blockedAddrs map[string]bool,
 	cms store.CommitMultiStore,
@@ -83,7 +78,6 @@ func NewKeeper(
 		paramSpace:      paramSpace,
 		accountKeeper:   accountKeeper,
 		bankKeeper:      bankKeeper,
-		evmKeeper:       evmKeeper,
 		aguaclaraKeeper: aguaclaraKeeper,
 		blockedAddrs:    blockedAddrs,
 		cms:             cms,
