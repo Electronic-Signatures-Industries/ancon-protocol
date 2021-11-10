@@ -7,10 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
-	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/v2/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 )
 
 // OnChanOpenInit implements the IBCModule interface
@@ -160,17 +160,17 @@ func (am AppModule) OnAcknowledgementPacket(
 	modulePacket channeltypes.Packet,
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
-) error {
+) (*sdk.Result, error) {
 	var ack channeltypes.Acknowledgement
 	if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
+		return &sdk.Result{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
 	}
 
 	// this line is used by starport scaffolding # oracle/packet/module/ack
 
 	var modulePacketData types.AguaclaraPacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+		return &sdk.Result{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
 	}
 
 	var eventType string
@@ -208,7 +208,7 @@ func (am AppModule) OnAcknowledgementPacket(
 		)
 	}
 
-	return nil
+	return &sdk.Result{}, nil
 }
 
 // OnTimeoutPacket implements the IBCModule interface
@@ -216,10 +216,10 @@ func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
 	relayer sdk.AccAddress,
-) error {
+) (*sdk.Result, error) {
 	var modulePacketData types.AguaclaraPacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+		return &sdk.Result{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
 	}
 
 	// // Dispatch packet
@@ -227,10 +227,10 @@ func (am AppModule) OnTimeoutPacket(
 	// // this line is used by starport scaffolding # ibc/packet/module/timeout
 	// default:
 	// 	errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-	// 	return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+	// 	return &sdk.Result{},  nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	// }
 
-	return nil
+	return &sdk.Result{}, nil
 }
 
 // NegotiateAppVersion performs application version negotiation given the provided channel ordering, connectionID, portID, counterparty and proposed version.

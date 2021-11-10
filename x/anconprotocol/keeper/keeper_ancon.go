@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
+	ibc "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/multiformats/go-multihash"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
