@@ -8,6 +8,7 @@ import (
 
 // x/anconprotocol module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
-	// this line is used by starport scaffolding # ibc/errors
+	ErrInvalidProof       = sdkerrors.Register(ModuleName, 2, "invalid proof")
+	ErrInvalidPrefix      = sdkerrors.Register(ModuleName, 3, "invalid prefix")
+	ErrInvalidMerkleProof = sdkerrors.Register(ModuleName, 4, "invalid merkle proof")
 )

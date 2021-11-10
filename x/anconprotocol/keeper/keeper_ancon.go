@@ -31,6 +31,7 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
 func (k Keeper) AddTrustedResource(ctx sdk.Context, msg *types.MsgMintTrustedResource) (string, error) {
@@ -366,7 +367,7 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 	return (root.Hash), &mp, nil
 }
 
-func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.MerkleProof, error) {
+func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *types.MerkleProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -396,7 +397,7 @@ func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.Merkl
 		Height: ctx.BlockHeader().Height,
 		Prove:  true,
 	})
-	mp, err := ibc.ConvertProofs(res.ProofOps)
+	mp, err := ConvertProofs(res.ProofOps)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -406,7 +407,7 @@ func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.Merkl
 	}
 
 	r, err := combined.Calculate()
-	root := ibc.MerkleRoot{
+	root := types.MerkleRoot{
 		Hash: r,
 	}
 	if err != nil {
@@ -427,6 +428,27 @@ func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.Merkl
 	ctx.Logger().Info("verified membership created")
 	return (root.Hash), &mp, nil
 }
+
+// ConvertProofs converts crypto.ProofOps into MerkleProof
+func ConvertProofs(tmProof *crypto.ProofOps) (types.MerkleProof, error) {
+	if tmProof == nil {
+		return types.MerkleProof{}, sdkerrors.Wrapf(types.ErrInvalidMerkleProof, "tendermint proof is nil")
+	}
+	// Unmarshal all proof ops to CommitmentProof
+	proofs := make([]*ics23.CommitmentProof, len(tmProof.Ops))
+	for i, op := range tmProof.Ops {
+		var p ics23.CommitmentProof
+		err := p.Unmarshal(op.Data)
+		if err != nil || p.Proof == nil {
+			return types.MerkleProof{}, sdkerrors.Wrapf(types.ErrInvalidMerkleProof, "could not unmarshal proof op into CommitmentProof at index %d: %v", i, err)
+		}
+		proofs[i] = &p
+	}
+	return types.MerkleProof{
+		Proofs: proofs,
+	}, nil
+}
+
 func (k Keeper) GetLinkSystem() linking.LinkSystem {
 	return cidlink.DefaultLinkSystem()
 }
