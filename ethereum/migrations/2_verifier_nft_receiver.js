@@ -25,17 +25,15 @@ module.exports = async (deployer, network, accounts) => {
     fs.writeFileSync(path, output);
   };
   let xdvnft;
-  let stableCoinAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
-  let dai;
 
-  if (network === "bsc") {
-    stableCoinAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
-  }
-  else {
-    await deployer.deploy(DAI);
-    dai = await DAI.deployed();
-    stableCoinAddress = dai.address;
-  }
+  // let dai;
+
+  // if (network === "bsc") {
+  //   stableCoinAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
+  // }
+  // else {
+  await deployer.deploy(DAI);
+  const dai = await DAI.deployed();
 
 
   await deployer.deploy(Memory);
@@ -47,13 +45,13 @@ module.exports = async (deployer, network, accounts) => {
   await Faucet.deployed()
   const verifier = await AnconVerifier.deployed();
 
-  await deployer.deploy(AguaclaraRouter,  accounts[0], verifier.address);
+  await deployer.deploy(AguaclaraRouter, accounts[0], verifier.address);
 
   const r = await AguaclaraRouter.deployed();
-  
+
 
   // Deploy NFT
-  await deployer.deploy(XDVNFT, "XDVNFT", "XDVNFT", stableCoinAddress, verifier.address);
+  await deployer.deploy(XDVNFT, "XDVNFT", "XDVNFT", dai.address, verifier.address);
 
   xdvnft = await XDVNFT.deployed();
   await xdvnft.setServiceFeeForContract(new BigNumber(1 * 1e18));
