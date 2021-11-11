@@ -3,14 +3,13 @@ package simapp
 import (
 	"time"
 
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
 )
 
 // New creates application instance with in-memory database and disabled logging.
@@ -18,7 +17,7 @@ func New(dir string) *app.App {
 	db := tmdb.NewMemDB()
 	logger := log.NewNopLogger()
 
-	encoding := app.MakeEncodingConfig()
+	encoding := simapp.MakeTestEncodingConfig()
 
 	a := app.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
 		// this line is used by starport scaffolding # stargate/testutil/appArgument

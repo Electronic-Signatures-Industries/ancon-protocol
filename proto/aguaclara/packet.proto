@@ -1,0 +1,22 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.aguaclara;
+
+// this line is used by starport scaffolding # proto/packet/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types";
+
+message AguaclaraPacketData {
+    string creator = 1;
+    string tokenAddress = 2;
+    string tokenId = 3;
+    string didRecipient = 4;
+    string toMetadata = 5;
+    string hash = 6;
+    string currentChainId = 7;
+    string recipientChainId = 8;
+}
+
+message NoData {
+}
+
+// this line is used by starport scaffolding # ibc/packet/proto/message

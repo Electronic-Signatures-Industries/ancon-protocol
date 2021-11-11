@@ -6,21 +6,28 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
+// InitGenesis stores the NFT genesis.
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
+	if err := types.ValidateGenesis(data); err != nil {
+		panic(err.Error())
+	}
 
-	// this line is used by starport scaffolding # ibc/genesis/init
+	for _, c := range data.Collections {
+		if err := k.SetDenom(ctx, c.Denom); err != nil {
+			panic(err)
+		}
+		if err := k.SetCollection(ctx, c); err != nil {
+			panic(err)
+		}
+	}
 }
 
-// ExportGenesis returns the capability module's exported genesis.
+// ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
+	return types.NewGenesisState(k.GetCollections(ctx))
+}
 
-	// this line is used by starport scaffolding # genesis/module/export
-
-	// this line is used by starport scaffolding # ibc/genesis/export
-
-	return genesis
+// DefaultGenesisState returns a default genesis state
+func DefaultGenesisState() *types.GenesisState {
+	return types.NewGenesisState([]types.Collection{})
 }

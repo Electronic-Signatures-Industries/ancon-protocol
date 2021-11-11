@@ -1,0 +1,26 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.aguaclara;
+
+// this line is used by starport scaffolding # proto/tx/import
+import "aguaclara/packet.proto";
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/aguaclara/types";
+
+// Msg defines the Msg service.
+service Msg {
+      //Create ancon metadata
+  rpc SendMetadataOwnership(MsgSendMetadataOwnership) returns (MsgSendMetadataOwnershipResponse);
+}
+
+message MsgSendMetadataOwnership {
+    string creator = 1;
+    string portId = 2;
+    string channelId = 3;
+    AguaclaraPacketData data = 4;
+
+  }
+  
+  message MsgSendMetadataOwnershipResponse {
+    string cid = 1;
+  }
+  
+// this line is used by starport scaffolding # proto/tx/message

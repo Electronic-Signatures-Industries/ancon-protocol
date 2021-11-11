@@ -1,20 +1,28 @@
 syntax = "proto3";
 package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/any.proto";
-import "cosmos_proto/cosmos.proto";
 
 
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
+import "anconprotocol/nft.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
 // Query defines the gRPC querier service.
 service Query {
+	// // ReadRoyaltyInfo
+	// rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
+	// 	option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
+	// }
+
+	// ReadRoyaltyInfo
+	rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
+		option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
+	}
 
 
 	// Queries a list of resource items.
@@ -22,25 +30,195 @@ service Query {
 		option (google.api.http).get = "/ancon/{cid}/{path}";
 	}
 
-	//additional handler that uses ReadFile
-	// Queries a list of resource items.
-	rpc ReadFile(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/file/{cid}/{path}";
+	// Reads metadata proofs
+	rpc ReadMetadataProof(QueryProofMetadataRequest) returns (QueryProofResponse) {
+		option (google.api.http).get = "/ancon/proof/{cid}/{path}";
 	}
-  
-	// Queries a list of resource items.
-	rpc Read(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/{cid}";
+	// this line is used by starport scaffolding # 2
+
+	// Queries a list of owners items.
+	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
+		option (google.api.http).get = "/ancon/didregistry/{address}";
 	}
-    // this line is used by starport scaffolding # 2
+	// Queries a list of Attributes items.
+	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
+		option (google.api.http).get = "/ancon/didregistry/{address}/attributes";
+	}
 
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}";
+		option (google.api.http).get = "/ancon/resource/{cid}";
 	}
 
+	// Queries a list of delegates items.
+	rpc ReadDelegate(QueryGetDelegateRequest) returns (QueryGetDelegateResponse) {
+		option (google.api.http).get = "/ancon/didregistry/delegates/{id}";
+	}
+
+	// Owner queries the NFTs of the specified owner
+	rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
+		option (google.api.http).get = "/ancon/nft/nfts";
+	}
+
+	// Collection queries the NFTs of the specified denom
+	rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
+		option (google.api.http).get = "/ancon/nft/collections/{denom_id}";
+	}
+
+	// Denom queries the definition of a given denom
+	rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
+		option (google.api.http).get = "/ancon/nft/denoms/{denom_id}";
+	}
+
+	// Denoms queries all the denoms
+	rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
+		option (google.api.http).get = "/ancon/nft/denoms";
+	}
+
+	// NFT queries the NFT for the given denom and token ID
+	rpc GetNft(QueryNFTRequest) returns (QueryNFTResponse) {
+		option (google.api.http).get = "/ancon/nft/nfts/{denom_id}/{token_id}";
+	}
+
+	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/user/{name}/did.json";
+	}
+
+	rpc GetDidKey(QueryGetDidRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/ancon/didregistry/{name}";
+	}
+}
+
+message QueryDidWebRequest {
+	string name = 1;
+}
+
+
+message QueryProofMetadataRequest {
+	string cid = 1;
+	string path =2;
+}
+
+message QueryProofResponse {
+string root = 1;
+string proof = 2;
+}
+
+message QueryGetDidRequest {
+	string name = 1;
+}
+
+
+message QueryReadDidKeyRequest {
+	string name = 1;
+}
+
+message QueryReadDidKeyResponse {
+}
+
+message QueryReadRoyaltyInfo {
+	string cid = 1;
+	string price = 2; // fee % * sales amount
+}
+message QueryReadRoyaltyInfoResponse {
+	string receiver = 1;
+	uint64 royaltyAmount = 2; // fee % * sales amount
+}
+  
+// QueryOwnerRequest is the request type for the Query/Owner RPC method
+message QueryOwnerRequest {
+string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+// pagination defines an optional pagination for the request.
+cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryOwnerResponse is the response type for the Query/Owner RPC method
+message QueryOwnerResponse {
+Owner owner = 1;
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCollectionRequest is the request type for the Query/Collection RPC method
+message QueryCollectionRequest {
+string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+// pagination defines an optional pagination for the request.
+cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryCollectionResponse is the response type for the Query/Collection RPC method
+message QueryCollectionResponse {
+Collection collection = 1;
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryDenomRequest is the request type for the Query/Denom RPC method
+message QueryDenomRequest {
+string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+}
+
+// QueryDenomResponse is the response type for the Query/Denom RPC method
+message QueryDenomResponse {
+Denom denom = 1;
+}
+
+// QueryDenomsRequest is the request type for the Query/Denoms RPC method
+message QueryDenomsRequest {
+// pagination defines an optional pagination for the request.
+cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryDenomsResponse is the response type for the Query/Denoms RPC method
+message QueryDenomsResponse {
+repeated Denom denoms = 1 [ (gogoproto.nullable) = false ];
+
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryNFTRequest is the request type for the Query/NFT RPC method
+message QueryNFTRequest {
+string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+string token_id = 2 [ (gogoproto.moretags) = "yaml:\"token_id\"" ];
+}
+
+// QueryNFTResponse is the response type for the Query/NFT RPC method
+message QueryNFTResponse {
+BaseNFT nft = 1 [ (gogoproto.customname) = "NFT" ];
 }
 // this line is used by starport scaffolding # 3
+
+message QueryGetDelegateRequest {
+	string id = 1;
+	
+}
+
+message QueryGetDelegateResponse {
+}
+
+message QueryNonceRequest {
+  string id = 1;
+}
+
+message QueryNonceResponse {
+}
+
+message QueryGetAttributesResponse {
+
+}
+
+message QueryIdentifyOwnerResponse{
+	
+}
+message QueryGetAttributesRequest {
+	string address = 1;
+}
+
+message QueryIdentifyOwnerRequest {
+	string address = 1;
+}
+message QueryOwnersResponse {
+}
+
 message QueryResourceRequest {
   string cid = 1;
   string path = 2;
@@ -49,4 +227,5 @@ message QueryResourceRequest {
 message QueryResourceResponse {
   string data = 1;
 }
+
 

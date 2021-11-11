@@ -3,14 +3,35 @@ package main
 import (
 	"os"
 
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/app"
-	"github.com/Electronic-Signatures-Industries/ancon-protocol/cmd/ancon-protocold/cmd"
+	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	cmdcfg "github.com/Electronic-Signatures-Industries/ancon-protocol/cmd/config"
+	"github.com/tharsis/ethermint/app"
 )
 
 func main() {
-	rootCmd, _ := cmd.NewRootCmd()
+	setupConfig()
+	cmdcfg.RegisterDenoms()
+
+	rootCmd, _ := NewRootCmd()
+
 	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {
-		os.Exit(1)
+		switch e := err.(type) {
+		case server.ErrorCode:
+			os.Exit(e.Code)
+
+		default:
+			os.Exit(1)
+		}
 	}
+}
+
+func setupConfig() {
+	// set the address prefixes
+	config := sdk.GetConfig()
+	cmdcfg.SetBech32Prefixes(config)
+	cmdcfg.SetBip44CoinType(config)
+	config.Seal()
 }

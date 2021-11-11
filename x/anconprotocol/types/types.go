@@ -48,3 +48,18 @@ type File struct {
 type JSONArrayOfString struct {
 	Items []string
 }
+
+type OffchainLookup struct {
+	Uri    string
+	Prefix string
+}
+
+type RelayMessageNFTMintSwap struct {
+	Prefix string
+	Key    string
+	Value  string
+}
+
+type InitiateSwapWithProofResponse struct {
+	TokenID string
+}

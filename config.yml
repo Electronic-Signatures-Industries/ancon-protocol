@@ -1,16 +1,53 @@
+
+  
 accounts:
   - name: alice
-    coins: ["20000token", "200000000stake"]
+    coins: ["100000000uatom", "100000000000000000000aphoton", "10000000000000000stake"]
   - name: bob
-    coins: ["10000token", "100000000stake"]
+    coins: ["5000000000000aphoton", "10000000000000000stake"]
+  # - name: faucet
+  #   coins: ["1000000000000000000000000000uatom", "10000000000000000stake"]
 validator:
   name: alice
-  staked: "100000000stake"
-client:
-  vuex:
-    path: "vue/src/store"
-  openapi:
-    path: "docs/static/openapi.yml"
-faucet:
-  name: bob
-  coins: ["5token", "100000stake"]
+  staked: "1000000000000000stake"
+  staked: "1000000000000000stake"
+  faucet:
+    port: 4500
+    name: "faucet"
+    coins: ["1000000000000000000000000000uatom"]
+    coins_max: ["100000000uatom"]
+  build:
+    binary: "anconprotocold"
+init:
+  home: "$HOME/.anconprotocold"
+  app:
+    grpc:
+      enable: true
+    rosetta:
+      enable: true
+    api:
+      enable: true
+    json-rpc:
+      enable: true
+      address: "0.0.0.0:9545"     # change the JSON-RPC address and port
+      ws-address: "0.0.0.0:9546"  # change the JSON-RPC websocket address and port
+genesis:
+  chain_id: "anconprotocol_9000-1"
+  app_state:
+    staking:
+      params:
+        bond_denom: "stake"
+    mint:
+      params:
+        mint_denom: "aphoton"
+    crisis:
+      constant_fee:
+        denom: "aphoton"
+    gov:
+      deposit_params:
+        min_deposit:
+          - amount: "10000000"
+            denom: "aphoton"
+    evm:
+      params:
+        evm_denom: "aphoton"

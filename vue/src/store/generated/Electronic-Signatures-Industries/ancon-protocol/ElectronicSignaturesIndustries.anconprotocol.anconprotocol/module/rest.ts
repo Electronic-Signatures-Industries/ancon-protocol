@@ -9,12 +9,223 @@
  * ---------------------------------------------------------------
  */
 
-export interface AnconprotocolMsgFileResponse {
+export interface AnconprotocolAguaclaraPacketData {
+  creator?: string;
+  tokenAddress?: string;
+  tokenId?: string;
+  didRecipient?: string;
+  toMetadata?: string;
+  hash?: string;
+  currentChainId?: string;
+  recipientChainId?: string;
+}
+
+export interface AnconprotocolBaseNFT {
+  id?: string;
+  name?: string;
+  uri?: string;
+  data?: string;
+  owner?: string;
+  didOwner?: string;
+
+  /** @format uint64 */
+  price?: string;
+}
+
+export interface AnconprotocolCollection {
+  denom?: AnconprotocolDenom;
+  nfts?: AnconprotocolBaseNFT[];
+}
+
+export interface AnconprotocolDenom {
+  id?: string;
+  name?: string;
+  schema?: string;
+  creator?: string;
+  symbol?: string;
+  mintRestricted?: boolean;
+  updateRestricted?: boolean;
+}
+
+export interface AnconprotocolIDCollection {
+  denomId?: string;
+  tokenIds?: string[];
+}
+
+/**
+ * MsgBurnNFTResponse defines the Msg/BurnNFT response type.
+ */
+export type AnconprotocolMsgBurnNFTResponse = object;
+
+export interface AnconprotocolMsgChangeOwnerResponse {
+  identity?: string;
+  owner?: string;
+
+  /** @format uint64 */
+  previousChange?: string;
+}
+
+export interface AnconprotocolMsgCreateDidResponse {
+  cid?: string;
+  did?: string;
+}
+
+/**
+ * MsgEditNFTResponse defines the Msg/EditNFT response type.
+ */
+export type AnconprotocolMsgEditNFTResponse = object;
+
+export interface AnconprotocolMsgGrantAttributeResponse {
+  ok?: boolean;
+}
+
+export interface AnconprotocolMsgGrantDelegateResponse {
+  /** @format byte */
   hash?: string;
 }
 
+/**
+ * MsgIssueDenomResponse defines the Msg/IssueDenom response type.
+ */
+export type AnconprotocolMsgIssueDenomResponse = object;
+
 export interface AnconprotocolMsgMetadataResponse {
   cid?: string;
+}
+
+/**
+ * MsgMintNFTResponse defines the Msg/MintNFT response type.
+ */
+export type AnconprotocolMsgMintNFTResponse = object;
+
+export interface AnconprotocolMsgMintTrustedContentResponse {
+  /** @format uint64 */
+  id?: string;
+}
+
+export interface AnconprotocolMsgMintTrustedResourceResponse {
+  /** @format uint64 */
+  id?: string;
+}
+
+export interface AnconprotocolMsgRevokeAttributeResponse {
+  /** @format byte */
+  hash?: string;
+}
+
+export interface AnconprotocolMsgRevokeDelegateResponse {
+  /** @format byte */
+  hash?: string;
+}
+
+export interface AnconprotocolMsgRevokeDidResponse {
+  /** @format uint64 */
+  id?: string;
+}
+
+export interface AnconprotocolMsgRoyaltyInfoResponse {
+  receiver?: string;
+
+  /** @format uint64 */
+  royaltyFeePercentage?: string;
+  metadataRef?: string;
+}
+
+export interface AnconprotocolMsgSendMetadataOwnershipResponse {
+  cid?: string;
+}
+
+/**
+ * MsgTransferDenomResponse defines the Msg/TransferDenom response type.
+ */
+export type AnconprotocolMsgTransferDenomResponse = object;
+
+/**
+ * MsgTransferNFTResponse defines the Msg/TransferNFT response type.
+ */
+export type AnconprotocolMsgTransferNFTResponse = object;
+
+export type AnconprotocolMsgUpdateDidResponse = object;
+
+export interface AnconprotocolMsgUpdateMetadataOwnershipResponse {
+  metadataRef?: string;
+  packetRef?: string;
+}
+
+export interface AnconprotocolOwner {
+  address?: string;
+  idCollections?: AnconprotocolIDCollection[];
+}
+
+export interface AnconprotocolQueryCollectionResponse {
+  collection?: AnconprotocolCollection;
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryDenomResponse {
+  denom?: AnconprotocolDenom;
+}
+
+export interface AnconprotocolQueryDenomsResponse {
+  denoms?: AnconprotocolDenom[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export type AnconprotocolQueryGetAttributesResponse = object;
+
+export type AnconprotocolQueryGetDelegateResponse = object;
+
+export type AnconprotocolQueryIdentifyOwnerResponse = object;
+
+export interface AnconprotocolQueryNFTResponse {
+  nft?: AnconprotocolBaseNFT;
+}
+
+export interface AnconprotocolQueryOwnerResponse {
+  owner?: AnconprotocolOwner;
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryProofResponse {
+  root?: string;
+  proof?: string;
+}
+
+export interface AnconprotocolQueryReadRoyaltyInfoResponse {
+  receiver?: string;
+
+  /** @format uint64 */
+  royaltyAmount?: string;
 }
 
 export interface AnconprotocolQueryResourceResponse {
@@ -60,10 +271,13 @@ Example 2: Pack and unpack a message in Java.
  Example 4: Pack and unpack a message in Go
 
      foo := &pb.Foo{...}
-     any, err := ptypes.MarshalAny(foo)
+     any, err := anypb.New(foo)
+     if err != nil {
+       ...
+     }
      ...
      foo := &pb.Foo{}
-     if err := ptypes.UnmarshalAny(any, foo); err != nil {
+     if err := any.UnmarshalTo(foo); err != nil {
        ...
      }
 
@@ -132,13 +346,7 @@ export interface ProtobufAny {
    * Schemes other than `http`, `https` (or the empty scheme) might be
    * used with implementation specific semantics.
    */
-  typeUrl?: string;
-
-  /**
-   * Must be a valid serialized protocol buffer of the above specified type.
-   * @format byte
-   */
-  value?: string;
+  "@type"?: string;
 }
 
 export interface RpcStatus {
@@ -146,6 +354,65 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* message SomeRequest {
+         Foo some_parameter = 1;
+         PageRequest pagination = 2;
+ }
+*/
+export interface V1Beta1PageRequest {
+  /**
+   * key is a value returned in PageResponse.next_key to begin
+   * querying the next page most efficiently. Only one of offset or key
+   * should be set.
+   * @format byte
+   */
+  key?: string;
+
+  /**
+   * offset is a numeric offset that can be used when key is unavailable.
+   * It is less efficient than using key. Only one of offset or key should
+   * be set.
+   * @format uint64
+   */
+  offset?: string;
+
+  /**
+   * limit is the total number of results to be returned in the result page.
+   * If left empty it will default to a value to be set by each app.
+   * @format uint64
+   */
+  limit?: string;
+
+  /**
+   * count_total is set to true  to indicate that the result set should include
+   * a count of the total number of items available for pagination in UIs.
+   * count_total is only respected when offset is used. It is ignored when key
+   * is set.
+   */
+  countTotal?: boolean;
+
+  /** reverse is set to true if results are to be returned in the descending order. */
+  reverse?: boolean;
+}
+
+/**
+* PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+*/
+export interface V1Beta1PageResponse {
+  /** @format byte */
+  nextKey?: string;
+
+  /** @format uint64 */
+  total?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -340,7 +607,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title anconprotocol/genesis.proto
+ * @title anconprotocol/did_registry.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -348,31 +615,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryResource
-   * @summary Queries a list of resource items.
-   * @request GET:/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/{cid}
+   * @name QueryReadDelegate
+   * @summary Queries a list of delegates items.
+   * @request GET:/ancon/didregistry/delegates/{id}
    */
-  queryResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/Electronic-Signatures-Industries/anconprotocol/anconprotocol/resource/${cid}`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
- * No description
- * 
- * @tags Query
- * @name QueryReadFile
- * @summary additional handler that uses ReadFile
-Queries a list of resource items.
- * @request GET:/ancon/file/{cid}/{path}
- */
-  queryReadFile = (cid: string, path: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/file/${cid}/${path}`,
+  queryReadDelegate = (id: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryGetDelegateResponse, RpcStatus>({
+      path: `/ancon/didregistry/delegates/${id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -382,15 +631,207 @@ Queries a list of resource items.
    * No description
    *
    * @tags Query
-   * @name QueryRead
-   * @summary Queries a list of resource items.
-   * @request GET:/ancon/{cid}
+   * @name QueryIdentifyOwner
+   * @summary Queries a list of owners items.
+   * @request GET:/ancon/didregistry/{address}
    */
-  queryRead = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
+  queryIdentifyOwner = (address: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryIdentifyOwnerResponse, RpcStatus>({
+      path: `/ancon/didregistry/${address}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGetAttributes
+   * @summary Queries a list of Attributes items.
+   * @request GET:/ancon/didregistry/{address}/attributes
+   */
+  queryGetAttributes = (address: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryGetAttributesResponse, RpcStatus>({
+      path: `/ancon/didregistry/${address}/attributes`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGetDidKey
+   * @request GET:/ancon/didregistry/{name}
+   */
+  queryGetDidKey = (name: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/${cid}`,
+      path: `/ancon/didregistry/${name}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCollection
+   * @summary Collection queries the NFTs of the specified denom
+   * @request GET:/ancon/nft/collections/{denomId}
+   */
+  queryCollection = (
+    denomId: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryCollectionResponse, RpcStatus>({
+      path: `/ancon/nft/collections/${denomId}`,
       method: "GET",
       query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDenoms
+   * @summary Denoms queries all the denoms
+   * @request GET:/ancon/nft/denoms
+   */
+  queryDenoms = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryDenomsResponse, RpcStatus>({
+      path: `/ancon/nft/denoms`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDenom
+   * @summary Denom queries the definition of a given denom
+   * @request GET:/ancon/nft/denoms/{denomId}
+   */
+  queryDenom = (denomId: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryDenomResponse, RpcStatus>({
+      path: `/ancon/nft/denoms/${denomId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryOwner
+   * @summary Owner queries the NFTs of the specified owner
+   * @request GET:/ancon/nft/nfts
+   */
+  queryOwner = (
+    query?: {
+      denomId?: string;
+      owner?: string;
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<AnconprotocolQueryOwnerResponse, RpcStatus>({
+      path: `/ancon/nft/nfts`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGetNft
+   * @summary NFT queries the NFT for the given denom and token ID
+   * @request GET:/ancon/nft/nfts/{denomId}/{tokenId}
+   */
+  queryGetNft = (denomId: string, tokenId: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryNFTResponse, RpcStatus>({
+      path: `/ancon/nft/nfts/${denomId}/${tokenId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadMetadataProof
+   * @summary Reads metadata proofs
+   * @request GET:/ancon/proof/{cid}/{path}
+   */
+  queryReadMetadataProof = (cid: string, path: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryProofResponse, RpcStatus>({
+      path: `/ancon/proof/${cid}/${path}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryResource
+   * @summary Queries a list of resource items.
+   * @request GET:/ancon/resource/{cid}
+   */
+  queryResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/ancon/resource/${cid}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadRoyaltyInfo
+   * @summary ReadRoyaltyInfo
+   * @request GET:/ancon/royalty/{cid}/{price}
+   */
+  queryReadRoyaltyInfo = (cid: string, price: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>({
+      path: `/ancon/royalty/${cid}/${price}`,
+      method: "GET",
       format: "json",
       ...params,
     });
@@ -406,6 +847,21 @@ Queries a list of resource items.
   queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
       path: `/ancon/${cid}/${path}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryResolveDidWeb
+   * @request GET:/user/{name}/did.json
+   */
+  queryResolveDidWeb = (name: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/user/${name}/did.json`,
       method: "GET",
       format: "json",
       ...params,

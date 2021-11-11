@@ -1,0 +1,42 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
+
+import "gogoproto/gogo.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
+
+message DIDOwner {
+  string identity = 1;
+  string owner = 2;
+  string cid = 3;
+  bool did_web_deactivated = 4[ (gogoproto.nullable) = true];
+  string vanity_name = 5;
+}
+
+message DIDWebRoute {
+  string name = 1;
+  string route = 2;
+  string cid = 3;
+}
+
+message Delegate {
+  string delegate = 1;
+  string delegateType = 2;
+  uint64 validity = 3;
+  string creator = 4;
+  string identity = 5;
+}
+
+message Change {
+  string identity = 1;
+  string owner = 2;
+  uint64 previousChange = 3;
+}
+
+message Attribute {
+  string identity = 1;
+  bytes name = 2;
+  bytes value = 3;
+}

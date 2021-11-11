@@ -1,0 +1,19 @@
+@startuml crossmint
+participant client
+participant blockchain as ancon
+participant durinGateway as l2
+participant ethereumSmartContract as ethSC
+
+client -> ancon : "create metadata - msg mint trusted content"
+ancon -> client : "return cid hash"
+
+client -> ethSC : "mint nft"
+
+ethSC -> client : "offchainLookUpError"
+
+client -> l2 : "retrieve proof - using error URI"
+l2 -> client : "proof"
+
+client -> ethSC : "mint nft with proof"
+
+@enduml

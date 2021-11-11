@@ -1,4 +1,13 @@
 main
 vue/node_modules
+flow/atlantico/node_modules
+flow/node_modules
 vue/dist
 secret.yml
+.idea/
+gen
+ethereum/node_modules
+ethereum/build/contracts
+.env
+ethereum/.env
+.vscode
