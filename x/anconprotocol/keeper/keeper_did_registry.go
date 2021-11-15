@@ -87,7 +87,7 @@ func (k Keeper) BuildDidKey(ctx sdk.Context, creator string) (*did.Doc, error) {
 	multi := append([]byte(multicodec.Secp256k1Pub.String()), acc.Bytes()...)
 	code, _ := multibase.Encode(multibase.Base58BTC, multi)
 	// did key
-	base := append([]byte("did:key:z"), code...)
+	base := append([]byte("did:key:"), code...)
 	// did key # id
 	id := append(base, []byte("#")...)
 
@@ -127,8 +127,7 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 	var didDoc *did.Doc
 	var err error
 	didOwner := types.DIDOwner{
-		Identity: msg.Creator,
-		Owner:    msg.Creator,
+		Owner: msg.Creator,
 	}
 
 	if msg.DidType == "web" {
@@ -176,7 +175,8 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 		k.SetDidWebRoute(ctx, didWebRoute)
 	}
 	didOwner.Cid = cid
-	k.SetDIDOwner(ctx, didOwner)
+	didOwner.DidIdentity = didDoc.ID
+	k.SetDIDOwner(ctx, &didOwner)
 	return &didOwner, nil
 }
 

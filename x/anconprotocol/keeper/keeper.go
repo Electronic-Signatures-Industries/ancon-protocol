@@ -101,16 +101,23 @@ func (k *Keeper) EnsureModuleAccountPermissions(ctx sdk.Context) error {
 }
 
 // ApplyChangeOwner = AppendOwner
-func (k *Keeper) ApplyOwner(ctx sdk.Context, msg *types.MsgChangeOwner) error {
-	//verify that the creator is owner of that account
-	owner := types.DIDOwner{
-		Identity: msg.Identity,
-		Owner:    msg.NewOwner,
+func (k *Keeper) ApplyOwner(ctx sdk.Context, creator, newOwner string) (*types.DIDOwner, error) {
+
+	has := k.HasDIDOwner(ctx, creator)
+	if has {
+		did := k.GetDIDOwner(ctx, creator)
+		//verify that the creator is owner of that account
+		owner := types.DIDOwner{
+			DidIdentity: did.DidIdentity,
+			Owner:       newOwner,
+		}
+
+		k.SetDIDOwner(ctx, &owner)
+
+		return &did, nil
 	}
 
-	k.SetDIDOwner(ctx, owner)
-
-	return nil
+	return nil, fmt.Errorf("must be an existing owner")
 }
 
 //Get functions returns a documents from its id
@@ -122,52 +129,52 @@ func (k *Keeper) GetDIDOwner(ctx sdk.Context, owner string) types.DIDOwner {
 	return found
 }
 
-func (k *Keeper) GetDelegates(ctx sdk.Context, delegate string, o string) types.Delegate {
+func (k *Keeper) GetDelegate(ctx sdk.Context, delegate string) types.DIDDelegate {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
-	var found types.Delegate
-	id := []byte(o)
+	var found types.DIDDelegate
+	id := []byte(delegate)
 	k.cdc.Unmarshal(store.Get(id), &found)
 	return found
 }
 func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) error {
 	blockTime := ctx.BlockTime()
-	grantDelegate := &types.Delegate{
+	grantDelegate := &types.DIDDelegate{
 		Delegate:     msg.Delegate,
 		DelegateType: msg.DelegateType,
 		Validity:     msg.Validity + uint64(blockTime.Unix()),
 		Creator:      msg.Creator,
-		Identity:     msg.Identity,
+		DidIdentity:  msg.DidIdentity,
 	}
 	k.SetDelegate(ctx, grantDelegate)
 
 	return nil
 }
-func (k *Keeper) SetDIDOwner(ctx sdk.Context, o types.DIDOwner) {
+func (k *Keeper) SetDIDOwner(ctx sdk.Context, o *types.DIDOwner) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
-	res := k.cdc.MustMarshal(&o)
-	store.Set([]byte(o.Identity), res)
+	res := k.cdc.MustMarshal(o)
+	store.Set([]byte(o.Owner), res)
 }
 
-func (k *Keeper) SetAttribute(ctx sdk.Context, msg *types.Attribute) {
+func (k *Keeper) SetAttribute(ctx sdk.Context, msg *types.DIDAttribute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
 	res := k.cdc.MustMarshal(msg)
-	store.Set([]byte(msg.Identity), res)
+	store.Set([]byte(msg.DidIdentity), res)
 }
 
-func (k *Keeper) SetDelegate(ctx sdk.Context, msg *types.Delegate) {
+func (k *Keeper) SetDelegate(ctx sdk.Context, msg *types.DIDDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	res := k.cdc.MustMarshal(msg)
-	store.Set([]byte(msg.Identity), res)
+	store.Set([]byte(msg.DidIdentity), res)
 }
 
 func (k *Keeper) RemoveAttribute(ctx sdk.Context, msg *types.MsgRevokeAttribute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
-	store.Delete([]byte(msg.Identity))
+	store.Delete([]byte(msg.DidIdentity))
 }
 
 func (k *Keeper) RemoveDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
-	store.Delete([]byte(msg.Identity))
+	store.Delete([]byte(msg.DidIdentity))
 }
 func (k *Keeper) RemoveDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
@@ -256,10 +263,10 @@ func (k *Keeper) toIpldProofList(proofs []did.Proof) func(fluent.ListAssembler) 
 }
 
 func (k *Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgGrantAttribute) error {
-	attr := types.Attribute{
-		Identity: msg.Identity,
-		Name:     msg.Name,
-		Value:    msg.Value,
+	attr := types.DIDAttribute{
+		DidIdentity: msg.DidIdentity,
+		Name:        msg.Name,
+		Value:       msg.Value,
 	}
 
 	k.SetAttribute(ctx, &attr)
@@ -272,9 +279,9 @@ func (k *Keeper) HasDelegates(ctx sdk.Context, delegate string, delegateType str
 	return store.Has([]byte(o))
 }
 
-func (k *Keeper) HasOwner(ctx sdk.Context, o string) bool {
+func (k *Keeper) HasDIDOwner(ctx sdk.Context, id string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
-	return store.Has([]byte(o))
+	return store.Has([]byte(id))
 }
 
 func (k *Keeper) HasDidWebRoute(ctx sdk.Context, vn string) bool {

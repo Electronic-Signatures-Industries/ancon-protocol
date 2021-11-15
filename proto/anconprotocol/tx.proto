@@ -290,30 +290,18 @@ message MsgTransferNFT {
 }
 message MsgChangeOwnerResponse {
   option (gogoproto.goproto_getters) = false;
-  string identity = 1;
+  string did_identity = 1;
   string owner = 2;
   uint64 previousChange = 3;
 }
 
-message MsgCreateDIDOwner {
-  option (gogoproto.goproto_getters) = false;
 
-  string creator = 1;
-  string owner = 2;
-  string did_key = 3[ (gogoproto.nullable) = true ];
-  string did_web = 4[ (gogoproto.nullable) = true ];  
-}
-
-message MsgCreateDIDOwnerResponse {
-
-}
 
 message MsgChangeOwner {
   option (gogoproto.goproto_getters) = false;
 
   string creator = 1;
-  string identity = 2;
-  string newOwner = 3;
+  string new_owner = 2;
 }
 
 message MsgGrantDelegate {
@@ -322,7 +310,7 @@ message MsgGrantDelegate {
   string delegateType = 2;
   uint64 validity = 3;
   string creator = 4;
-  string identity = 5;
+  string did_identity = 5;
 }
 message MsgGrantDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -335,7 +323,7 @@ message MsgRevokeDelegate {
   string delegateType = 2;
   uint64 validity = 3;
   string creator = 4;
-  string identity = 5;
+  string did_identity = 5;
 }
 message MsgRevokeDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -344,7 +332,7 @@ message MsgRevokeDelegateResponse {
 }
 message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
-  string identity = 1;
+  string did_identity = 1;
   string actor = 2;
   string creator = 3;
   bytes name = 4;
@@ -359,7 +347,7 @@ message MsgSetAttributeResponse {
 
 message MsgGrantAttribute {
   option (gogoproto.goproto_getters) = false;
-  string identity = 1;
+  string did_identity = 1;
   string actor = 2;
   bytes name = 3;
   bytes value = 4;
@@ -375,7 +363,7 @@ message MsgGrantAttributeResponse {
 
 message MsgRevokeAttribute {
   option (gogoproto.goproto_getters) = false;
-  string identity = 1;
+  string did_identity = 1;
   string actor = 2;
   bytes name = 3;
   bytes value = 4;

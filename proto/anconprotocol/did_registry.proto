@@ -8,35 +8,33 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
 
 message DIDOwner {
-  string identity = 1;
+  string did_identity = 1;
   string owner = 2;
   string cid = 3;
-  bool did_web_deactivated = 4[ (gogoproto.nullable) = true];
-  string vanity_name = 5;
+  string vanity_name = 4;
 }
 
 message DIDWebRoute {
   string name = 1;
   string route = 2;
   string cid = 3;
+  bool did_web_deactivated = 4[ (gogoproto.nullable) = true];
+  string did_identity = 5;
+
 }
 
-message Delegate {
+message DIDDelegate {
   string delegate = 1;
   string delegateType = 2;
   uint64 validity = 3;
   string creator = 4;
-  string identity = 5;
+  string did_identity = 5;
 }
 
-message Change {
-  string identity = 1;
-  string owner = 2;
-  uint64 previousChange = 3;
-}
 
-message Attribute {
-  string identity = 1;
+
+message DIDAttribute {
+  string did_identity = 1;
   bytes name = 2;
   bytes value = 3;
 }

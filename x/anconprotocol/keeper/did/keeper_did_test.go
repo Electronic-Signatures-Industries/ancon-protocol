@@ -4,8 +4,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"encoding/base64"
-	"fmt"
 	"testing"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
@@ -21,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	cbor "github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/libs/log"
@@ -124,37 +121,111 @@ func Test_DID_Key(t *testing.T) {
 	require.Equal(t, route, doc)
 }
 
-func Test_ChangeMetadata_JSON(t *testing.T) {
+func Test_DID_Delegate(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
-	f := make([]types.MsgMetadata, 1)
-	f[0].Creator = "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
-	f[0].Description = "NFT Metadata"
-	f[0].Did = "did:ethr:0xeeC58E89996496640c8b5898A7e0218E9b6E90cB"
-	f[0].Image = "bafyreicztwstn4ujtsnabjabn3hj7mvbhsgrvefbh37ddnx4w2pvghvsfm"
-	f[0].Owner = "did:key:z8mWaJHXieAVxxLagBpdaNWFEBKVWmMiE"
-	f[0].Parent = ""
-	f[0].VerifiedCredentialRef = ""
-	f[0].AdditionalSources = []string{"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"}
-	f[0].Links = []string{}
-	f[0].From = "gggggggggggggg"
+	// ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// require.NoError(t, err)
 
-	lnk, _ := keeper.AddMetadata(ctx, &f[0])
+	// ecKeyBytes := elliptic.Marshal(elliptic.P256(), ecKey.X, ecKey.Y)
 
-	updlnk, _ := keeper.ChangeOwnerMetadata(ctx, lnk, f[0].Owner, f[0].Did, "", "")
+	payload := types.MsgCreateDid{
+		Creator:    "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		VanityName: "wonderland",
+		DidType:    "key",
+		// PublicKeyBytes: ecKeyBytes,
+	}
+	res, err := keeper.AddDid(ctx, &payload)
 
-	r, p, _ := keeper.GetMetadataProof(ctx, fmt.Sprintf("%s", updlnk), "")
+	if err != nil {
+		require.NoError(t, err)
+	}
+	x := &types.QueryGetDidRequest{
+		Name: "wonderland",
+	}
+	doc, _ := keeper.GetDid(ctx, res.Cid)
+	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	require.Equal(t, route, doc)
 
-	require.NotNil(t, r)
-	require.NotNil(t, p)
+	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
+		Delegate:     "did:web:ancon:alice",
+		DelegateType: "web",
+		Validity:     100000000,
+		Creator:      payload.Creator,
+		DidIdentity:  "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl",
+	})
 
-	// lnk = "bafyreiamh4lbph4e7jtwuk2fwato6y6jk67v4mmra4x4rxhjjzn7xa5uiq"
-	x := &types.QueryResourceRequest{Cid: updlnk}
-	om, _ := keeper.GetObject(ctx, x)
+	res2 := keeper.GetDelegate(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
 
-	var cborPayload []byte
-	cborPayload, _ = base64.RawStdEncoding.DecodeString(om.Data)
+	require.NotEqual(t, res.DidIdentity, res2.DidIdentity)
+}
 
-	var output types.IPLDMetadataStore
-	_ = cbor.Unmarshal(cborPayload, &output)
-	require.Equal(t, output.Owner, f[0].Did)
+func Test_DID_ChangeOwner(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	// ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// require.NoError(t, err)
+
+	// ecKeyBytes := elliptic.Marshal(elliptic.P256(), ecKey.X, ecKey.Y)
+
+	payload := types.MsgCreateDid{
+		Creator:    "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		VanityName: "wonderland",
+		DidType:    "key",
+		// PublicKeyBytes: ecKeyBytes,
+	}
+	res, err := keeper.AddDid(ctx, &payload)
+
+	if err != nil {
+		require.NoError(t, err)
+	}
+	x := &types.QueryGetDidRequest{
+		Name: "wonderland",
+	}
+	doc, _ := keeper.GetDid(ctx, res.Cid)
+	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	require.Equal(t, route, doc)
+
+	keeper.ApplyOwner(ctx,
+		"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		"cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl",
+	)
+
+	res2 := keeper.GetDIDOwner(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
+
+	require.Equal(t, res.DidIdentity, res2.DidIdentity)
+
+}
+func Test_DID_ChangeOwner_NotFound(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	// ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// require.NoError(t, err)
+
+	// ecKeyBytes := elliptic.Marshal(elliptic.P256(), ecKey.X, ecKey.Y)
+
+	payload := types.MsgCreateDid{
+		Creator:    "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		VanityName: "wonderland",
+		DidType:    "key",
+		// PublicKeyBytes: ecKeyBytes,
+	}
+	res, err := keeper.AddDid(ctx, &payload)
+
+	if err != nil {
+		require.NoError(t, err)
+	}
+	x := &types.QueryGetDidRequest{
+		Name: "wonderland",
+	}
+	doc, _ := keeper.GetDid(ctx, res.Cid)
+	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	require.Equal(t, route, doc)
+
+	keeper.ApplyOwner(ctx,
+		"cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl",
+		"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+	)
+
+	res2 := keeper.GetDIDOwner(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
+
+	require.NotEqual(t, res.DidIdentity, res2.DidIdentity)
+
 }

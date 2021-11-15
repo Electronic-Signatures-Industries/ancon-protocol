@@ -14,21 +14,23 @@ import (
 func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner) (*types.MsgChangeOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	k.ApplyOwner(ctx, msg)
+	owner, err :=
+		k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
+
+	if err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.ChangeOwnerEvent,
-			sdk.NewAttribute("Identity", msg.Identity),
 			sdk.NewAttribute("NewOwner", msg.NewOwner),
 		),
 	})
 
-	_ = ctx
-
 	return &types.MsgChangeOwnerResponse{
-		Identity: msg.Identity,
-		Owner:    msg.NewOwner,
+		DidIdentity: owner.DidIdentity,
+		Owner:       msg.NewOwner,
 	}, nil
 }
 
@@ -49,8 +51,6 @@ func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttr
 		),
 	})
 
-	_ = ctx
-
 	return &types.MsgGrantAttributeResponse{
 		Ok: true,
 	}, nil
@@ -66,7 +66,7 @@ func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDeleg
 		sdk.NewEvent(
 			types.SetAttributeEvent,
 			sdk.NewAttribute("Creator", msg.Creator),
-			sdk.NewAttribute("Identity", msg.Identity),
+			sdk.NewAttribute("DidIdentity", msg.DidIdentity),
 			sdk.NewAttribute("Delegate", string(msg.Delegate)),
 			sdk.NewAttribute("DelegateType", string(msg.DelegateType)),
 			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
@@ -89,7 +89,7 @@ func (k msgServer) RevokeAttribute(goCtx context.Context, msg *types.MsgRevokeAt
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.SetAttributeEvent,
-			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Creator", msg.Creator),
 			sdk.NewAttribute("Name", string(msg.Name)),
 			sdk.NewAttribute("Value", string(msg.Value)),
 			//			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
@@ -154,7 +154,7 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 
 	return &types.MsgCreateDidResponse{
 		Cid: didOwner.Cid,
-		Did: didOwner.Identity,
+		Did: didOwner.DidIdentity,
 		Url: string(append([]byte(host), addr...)),
 	}, err
 }

@@ -24,11 +24,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type DIDOwner struct {
-	Identity          string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
-	Owner             string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Cid               string `protobuf:"bytes,3,opt,name=cid,proto3" json:"cid,omitempty"`
-	DidWebDeactivated bool   `protobuf:"varint,4,opt,name=did_web_deactivated,json=didWebDeactivated,proto3" json:"did_web_deactivated,omitempty"`
-	VanityName        string `protobuf:"bytes,5,opt,name=vanity_name,json=vanityName,proto3" json:"vanity_name,omitempty"`
+	DidIdentity string `protobuf:"bytes,1,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
+	Owner       string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	Cid         string `protobuf:"bytes,3,opt,name=cid,proto3" json:"cid,omitempty"`
+	VanityName  string `protobuf:"bytes,4,opt,name=vanity_name,json=vanityName,proto3" json:"vanity_name,omitempty"`
 }
 
 func (m *DIDOwner) Reset()         { *m = DIDOwner{} }
@@ -64,9 +63,9 @@ func (m *DIDOwner) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DIDOwner proto.InternalMessageInfo
 
-func (m *DIDOwner) GetIdentity() string {
+func (m *DIDOwner) GetDidIdentity() string {
 	if m != nil {
-		return m.Identity
+		return m.DidIdentity
 	}
 	return ""
 }
@@ -85,13 +84,6 @@ func (m *DIDOwner) GetCid() string {
 	return ""
 }
 
-func (m *DIDOwner) GetDidWebDeactivated() bool {
-	if m != nil {
-		return m.DidWebDeactivated
-	}
-	return false
-}
-
 func (m *DIDOwner) GetVanityName() string {
 	if m != nil {
 		return m.VanityName
@@ -100,9 +92,11 @@ func (m *DIDOwner) GetVanityName() string {
 }
 
 type DIDWebRoute struct {
-	Name  string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Route string `protobuf:"bytes,2,opt,name=route,proto3" json:"route,omitempty"`
-	Cid   string `protobuf:"bytes,3,opt,name=cid,proto3" json:"cid,omitempty"`
+	Name              string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Route             string `protobuf:"bytes,2,opt,name=route,proto3" json:"route,omitempty"`
+	Cid               string `protobuf:"bytes,3,opt,name=cid,proto3" json:"cid,omitempty"`
+	DidWebDeactivated bool   `protobuf:"varint,4,opt,name=did_web_deactivated,json=didWebDeactivated,proto3" json:"did_web_deactivated,omitempty"`
+	DidIdentity       string `protobuf:"bytes,5,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
 }
 
 func (m *DIDWebRoute) Reset()         { *m = DIDWebRoute{} }
@@ -159,26 +153,40 @@ func (m *DIDWebRoute) GetCid() string {
 	return ""
 }
 
-type Delegate struct {
+func (m *DIDWebRoute) GetDidWebDeactivated() bool {
+	if m != nil {
+		return m.DidWebDeactivated
+	}
+	return false
+}
+
+func (m *DIDWebRoute) GetDidIdentity() string {
+	if m != nil {
+		return m.DidIdentity
+	}
+	return ""
+}
+
+type DIDDelegate struct {
 	Delegate     string `protobuf:"bytes,1,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	DelegateType string `protobuf:"bytes,2,opt,name=delegateType,proto3" json:"delegateType,omitempty"`
 	Validity     uint64 `protobuf:"varint,3,opt,name=validity,proto3" json:"validity,omitempty"`
 	Creator      string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
-	Identity     string `protobuf:"bytes,5,opt,name=identity,proto3" json:"identity,omitempty"`
+	DidIdentity  string `protobuf:"bytes,5,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
 }
 
-func (m *Delegate) Reset()         { *m = Delegate{} }
-func (m *Delegate) String() string { return proto.CompactTextString(m) }
-func (*Delegate) ProtoMessage()    {}
-func (*Delegate) Descriptor() ([]byte, []int) {
+func (m *DIDDelegate) Reset()         { *m = DIDDelegate{} }
+func (m *DIDDelegate) String() string { return proto.CompactTextString(m) }
+func (*DIDDelegate) ProtoMessage()    {}
+func (*DIDDelegate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ff4b4c49efbad430, []int{2}
 }
-func (m *Delegate) XXX_Unmarshal(b []byte) error {
+func (m *DIDDelegate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Delegate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *DIDDelegate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Delegate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_DIDDelegate.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -188,71 +196,71 @@ func (m *Delegate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Delegate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Delegate.Merge(m, src)
+func (m *DIDDelegate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DIDDelegate.Merge(m, src)
 }
-func (m *Delegate) XXX_Size() int {
+func (m *DIDDelegate) XXX_Size() int {
 	return m.Size()
 }
-func (m *Delegate) XXX_DiscardUnknown() {
-	xxx_messageInfo_Delegate.DiscardUnknown(m)
+func (m *DIDDelegate) XXX_DiscardUnknown() {
+	xxx_messageInfo_DIDDelegate.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Delegate proto.InternalMessageInfo
+var xxx_messageInfo_DIDDelegate proto.InternalMessageInfo
 
-func (m *Delegate) GetDelegate() string {
+func (m *DIDDelegate) GetDelegate() string {
 	if m != nil {
 		return m.Delegate
 	}
 	return ""
 }
 
-func (m *Delegate) GetDelegateType() string {
+func (m *DIDDelegate) GetDelegateType() string {
 	if m != nil {
 		return m.DelegateType
 	}
 	return ""
 }
 
-func (m *Delegate) GetValidity() uint64 {
+func (m *DIDDelegate) GetValidity() uint64 {
 	if m != nil {
 		return m.Validity
 	}
 	return 0
 }
 
-func (m *Delegate) GetCreator() string {
+func (m *DIDDelegate) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *Delegate) GetIdentity() string {
+func (m *DIDDelegate) GetDidIdentity() string {
 	if m != nil {
-		return m.Identity
+		return m.DidIdentity
 	}
 	return ""
 }
 
-type Change struct {
-	Identity       string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
-	Owner          string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	PreviousChange uint64 `protobuf:"varint,3,opt,name=previousChange,proto3" json:"previousChange,omitempty"`
+type DIDAttribute struct {
+	DidIdentity string `protobuf:"bytes,1,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
+	Name        []byte `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Value       []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
 }
 
-func (m *Change) Reset()         { *m = Change{} }
-func (m *Change) String() string { return proto.CompactTextString(m) }
-func (*Change) ProtoMessage()    {}
-func (*Change) Descriptor() ([]byte, []int) {
+func (m *DIDAttribute) Reset()         { *m = DIDAttribute{} }
+func (m *DIDAttribute) String() string { return proto.CompactTextString(m) }
+func (*DIDAttribute) ProtoMessage()    {}
+func (*DIDAttribute) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ff4b4c49efbad430, []int{3}
 }
-func (m *Change) XXX_Unmarshal(b []byte) error {
+func (m *DIDAttribute) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Change) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *DIDAttribute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Change.Marshal(b, m, deterministic)
+		return xxx_messageInfo_DIDAttribute.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -262,93 +270,33 @@ func (m *Change) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Change) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Change.Merge(m, src)
+func (m *DIDAttribute) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DIDAttribute.Merge(m, src)
 }
-func (m *Change) XXX_Size() int {
+func (m *DIDAttribute) XXX_Size() int {
 	return m.Size()
 }
-func (m *Change) XXX_DiscardUnknown() {
-	xxx_messageInfo_Change.DiscardUnknown(m)
+func (m *DIDAttribute) XXX_DiscardUnknown() {
+	xxx_messageInfo_DIDAttribute.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Change proto.InternalMessageInfo
+var xxx_messageInfo_DIDAttribute proto.InternalMessageInfo
 
-func (m *Change) GetIdentity() string {
+func (m *DIDAttribute) GetDidIdentity() string {
 	if m != nil {
-		return m.Identity
+		return m.DidIdentity
 	}
 	return ""
 }
 
-func (m *Change) GetOwner() string {
-	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-func (m *Change) GetPreviousChange() uint64 {
-	if m != nil {
-		return m.PreviousChange
-	}
-	return 0
-}
-
-type Attribute struct {
-	Identity string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
-	Name     []byte `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Value    []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
-}
-
-func (m *Attribute) Reset()         { *m = Attribute{} }
-func (m *Attribute) String() string { return proto.CompactTextString(m) }
-func (*Attribute) ProtoMessage()    {}
-func (*Attribute) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ff4b4c49efbad430, []int{4}
-}
-func (m *Attribute) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Attribute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Attribute.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Attribute) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Attribute.Merge(m, src)
-}
-func (m *Attribute) XXX_Size() int {
-	return m.Size()
-}
-func (m *Attribute) XXX_DiscardUnknown() {
-	xxx_messageInfo_Attribute.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Attribute proto.InternalMessageInfo
-
-func (m *Attribute) GetIdentity() string {
-	if m != nil {
-		return m.Identity
-	}
-	return ""
-}
-
-func (m *Attribute) GetName() []byte {
+func (m *DIDAttribute) GetName() []byte {
 	if m != nil {
 		return m.Name
 	}
 	return nil
 }
 
-func (m *Attribute) GetValue() []byte {
+func (m *DIDAttribute) GetValue() []byte {
 	if m != nil {
 		return m.Value
 	}
@@ -358,44 +306,41 @@ func (m *Attribute) GetValue() []byte {
 func init() {
 	proto.RegisterType((*DIDOwner)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.DIDOwner")
 	proto.RegisterType((*DIDWebRoute)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.DIDWebRoute")
-	proto.RegisterType((*Delegate)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Delegate")
-	proto.RegisterType((*Change)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Change")
-	proto.RegisterType((*Attribute)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Attribute")
+	proto.RegisterType((*DIDDelegate)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.DIDDelegate")
+	proto.RegisterType((*DIDAttribute)(nil), "ElectronicSignaturesIndustries.anconprotocol.anconprotocol.DIDAttribute")
 }
 
 func init() { proto.RegisterFile("anconprotocol/did_registry.proto", fileDescriptor_ff4b4c49efbad430) }
 
 var fileDescriptor_ff4b4c49efbad430 = []byte{
-	// 449 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xbf, 0x8e, 0xd3, 0x40,
-	0x10, 0xc6, 0x63, 0x2e, 0x39, 0x92, 0xbd, 0x08, 0xc1, 0x72, 0x85, 0x75, 0x85, 0x2f, 0x72, 0x81,
-	0xae, 0x49, 0x5c, 0x40, 0x45, 0xc7, 0x61, 0x8a, 0x34, 0xfc, 0x31, 0x48, 0x27, 0xd1, 0x44, 0xeb,
-	0xdd, 0x91, 0x6f, 0x91, 0xb3, 0x1b, 0xad, 0xc7, 0x3e, 0xfc, 0x16, 0x3c, 0x00, 0x2d, 0xef, 0x72,
-	0xe5, 0x95, 0x54, 0x08, 0x25, 0x2f, 0x82, 0x76, 0x1d, 0xc7, 0x32, 0x48, 0x14, 0xd7, 0xcd, 0x6f,
-	0x76, 0xfd, 0xcd, 0x37, 0xe3, 0x59, 0x32, 0x63, 0x8a, 0x6b, 0xb5, 0x31, 0x1a, 0x35, 0xd7, 0x79,
-	0x24, 0xa4, 0x58, 0x19, 0xc8, 0x64, 0x81, 0xa6, 0x5e, 0xb8, 0x2c, 0x7d, 0xf9, 0x26, 0x07, 0x8e,
-	0x46, 0x2b, 0xc9, 0x3f, 0xca, 0x4c, 0x31, 0x2c, 0x0d, 0x14, 0x4b, 0x25, 0xca, 0x02, 0x8d, 0x84,
-	0x62, 0xd1, 0x13, 0xe8, 0xd3, 0xd9, 0x69, 0xa6, 0x33, 0xed, 0x28, 0xb2, 0x51, 0xa3, 0x18, 0xfe,
-	0xf0, 0xc8, 0x38, 0x5e, 0xc6, 0xef, 0x6e, 0x14, 0x18, 0x7a, 0x46, 0xc6, 0x52, 0x80, 0x42, 0x89,
-	0xb5, 0xef, 0xcd, 0xbc, 0x8b, 0x49, 0x72, 0x60, 0x7a, 0x4a, 0x46, 0xda, 0x5e, 0xf2, 0x1f, 0xb8,
-	0x83, 0x06, 0xe8, 0x63, 0x72, 0xc4, 0xa5, 0xf0, 0x8f, 0x5c, 0xce, 0x86, 0xf4, 0x05, 0x79, 0x6a,
-	0x8d, 0xdf, 0x40, 0xba, 0x12, 0xc0, 0x38, 0xca, 0x8a, 0x21, 0x08, 0x7f, 0x38, 0xf3, 0x2e, 0xc6,
-	0x97, 0xc3, 0xdb, 0x5f, 0xe7, 0x5e, 0xf2, 0x44, 0x48, 0x71, 0x05, 0x69, 0xdc, 0x1d, 0xd3, 0x73,
-	0x72, 0x52, 0x31, 0x25, 0xb1, 0x5e, 0x29, 0xb6, 0x06, 0x7f, 0xe4, 0xf4, 0x48, 0x93, 0x7a, 0xcb,
-	0xd6, 0x10, 0x2e, 0xc9, 0x49, 0xbc, 0x8c, 0xaf, 0x20, 0x4d, 0x74, 0x89, 0x40, 0x29, 0x19, 0xba,
-	0x8b, 0x8d, 0x4b, 0x17, 0x5b, 0x87, 0xc6, 0x1e, 0xb6, 0x0e, 0x1d, 0xfc, 0xeb, 0x30, 0xfc, 0x6e,
-	0x5b, 0x86, 0x1c, 0x32, 0x86, 0x60, 0x5b, 0x16, 0xfb, 0xb8, 0x6d, 0xb9, 0x65, 0x1a, 0x92, 0x69,
-	0x1b, 0x7f, 0xaa, 0x37, 0xad, 0x6e, 0x2f, 0x67, 0xbf, 0xaf, 0x58, 0x2e, 0x85, 0x1d, 0x99, 0xad,
-	0x31, 0x4c, 0x0e, 0x4c, 0x7d, 0xf2, 0x90, 0x1b, 0x60, 0xa8, 0x8d, 0x6b, 0x7f, 0x92, 0xb4, 0xd8,
-	0x1b, 0xf4, 0xa8, 0x3f, 0xe8, 0x30, 0x25, 0xc7, 0xaf, 0xaf, 0x99, 0xca, 0xe0, 0x1e, 0xbf, 0xe3,
-	0x19, 0x79, 0xb4, 0x31, 0x50, 0x49, 0x5d, 0x16, 0x8d, 0xc6, 0xde, 0xd3, 0x5f, 0xd9, 0xf0, 0x03,
-	0x99, 0xbc, 0x42, 0x34, 0x32, 0x2d, 0xf1, 0xff, 0x65, 0xda, 0x39, 0xdb, 0x2a, 0xd3, 0x6e, 0xce,
-	0x15, 0xcb, 0xcb, 0x46, 0x7b, 0x9a, 0x34, 0x70, 0xf9, 0xe5, 0x76, 0x1b, 0x78, 0x77, 0xdb, 0xc0,
-	0xfb, 0xbd, 0x0d, 0xbc, 0x6f, 0xbb, 0x60, 0x70, 0xb7, 0x0b, 0x06, 0x3f, 0x77, 0xc1, 0xe0, 0xf3,
-	0xfb, 0x4c, 0xe2, 0x75, 0x99, 0x2e, 0xb8, 0x5e, 0x47, 0xdd, 0xfe, 0xce, 0xbb, 0x05, 0x9e, 0x77,
-	0x1b, 0x1c, 0xb9, 0x9d, 0x9d, 0x1f, 0xde, 0xc0, 0xd7, 0xa8, 0xff, 0x26, 0xb0, 0xde, 0x40, 0x91,
-	0x1e, 0x3b, 0x7e, 0xfe, 0x27, 0x00, 0x00, 0xff, 0xff, 0x58, 0x41, 0x74, 0x79, 0x31, 0x03, 0x00,
-	0x00,
+	// 428 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x31, 0x8f, 0xd3, 0x30,
+	0x18, 0x6d, 0xb8, 0x1e, 0x14, 0x37, 0x03, 0x98, 0x1b, 0xa2, 0x1b, 0x72, 0x47, 0x27, 0x96, 0x36,
+	0x03, 0x4c, 0x6c, 0x9c, 0xcc, 0x90, 0x05, 0x50, 0x40, 0x3a, 0x09, 0x86, 0xca, 0xb1, 0x3f, 0x05,
+	0xa3, 0xd4, 0xae, 0x9c, 0x2f, 0x39, 0xf2, 0x2f, 0xf8, 0x0d, 0x0c, 0xfc, 0x96, 0x1b, 0x6f, 0x64,
+	0x42, 0xa8, 0xfd, 0x23, 0xc8, 0x4e, 0xd3, 0xa8, 0x3a, 0x86, 0x6e, 0xef, 0xbd, 0xcf, 0xf1, 0x7b,
+	0xfe, 0xf2, 0xc8, 0x25, 0xd7, 0xc2, 0xe8, 0xb5, 0x35, 0x68, 0x84, 0x29, 0x13, 0xa9, 0xe4, 0xd2,
+	0x42, 0xa1, 0x2a, 0xb4, 0xed, 0xc2, 0xab, 0xf4, 0xf5, 0xdb, 0x12, 0x04, 0x5a, 0xa3, 0x95, 0xf8,
+	0xa8, 0x0a, 0xcd, 0xb1, 0xb6, 0x50, 0xa5, 0x5a, 0xd6, 0x15, 0x5a, 0x05, 0xd5, 0xe2, 0xe0, 0x82,
+	0x43, 0x76, 0x7e, 0x56, 0x98, 0xc2, 0x78, 0x96, 0x38, 0xd4, 0xdd, 0x38, 0x6b, 0xc8, 0x84, 0xa5,
+	0xec, 0xfd, 0x8d, 0x06, 0x4b, 0x9f, 0x93, 0xd0, 0x79, 0x2a, 0x09, 0x1a, 0x15, 0xb6, 0x51, 0x70,
+	0x19, 0xbc, 0x78, 0x9c, 0x4d, 0xa5, 0x92, 0xe9, 0x4e, 0xa2, 0x67, 0xe4, 0xd4, 0xb8, 0xb3, 0xd1,
+	0x03, 0x3f, 0xeb, 0x08, 0x7d, 0x42, 0x4e, 0x84, 0x92, 0xd1, 0x89, 0xd7, 0x1c, 0xa4, 0x17, 0x64,
+	0xda, 0x70, 0xad, 0xb0, 0x5d, 0x6a, 0xbe, 0x82, 0x68, 0xec, 0x27, 0xa4, 0x93, 0xde, 0xf1, 0x15,
+	0xcc, 0x7e, 0x06, 0x64, 0xca, 0x52, 0x76, 0x0d, 0x79, 0x66, 0x6a, 0x04, 0x4a, 0xc9, 0xd8, 0x9f,
+	0xec, 0x3c, 0x3d, 0x76, 0x66, 0xd6, 0x0d, 0x7b, 0x33, 0x4f, 0xfe, 0x63, 0xf6, 0x8a, 0x3c, 0x73,
+	0xb9, 0x6f, 0x20, 0x5f, 0x4a, 0xe0, 0x02, 0x55, 0xc3, 0x11, 0xa4, 0x37, 0x9d, 0x5c, 0x8d, 0x6f,
+	0xff, 0x5c, 0x04, 0xd9, 0x53, 0xa9, 0xe4, 0x35, 0xe4, 0x6c, 0x18, 0xdf, 0x7b, 0xed, 0xe9, 0xbd,
+	0xd7, 0xce, 0x7e, 0x75, 0x21, 0x19, 0x94, 0x50, 0x70, 0x04, 0x7a, 0x4e, 0x26, 0x72, 0x87, 0x77,
+	0x41, 0xf7, 0x9c, 0xce, 0x48, 0xd8, 0xe3, 0x4f, 0xed, 0xba, 0xcf, 0x7c, 0xa0, 0xb9, 0xef, 0x1b,
+	0x5e, 0x2a, 0xe9, 0xec, 0x5c, 0xfe, 0x71, 0xb6, 0xe7, 0x34, 0x22, 0x8f, 0x84, 0x05, 0x8e, 0xc6,
+	0xee, 0xb6, 0xd5, 0xd3, 0x63, 0x82, 0x7e, 0x21, 0x21, 0x4b, 0xd9, 0x1b, 0x44, 0xab, 0x72, 0xb7,
+	0xa3, 0x23, 0xfe, 0x64, 0xbf, 0x70, 0x97, 0x33, 0x1c, 0x16, 0xde, 0xf0, 0xb2, 0x06, 0x1f, 0x2e,
+	0xcc, 0x3a, 0x72, 0xf5, 0xed, 0x76, 0x13, 0x07, 0x77, 0x9b, 0x38, 0xf8, 0xbb, 0x89, 0x83, 0x1f,
+	0xdb, 0x78, 0x74, 0xb7, 0x8d, 0x47, 0xbf, 0xb7, 0xf1, 0xe8, 0xf3, 0x87, 0x42, 0xe1, 0xd7, 0x3a,
+	0x5f, 0x08, 0xb3, 0x4a, 0x86, 0x66, 0xce, 0x87, 0x6a, 0xce, 0x87, 0x6e, 0x26, 0xbe, 0x8d, 0xf3,
+	0x7d, 0xbb, 0xbf, 0x27, 0x87, 0x6d, 0xc7, 0x76, 0x0d, 0x55, 0xfe, 0xd0, 0xf3, 0x97, 0xff, 0x02,
+	0x00, 0x00, 0xff, 0xff, 0x27, 0xd1, 0xd1, 0x84, 0x0b, 0x03, 0x00, 0x00,
 }
 
 func (m *DIDOwner) Marshal() (dAtA []byte, err error) {
@@ -423,17 +368,7 @@ func (m *DIDOwner) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.VanityName)
 		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.VanityName)))
 		i--
-		dAtA[i] = 0x2a
-	}
-	if m.DidWebDeactivated {
-		i--
-		if m.DidWebDeactivated {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x22
 	}
 	if len(m.Cid) > 0 {
 		i -= len(m.Cid)
@@ -449,10 +384,10 @@ func (m *DIDOwner) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Identity) > 0 {
-		i -= len(m.Identity)
-		copy(dAtA[i:], m.Identity)
-		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.Identity)))
+	if len(m.DidIdentity) > 0 {
+		i -= len(m.DidIdentity)
+		copy(dAtA[i:], m.DidIdentity)
+		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.DidIdentity)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -479,6 +414,23 @@ func (m *DIDWebRoute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.DidIdentity) > 0 {
+		i -= len(m.DidIdentity)
+		copy(dAtA[i:], m.DidIdentity)
+		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.DidIdentity)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.DidWebDeactivated {
+		i--
+		if m.DidWebDeactivated {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x20
+	}
 	if len(m.Cid) > 0 {
 		i -= len(m.Cid)
 		copy(dAtA[i:], m.Cid)
@@ -503,7 +455,7 @@ func (m *DIDWebRoute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *Delegate) Marshal() (dAtA []byte, err error) {
+func (m *DIDDelegate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -513,20 +465,20 @@ func (m *Delegate) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Delegate) MarshalTo(dAtA []byte) (int, error) {
+func (m *DIDDelegate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Delegate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *DIDDelegate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Identity) > 0 {
-		i -= len(m.Identity)
-		copy(dAtA[i:], m.Identity)
-		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.Identity)))
+	if len(m.DidIdentity) > 0 {
+		i -= len(m.DidIdentity)
+		copy(dAtA[i:], m.DidIdentity)
+		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.DidIdentity)))
 		i--
 		dAtA[i] = 0x2a
 	}
@@ -559,7 +511,7 @@ func (m *Delegate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *Change) Marshal() (dAtA []byte, err error) {
+func (m *DIDAttribute) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -569,54 +521,12 @@ func (m *Change) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Change) MarshalTo(dAtA []byte) (int, error) {
+func (m *DIDAttribute) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Change) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.PreviousChange != 0 {
-		i = encodeVarintDidRegistry(dAtA, i, uint64(m.PreviousChange))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.Owner)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Identity) > 0 {
-		i -= len(m.Identity)
-		copy(dAtA[i:], m.Identity)
-		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.Identity)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *Attribute) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Attribute) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *Attribute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *DIDAttribute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -635,10 +545,10 @@ func (m *Attribute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Identity) > 0 {
-		i -= len(m.Identity)
-		copy(dAtA[i:], m.Identity)
-		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.Identity)))
+	if len(m.DidIdentity) > 0 {
+		i -= len(m.DidIdentity)
+		copy(dAtA[i:], m.DidIdentity)
+		i = encodeVarintDidRegistry(dAtA, i, uint64(len(m.DidIdentity)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -662,7 +572,7 @@ func (m *DIDOwner) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Identity)
+	l = len(m.DidIdentity)
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
 	}
@@ -673,9 +583,6 @@ func (m *DIDOwner) Size() (n int) {
 	l = len(m.Cid)
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
-	}
-	if m.DidWebDeactivated {
-		n += 2
 	}
 	l = len(m.VanityName)
 	if l > 0 {
@@ -702,10 +609,17 @@ func (m *DIDWebRoute) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
 	}
+	if m.DidWebDeactivated {
+		n += 2
+	}
+	l = len(m.DidIdentity)
+	if l > 0 {
+		n += 1 + l + sovDidRegistry(uint64(l))
+	}
 	return n
 }
 
-func (m *Delegate) Size() (n int) {
+func (m *DIDDelegate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -726,40 +640,20 @@ func (m *Delegate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
 	}
-	l = len(m.Identity)
+	l = len(m.DidIdentity)
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
 	}
 	return n
 }
 
-func (m *Change) Size() (n int) {
+func (m *DIDAttribute) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Identity)
-	if l > 0 {
-		n += 1 + l + sovDidRegistry(uint64(l))
-	}
-	l = len(m.Owner)
-	if l > 0 {
-		n += 1 + l + sovDidRegistry(uint64(l))
-	}
-	if m.PreviousChange != 0 {
-		n += 1 + sovDidRegistry(uint64(m.PreviousChange))
-	}
-	return n
-}
-
-func (m *Attribute) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Identity)
+	l = len(m.DidIdentity)
 	if l > 0 {
 		n += 1 + l + sovDidRegistry(uint64(l))
 	}
@@ -811,7 +705,7 @@ func (m *DIDOwner) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentity", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -839,7 +733,7 @@ func (m *DIDOwner) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Identity = string(dAtA[iNdEx:postIndex])
+			m.DidIdentity = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -906,26 +800,6 @@ func (m *DIDOwner) Unmarshal(dAtA []byte) error {
 			m.Cid = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidWebDeactivated", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDidRegistry
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.DidWebDeactivated = bool(v != 0)
-		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field VanityName", wireType)
 			}
@@ -1103,6 +977,58 @@ func (m *DIDWebRoute) Unmarshal(dAtA []byte) error {
 			}
 			m.Cid = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DidWebDeactivated", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDidRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DidWebDeactivated = bool(v != 0)
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentity", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDidRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDidRegistry
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDidRegistry
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DidIdentity = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDidRegistry(dAtA[iNdEx:])
@@ -1124,7 +1050,7 @@ func (m *DIDWebRoute) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Delegate) Unmarshal(dAtA []byte) error {
+func (m *DIDDelegate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1147,10 +1073,10 @@ func (m *Delegate) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Delegate: wiretype end group for non-group")
+			return fmt.Errorf("proto: DIDDelegate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Delegate: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: DIDDelegate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1270,7 +1196,7 @@ func (m *Delegate) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentity", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1298,7 +1224,7 @@ func (m *Delegate) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Identity = string(dAtA[iNdEx:postIndex])
+			m.DidIdentity = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1321,7 +1247,7 @@ func (m *Delegate) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Change) Unmarshal(dAtA []byte) error {
+func (m *DIDAttribute) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1344,15 +1270,15 @@ func (m *Change) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Change: wiretype end group for non-group")
+			return fmt.Errorf("proto: DIDAttribute: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Change: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: DIDAttribute: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentity", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1380,140 +1306,7 @@ func (m *Change) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Identity = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDidRegistry
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDidRegistry
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDidRegistry
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PreviousChange", wireType)
-			}
-			m.PreviousChange = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDidRegistry
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.PreviousChange |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipDidRegistry(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthDidRegistry
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *Attribute) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowDidRegistry
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Attribute: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Attribute: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDidRegistry
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDidRegistry
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDidRegistry
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Identity = string(dAtA[iNdEx:postIndex])
+			m.DidIdentity = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
