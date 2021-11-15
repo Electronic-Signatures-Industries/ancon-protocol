@@ -14,38 +14,28 @@ import (
 func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner) (*types.MsgChangeOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	res, err := k.ApplyChangeOwner(ctx, msg)
-
-	if err != nil {
-		return nil, err
-	}
+	k.ApplyOwner(ctx, msg)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.ChangeOwnerEvent,
-			sdk.NewAttribute("Identity", res.Identity),
-			sdk.NewAttribute("Owner", res.Owner),
-			sdk.NewAttribute("Height", fmt.Sprint(res.PreviousChange)),
+			sdk.NewAttribute("Identity", msg.Identity),
+			sdk.NewAttribute("NewOwner", msg.NewOwner),
 		),
 	})
 
 	_ = ctx
 
 	return &types.MsgChangeOwnerResponse{
-		Identity:       res.Identity,
-		Owner:          res.Owner,
-		PreviousChange: res.PreviousChange,
+		Identity: msg.Identity,
+		Owner:    msg.NewOwner,
 	}, nil
 }
 
 func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttribute) (*types.MsgGrantAttributeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	_, err := k.ApplyAttribute(ctx, msg)
-
-	if err != nil {
-		return nil, err
-	}
+	k.ApplyAttribute(ctx, msg)
 
 	until := msg.Validity + uint64(ctx.BlockTime().Unix())
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -68,28 +58,74 @@ func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttr
 
 func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDelegate) (*types.MsgGrantDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
+
+	k.ApplyDelegate(ctx, msg)
+
+	until := msg.Validity + uint64(ctx.BlockTime().Unix())
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Creator", msg.Creator),
+			sdk.NewAttribute("Identity", msg.Identity),
+			sdk.NewAttribute("Delegate", string(msg.Delegate)),
+			sdk.NewAttribute("DelegateType", string(msg.DelegateType)),
+			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
+
 	_ = ctx
 
-	return &types.MsgGrantDelegateResponse{}, nil
+	return &types.MsgGrantDelegateResponse{
+		Ok: true,
+	}, nil
 }
 func (k msgServer) RevokeAttribute(goCtx context.Context, msg *types.MsgRevokeAttribute) (*types.MsgRevokeAttributeResponse, error) {
 
-	return &types.MsgRevokeAttributeResponse{}, nil
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	k.RemoveAttribute(ctx, msg)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Name", string(msg.Name)),
+			sdk.NewAttribute("Value", string(msg.Value)),
+			//			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
+
+	_ = ctx
+
+	return &types.MsgRevokeAttributeResponse{
+		Ok: true,
+	}, nil
 }
 
 func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDelegate) (*types.MsgRevokeDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
+
+	k.RemoveDelegate(ctx, msg)
+
+	until := msg.Validity + uint64(ctx.BlockTime().Unix())
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Name", string(msg.Delegate)),
+			sdk.NewAttribute("Value", string(msg.DelegateType)),
+			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
+
 	_ = ctx
 
-	return &types.MsgRevokeDelegateResponse{}, nil
+	return &types.MsgRevokeDelegateResponse{
+		Ok: true,
+	}, nil
 }
 
 func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*types.MsgCreateDidResponse, error) {
@@ -101,7 +137,9 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 	}
 
 	didOwner, err := k.AddDid(ctx, msg)
-	//Revoke DID relationship / access
+	if err != nil {
+		return nil, err
+	}
 
 	// owners[identity] = newOwner;
 	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
@@ -115,8 +153,9 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 	// Did := res.addDid
 
 	return &types.MsgCreateDidResponse{
-		Cid: addr,
-		Did: host,
+		Cid: didOwner.Cid,
+		Did: didOwner.Identity,
+		Url: string(append([]byte(host), addr...)),
 	}, err
 }
 
@@ -139,17 +178,22 @@ func (k msgServer) UpdateDid(goCtx context.Context, msg *types.MsgUpdateDid) (*t
 func (k msgServer) RevokeDid(goCtx context.Context, msg *types.MsgRevokeDid) (*types.MsgRevokeDidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	//Revoke DID relationship / acces
+	k.RemoveDid(ctx, msg.Did)
 
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Did", string(msg.Did)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
+
 	_ = ctx
 
-	// Did := res.did
-
-	return &types.MsgRevokeDidResponse{}, nil
+	return &types.MsgRevokeDidResponse{
+		Ok: true,
+	}, nil
 }
 
 // Example 1: Example did:web DID document

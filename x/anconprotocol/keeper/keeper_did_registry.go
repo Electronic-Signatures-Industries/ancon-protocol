@@ -2,10 +2,12 @@ package keeper
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"time"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/btcsuite/btcutil/base58"
 	cosmosed25519 "github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,7 +19,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
-	"github.com/itchyny/base58-go"
+
 	"github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-multicodec"
 	"github.com/spf13/cast"
@@ -30,47 +32,38 @@ type Delegate struct {
 }
 
 // BuildDidWeb ....
-func (k Keeper) BuildDidWeb(ctx sdk.Context, creator string) (*did.Doc, error) {
-
-	// impl read checks
-	//
-	encoding := base58.BitcoinEncoding
-
-	//sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	acc, _ := sdk.AccAddressFromBech32(creator)
-	encoded, err := encoding.Encode(acc.Bytes())
-
-	if err != nil {
-		return nil, err
-	}
-
+func (k Keeper) BuildDidWeb(ctx sdk.Context, creator, vanityName string, pubkey []byte) (*did.Doc, error) {
 	// public
-	pub := encoded // for did:key base58
+	encoded := base58.Encode(pubkey)
 	ti := time.Now()
 	//Dev: chain id is replaced on the query by http host
 	// did web
-	base := append([]byte("did:web:"), []byte(ctx.ChainID())...)
+	base := append([]byte("did:web:"), []byte(vanityName)...)
 	// did web # id
 	id := append(base, []byte("#")...)
-	id = append(id, acc.Bytes()...)
+	id = append(id, encoded...)
 
 	//Authentication method 2018
 	didWebVer := did.NewVerificationMethodFromBytes(
 		string(id),
 		"Secp256k1VerificationKey2018",
 		string(base),
-		[]byte(pub),
+		[]byte(encoded),
 	)
 
 	ver := []did.VerificationMethod{
 		{},
 	}
 	ver = append(ver, *didWebVer)
+
 	serv := []did.Service{{}, {}}
 
 	// Secp256k1SignatureAuthentication2018
 	auth := []did.Verification{{}}
+
+	didWebAuthVerification := did.NewEmbeddedVerification(didWebVer, did.Authentication)
+
+	auth = append(auth, *didWebAuthVerification)
 
 	doc := did.BuildDoc(
 		did.WithVerificationMethod(ver),
@@ -79,21 +72,15 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, creator string) (*did.Doc, error) {
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
 	)
+	doc.ID = string(id)
 	return doc, nil
 }
 
 // BuildDidKey ....
 func (k Keeper) BuildDidKey(ctx sdk.Context, creator string) (*did.Doc, error) {
 
-	encoding := base58.BitcoinEncoding
-
 	acc := cosmosed25519.GenPrivKey()
-	encoded, err := encoding.Encode(acc.PubKey().Bytes())
-
-	if err != nil {
-		return nil, err
-	}
-
+	encoded := base58.Encode(acc.PubKey().Bytes())
 	// public
 	pub := encoded
 	ti := time.Now()
@@ -131,7 +118,66 @@ func (k Keeper) BuildDidKey(ctx sdk.Context, creator string) (*did.Doc, error) {
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
 	)
+	doc.ID = string(base)
 	return doc, nil
+}
+
+func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwner, error) {
+
+	var didDoc *did.Doc
+	var err error
+	didOwner := types.DIDOwner{
+		Identity: msg.Creator,
+		Owner:    msg.Creator,
+	}
+
+	if msg.DidType == "web" {
+		// TODO:move to ValidateBasic
+		if k.HasDidWebRoute(ctx, msg.VanityName) {
+			return nil, fmt.Errorf("vanity name exists: %v", msg.VanityName)
+		}
+		key := msg.PublicKeyBytes
+		if err != nil {
+			return nil, err
+		}
+
+		didDoc, err = k.BuildDidWeb(ctx, msg.Creator, msg.VanityName, key)
+		if err != nil {
+			return nil, err
+		}
+
+	} else if msg.DidType == "key" {
+		didDoc, err = k.BuildDidKey(ctx, msg.Creator)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		return nil, fmt.Errorf("Must create a did")
+	}
+	cid, err := k.SetDid(ctx, didDoc)
+	if err != nil {
+		return nil, err
+	}
+	if msg.DidType == "web" {
+		didWebRoute := &types.DIDWebRoute{
+			Name:  msg.VanityName,
+			Route: "optional",
+			Cid:   cid,
+		}
+		k.SetDidWebRoute(ctx, didWebRoute)
+	} else {
+
+		didWebRoute := &types.DIDWebRoute{
+			Name:  didDoc.ID,
+			Route: "optional",
+			Cid:   cid,
+		}
+		k.SetDidWebRoute(ctx, didWebRoute)
+	}
+	didOwner.Cid = cid
+	k.SetDIDOwner(ctx, didOwner)
+	return &didOwner, nil
 }
 
 //IPLD Store DID Type is Web

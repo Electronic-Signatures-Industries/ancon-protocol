@@ -69,7 +69,7 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 		paramstypes.NewSubspace(
 			codec.NewProtoCodec(registry),
 			nil, storeKey, memStoreKey, "test",
-		), nil, nil, nil, map[string]bool{})
+		), nil, nil, map[string]bool{})
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return &keeper, ctx

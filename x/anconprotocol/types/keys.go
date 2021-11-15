@@ -29,7 +29,7 @@ const (
 
 	OwnerKey = "did_ancon_owners"
 
-	ChangeOwnerKey = "did_change_owner_key"
+	// ChangeOwnerKey = "did_change_owner_key"
 
 	ChangeOwnerEvent = "change_owner"
 

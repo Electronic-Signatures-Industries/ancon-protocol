@@ -88,11 +88,13 @@ message MsgCreateDid {
   string creator = 1;
   string vanity_name = 2;
   string did_type = 3;
+  bytes publicKeyBytes = 4; 
 }
 
 message MsgCreateDidResponse {
   string cid = 1;
   string did = 2;
+  string url = 3;
 }
 
 message MsgUpdateDid {
@@ -113,7 +115,7 @@ message MsgRevokeDid {
 }
 
 message MsgRevokeDidResponse {
-  uint64 id = 1;
+  bool ok = 1;
 }
 
 message MsgMintTrustedContent {
@@ -325,7 +327,7 @@ message MsgGrantDelegate {
 message MsgGrantDelegateResponse {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  bool ok = 1;
 }
 message MsgRevokeDelegate {
   option (gogoproto.goproto_getters) = false;
@@ -338,7 +340,7 @@ message MsgRevokeDelegate {
 message MsgRevokeDelegateResponse {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  bool ok = 1;
 }
 message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
@@ -352,7 +354,7 @@ message MsgSetAttribute {
 message MsgSetAttributeResponse {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  bool ok = 1;
 }
 
 message MsgGrantAttribute {
@@ -383,7 +385,7 @@ message MsgRevokeAttribute {
 message MsgRevokeAttributeResponse {
   option (gogoproto.goproto_getters) = false;
 
-  bytes hash = 1;
+  bool ok = 1;
 }
 // MsgTransferNFTResponse defines the Msg/TransferNFT response type.
 message MsgTransferNFTResponse {}
