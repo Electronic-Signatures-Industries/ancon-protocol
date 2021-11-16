@@ -34,6 +34,13 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "anconprotocol/BurnNFT", nil)
 	cdc.RegisterConcrete(&MsgTransferDenom{}, "anconprotocol/TransferDenom", nil)
 	cdc.RegisterConcrete(&MsgSendMetadataOwnership{}, "anconprotocol/SendMetadataOwnership", nil)
+
+	cdc.RegisterConcrete(&MsgAddDataUnion{}, "anconprotocol/AddDataUnion", nil)
+	cdc.RegisterConcrete(&MsgUpdateDataUnion{}, "anconprotocol/UpdateDataUnion", nil)
+	cdc.RegisterConcrete(&MsgRemoveDataUnion{}, "anconprotocol/RemoveDataUnion", nil)
+	cdc.RegisterConcrete(&MsgAddDataSource{}, "anconprotocol/AddDataSource", nil)
+	cdc.RegisterConcrete(&MsgRemoveDataSource{}, "anconprotocol/RemoveDataSource", nil)
+	cdc.RegisterConcrete(&MsgUpdateDataSource{}, "anconprotocol/UpdateDataSource", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -56,6 +63,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgRevokeDid{},
 		&MsgUpdateMetadataOwnership{},
 		&MsgSendMetadataOwnership{},
+		&MsgAddDataSource{},
+		&MsgUpdateDataSource{},
+		&MsgRemoveDataSource{},
+		&MsgAddDataUnion{},
+		&MsgRemoveDataUnion{},
+		&MsgUpdateDataUnion{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

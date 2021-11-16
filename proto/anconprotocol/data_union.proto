@@ -1,0 +1,117 @@
+syntax = "proto3";
+package ElectronicSignaturesIndustries.anconprotocol.anconprotocol;
+
+import "gogoproto/gogo.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
+
+// Data Source is a container of links which contains the data source to be offer
+message DataSource {
+  uint64 id = 1;
+  string did_identity_owner = 2;
+  repeated string anchors = 3;
+  string name = 4;
+  string description = 5;
+  string creator = 6;
+}
+
+// Data Union represents a data provider.
+// It offers data sources with linkable dags to be available for
+// users of Ancon Data Union Marketplace
+message DataUnion {
+  uint64 id = 1;
+  // name
+  string name = 2;
+  // did identity
+  string did_identity = 3;
+  // account profile cid
+  string profile_ref = 4;
+  // is active
+  bool  active = 5[ (gogoproto.nullable) = true];
+  // data sources
+  repeated uint64  data_sources = 6;
+
+  string creator = 7;
+}
+
+// Anchor connects a CID to an onchain record, in this a data source
+message Anchor {
+  string did_identity_owner = 1;
+  string link = 2;
+  uint64 data_source_ref = 3;
+  string creator = 4;
+}
+
+// Pricing contains prices for fixed prices data sources
+message Pricing {
+    string did_identity_owner = 1;
+    uint64 price = 2;
+    uint64 data_source_ref = 3;
+    string creator = 4;
+}
+  
+
+message MsgAddDataSource{    
+    DataSource data_source = 1;
+    string creator = 2;
+}
+
+message MsgAddDataSourceResponse {
+    bool ok = 1;
+    string cid = 2;
+}
+
+message MsgRemoveDataSource{
+    string creator = 1;
+    uint64 id = 2;
+}
+
+message MsgRemoveDataSourceResponse {
+    bool ok = 1;
+}
+
+message MsgUpdateDataSource {
+    string creator = 1;
+    uint64 id = 2;
+    string name = 3;
+    string description = 4;
+    repeated uint64 anchors = 5;
+}
+  
+
+message MsgUpdateDataSourceResponse{
+    bool ok = 1;
+    string cid = 2;
+}
+
+message MsgAddDataUnion{
+    DataUnion data_union = 1;
+    string creator = 2;
+}
+
+message MsgAddDataUnionResponse {
+
+}
+
+message MsgRemoveDataUnion{
+    string creator = 1;
+    uint64 id = 2;
+}
+
+message MsgRemoveDataUnionResponse {
+
+}
+
+message MsgUpdateDataUnion {
+    string creator = 1;
+    uint64 id = 2;
+    string name = 3;
+    string profile_ref = 4;
+    repeated uint64 data_sources = 5;}
+  
+
+message MsgUpdateDataUnionResponse{
+    
+}
