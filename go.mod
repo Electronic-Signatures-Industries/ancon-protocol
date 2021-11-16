@@ -17,7 +17,7 @@ require (
 	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/improbable-eng/grpc-web v0.14.1
 	github.com/ipfs/go-cid v0.1.0
-	github.com/ipld/go-ipld-prime v0.12.2
+	github.com/ipld/go-ipld-prime v0.14.0
 	github.com/multiformats/go-multibase v0.0.3
 	github.com/multiformats/go-multicodec v0.3.0
 	github.com/prometheus/procfs v0.7.0 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/libp2p/go-libp2p-kad-dht v0.13.1
 	github.com/libp2p/go-libp2p-noise v0.2.0
 	github.com/libp2p/go-libp2p-routing v0.1.0
-	github.com/multiformats/go-multihash v0.0.15
+	github.com/multiformats/go-multihash v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/proofzero/go-ipld-linkstore v1.0.0
 	github.com/spf13/pflag v1.0.5

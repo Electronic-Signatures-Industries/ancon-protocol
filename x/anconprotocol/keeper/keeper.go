@@ -69,6 +69,9 @@ func NewKeeper(
 	cms store.CommitMultiStore,
 ) Keeper {
 
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+
+	dataunionKeeper := dataunion.NewKeeper()
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
