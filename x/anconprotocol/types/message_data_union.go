@@ -46,10 +46,10 @@ func (msg *MsgAddDataSource) ValidateBasic() error {
 	}
 	return nil
 }
-func NewUpdateDataSource(id uint64, creator string, name, description string, anchors []uint64) *MsgUpdateDataSource {
+func NewUpdateDataSource(id, creator string, name, description string, anchors []uint64) *MsgUpdateDataSource {
 	return &MsgUpdateDataSource{
 		Creator:     creator,
-		Id:          id,
+		Cid:         id,
 		Name:        name,
 		Description: description,
 		Anchors:     anchors,
@@ -84,10 +84,10 @@ func (msg *MsgUpdateDataSource) ValidateBasic() error {
 	}
 	return nil
 }
-func NewRemoveDataSource(creator string, id uint64) *MsgRemoveDataSource {
+func NewRemoveDataSource(creator string, id string) *MsgRemoveDataSource {
 	return &MsgRemoveDataSource{
 		Creator: creator,
-		Id:      id,
+		Cid:     id,
 	}
 }
 
@@ -155,10 +155,10 @@ func (msg *MsgAddDataUnion) ValidateBasic() error {
 	return nil
 }
 
-func NewRemoveDataUnion(creator string, id uint64) *MsgRemoveDataUnion {
+func NewRemoveDataUnion(creator string, id string) *MsgRemoveDataUnion {
 	return &MsgRemoveDataUnion{
 		Creator: creator,
-		Id:      id,
+		Cid:     id,
 	}
 }
 
@@ -190,13 +190,11 @@ func (msg *MsgRemoveDataUnion) ValidateBasic() error {
 	}
 	return nil
 }
-func NewUpdateDataUnion(creator string, id uint64, name, profileRef string, dataSources []uint64) *MsgUpdateDataUnion {
+func NewUpdateDataUnion(creator, name, id string) *MsgUpdateDataUnion {
 	return &MsgUpdateDataUnion{
-		Creator:     creator,
-		Id:          id,
-		Name:        name,
-		ProfileRef:  profileRef,
-		DataSources: dataSources,
+		Creator: creator,
+		Cid:     id,
+		Name:    name,
 	}
 }
 

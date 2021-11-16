@@ -9,7 +9,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Data Source is a container of links which contains the data source to be offer
 message DataSource {
-  uint64 id = 1;
+  string parent_cid = 1;
   string did_identity_owner = 2;
   repeated string anchors = 3;
   string name = 4;
@@ -21,26 +21,21 @@ message DataSource {
 // It offers data sources with linkable dags to be available for
 // users of Ancon Data Union Marketplace
 message DataUnion {
-  uint64 id = 1;
   // name
-  string name = 2;
+  string name = 1;
   // did identity
-  string did_identity = 3;
-  // account profile cid
-  string profile_ref = 4;
+  string did_identity = 2;
   // is active
-  bool  active = 5[ (gogoproto.nullable) = true];
-  // data sources
-  repeated uint64  data_sources = 6;
+  bool  active = 3[ (gogoproto.nullable) = true];
 
-  string creator = 7;
+  string creator = 4;
 }
 
 // Anchor connects a CID to an onchain record, in this a data source
 message Anchor {
   string did_identity_owner = 1;
   string link = 2;
-  uint64 data_source_ref = 3;
+  string parent_cid = 3;
   string creator = 4;
 }
 
@@ -65,7 +60,7 @@ message MsgAddDataSourceResponse {
 
 message MsgRemoveDataSource{
     string creator = 1;
-    uint64 id = 2;
+    string cid = 2;
 }
 
 message MsgRemoveDataSourceResponse {
@@ -74,7 +69,7 @@ message MsgRemoveDataSourceResponse {
 
 message MsgUpdateDataSource {
     string creator = 1;
-    uint64 id = 2;
+    string cid = 2;
     string name = 3;
     string description = 4;
     repeated uint64 anchors = 5;
@@ -97,7 +92,7 @@ message MsgAddDataUnionResponse {
 
 message MsgRemoveDataUnion{
     string creator = 1;
-    uint64 id = 2;
+    string cid = 2;
 }
 
 message MsgRemoveDataUnionResponse {
@@ -106,11 +101,9 @@ message MsgRemoveDataUnionResponse {
 
 message MsgUpdateDataUnion {
     string creator = 1;
-    uint64 id = 2;
+    string cid = 2;
     string name = 3;
-    string profile_ref = 4;
-    repeated uint64 data_sources = 5;}
-  
+}  
 
 message MsgUpdateDataUnionResponse{
     

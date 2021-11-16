@@ -1,19 +1,28 @@
 package keeper
 
 import (
+	"strings"
+
+	iavlst "github.com/cosmos/cosmos-sdk/store/iavl"
+
 	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/store/cache"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/iavl"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/dataunion"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,13 +31,16 @@ import (
 )
 
 type Keeper struct {
-	cdc           codec.Codec
-	storeKey      sdk.StoreKey
-	memKey        sdk.StoreKey
-	paramSpace    paramstypes.Subspace
-	accountKeeper types.AccountKeeper
-	iavltree      *iavl.ImmutableTree
-	bankKeeper    types.BankKeeper
+	cdc            codec.Codec
+	storeKey       sdk.StoreKey
+	memKey         sdk.StoreKey
+	paramSpace     paramstypes.Subspace
+	accountKeeper  types.AccountKeeper
+	iavltree       *iavl.ImmutableTree
+	bankKeeper     types.BankKeeper
+	queryableStore store.Queryable
+
+	dataunionKeeper dataunion.Keeper
 	// aguaclaraKeeper aguaclaramodulekeeper.Keeper
 	blockedAddrs map[string]bool
 	cms          store.CommitMultiStore
@@ -68,17 +80,25 @@ func NewKeeper(
 	blockedAddrs map[string]bool,
 	cms store.CommitMultiStore,
 ) Keeper {
+	// create cache manager to unwrap
+	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
+	mngr.GetStoreCache(key, cms.GetCommitKVStore(key))
+	iavlstore := mngr.Unwrap(key).(*iavlst.Store)
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("ancon"))
+	queryableStore := store.Queryable(iavlstore)
 
-	dataunionKeeper := dataunion.NewKeeper()
+	kvs := mngr.Unwrap(key)
+
+	dataunionKeeper := dataunion.NewKeeper(kvs)
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		memKey:        memKey,
-		paramSpace:    paramSpace,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
+		queryableStore:  queryableStore,
+		dataunionKeeper: dataunionKeeper,
+		storeKey:        key,
+		cdc:             cdc,
+		memKey:          memKey,
+		paramSpace:      paramSpace,
+		accountKeeper:   accountKeeper,
+		bankKeeper:      bankKeeper,
 		// aguaclaraKeeper: aguaclaraKeeper,
 		blockedAddrs: blockedAddrs,
 		cms:          cms,
@@ -101,6 +121,61 @@ func (k *Keeper) EnsureModuleAccountPermissions(ctx sdk.Context) error {
 	macc.Permissions = perms
 	k.accountKeeper.SetModuleAccount(ctx, macc)
 	return nil
+}
+
+func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (string, error) {
+
+	du := &types.DataUnion{
+		Name:        msg.DataUnion.Name,
+		DidIdentity: msg.DataUnion.DidIdentity,
+		Active:      msg.DataUnion.Active,
+		Creator:     msg.DataUnion.Creator,
+	}
+	n := bindnode.Wrap(du, nil)
+
+	link, err := k.dataunionKeeper.LinkSystem.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath("dataunion/"),
+		},
+		GetLinkPrototype(),
+		n,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	// id, _ := cid.Decode(link.String())
+	return link.String(), nil
+}
+
+func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (string, error) {
+
+	du := &types.DataSource{
+		ParentCid:        msg.DataSource.ParentCid,
+		DidIdentityOwner: msg.DataSource.DidIdentityOwner,
+		Anchors:          msg.DataSource.Anchors,
+		Name:             msg.DataSource.Name,
+		Description:      msg.DataSource.Description,
+		Creator:          msg.Creator,
+	}
+	n := bindnode.Wrap(du, nil)
+
+	// parent, _ := ParseCidLink(msg.DataSource.ParentCid)
+	link, err := k.dataunionKeeper.LinkSystem.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(
+				strings.Join([]string{"dataunion", msg.DataSource.ParentCid, "datasource"}, "/"),
+			),
+		},
+		GetLinkPrototype(),
+		n,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	// id, _ := cid.Decode(link.String())
+	return link.String(), nil
 }
 
 // ApplyChangeOwner = AppendOwner

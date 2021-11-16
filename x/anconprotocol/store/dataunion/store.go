@@ -7,15 +7,15 @@ import (
 	"io"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/store"
 )
 
 type DataUnionStore struct {
-	store prefix.Store
+	store store.CommitKVStore
 	cdc   codec.Codec
 }
 
-func NewDataUnionStore(store prefix.Store) *DataUnionStore {
+func NewDataUnionStore(store store.CommitKVStore) *DataUnionStore {
 	return &DataUnionStore{store: store}
 }
 

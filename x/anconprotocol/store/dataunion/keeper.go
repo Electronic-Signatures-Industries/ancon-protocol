@@ -1,7 +1,7 @@
 package dataunion
 
 import (
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/store"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -14,7 +14,7 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	kvstore prefix.Store,
+	kvstore store.CommitKVStore,
 ) Keeper {
 
 	store := NewDataUnionStore(kvstore)

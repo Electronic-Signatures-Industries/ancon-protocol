@@ -46,7 +46,6 @@ require (
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-graphsync v0.9.3
-	github.com/ipld/go-car v0.3.1
 	github.com/ipld/go-car/v2 v2.0.2
 	github.com/libp2p/go-libp2p v0.14.4
 	github.com/libp2p/go-libp2p-connmgr v0.2.4
@@ -57,7 +56,6 @@ require (
 	github.com/libp2p/go-libp2p-routing v0.1.0
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/proofzero/go-ipld-linkstore v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/tharsis/ethermint v0.7.2
 )

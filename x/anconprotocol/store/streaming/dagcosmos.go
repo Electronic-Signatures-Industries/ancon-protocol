@@ -1,28 +1,24 @@
 package streaming
 
 import (
-	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 	"sync"
 
 	"github.com/multiformats/go-multihash"
-	linkstore "github.com/proofzero/go-ipld-linkstore"
 	"github.com/spf13/cast"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	"github.com/ipfs/go-cid"
 
-	carv1 "github.com/ipld/go-car"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/multicodec"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -51,7 +47,7 @@ type StreamingHooks struct {
 
 // StreamingService is a concrete implementation of StreamingService that writes state changes out to files
 type DagCosmosStreamingService struct {
-	sls                *linkstore.StorageLinkSystem
+	sls                linking.LinkSystem
 	listeners          map[sdk.StoreKey][]types.WriteListener // the listeners that will be initialized with BaseApp
 	srcChan            <-chan []byte                          // the channel that all of the WriteListeners write their data out to
 	filePrefix         string                                 // optional prefix for each of the generated files
@@ -105,7 +101,7 @@ func NewDagCosmosStreamingService(writeDir, filePrefix string, storeKeys []sdk.S
 		return nil, err
 	}
 
-	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
+	sls := (cidlink.DefaultLinkSystem())
 
 	return &DagCosmosStreamingService{
 		sls:            sls,
@@ -392,25 +388,3 @@ func (fss *DagCosmosStreamingService) Close() error {
 	return nil
 }
 
-// WriteCAR
-func (fss *DagCosmosStreamingService) WriteCAR(root cid.Cid, filename string) error {
-	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
-	selector := ssb.ExploreAll(ssb.Matcher()).Node()
-
-	car := carv1.NewSelectiveCar(context.Background(),
-		fss.sls.ReadStore,
-		[]carv1.Dag{{
-			Root:     root,
-			Selector: selector,
-		}})
-	file, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	err = car.Write(file)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

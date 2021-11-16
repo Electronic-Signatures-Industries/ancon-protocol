@@ -25,7 +25,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Data Source is a container of links which contains the data source to be offer
 type DataSource struct {
-	Id               uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ParentCid        string   `protobuf:"bytes,1,opt,name=parent_cid,json=parentCid,proto3" json:"parent_cid,omitempty"`
 	DidIdentityOwner string   `protobuf:"bytes,2,opt,name=did_identity_owner,json=didIdentityOwner,proto3" json:"did_identity_owner,omitempty"`
 	Anchors          []string `protobuf:"bytes,3,rep,name=anchors,proto3" json:"anchors,omitempty"`
 	Name             string   `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
@@ -66,11 +66,11 @@ func (m *DataSource) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DataSource proto.InternalMessageInfo
 
-func (m *DataSource) GetId() uint64 {
+func (m *DataSource) GetParentCid() string {
 	if m != nil {
-		return m.Id
+		return m.ParentCid
 	}
-	return 0
+	return ""
 }
 
 func (m *DataSource) GetDidIdentityOwner() string {
@@ -112,18 +112,13 @@ func (m *DataSource) GetCreator() string {
 // It offers data sources with linkable dags to be available for
 // users of Ancon Data Union Marketplace
 type DataUnion struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// name
-	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// did identity
-	DidIdentity string `protobuf:"bytes,3,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
-	// account profile cid
-	ProfileRef string `protobuf:"bytes,4,opt,name=profile_ref,json=profileRef,proto3" json:"profile_ref,omitempty"`
+	DidIdentity string `protobuf:"bytes,2,opt,name=did_identity,json=didIdentity,proto3" json:"did_identity,omitempty"`
 	// is active
-	Active bool `protobuf:"varint,5,opt,name=active,proto3" json:"active,omitempty"`
-	// data sources
-	DataSources []uint64 `protobuf:"varint,6,rep,packed,name=data_sources,json=dataSources,proto3" json:"data_sources,omitempty"`
-	Creator     string   `protobuf:"bytes,7,opt,name=creator,proto3" json:"creator,omitempty"`
+	Active  bool   `protobuf:"varint,3,opt,name=active,proto3" json:"active,omitempty"`
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *DataUnion) Reset()         { *m = DataUnion{} }
@@ -159,13 +154,6 @@ func (m *DataUnion) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DataUnion proto.InternalMessageInfo
 
-func (m *DataUnion) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
 func (m *DataUnion) GetName() string {
 	if m != nil {
 		return m.Name
@@ -180,25 +168,11 @@ func (m *DataUnion) GetDidIdentity() string {
 	return ""
 }
 
-func (m *DataUnion) GetProfileRef() string {
-	if m != nil {
-		return m.ProfileRef
-	}
-	return ""
-}
-
 func (m *DataUnion) GetActive() bool {
 	if m != nil {
 		return m.Active
 	}
 	return false
-}
-
-func (m *DataUnion) GetDataSources() []uint64 {
-	if m != nil {
-		return m.DataSources
-	}
-	return nil
 }
 
 func (m *DataUnion) GetCreator() string {
@@ -212,7 +186,7 @@ func (m *DataUnion) GetCreator() string {
 type Anchor struct {
 	DidIdentityOwner string `protobuf:"bytes,1,opt,name=did_identity_owner,json=didIdentityOwner,proto3" json:"did_identity_owner,omitempty"`
 	Link             string `protobuf:"bytes,2,opt,name=link,proto3" json:"link,omitempty"`
-	DataSourceRef    uint64 `protobuf:"varint,3,opt,name=data_source_ref,json=dataSourceRef,proto3" json:"data_source_ref,omitempty"`
+	ParentCid        string `protobuf:"bytes,3,opt,name=parent_cid,json=parentCid,proto3" json:"parent_cid,omitempty"`
 	Creator          string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
@@ -263,11 +237,11 @@ func (m *Anchor) GetLink() string {
 	return ""
 }
 
-func (m *Anchor) GetDataSourceRef() uint64 {
+func (m *Anchor) GetParentCid() string {
 	if m != nil {
-		return m.DataSourceRef
+		return m.ParentCid
 	}
-	return 0
+	return ""
 }
 
 func (m *Anchor) GetCreator() string {
@@ -452,7 +426,7 @@ func (m *MsgAddDataSourceResponse) GetCid() string {
 
 type MsgRemoveDataSource struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Cid     string `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
 func (m *MsgRemoveDataSource) Reset()         { *m = MsgRemoveDataSource{} }
@@ -495,11 +469,11 @@ func (m *MsgRemoveDataSource) GetCreator() string {
 	return ""
 }
 
-func (m *MsgRemoveDataSource) GetId() uint64 {
+func (m *MsgRemoveDataSource) GetCid() string {
 	if m != nil {
-		return m.Id
+		return m.Cid
 	}
-	return 0
+	return ""
 }
 
 type MsgRemoveDataSourceResponse struct {
@@ -548,7 +522,7 @@ func (m *MsgRemoveDataSourceResponse) GetOk() bool {
 
 type MsgUpdateDataSource struct {
 	Creator     string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id          uint64   `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Cid         string   `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 	Name        string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Description string   `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	Anchors     []uint64 `protobuf:"varint,5,rep,packed,name=anchors,proto3" json:"anchors,omitempty"`
@@ -594,11 +568,11 @@ func (m *MsgUpdateDataSource) GetCreator() string {
 	return ""
 }
 
-func (m *MsgUpdateDataSource) GetId() uint64 {
+func (m *MsgUpdateDataSource) GetCid() string {
 	if m != nil {
-		return m.Id
+		return m.Cid
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgUpdateDataSource) GetName() string {
@@ -764,7 +738,7 @@ var xxx_messageInfo_MsgAddDataUnionResponse proto.InternalMessageInfo
 
 type MsgRemoveDataUnion struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Cid     string `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
 func (m *MsgRemoveDataUnion) Reset()         { *m = MsgRemoveDataUnion{} }
@@ -807,11 +781,11 @@ func (m *MsgRemoveDataUnion) GetCreator() string {
 	return ""
 }
 
-func (m *MsgRemoveDataUnion) GetId() uint64 {
+func (m *MsgRemoveDataUnion) GetCid() string {
 	if m != nil {
-		return m.Id
+		return m.Cid
 	}
-	return 0
+	return ""
 }
 
 type MsgRemoveDataUnionResponse struct {
@@ -851,11 +825,9 @@ func (m *MsgRemoveDataUnionResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveDataUnionResponse proto.InternalMessageInfo
 
 type MsgUpdateDataUnion struct {
-	Creator     string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id          uint64   `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Name        string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	ProfileRef  string   `protobuf:"bytes,4,opt,name=profile_ref,json=profileRef,proto3" json:"profile_ref,omitempty"`
-	DataSources []uint64 `protobuf:"varint,5,rep,packed,name=data_sources,json=dataSources,proto3" json:"data_sources,omitempty"`
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Cid     string `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
+	Name    string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 }
 
 func (m *MsgUpdateDataUnion) Reset()         { *m = MsgUpdateDataUnion{} }
@@ -898,11 +870,11 @@ func (m *MsgUpdateDataUnion) GetCreator() string {
 	return ""
 }
 
-func (m *MsgUpdateDataUnion) GetId() uint64 {
+func (m *MsgUpdateDataUnion) GetCid() string {
 	if m != nil {
-		return m.Id
+		return m.Cid
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgUpdateDataUnion) GetName() string {
@@ -910,20 +882,6 @@ func (m *MsgUpdateDataUnion) GetName() string {
 		return m.Name
 	}
 	return ""
-}
-
-func (m *MsgUpdateDataUnion) GetProfileRef() string {
-	if m != nil {
-		return m.ProfileRef
-	}
-	return ""
-}
-
-func (m *MsgUpdateDataUnion) GetDataSources() []uint64 {
-	if m != nil {
-		return m.DataSources
-	}
-	return nil
 }
 
 type MsgUpdateDataUnionResponse struct {
@@ -984,50 +942,48 @@ func init() {
 func init() { proto.RegisterFile("anconprotocol/data_union.proto", fileDescriptor_2c5127372209c222) }
 
 var fileDescriptor_2c5127372209c222 = []byte{
-	// 676 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0x4f, 0x4f, 0xd4, 0x4e,
-	0x18, 0xc7, 0x99, 0xb6, 0xbb, 0xb0, 0xcf, 0xfe, 0x7e, 0x42, 0x46, 0x12, 0x2b, 0x92, 0xb2, 0xee,
-	0xc1, 0xec, 0xc1, 0xdd, 0x4d, 0xf4, 0x66, 0x8c, 0x04, 0x02, 0x26, 0x1c, 0x88, 0xa4, 0x84, 0x8b,
-	0x97, 0x4d, 0xe9, 0x0c, 0x65, 0x64, 0x99, 0x69, 0x66, 0x66, 0x51, 0xde, 0x83, 0x89, 0x7a, 0xd0,
-	0x57, 0xe2, 0x8b, 0xe0, 0x64, 0x38, 0x7a, 0x32, 0x06, 0xde, 0x88, 0xe9, 0x6c, 0xbb, 0x6d, 0xf7,
-	0x4f, 0x08, 0xe8, 0x6d, 0x9e, 0x69, 0xe6, 0xfb, 0x7c, 0x9e, 0xbf, 0x05, 0x2f, 0xe0, 0xa1, 0xe0,
-	0xb1, 0x14, 0x5a, 0x84, 0xa2, 0xdf, 0x25, 0x81, 0x0e, 0x7a, 0x03, 0xce, 0x04, 0xef, 0x98, 0x3b,
-	0xfc, 0x62, 0xbb, 0x4f, 0x43, 0x2d, 0x05, 0x67, 0xe1, 0x3e, 0x8b, 0x78, 0xa0, 0x07, 0x92, 0xaa,
-	0x1d, 0x4e, 0x06, 0x4a, 0x4b, 0x46, 0x55, 0xa7, 0xf4, 0xbc, 0x6c, 0xad, 0x2c, 0x47, 0x22, 0x12,
-	0xc6, 0xea, 0x26, 0xa7, 0xa1, 0x62, 0xf3, 0x3b, 0x02, 0xd8, 0x0a, 0x74, 0xb0, 0x2f, 0x06, 0x32,
-	0xa4, 0xf8, 0x1e, 0x58, 0x8c, 0xb8, 0xa8, 0x81, 0x5a, 0x8e, 0x6f, 0x31, 0x82, 0x9f, 0x02, 0x26,
-	0x8c, 0xf4, 0x18, 0xa1, 0x5c, 0x33, 0x7d, 0xde, 0x13, 0xef, 0x39, 0x95, 0xae, 0xd5, 0x40, 0xad,
-	0x9a, 0xbf, 0x44, 0x18, 0xd9, 0x49, 0x3f, 0xbc, 0x49, 0xee, 0xb1, 0x0b, 0xf3, 0x01, 0x0f, 0x8f,
-	0x85, 0x54, 0xae, 0xdd, 0xb0, 0x5b, 0x35, 0x3f, 0x33, 0x31, 0x06, 0x87, 0x07, 0xa7, 0xd4, 0x75,
-	0xcc, 0x4b, 0x73, 0xc6, 0x0d, 0xa8, 0x13, 0xaa, 0x42, 0xc9, 0x62, 0xcd, 0x04, 0x77, 0x2b, 0xe6,
-	0x53, 0xf1, 0x2a, 0xd1, 0x0b, 0x25, 0x0d, 0xb4, 0x90, 0x6e, 0xd5, 0x7c, 0xcd, 0xcc, 0xe6, 0x0f,
-	0x04, 0xb5, 0x04, 0xfb, 0x20, 0x49, 0xce, 0x04, 0x75, 0xe6, 0xcd, 0x2a, 0x78, 0x7b, 0x0c, 0xff,
-	0x15, 0x23, 0x71, 0xed, 0xd4, 0x5d, 0x1e, 0x03, 0x5e, 0x83, 0x7a, 0x2c, 0xc5, 0x11, 0xeb, 0xd3,
-	0x9e, 0xa4, 0x47, 0x29, 0x2b, 0xa4, 0x57, 0x3e, 0x3d, 0xc2, 0xab, 0x50, 0x0d, 0x42, 0xcd, 0xce,
-	0xa8, 0x81, 0x5d, 0xd8, 0x74, 0x2e, 0x7e, 0xad, 0x21, 0x3f, 0xbd, 0x33, 0x1e, 0x92, 0x82, 0x29,
-	0x93, 0x4a, 0xe5, 0x56, 0x1b, 0x76, 0xcb, 0xf1, 0xeb, 0x64, 0x94, 0x5d, 0x55, 0x0c, 0x68, 0xbe,
-	0x1c, 0xd0, 0x47, 0x04, 0xd5, 0x0d, 0x93, 0xac, 0x19, 0x39, 0x47, 0x33, 0x72, 0x8e, 0xc1, 0xe9,
-	0x33, 0x7e, 0x92, 0xc5, 0x9a, 0x9c, 0xf1, 0x13, 0x58, 0x2c, 0x90, 0x98, 0x60, 0x6c, 0x93, 0x9c,
-	0xff, 0x73, 0x98, 0x24, 0x9e, 0x02, 0x8e, 0x53, 0xc6, 0xf9, 0x84, 0x60, 0x7e, 0x4f, 0xb2, 0x90,
-	0xf1, 0xe8, 0x96, 0x3c, 0xcb, 0x50, 0x89, 0x25, 0x0b, 0x87, 0xc9, 0x77, 0xfc, 0xa1, 0xf1, 0x0f,
-	0x88, 0xbe, 0x22, 0x58, 0xda, 0x55, 0xd1, 0x06, 0x21, 0x85, 0x76, 0x8d, 0xa0, 0x5e, 0x90, 0x35,
-	0x4c, 0xf5, 0x67, 0xaf, 0x3b, 0x77, 0x9f, 0x92, 0x4e, 0x2e, 0xee, 0x43, 0x8e, 0x56, 0xe4, 0xb2,
-	0xca, 0x5c, 0x2f, 0xc1, 0x1d, 0xc7, 0xf2, 0xa9, 0x8a, 0x05, 0x57, 0x66, 0x9a, 0xc4, 0x89, 0xa1,
-	0x5a, 0xf0, 0x2d, 0x71, 0x82, 0x97, 0xc0, 0x0e, 0x19, 0x49, 0x15, 0x92, 0x63, 0x73, 0x1d, 0xee,
-	0xef, 0xaa, 0xc8, 0xa7, 0xa7, 0xe2, 0x8c, 0x6e, 0x4d, 0x75, 0x87, 0x4a, 0xee, 0xd2, 0x56, 0xb7,
-	0xb2, 0x56, 0x6f, 0xb6, 0xe1, 0xd1, 0x14, 0x81, 0x59, 0x04, 0x49, 0x5d, 0x13, 0x87, 0x07, 0x31,
-	0x09, 0xf4, 0x9d, 0x1c, 0x8e, 0x66, 0xcb, 0x9e, 0x3d, 0xc9, 0xce, 0xd4, 0x49, 0xce, 0x36, 0x43,
-	0xc5, 0x8c, 0x45, 0x66, 0x36, 0xd7, 0x4d, 0x00, 0xe3, 0x40, 0xb7, 0x48, 0xe1, 0x17, 0x04, 0x8b,
-	0x79, 0x05, 0x86, 0x0b, 0x81, 0x00, 0xe4, 0xbb, 0x33, 0x6d, 0x8b, 0xed, 0xbf, 0x6d, 0x0b, 0x23,
-	0xed, 0xd7, 0xc8, 0xc8, 0xcb, 0xec, 0xa6, 0x78, 0x08, 0x0f, 0xc6, 0x90, 0xb2, 0x80, 0x9a, 0xaf,
-	0x00, 0x97, 0x0a, 0x36, 0x21, 0x75, 0x43, 0xc1, 0x57, 0x61, 0x65, 0xf2, 0xfd, 0x48, 0xfd, 0x1b,
-	0x32, 0xf2, 0x79, 0x3a, 0x6f, 0x29, 0x3f, 0xb5, 0xbc, 0x37, 0xee, 0xc5, 0xf1, 0xcd, 0x57, 0x99,
-	0xd8, 0x7c, 0x29, 0xf6, 0x18, 0x57, 0x86, 0xbd, 0xf9, 0xee, 0xe2, 0xca, 0x43, 0x97, 0x57, 0x1e,
-	0xfa, 0x7d, 0xe5, 0xa1, 0xcf, 0xd7, 0xde, 0xdc, 0xe5, 0xb5, 0x37, 0xf7, 0xf3, 0xda, 0x9b, 0x7b,
-	0xbb, 0x17, 0x31, 0x7d, 0x3c, 0x38, 0xec, 0x84, 0xe2, 0xb4, 0x9b, 0xd7, 0xaf, 0x9d, 0x17, 0xb0,
-	0x9d, 0x57, 0xb0, 0x6b, 0x6a, 0xd6, 0x1e, 0xfd, 0x3e, 0x3f, 0x74, 0xcb, 0xbf, 0x53, 0x7d, 0x1e,
-	0x53, 0x75, 0x58, 0x35, 0xf6, 0xf3, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x86, 0xb6, 0x0f, 0x0a,
-	0x6c, 0x07, 0x00, 0x00,
+	// 643 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x95, 0x4f, 0x4f, 0x13, 0x4f,
+	0x18, 0xc7, 0x99, 0xee, 0x52, 0xe8, 0xd3, 0xdf, 0x4f, 0xc8, 0x48, 0xe2, 0x8a, 0xb8, 0xd6, 0x1e,
+	0x4c, 0x0f, 0xb6, 0x4d, 0xf4, 0x66, 0x4c, 0x14, 0x04, 0x13, 0x0e, 0x44, 0xb2, 0xc8, 0xc5, 0x4b,
+	0x33, 0xcc, 0x0c, 0xcb, 0x08, 0xcc, 0x6c, 0x66, 0xa7, 0x28, 0x5e, 0x7d, 0x01, 0xca, 0xc1, 0x57,
+	0xe4, 0x85, 0x23, 0x47, 0x4f, 0xc6, 0xc0, 0x1b, 0x31, 0x3b, 0x6d, 0xf7, 0x4f, 0xe9, 0x6a, 0x8a,
+	0xb7, 0x79, 0x9e, 0xed, 0x7e, 0x9f, 0xcf, 0x7c, 0x9f, 0xe7, 0xe9, 0x82, 0x4f, 0x24, 0x55, 0x32,
+	0xd2, 0xca, 0x28, 0xaa, 0x8e, 0xba, 0x8c, 0x18, 0xd2, 0xeb, 0x4b, 0xa1, 0x64, 0xc7, 0xe6, 0xf0,
+	0xb3, 0x8d, 0x23, 0x4e, 0x8d, 0x56, 0x52, 0xd0, 0x1d, 0x11, 0x4a, 0x62, 0xfa, 0x9a, 0xc7, 0x9b,
+	0x92, 0xf5, 0x63, 0xa3, 0x05, 0x8f, 0x3b, 0x85, 0xd7, 0x8b, 0xd1, 0xf2, 0x52, 0xa8, 0x42, 0x65,
+	0xa3, 0x6e, 0x72, 0x1a, 0x28, 0x36, 0xbf, 0x23, 0x80, 0x75, 0x62, 0xc8, 0x8e, 0xea, 0x6b, 0xca,
+	0xf1, 0x7d, 0x80, 0x88, 0x68, 0x2e, 0x4d, 0x8f, 0x0a, 0xe6, 0xa1, 0x06, 0x6a, 0xd5, 0x82, 0xda,
+	0x20, 0xf3, 0x4a, 0x30, 0xfc, 0x18, 0x30, 0x13, 0xac, 0x27, 0x18, 0x97, 0x46, 0x98, 0xd3, 0x9e,
+	0xfa, 0x20, 0xb9, 0xf6, 0x2a, 0xf6, 0x67, 0x8b, 0x4c, 0xb0, 0xcd, 0xe1, 0x83, 0x37, 0x49, 0x1e,
+	0x7b, 0x30, 0x47, 0x24, 0x3d, 0x50, 0x3a, 0xf6, 0x9c, 0x86, 0xd3, 0xaa, 0x05, 0xa3, 0x10, 0x63,
+	0x70, 0x25, 0x39, 0xe6, 0x9e, 0x6b, 0xdf, 0xb4, 0x67, 0xdc, 0x80, 0x3a, 0xe3, 0x31, 0xd5, 0x22,
+	0x32, 0x42, 0x49, 0x6f, 0xd6, 0x3e, 0xca, 0xa7, 0x12, 0x3d, 0xaa, 0x39, 0x31, 0x4a, 0x7b, 0x55,
+	0xfb, 0x74, 0x14, 0x36, 0x3f, 0x41, 0x2d, 0xb9, 0xc4, 0x6e, 0x62, 0x55, 0x2a, 0x8e, 0x72, 0xe2,
+	0x0f, 0xe1, 0xbf, 0x3c, 0xf8, 0x10, 0xb9, 0x9e, 0x43, 0xc6, 0x2b, 0x50, 0x25, 0xd4, 0x88, 0x13,
+	0xee, 0x39, 0x0d, 0xd4, 0x9a, 0x5f, 0x73, 0xcf, 0x7f, 0x3e, 0x40, 0xc1, 0x30, 0x97, 0xaf, 0xed,
+	0x16, 0x6b, 0x7f, 0x46, 0x50, 0x5d, 0xb5, 0xf7, 0x2a, 0xb1, 0x07, 0x95, 0xd8, 0x83, 0xc1, 0x3d,
+	0x12, 0xf2, 0x70, 0xc8, 0x62, 0xcf, 0x63, 0xfe, 0x3b, 0xe3, 0xfe, 0x97, 0x53, 0x7c, 0x41, 0x30,
+	0xb7, 0xad, 0x05, 0x15, 0x32, 0x9c, 0x12, 0x63, 0x09, 0x66, 0x23, 0x2d, 0x28, 0xb7, 0x1c, 0x6e,
+	0x30, 0x08, 0xf0, 0x23, 0x58, 0xb0, 0xd3, 0x17, 0xdb, 0xb9, 0xe8, 0x69, 0xbe, 0x6f, 0x69, 0xdc,
+	0xe0, 0x7f, 0x96, 0x4e, 0x4b, 0xc0, 0xf7, 0xff, 0x40, 0xf4, 0x0d, 0xc1, 0xe2, 0x56, 0x1c, 0xae,
+	0x32, 0x96, 0x9b, 0xaf, 0x10, 0xea, 0x39, 0x59, 0xcb, 0x54, 0x7f, 0xf2, 0xba, 0x73, 0xf3, 0xb1,
+	0xee, 0x64, 0xe2, 0x01, 0x64, 0x68, 0x79, 0xae, 0x4a, 0x91, 0xeb, 0x39, 0x78, 0xe3, 0x58, 0x01,
+	0x8f, 0x23, 0x25, 0x63, 0x8e, 0x6f, 0x41, 0x45, 0x1d, 0x5a, 0xaa, 0xf9, 0xa0, 0xa2, 0x0e, 0xf1,
+	0x22, 0x38, 0x49, 0x1f, 0x06, 0x0a, 0xc9, 0xb1, 0xb9, 0x0a, 0xb7, 0xb7, 0xe2, 0x30, 0xe0, 0xc7,
+	0xea, 0x84, 0xaf, 0x4f, 0x2c, 0x87, 0x0a, 0xe5, 0x26, 0x48, 0xb4, 0xe1, 0xde, 0x04, 0x89, 0x32,
+	0x86, 0xe6, 0x19, 0xb2, 0x25, 0x77, 0x23, 0x46, 0xcc, 0x0d, 0x4b, 0xa6, 0x2b, 0xe1, 0x94, 0xef,
+	0x9b, 0x3b, 0x71, 0xdf, 0x46, 0xfb, 0x3b, 0xdb, 0x70, 0x5a, 0x6e, 0xba, 0xbf, 0xcd, 0x17, 0xf6,
+	0x0a, 0xe3, 0x48, 0x53, 0xd8, 0x78, 0x86, 0x60, 0x21, 0xeb, 0xc2, 0x60, 0x6f, 0x19, 0x40, 0xf6,
+	0x87, 0x37, 0x1c, 0x8d, 0x8d, 0x7f, 0x1d, 0x0d, 0x2b, 0x1d, 0xd4, 0x58, 0x5a, 0xa5, 0x7c, 0x30,
+	0xee, 0xc2, 0x9d, 0x31, 0xa4, 0xd1, 0x85, 0x9a, 0x2f, 0x01, 0x17, 0x5a, 0x76, 0x4d, 0xea, 0xaf,
+	0x4d, 0x5f, 0x81, 0xe5, 0xeb, 0x0a, 0xa9, 0xfe, 0x5b, 0xab, 0x9f, 0xf9, 0x39, 0xb5, 0xfe, 0xa4,
+	0x0e, 0x0f, 0x6b, 0x8e, 0xa9, 0x8e, 0x6a, 0xae, 0xbd, 0x3f, 0xbf, 0xf4, 0xd1, 0xc5, 0xa5, 0x8f,
+	0x7e, 0x5d, 0xfa, 0xe8, 0xeb, 0x95, 0x3f, 0x73, 0x71, 0xe5, 0xcf, 0xfc, 0xb8, 0xf2, 0x67, 0xde,
+	0x6d, 0x87, 0xc2, 0x1c, 0xf4, 0xf7, 0x3a, 0x54, 0x1d, 0x77, 0x33, 0xfb, 0xdb, 0x99, 0xff, 0xed,
+	0xac, 0x01, 0x5d, 0x6b, 0x79, 0x3b, 0xfd, 0x64, 0x7d, 0xec, 0x16, 0x3f, 0x61, 0xe6, 0x34, 0xe2,
+	0xf1, 0x5e, 0xd5, 0xc6, 0x4f, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0x99, 0x1c, 0x0b, 0x60, 0xe0,
+	0x06, 0x00, 0x00,
 }
 
 func (m *DataSource) Marshal() (dAtA []byte, err error) {
@@ -1087,10 +1043,12 @@ func (m *DataSource) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
+	if len(m.ParentCid) > 0 {
+		i -= len(m.ParentCid)
+		copy(dAtA[i:], m.ParentCid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.ParentCid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1120,25 +1078,7 @@ func (m *DataUnion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Creator)
 		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Creator)))
 		i--
-		dAtA[i] = 0x3a
-	}
-	if len(m.DataSources) > 0 {
-		dAtA2 := make([]byte, len(m.DataSources)*10)
-		var j1 int
-		for _, num := range m.DataSources {
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
-		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintDataUnion(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x22
 	}
 	if m.Active {
 		i--
@@ -1148,33 +1088,21 @@ func (m *DataUnion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.ProfileRef) > 0 {
-		i -= len(m.ProfileRef)
-		copy(dAtA[i:], m.ProfileRef)
-		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.ProfileRef)))
-		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x18
 	}
 	if len(m.DidIdentity) > 0 {
 		i -= len(m.DidIdentity)
 		copy(dAtA[i:], m.DidIdentity)
 		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.DidIdentity)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.Name) > 0 {
 		i -= len(m.Name)
 		copy(dAtA[i:], m.Name)
 		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Name)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1206,10 +1134,12 @@ func (m *Anchor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if m.DataSourceRef != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.DataSourceRef))
+	if len(m.ParentCid) > 0 {
+		i -= len(m.ParentCid)
+		copy(dAtA[i:], m.ParentCid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.ParentCid)))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x1a
 	}
 	if len(m.Link) > 0 {
 		i -= len(m.Link)
@@ -1377,10 +1307,12 @@ func (m *MsgRemoveDataSource) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
+	if len(m.Cid) > 0 {
+		i -= len(m.Cid)
+		copy(dAtA[i:], m.Cid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Cid)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -1446,20 +1378,20 @@ func (m *MsgUpdateDataSource) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.Anchors) > 0 {
-		dAtA5 := make([]byte, len(m.Anchors)*10)
-		var j4 int
+		dAtA3 := make([]byte, len(m.Anchors)*10)
+		var j2 int
 		for _, num := range m.Anchors {
 			for num >= 1<<7 {
-				dAtA5[j4] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA3[j2] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j4++
+				j2++
 			}
-			dAtA5[j4] = uint8(num)
-			j4++
+			dAtA3[j2] = uint8(num)
+			j2++
 		}
-		i -= j4
-		copy(dAtA[i:], dAtA5[:j4])
-		i = encodeVarintDataUnion(dAtA, i, uint64(j4))
+		i -= j2
+		copy(dAtA[i:], dAtA3[:j2])
+		i = encodeVarintDataUnion(dAtA, i, uint64(j2))
 		i--
 		dAtA[i] = 0x2a
 	}
@@ -1477,10 +1409,12 @@ func (m *MsgUpdateDataSource) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
+	if len(m.Cid) > 0 {
+		i -= len(m.Cid)
+		copy(dAtA[i:], m.Cid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Cid)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -1617,10 +1551,12 @@ func (m *MsgRemoveDataUnion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
+	if len(m.Cid) > 0 {
+		i -= len(m.Cid)
+		copy(dAtA[i:], m.Cid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Cid)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -1675,31 +1611,6 @@ func (m *MsgUpdateDataUnion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.DataSources) > 0 {
-		dAtA8 := make([]byte, len(m.DataSources)*10)
-		var j7 int
-		for _, num := range m.DataSources {
-			for num >= 1<<7 {
-				dAtA8[j7] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j7++
-			}
-			dAtA8[j7] = uint8(num)
-			j7++
-		}
-		i -= j7
-		copy(dAtA[i:], dAtA8[:j7])
-		i = encodeVarintDataUnion(dAtA, i, uint64(j7))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.ProfileRef) > 0 {
-		i -= len(m.ProfileRef)
-		copy(dAtA[i:], m.ProfileRef)
-		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.ProfileRef)))
-		i--
-		dAtA[i] = 0x22
-	}
 	if len(m.Name) > 0 {
 		i -= len(m.Name)
 		copy(dAtA[i:], m.Name)
@@ -1707,10 +1618,12 @@ func (m *MsgUpdateDataUnion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintDataUnion(dAtA, i, uint64(m.Id))
+	if len(m.Cid) > 0 {
+		i -= len(m.Cid)
+		copy(dAtA[i:], m.Cid)
+		i = encodeVarintDataUnion(dAtA, i, uint64(len(m.Cid)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -1762,8 +1675,9 @@ func (m *DataSource) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
+	l = len(m.ParentCid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	l = len(m.DidIdentityOwner)
 	if l > 0 {
@@ -1796,9 +1710,6 @@ func (m *DataUnion) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
-	}
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
@@ -1807,19 +1718,8 @@ func (m *DataUnion) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	l = len(m.ProfileRef)
-	if l > 0 {
-		n += 1 + l + sovDataUnion(uint64(l))
-	}
 	if m.Active {
 		n += 2
-	}
-	if len(m.DataSources) > 0 {
-		l = 0
-		for _, e := range m.DataSources {
-			l += sovDataUnion(uint64(e))
-		}
-		n += 1 + sovDataUnion(uint64(l)) + l
 	}
 	l = len(m.Creator)
 	if l > 0 {
@@ -1842,8 +1742,9 @@ func (m *Anchor) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	if m.DataSourceRef != 0 {
-		n += 1 + sovDataUnion(uint64(m.DataSourceRef))
+	l = len(m.ParentCid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	l = len(m.Creator)
 	if l > 0 {
@@ -1918,8 +1819,9 @@ func (m *MsgRemoveDataSource) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	return n
 }
@@ -1946,8 +1848,9 @@ func (m *MsgUpdateDataSource) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	l = len(m.Name)
 	if l > 0 {
@@ -2019,8 +1922,9 @@ func (m *MsgRemoveDataUnion) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	return n
 }
@@ -2044,23 +1948,13 @@ func (m *MsgUpdateDataUnion) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovDataUnion(uint64(m.Id))
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovDataUnion(uint64(l))
 	}
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovDataUnion(uint64(l))
-	}
-	l = len(m.ProfileRef)
-	if l > 0 {
-		n += 1 + l + sovDataUnion(uint64(l))
-	}
-	if len(m.DataSources) > 0 {
-		l = 0
-		for _, e := range m.DataSources {
-			l += sovDataUnion(uint64(e))
-		}
-		n += 1 + sovDataUnion(uint64(l)) + l
 	}
 	return n
 }
@@ -2110,10 +2004,10 @@ func (m *DataSource) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ParentCid", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -2123,11 +2017,24 @@ func (m *DataSource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ParentCid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentityOwner", wireType)
@@ -2339,25 +2246,6 @@ func (m *DataUnion) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDataUnion
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
@@ -2389,7 +2277,7 @@ func (m *DataUnion) Unmarshal(dAtA []byte) error {
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidIdentity", wireType)
 			}
@@ -2421,39 +2309,7 @@ func (m *DataUnion) Unmarshal(dAtA []byte) error {
 			}
 			m.DidIdentity = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProfileRef", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDataUnion
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDataUnion
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDataUnion
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProfileRef = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Active", wireType)
 			}
@@ -2473,83 +2329,7 @@ func (m *DataUnion) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Active = bool(v != 0)
-		case 6:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowDataUnion
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.DataSources = append(m.DataSources, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowDataUnion
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthDataUnion
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthDataUnion
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.DataSources) == 0 {
-					m.DataSources = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowDataUnion
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.DataSources = append(m.DataSources, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field DataSources", wireType)
-			}
-		case 7:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
@@ -2696,10 +2476,10 @@ func (m *Anchor) Unmarshal(dAtA []byte) error {
 			m.Link = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DataSourceRef", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ParentCid", wireType)
 			}
-			m.DataSourceRef = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -2709,11 +2489,24 @@ func (m *Anchor) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.DataSourceRef |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ParentCid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
@@ -3201,10 +2994,10 @@ func (m *MsgRemoveDataSource) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -3214,11 +3007,24 @@ func (m *MsgRemoveDataSource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDataUnion(dAtA[iNdEx:])
@@ -3372,10 +3178,10 @@ func (m *MsgUpdateDataSource) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -3385,11 +3191,24 @@ func (m *MsgUpdateDataSource) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
@@ -3883,10 +3702,10 @@ func (m *MsgRemoveDataUnion) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -3896,11 +3715,24 @@ func (m *MsgRemoveDataUnion) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDataUnion(dAtA[iNdEx:])
@@ -4034,10 +3866,10 @@ func (m *MsgUpdateDataUnion) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowDataUnion
@@ -4047,11 +3879,24 @@ func (m *MsgUpdateDataUnion) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthDataUnion
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
@@ -4084,114 +3929,6 @@ func (m *MsgUpdateDataUnion) Unmarshal(dAtA []byte) error {
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProfileRef", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDataUnion
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDataUnion
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDataUnion
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProfileRef = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowDataUnion
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.DataSources = append(m.DataSources, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowDataUnion
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthDataUnion
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthDataUnion
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.DataSources) == 0 {
-					m.DataSources = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowDataUnion
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.DataSources = append(m.DataSources, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field DataSources", wireType)
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDataUnion(dAtA[iNdEx:])

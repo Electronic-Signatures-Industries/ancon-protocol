@@ -67,17 +67,17 @@ func (k msgServer) RemoveDataSource(goCtx context.Context, msg *types.MsgRemoveD
 func (k msgServer) AddDataUnion(goCtx context.Context, msg *types.MsgAddDataUnion) (*types.MsgAddDataUnionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
+	lnk, err :=
+		k.ApplyDataUnion(ctx, msg)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"add_data_union",
+			sdk.NewAttribute("link", lnk),
 		),
 	})
 

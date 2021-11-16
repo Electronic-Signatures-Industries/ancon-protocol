@@ -23,7 +23,8 @@ import (
 
 	noise "github.com/libp2p/go-libp2p-noise"
 	routing "github.com/libp2p/go-libp2p-routing"
-	linkstore "github.com/proofzero/go-ipld-linkstore"
+
+	//	linkstore "github.com/proofzero/go-ipld-linkstore"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	blocks "github.com/ipfs/go-block-format"
@@ -139,11 +140,11 @@ func (gs *GraphsyncServer) ListenAndServe() error {
 		gs.host.Connect(c, *pi)
 	}
 
-	sls := linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
+	sls := cidlink.DefaultLinkSystem() // linkstore.NewStorageLinkSystemWithNewStorage(cidlink.DefaultLinkSystem())
 	network := gsnet.NewFromLibp2pHost(gs.host)
 
 	//add carv1
-	gs.exchange = graphsync.New(c, network, sls.LinkSystem)
+	gs.exchange = graphsync.New(c, network, sls)
 
 	finalResponseStatusChan := make(chan gsync.ResponseStatusCode, 1)
 	gs.exchange.RegisterCompletedResponseListener(func(p peer.ID, request gsync.RequestData, status gsync.ResponseStatusCode) {
@@ -184,6 +185,7 @@ func (gs *GraphsyncServer) ListenAndServe() error {
 			s, _ := network.NewMessageSender(c, message.Sender)
 			s.SendMsg(c, mm)
 		}
+
 	}()
 
 	return nil
