@@ -12,7 +12,7 @@ import (
 
 type DataUnionStore struct {
 	store store.CommitKVStore
-	cdc   codec.Codec
+	cdc   codec.Marshaler
 }
 
 func NewDataUnionStore(store store.CommitKVStore) *DataUnionStore {

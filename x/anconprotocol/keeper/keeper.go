@@ -33,7 +33,7 @@ import (
 )
 
 type Keeper struct {
-	cdc              codec.Codec
+	cdc              codec.Marshaler
 	storeKey         sdk.StoreKey
 	memKey           sdk.StoreKey
 	paramSpace       paramstypes.Subspace
@@ -51,7 +51,7 @@ type Keeper struct {
 }
 
 func NewTestKeeper(
-	cdc codec.Codec,
+	cdc codec.Marshaler,
 	key sdk.StoreKey,
 	memKey sdk.StoreKey,
 	paramSpace paramstypes.Subspace,
@@ -73,7 +73,7 @@ func NewTestKeeper(
 }
 
 func NewKeeper(
-	cdc codec.Codec,
+	cdc codec.Marshaler,
 	key sdk.StoreKey,
 	memKey sdk.StoreKey,
 	paramSpace paramstypes.Subspace,
@@ -323,7 +323,7 @@ func (k *Keeper) GetDIDOwner(ctx sdk.Context, owner string) types.DIDOwner {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
 	var found types.DIDOwner
 	id := []byte(owner)
-	k.cdc.Unmarshal(store.Get(id), &found)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(id), &found)
 	return found
 }
 
@@ -331,7 +331,7 @@ func (k *Keeper) GetDelegate(ctx sdk.Context, delegate string) *types.DIDDelegat
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	var found types.DIDDelegate
 	id := []byte(delegate)
-	k.cdc.Unmarshal(store.Get(id), &found)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(id), &found)
 	return &found
 }
 func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) error {
@@ -349,19 +349,19 @@ func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) err
 }
 func (k *Keeper) SetDIDOwner(ctx sdk.Context, o *types.DIDOwner) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
-	res := k.cdc.MustMarshal(o)
+	res := k.cdc.MustMarshalBinaryBare(o)
 	store.Set([]byte(o.Owner), res)
 }
 
 func (k *Keeper) SetAttribute(ctx sdk.Context, msg *types.DIDAttribute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
-	res := k.cdc.MustMarshal(msg)
+	res := k.cdc.MustMarshalBinaryBare(msg)
 	store.Set([]byte(msg.DidIdentity), res)
 }
 
 func (k *Keeper) SetDelegate(ctx sdk.Context, msg *types.DIDDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
-	res := k.cdc.MustMarshal(msg)
+	res := k.cdc.MustMarshalBinaryBare(msg)
 	store.Set([]byte(msg.DidIdentity), res)
 }
 
@@ -377,7 +377,7 @@ func (k *Keeper) RemoveDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 func (k *Keeper) GetAttribute(ctx sdk.Context, didIdentity string) *types.DIDAttribute {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	var found types.DIDAttribute
-	k.cdc.Unmarshal(store.Get([]byte(didIdentity)), &found)
+	k.cdc.MustUnmarshalBinaryBare(store.Get([]byte(didIdentity)), &found)
 	return &found
 }
 func (k *Keeper) RemoveDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
@@ -396,14 +396,14 @@ func (k *Keeper) GetDidWebRoute(ctx sdk.Context, vanityName string) types.DIDWeb
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
 	var found types.DIDWebRoute
 	id := []byte(vanityName)
-	k.cdc.Unmarshal(store.Get(id), &found)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(id), &found)
 
 	return found
 }
 
 func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	res := k.cdc.MustMarshal(didWebRoute)
+	res := k.cdc.MustMarshalBinaryBare(didWebRoute)
 	store.Set([]byte(didWebRoute.Name), res)
 }
 

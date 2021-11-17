@@ -18,7 +18,7 @@ import (
 type JSONStore struct {
 	fss   fsstore.Store
 	store store.CommitKVStore
-	cdc   codec.Codec
+	cdc   codec.Marshaler
 }
 
 func NewJSONStore(store store.CommitKVStore) *JSONStore {

@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
+	exported "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/exported"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
 	"github.com/multiformats/go-multihash"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -303,7 +303,7 @@ func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamode
 	return n, err
 }
 
-func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.MerkleProof, error) {
+func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *ics23.CommitmentProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -334,39 +334,21 @@ func (k Keeper) GetMetadataProof(ctx sdk.Context, hash, path string) ([]byte, *i
 		Height: ctx.BlockHeader().Height,
 		Prove:  true,
 	})
-	mp, err := ibc.ConvertProofs(res.ProofOps)
-	if err != nil {
-		return nil, nil, err
-	}
-	combined, err := ics23.CombineProofs(mp.Proofs)
+	combined, err := exported.GetCommitmentProof(res.ProofOps, true)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	r, err := combined.Calculate()
-	root := ibc.MerkleRoot{
-		Hash: r,
-	}
+
 	if err != nil {
 		return nil, nil, err
 	}
-	// e := fmt.Sprintf("root hash created %s %s ", res.Info, res.GetValue())
-	// ctx.Logger().Info(e)
-
-	// ps := []*ics23.ProofSpec{
-	// 	ics23.IavlSpec,
-	// }
-
-	// err = mp.VerifyMembership(ps, root, ibc.NewMerklePath(key), res.Value)
-	// ok := ics23.VerifyMembership(ps[0], r, mp.GetProofs()[0], []byte(key), mp.GetProofs()[0].GetExist().Value)
-	// if err != nil {
-	// 	return "", nil, err
-	// }
 	ctx.Logger().Info("verified membership created")
-	return (root.Hash), &mp, nil
+	return r, combined, nil
 }
 
-func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.MerkleProof, error) {
+func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ics23.CommitmentProof, error) {
 	var id []byte
 	if path != "" {
 		id = append([]byte(hash), path...)
@@ -396,36 +378,19 @@ func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.Merkl
 		Height: ctx.BlockHeader().Height,
 		Prove:  true,
 	})
-	mp, err := ibc.ConvertProofs(res.ProofOps)
-	if err != nil {
-		return nil, nil, err
-	}
-	combined, err := ics23.CombineProofs(mp.Proofs)
+
+	combined, err := exported.GetCommitmentProof(res.ProofOps, true)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	r, err := combined.Calculate()
-	root := ibc.MerkleRoot{
-		Hash: r,
-	}
+
 	if err != nil {
 		return nil, nil, err
 	}
-	// e := fmt.Sprintf("root hash created %s %s ", res.Info, res.GetValue())
-	// ctx.Logger().Info(e)
-
-	// ps := []*ics23.ProofSpec{
-	// 	ics23.IavlSpec,
-	// }
-
-	// err = mp.VerifyMembership(ps, root, ibc.NewMerklePath(key), res.Value)
-	// ok := ics23.VerifyMembership(ps[0], r, mp.GetProofs()[0], []byte(key), mp.GetProofs()[0].GetExist().Value)
-	// if err != nil {
-	// 	return "", nil, err
-	// }
 	ctx.Logger().Info("verified membership created")
-	return (root.Hash), &mp, nil
+	return r, combined, nil
 }
 func (k Keeper) GetLinkSystem() linking.LinkSystem {
 	return cidlink.DefaultLinkSystem()

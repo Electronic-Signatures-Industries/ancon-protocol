@@ -8,15 +8,15 @@ import (
 	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 )
 
-func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) ([]byte, *ics23.ExistenceProof, *ics23.ExistenceProof, error) {
+func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) (*ics23.CommitmentProof, error) {
 
 	if proof == nil {
-		return nil, &ics23.ExistenceProof{}, &ics23.ExistenceProof{}, fmt.Errorf("Proof not found")
+		return nil, fmt.Errorf("Proof not found")
 	}
 
 	ops := proof.GetOps()
 	if ops == nil {
-		return nil, &ics23.ExistenceProof{}, &ics23.ExistenceProof{}, fmt.Errorf("Proof ops not found")
+		return nil, fmt.Errorf("Proof ops not found")
 	}
 
 	// Extract iavl proof and multistore existence proof
@@ -33,7 +33,7 @@ func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) ([]byte, *
 			iavlOps := storetypes.NewIavlCommitmentOp(op.Key, proof)
 			iavlEp = iavlOps.Proof.GetExist()
 			if iavlEp == nil {
-				return nil, &ics23.ExistenceProof{}, &ics23.ExistenceProof{}, fmt.Errorf("IAVL existence proof not found")
+				return nil, fmt.Errorf("IAVL existence proof not found")
 			}
 		case storetypes.ProofOpSimpleMerkleCommitment:
 			if getMultiStoreEp {
@@ -45,13 +45,29 @@ func GetCommitmentProof(proof *crypto.ProofOps, getMultiStoreEp bool) ([]byte, *
 				multiStoreOps := storetypes.NewSimpleMerkleCommitmentOp(op.Key, proof)
 				multiStoreEp = multiStoreOps.Proof.GetExist()
 				if multiStoreEp == nil {
-					return nil, &ics23.ExistenceProof{}, &ics23.ExistenceProof{}, fmt.Errorf("MultiStore existence proof not found")
+					return nil, fmt.Errorf("MultiStore existence proof not found")
 				}
 			}
 		default:
-			return nil, &ics23.ExistenceProof{}, &ics23.ExistenceProof{}, fmt.Errorf("Unknown proof ops found")
+			return nil, fmt.Errorf("Unknown proof ops found")
 		}
 	}
 
-	return nil, iavlEp, multiStoreEp, nil
+	mp, err := ics23.CombineProofs([]*ics23.CommitmentProof{
+		{
+			Proof: &ics23.CommitmentProof_Exist{
+				Exist: iavlEp,
+			},
+		},
+		{
+			Proof: &ics23.CommitmentProof_Exist{
+				Exist: multiStoreEp,
+			},
+		}})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return mp, nil
 }

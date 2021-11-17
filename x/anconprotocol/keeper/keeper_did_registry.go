@@ -264,7 +264,7 @@ func (k Keeper) GetDidRoute(ctx sdk.Context, name string) (datamodel.Node, error
 	}
 	var didRoute types.DIDWebRoute
 	bz := storeRoute.Get([]byte(name))
-	k.cdc.MustUnmarshal(bz, &didRoute)
+	k.cdc.MustUnmarshalBinaryBare(bz, &didRoute)
 
 	return k.GetDid(ctx, didRoute.Cid)
 
