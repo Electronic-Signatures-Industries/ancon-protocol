@@ -3,8 +3,6 @@ package keeper
 import (
 	"strings"
 
-	iavlst "github.com/cosmos/cosmos-sdk/store/iavl"
-
 	"encoding/json"
 	"fmt"
 
@@ -86,16 +84,13 @@ func NewKeeper(
 	// create cache manager to unwrap
 	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
 	mngr.GetStoreCache(key, cms.GetCommitKVStore(key))
-	iavlstore := mngr.Unwrap(key).(*iavlst.Store)
-
-	queryableStore := store.Queryable(iavlstore)
 
 	kvs := mngr.Unwrap(key)
 
 	dataunionKeeper := dataunion.NewKeeper(kvs)
 	jsonschemaKeeper := jsonstore.NewKeeper(kvs)
 	return Keeper{
-		queryableStore:   queryableStore,
+		queryableStore:   nil,
 		dataunionKeeper:  dataunionKeeper,
 		jsonschemaKeeper: jsonschemaKeeper,
 		storeKey:         key,
