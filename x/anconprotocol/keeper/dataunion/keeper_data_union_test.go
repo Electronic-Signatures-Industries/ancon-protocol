@@ -80,13 +80,13 @@ func Test_Roundtrip_JSONStore(t *testing.T) {
 		}
 	}`
 
-	lnk, err := keeper.AddJSON(ctx, "/", payload)
+	lnk, err := keeper.AddCBOR(ctx, "/", payload)
 
 	if err != nil {
 		require.NoError(t, err)
 	}
 
-	content, _ := keeper.ReadJSON(ctx, "/", lnk)
+	content, _ := keeper.ReadCBOR(ctx, "/", lnk)
 	// x := &types.QueryGetDidRequest{
 	// 	Name: "wonderland",
 	// }
@@ -137,10 +137,10 @@ func Test_DID_Key(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 }
 
@@ -163,10 +163,10 @@ func Test_DID_Delegate(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
@@ -201,10 +201,10 @@ func Test_DID_ChangeOwner(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -236,10 +236,10 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,

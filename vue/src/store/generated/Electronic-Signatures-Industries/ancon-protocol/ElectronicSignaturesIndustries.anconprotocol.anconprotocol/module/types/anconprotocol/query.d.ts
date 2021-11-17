@@ -5,6 +5,13 @@ export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprot
 export interface QueryDidWebRequest {
     name: string;
 }
+export interface QuerySchemaStoreRequest {
+    cid: string;
+    path: string;
+}
+export interface QuerySchemaStoreResponse {
+    data: Uint8Array;
+}
 export interface QueryProofMetadataRequest {
     cid: string;
     path: string;
@@ -14,12 +21,7 @@ export interface QueryProofResponse {
     proof: string;
 }
 export interface QueryGetDidRequest {
-    name: string;
-}
-export interface QueryReadDidKeyRequest {
-    name: string;
-}
-export interface QueryReadDidKeyResponse {
+    hashcid: string;
 }
 export interface QueryReadRoyaltyInfo {
     cid: string;
@@ -85,6 +87,10 @@ export interface QueryGetDelegateRequest {
     id: string;
 }
 export interface QueryGetDelegateResponse {
+    delegate: string;
+    delegateType: string;
+    validity: number;
+    creator: string;
 }
 export interface QueryNonceRequest {
     id: string;
@@ -92,6 +98,8 @@ export interface QueryNonceRequest {
 export interface QueryNonceResponse {
 }
 export interface QueryGetAttributesResponse {
+    name: string[];
+    value: string[];
 }
 export interface QueryIdentifyOwnerResponse {
 }
@@ -117,6 +125,20 @@ export declare const QueryDidWebRequest: {
     toJSON(message: QueryDidWebRequest): unknown;
     fromPartial(object: DeepPartial<QueryDidWebRequest>): QueryDidWebRequest;
 };
+export declare const QuerySchemaStoreRequest: {
+    encode(message: QuerySchemaStoreRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QuerySchemaStoreRequest;
+    fromJSON(object: any): QuerySchemaStoreRequest;
+    toJSON(message: QuerySchemaStoreRequest): unknown;
+    fromPartial(object: DeepPartial<QuerySchemaStoreRequest>): QuerySchemaStoreRequest;
+};
+export declare const QuerySchemaStoreResponse: {
+    encode(message: QuerySchemaStoreResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QuerySchemaStoreResponse;
+    fromJSON(object: any): QuerySchemaStoreResponse;
+    toJSON(message: QuerySchemaStoreResponse): unknown;
+    fromPartial(object: DeepPartial<QuerySchemaStoreResponse>): QuerySchemaStoreResponse;
+};
 export declare const QueryProofMetadataRequest: {
     encode(message: QueryProofMetadataRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryProofMetadataRequest;
@@ -137,20 +159,6 @@ export declare const QueryGetDidRequest: {
     fromJSON(object: any): QueryGetDidRequest;
     toJSON(message: QueryGetDidRequest): unknown;
     fromPartial(object: DeepPartial<QueryGetDidRequest>): QueryGetDidRequest;
-};
-export declare const QueryReadDidKeyRequest: {
-    encode(message: QueryReadDidKeyRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryReadDidKeyRequest;
-    fromJSON(object: any): QueryReadDidKeyRequest;
-    toJSON(message: QueryReadDidKeyRequest): unknown;
-    fromPartial(object: DeepPartial<QueryReadDidKeyRequest>): QueryReadDidKeyRequest;
-};
-export declare const QueryReadDidKeyResponse: {
-    encode(_: QueryReadDidKeyResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): QueryReadDidKeyResponse;
-    fromJSON(_: any): QueryReadDidKeyResponse;
-    toJSON(_: QueryReadDidKeyResponse): unknown;
-    fromPartial(_: DeepPartial<QueryReadDidKeyResponse>): QueryReadDidKeyResponse;
 };
 export declare const QueryReadRoyaltyInfo: {
     encode(message: QueryReadRoyaltyInfo, writer?: Writer): Writer;
@@ -244,11 +252,11 @@ export declare const QueryGetDelegateRequest: {
     fromPartial(object: DeepPartial<QueryGetDelegateRequest>): QueryGetDelegateRequest;
 };
 export declare const QueryGetDelegateResponse: {
-    encode(_: QueryGetDelegateResponse, writer?: Writer): Writer;
+    encode(message: QueryGetDelegateResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryGetDelegateResponse;
-    fromJSON(_: any): QueryGetDelegateResponse;
-    toJSON(_: QueryGetDelegateResponse): unknown;
-    fromPartial(_: DeepPartial<QueryGetDelegateResponse>): QueryGetDelegateResponse;
+    fromJSON(object: any): QueryGetDelegateResponse;
+    toJSON(message: QueryGetDelegateResponse): unknown;
+    fromPartial(object: DeepPartial<QueryGetDelegateResponse>): QueryGetDelegateResponse;
 };
 export declare const QueryNonceRequest: {
     encode(message: QueryNonceRequest, writer?: Writer): Writer;
@@ -265,11 +273,11 @@ export declare const QueryNonceResponse: {
     fromPartial(_: DeepPartial<QueryNonceResponse>): QueryNonceResponse;
 };
 export declare const QueryGetAttributesResponse: {
-    encode(_: QueryGetAttributesResponse, writer?: Writer): Writer;
+    encode(message: QueryGetAttributesResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryGetAttributesResponse;
-    fromJSON(_: any): QueryGetAttributesResponse;
-    toJSON(_: QueryGetAttributesResponse): unknown;
-    fromPartial(_: DeepPartial<QueryGetAttributesResponse>): QueryGetAttributesResponse;
+    fromJSON(object: any): QueryGetAttributesResponse;
+    toJSON(message: QueryGetAttributesResponse): unknown;
+    fromPartial(object: DeepPartial<QueryGetAttributesResponse>): QueryGetAttributesResponse;
 };
 export declare const QueryIdentifyOwnerResponse: {
     encode(_: QueryIdentifyOwnerResponse, writer?: Writer): Writer;
@@ -341,6 +349,7 @@ export interface Query {
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
     ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
     GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
@@ -359,6 +368,7 @@ export declare class QueryClientImpl implements Query {
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
     ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
     GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

@@ -22,6 +22,20 @@ export interface AnconprotocolCollection {
     denom?: AnconprotocolDenom;
     nfts?: AnconprotocolBaseNFT[];
 }
+export interface AnconprotocolDataSource {
+    parentCid?: string;
+    didIdentityOwner?: string;
+    anchors?: string[];
+    name?: string;
+    description?: string;
+    creator?: string;
+}
+export interface AnconprotocolDataUnion {
+    name?: string;
+    didIdentity?: string;
+    active?: boolean;
+    creator?: string;
+}
 export interface AnconprotocolDenom {
     id?: string;
     name?: string;
@@ -35,12 +49,17 @@ export interface AnconprotocolIDCollection {
     denomId?: string;
     tokenIds?: string[];
 }
+export interface AnconprotocolMsgAddDataSourceResponse {
+    ok?: boolean;
+    cid?: string;
+}
+export declare type AnconprotocolMsgAddDataUnionResponse = object;
 /**
  * MsgBurnNFTResponse defines the Msg/BurnNFT response type.
  */
 export declare type AnconprotocolMsgBurnNFTResponse = object;
 export interface AnconprotocolMsgChangeOwnerResponse {
-    identity?: string;
+    didIdentity?: string;
     owner?: string;
     /** @format uint64 */
     previousChange?: string;
@@ -48,17 +67,14 @@ export interface AnconprotocolMsgChangeOwnerResponse {
 export interface AnconprotocolMsgCreateDidResponse {
     cid?: string;
     did?: string;
+    url?: string;
 }
 /**
  * MsgEditNFTResponse defines the Msg/EditNFT response type.
  */
 export declare type AnconprotocolMsgEditNFTResponse = object;
-export interface AnconprotocolMsgGrantAttributeResponse {
-    ok?: boolean;
-}
 export interface AnconprotocolMsgGrantDelegateResponse {
-    /** @format byte */
-    hash?: string;
+    ok?: boolean;
 }
 /**
  * MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -79,17 +95,18 @@ export interface AnconprotocolMsgMintTrustedResourceResponse {
     /** @format uint64 */
     id?: string;
 }
+export interface AnconprotocolMsgRemoveDataSourceResponse {
+    ok?: boolean;
+}
+export declare type AnconprotocolMsgRemoveDataUnionResponse = object;
 export interface AnconprotocolMsgRevokeAttributeResponse {
-    /** @format byte */
-    hash?: string;
+    ok?: boolean;
 }
 export interface AnconprotocolMsgRevokeDelegateResponse {
-    /** @format byte */
-    hash?: string;
+    ok?: boolean;
 }
 export interface AnconprotocolMsgRevokeDidResponse {
-    /** @format uint64 */
-    id?: string;
+    ok?: boolean;
 }
 export interface AnconprotocolMsgRoyaltyInfoResponse {
     receiver?: string;
@@ -97,8 +114,14 @@ export interface AnconprotocolMsgRoyaltyInfoResponse {
     royaltyFeePercentage?: string;
     metadataRef?: string;
 }
+export interface AnconprotocolMsgSchemaStoreResponse {
+    cid?: string;
+}
 export interface AnconprotocolMsgSendMetadataOwnershipResponse {
     cid?: string;
+}
+export interface AnconprotocolMsgSetAttributeResponse {
+    ok?: boolean;
 }
 /**
  * MsgTransferDenomResponse defines the Msg/TransferDenom response type.
@@ -108,6 +131,11 @@ export declare type AnconprotocolMsgTransferDenomResponse = object;
  * MsgTransferNFTResponse defines the Msg/TransferNFT response type.
  */
 export declare type AnconprotocolMsgTransferNFTResponse = object;
+export interface AnconprotocolMsgUpdateDataSourceResponse {
+    ok?: boolean;
+    cid?: string;
+}
+export declare type AnconprotocolMsgUpdateDataUnionResponse = object;
 export declare type AnconprotocolMsgUpdateDidResponse = object;
 export interface AnconprotocolMsgUpdateMetadataOwnershipResponse {
     metadataRef?: string;
@@ -146,8 +174,17 @@ export interface AnconprotocolQueryDenomsResponse {
      */
     pagination?: V1Beta1PageResponse;
 }
-export declare type AnconprotocolQueryGetAttributesResponse = object;
-export declare type AnconprotocolQueryGetDelegateResponse = object;
+export interface AnconprotocolQueryGetAttributesResponse {
+    name?: string[];
+    value?: string[];
+}
+export interface AnconprotocolQueryGetDelegateResponse {
+    delegate?: string;
+    delegateType?: string;
+    /** @format uint64 */
+    validity?: string;
+    creator?: string;
+}
 export declare type AnconprotocolQueryIdentifyOwnerResponse = object;
 export interface AnconprotocolQueryNFTResponse {
     nft?: AnconprotocolBaseNFT;
@@ -175,6 +212,10 @@ export interface AnconprotocolQueryReadRoyaltyInfoResponse {
     royaltyAmount?: string;
 }
 export interface AnconprotocolQueryResourceResponse {
+    data?: string;
+}
+export interface AnconprotocolQuerySchemaStoreResponse {
+    /** @format byte */
     data?: string;
 }
 /**
@@ -405,7 +446,7 @@ export declare class HttpClient<SecurityDataType = unknown> {
     request: <T = any, E = any>({ body, secure, path, type, query, format, baseUrl, cancelToken, ...params }: FullRequestParams) => Promise<HttpResponse<T, E>>;
 }
 /**
- * @title anconprotocol/did_registry.proto
+ * @title anconprotocol/data_union.proto
  * @version version not set
  */
 export declare class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -417,7 +458,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @summary Queries a list of delegates items.
      * @request GET:/ancon/didregistry/delegates/{id}
      */
-    queryReadDelegate: (id: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    queryReadDelegate: (id: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryGetDelegateResponse, RpcStatus>>;
     /**
      * No description
      *
@@ -435,15 +476,15 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @summary Queries a list of Attributes items.
      * @request GET:/ancon/didregistry/{address}/attributes
      */
-    queryGetAttributes: (address: string, params?: RequestParams) => Promise<HttpResponse<object, RpcStatus>>;
+    queryGetAttributes: (address: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryGetAttributesResponse, RpcStatus>>;
     /**
      * No description
      *
      * @tags Query
      * @name QueryGetDidKey
-     * @request GET:/ancon/didregistry/{name}
+     * @request GET:/ancon/didregistry/{hashcid}
      */
-    queryGetDidKey: (name: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
+    queryGetDidKey: (hashcid: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryResourceResponse, RpcStatus>>;
     /**
      * No description
      *
@@ -538,6 +579,16 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @request GET:/ancon/royalty/{cid}/{price}
      */
     queryReadRoyaltyInfo: (cid: string, price: string, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryReadSchemaStoreResource
+     * @request GET:/ancon/schemastore/{cid}
+     */
+    queryReadSchemaStoreResource: (cid: string, query?: {
+        path?: string;
+    }, params?: RequestParams) => Promise<HttpResponse<AnconprotocolQuerySchemaStoreResponse, RpcStatus>>;
     /**
      * No description
      *

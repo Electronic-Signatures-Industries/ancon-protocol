@@ -1,33 +1,29 @@
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface DIDOwner {
-    identity: string;
+    didIdentity: string;
     owner: string;
     cid: string;
-    didWebDeactivated: boolean;
     vanityName: string;
 }
 export interface DIDWebRoute {
     name: string;
     route: string;
     cid: string;
+    didWebDeactivated: boolean;
+    didIdentity: string;
 }
-export interface Delegate {
+export interface DIDDelegate {
     delegate: string;
     delegateType: string;
     validity: number;
     creator: string;
-    identity: string;
+    didIdentity: string;
 }
-export interface Change {
-    identity: string;
-    owner: string;
-    previousChange: number;
-}
-export interface Attribute {
-    identity: string;
-    name: Uint8Array;
-    value: Uint8Array;
+export interface DIDAttribute {
+    didIdentity: string;
+    name: string[];
+    value: string[];
 }
 export declare const DIDOwner: {
     encode(message: DIDOwner, writer?: Writer): Writer;
@@ -43,26 +39,19 @@ export declare const DIDWebRoute: {
     toJSON(message: DIDWebRoute): unknown;
     fromPartial(object: DeepPartial<DIDWebRoute>): DIDWebRoute;
 };
-export declare const Delegate: {
-    encode(message: Delegate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): Delegate;
-    fromJSON(object: any): Delegate;
-    toJSON(message: Delegate): unknown;
-    fromPartial(object: DeepPartial<Delegate>): Delegate;
+export declare const DIDDelegate: {
+    encode(message: DIDDelegate, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): DIDDelegate;
+    fromJSON(object: any): DIDDelegate;
+    toJSON(message: DIDDelegate): unknown;
+    fromPartial(object: DeepPartial<DIDDelegate>): DIDDelegate;
 };
-export declare const Change: {
-    encode(message: Change, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): Change;
-    fromJSON(object: any): Change;
-    toJSON(message: Change): unknown;
-    fromPartial(object: DeepPartial<Change>): Change;
-};
-export declare const Attribute: {
-    encode(message: Attribute, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): Attribute;
-    fromJSON(object: any): Attribute;
-    toJSON(message: Attribute): unknown;
-    fromPartial(object: DeepPartial<Attribute>): Attribute;
+export declare const DIDAttribute: {
+    encode(message: DIDAttribute, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): DIDAttribute;
+    fromJSON(object: any): DIDAttribute;
+    toJSON(message: DIDAttribute): unknown;
+    fromPartial(object: DeepPartial<DIDAttribute>): DIDAttribute;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

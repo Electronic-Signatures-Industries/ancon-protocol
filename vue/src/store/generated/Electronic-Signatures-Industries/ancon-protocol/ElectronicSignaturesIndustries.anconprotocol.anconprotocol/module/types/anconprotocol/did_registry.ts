@@ -5,10 +5,9 @@ import { util, configure, Writer, Reader } from 'protobufjs/minimal'
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
 export interface DIDOwner {
-  identity: string
+  didIdentity: string
   owner: string
   cid: string
-  didWebDeactivated: boolean
   vanityName: string
 }
 
@@ -16,34 +15,30 @@ export interface DIDWebRoute {
   name: string
   route: string
   cid: string
+  didWebDeactivated: boolean
+  didIdentity: string
 }
 
-export interface Delegate {
+export interface DIDDelegate {
   delegate: string
   delegateType: string
   validity: number
   creator: string
-  identity: string
+  didIdentity: string
 }
 
-export interface Change {
-  identity: string
-  owner: string
-  previousChange: number
+export interface DIDAttribute {
+  didIdentity: string
+  name: string[]
+  value: string[]
 }
 
-export interface Attribute {
-  identity: string
-  name: Uint8Array
-  value: Uint8Array
-}
-
-const baseDIDOwner: object = { identity: '', owner: '', cid: '', didWebDeactivated: false, vanityName: '' }
+const baseDIDOwner: object = { didIdentity: '', owner: '', cid: '', vanityName: '' }
 
 export const DIDOwner = {
   encode(message: DIDOwner, writer: Writer = Writer.create()): Writer {
-    if (message.identity !== '') {
-      writer.uint32(10).string(message.identity)
+    if (message.didIdentity !== '') {
+      writer.uint32(10).string(message.didIdentity)
     }
     if (message.owner !== '') {
       writer.uint32(18).string(message.owner)
@@ -51,11 +46,8 @@ export const DIDOwner = {
     if (message.cid !== '') {
       writer.uint32(26).string(message.cid)
     }
-    if (message.didWebDeactivated === true) {
-      writer.uint32(32).bool(message.didWebDeactivated)
-    }
     if (message.vanityName !== '') {
-      writer.uint32(42).string(message.vanityName)
+      writer.uint32(34).string(message.vanityName)
     }
     return writer
   },
@@ -68,7 +60,7 @@ export const DIDOwner = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.identity = reader.string()
+          message.didIdentity = reader.string()
           break
         case 2:
           message.owner = reader.string()
@@ -77,9 +69,6 @@ export const DIDOwner = {
           message.cid = reader.string()
           break
         case 4:
-          message.didWebDeactivated = reader.bool()
-          break
-        case 5:
           message.vanityName = reader.string()
           break
         default:
@@ -92,10 +81,10 @@ export const DIDOwner = {
 
   fromJSON(object: any): DIDOwner {
     const message = { ...baseDIDOwner } as DIDOwner
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = String(object.identity)
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = String(object.didIdentity)
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner)
@@ -107,11 +96,6 @@ export const DIDOwner = {
     } else {
       message.cid = ''
     }
-    if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
-      message.didWebDeactivated = Boolean(object.didWebDeactivated)
-    } else {
-      message.didWebDeactivated = false
-    }
     if (object.vanityName !== undefined && object.vanityName !== null) {
       message.vanityName = String(object.vanityName)
     } else {
@@ -122,20 +106,19 @@ export const DIDOwner = {
 
   toJSON(message: DIDOwner): unknown {
     const obj: any = {}
-    message.identity !== undefined && (obj.identity = message.identity)
+    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
     message.owner !== undefined && (obj.owner = message.owner)
     message.cid !== undefined && (obj.cid = message.cid)
-    message.didWebDeactivated !== undefined && (obj.didWebDeactivated = message.didWebDeactivated)
     message.vanityName !== undefined && (obj.vanityName = message.vanityName)
     return obj
   },
 
   fromPartial(object: DeepPartial<DIDOwner>): DIDOwner {
     const message = { ...baseDIDOwner } as DIDOwner
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = object.identity
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = object.didIdentity
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner
@@ -147,11 +130,6 @@ export const DIDOwner = {
     } else {
       message.cid = ''
     }
-    if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
-      message.didWebDeactivated = object.didWebDeactivated
-    } else {
-      message.didWebDeactivated = false
-    }
     if (object.vanityName !== undefined && object.vanityName !== null) {
       message.vanityName = object.vanityName
     } else {
@@ -161,7 +139,7 @@ export const DIDOwner = {
   }
 }
 
-const baseDIDWebRoute: object = { name: '', route: '', cid: '' }
+const baseDIDWebRoute: object = { name: '', route: '', cid: '', didWebDeactivated: false, didIdentity: '' }
 
 export const DIDWebRoute = {
   encode(message: DIDWebRoute, writer: Writer = Writer.create()): Writer {
@@ -173,6 +151,12 @@ export const DIDWebRoute = {
     }
     if (message.cid !== '') {
       writer.uint32(26).string(message.cid)
+    }
+    if (message.didWebDeactivated === true) {
+      writer.uint32(32).bool(message.didWebDeactivated)
+    }
+    if (message.didIdentity !== '') {
+      writer.uint32(42).string(message.didIdentity)
     }
     return writer
   },
@@ -192,6 +176,12 @@ export const DIDWebRoute = {
           break
         case 3:
           message.cid = reader.string()
+          break
+        case 4:
+          message.didWebDeactivated = reader.bool()
+          break
+        case 5:
+          message.didIdentity = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -218,6 +208,16 @@ export const DIDWebRoute = {
     } else {
       message.cid = ''
     }
+    if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
+      message.didWebDeactivated = Boolean(object.didWebDeactivated)
+    } else {
+      message.didWebDeactivated = false
+    }
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = String(object.didIdentity)
+    } else {
+      message.didIdentity = ''
+    }
     return message
   },
 
@@ -226,6 +226,8 @@ export const DIDWebRoute = {
     message.name !== undefined && (obj.name = message.name)
     message.route !== undefined && (obj.route = message.route)
     message.cid !== undefined && (obj.cid = message.cid)
+    message.didWebDeactivated !== undefined && (obj.didWebDeactivated = message.didWebDeactivated)
+    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
     return obj
   },
 
@@ -246,14 +248,24 @@ export const DIDWebRoute = {
     } else {
       message.cid = ''
     }
+    if (object.didWebDeactivated !== undefined && object.didWebDeactivated !== null) {
+      message.didWebDeactivated = object.didWebDeactivated
+    } else {
+      message.didWebDeactivated = false
+    }
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = object.didIdentity
+    } else {
+      message.didIdentity = ''
+    }
     return message
   }
 }
 
-const baseDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', identity: '' }
+const baseDIDDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', didIdentity: '' }
 
-export const Delegate = {
-  encode(message: Delegate, writer: Writer = Writer.create()): Writer {
+export const DIDDelegate = {
+  encode(message: DIDDelegate, writer: Writer = Writer.create()): Writer {
     if (message.delegate !== '') {
       writer.uint32(10).string(message.delegate)
     }
@@ -266,16 +278,16 @@ export const Delegate = {
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
     }
-    if (message.identity !== '') {
-      writer.uint32(42).string(message.identity)
+    if (message.didIdentity !== '') {
+      writer.uint32(42).string(message.didIdentity)
     }
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Delegate {
+  decode(input: Reader | Uint8Array, length?: number): DIDDelegate {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseDelegate } as Delegate
+    const message = { ...baseDIDDelegate } as DIDDelegate
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -292,7 +304,7 @@ export const Delegate = {
           message.creator = reader.string()
           break
         case 5:
-          message.identity = reader.string()
+          message.didIdentity = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -302,8 +314,8 @@ export const Delegate = {
     return message
   },
 
-  fromJSON(object: any): Delegate {
-    const message = { ...baseDelegate } as Delegate
+  fromJSON(object: any): DIDDelegate {
+    const message = { ...baseDIDDelegate } as DIDDelegate
     if (object.delegate !== undefined && object.delegate !== null) {
       message.delegate = String(object.delegate)
     } else {
@@ -324,26 +336,26 @@ export const Delegate = {
     } else {
       message.creator = ''
     }
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = String(object.identity)
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = String(object.didIdentity)
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
     return message
   },
 
-  toJSON(message: Delegate): unknown {
+  toJSON(message: DIDDelegate): unknown {
     const obj: any = {}
     message.delegate !== undefined && (obj.delegate = message.delegate)
     message.delegateType !== undefined && (obj.delegateType = message.delegateType)
     message.validity !== undefined && (obj.validity = message.validity)
     message.creator !== undefined && (obj.creator = message.creator)
-    message.identity !== undefined && (obj.identity = message.identity)
+    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
     return obj
   },
 
-  fromPartial(object: DeepPartial<Delegate>): Delegate {
-    const message = { ...baseDelegate } as Delegate
+  fromPartial(object: DeepPartial<DIDDelegate>): DIDDelegate {
+    const message = { ...baseDIDDelegate } as DIDDelegate
     if (object.delegate !== undefined && object.delegate !== null) {
       message.delegate = object.delegate
     } else {
@@ -364,46 +376,48 @@ export const Delegate = {
     } else {
       message.creator = ''
     }
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = object.identity
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = object.didIdentity
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
     return message
   }
 }
 
-const baseChange: object = { identity: '', owner: '', previousChange: 0 }
+const baseDIDAttribute: object = { didIdentity: '', name: '', value: '' }
 
-export const Change = {
-  encode(message: Change, writer: Writer = Writer.create()): Writer {
-    if (message.identity !== '') {
-      writer.uint32(10).string(message.identity)
+export const DIDAttribute = {
+  encode(message: DIDAttribute, writer: Writer = Writer.create()): Writer {
+    if (message.didIdentity !== '') {
+      writer.uint32(10).string(message.didIdentity)
     }
-    if (message.owner !== '') {
-      writer.uint32(18).string(message.owner)
+    for (const v of message.name) {
+      writer.uint32(18).string(v!)
     }
-    if (message.previousChange !== 0) {
-      writer.uint32(24).uint64(message.previousChange)
+    for (const v of message.value) {
+      writer.uint32(26).string(v!)
     }
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Change {
+  decode(input: Reader | Uint8Array, length?: number): DIDAttribute {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseChange } as Change
+    const message = { ...baseDIDAttribute } as DIDAttribute
+    message.name = []
+    message.value = []
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.identity = reader.string()
+          message.didIdentity = reader.string()
           break
         case 2:
-          message.owner = reader.string()
+          message.name.push(reader.string())
           break
         case 3:
-          message.previousChange = longToNumber(reader.uint64() as Long)
+          message.value.push(reader.string())
           break
         default:
           reader.skipType(tag & 7)
@@ -413,135 +427,62 @@ export const Change = {
     return message
   },
 
-  fromJSON(object: any): Change {
-    const message = { ...baseChange } as Change
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = String(object.identity)
+  fromJSON(object: any): DIDAttribute {
+    const message = { ...baseDIDAttribute } as DIDAttribute
+    message.name = []
+    message.value = []
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = String(object.didIdentity)
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
-    if (object.owner !== undefined && object.owner !== null) {
-      message.owner = String(object.owner)
-    } else {
-      message.owner = ''
+    if (object.name !== undefined && object.name !== null) {
+      for (const e of object.name) {
+        message.name.push(String(e))
+      }
     }
-    if (object.previousChange !== undefined && object.previousChange !== null) {
-      message.previousChange = Number(object.previousChange)
-    } else {
-      message.previousChange = 0
-    }
-    return message
-  },
-
-  toJSON(message: Change): unknown {
-    const obj: any = {}
-    message.identity !== undefined && (obj.identity = message.identity)
-    message.owner !== undefined && (obj.owner = message.owner)
-    message.previousChange !== undefined && (obj.previousChange = message.previousChange)
-    return obj
-  },
-
-  fromPartial(object: DeepPartial<Change>): Change {
-    const message = { ...baseChange } as Change
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = object.identity
-    } else {
-      message.identity = ''
-    }
-    if (object.owner !== undefined && object.owner !== null) {
-      message.owner = object.owner
-    } else {
-      message.owner = ''
-    }
-    if (object.previousChange !== undefined && object.previousChange !== null) {
-      message.previousChange = object.previousChange
-    } else {
-      message.previousChange = 0
-    }
-    return message
-  }
-}
-
-const baseAttribute: object = { identity: '' }
-
-export const Attribute = {
-  encode(message: Attribute, writer: Writer = Writer.create()): Writer {
-    if (message.identity !== '') {
-      writer.uint32(10).string(message.identity)
-    }
-    if (message.name.length !== 0) {
-      writer.uint32(18).bytes(message.name)
-    }
-    if (message.value.length !== 0) {
-      writer.uint32(26).bytes(message.value)
-    }
-    return writer
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): Attribute {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input
-    let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseAttribute } as Attribute
-    while (reader.pos < end) {
-      const tag = reader.uint32()
-      switch (tag >>> 3) {
-        case 1:
-          message.identity = reader.string()
-          break
-        case 2:
-          message.name = reader.bytes()
-          break
-        case 3:
-          message.value = reader.bytes()
-          break
-        default:
-          reader.skipType(tag & 7)
-          break
+    if (object.value !== undefined && object.value !== null) {
+      for (const e of object.value) {
+        message.value.push(String(e))
       }
     }
     return message
   },
 
-  fromJSON(object: any): Attribute {
-    const message = { ...baseAttribute } as Attribute
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = String(object.identity)
-    } else {
-      message.identity = ''
-    }
-    if (object.name !== undefined && object.name !== null) {
-      message.name = bytesFromBase64(object.name)
-    }
-    if (object.value !== undefined && object.value !== null) {
-      message.value = bytesFromBase64(object.value)
-    }
-    return message
-  },
-
-  toJSON(message: Attribute): unknown {
+  toJSON(message: DIDAttribute): unknown {
     const obj: any = {}
-    message.identity !== undefined && (obj.identity = message.identity)
-    message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
-    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
+    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    if (message.name) {
+      obj.name = message.name.map((e) => e)
+    } else {
+      obj.name = []
+    }
+    if (message.value) {
+      obj.value = message.value.map((e) => e)
+    } else {
+      obj.value = []
+    }
     return obj
   },
 
-  fromPartial(object: DeepPartial<Attribute>): Attribute {
-    const message = { ...baseAttribute } as Attribute
-    if (object.identity !== undefined && object.identity !== null) {
-      message.identity = object.identity
+  fromPartial(object: DeepPartial<DIDAttribute>): DIDAttribute {
+    const message = { ...baseDIDAttribute } as DIDAttribute
+    message.name = []
+    message.value = []
+    if (object.didIdentity !== undefined && object.didIdentity !== null) {
+      message.didIdentity = object.didIdentity
     } else {
-      message.identity = ''
+      message.didIdentity = ''
     }
     if (object.name !== undefined && object.name !== null) {
-      message.name = object.name
-    } else {
-      message.name = new Uint8Array()
+      for (const e of object.name) {
+        message.name.push(e)
+      }
     }
     if (object.value !== undefined && object.value !== null) {
-      message.value = object.value
-    } else {
-      message.value = new Uint8Array()
+      for (const e of object.value) {
+        message.value.push(e)
+      }
     }
     return message
   }
@@ -556,25 +497,6 @@ var globalThis: any = (() => {
   if (typeof global !== 'undefined') return global
   throw 'Unable to locate global object'
 })()
-
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, 'base64').toString('binary'))
-function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64)
-  const arr = new Uint8Array(bin.length)
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i)
-  }
-  return arr
-}
-
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'))
-function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = []
-  for (let i = 0; i < arr.byteLength; ++i) {
-    bin.push(String.fromCharCode(arr[i]))
-  }
-  return btoa(bin.join(''))
-}
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined
 export type DeepPartial<T> = T extends Builtin
