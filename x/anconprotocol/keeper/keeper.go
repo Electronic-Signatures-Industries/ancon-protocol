@@ -151,7 +151,7 @@ func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (st
 	return link.String(), nil
 }
 
-func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link datamodel.Link) (*datamodel.Node, error) {
+func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
 	node, err := k.dataunionKeeper.LinkSystem.Load(
@@ -165,10 +165,10 @@ func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link da
 		return nil, err
 	}
 
-	return &node, nil
+	return node, nil
 }
 
-func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamodel.Link) (*datamodel.Node, error) {
+func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
 	node, err := k.jsonschemaKeeper.LinkSystem.Load(
@@ -182,10 +182,10 @@ func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamod
 		return nil, err
 	}
 
-	return &node, nil
+	return node, nil
 }
 
-func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content string) (*datamodel.Link, error) {
+func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content string) (datamodel.Link, error) {
 	np := basicnode.Prototype.Any
 	node, err := jsonstore.DecodeCBOR(np, []byte(content))
 
@@ -204,7 +204,7 @@ func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content string) (*datamod
 		return nil, err
 	}
 
-	return &link, nil
+	return link, nil
 }
 
 func (k *Keeper) ReadCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]byte, error) {
@@ -327,12 +327,12 @@ func (k *Keeper) GetDIDOwner(ctx sdk.Context, owner string) types.DIDOwner {
 	return found
 }
 
-func (k *Keeper) GetDelegate(ctx sdk.Context, delegate string) types.DIDDelegate {
+func (k *Keeper) GetDelegate(ctx sdk.Context, delegate string) *types.DIDDelegate {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	var found types.DIDDelegate
 	id := []byte(delegate)
 	k.cdc.Unmarshal(store.Get(id), &found)
-	return found
+	return &found
 }
 func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) error {
 	blockTime := ctx.BlockTime()
@@ -373,6 +373,12 @@ func (k *Keeper) RemoveAttribute(ctx sdk.Context, msg *types.MsgRevokeAttribute)
 func (k *Keeper) RemoveDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	store.Delete([]byte(msg.DidIdentity))
+}
+func (k *Keeper) GetAttribute(ctx sdk.Context, didIdentity string) *types.DIDAttribute {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
+	var found types.DIDAttribute
+	k.cdc.Unmarshal(store.Get([]byte(didIdentity)), &found)
+	return &found
 }
 func (k *Keeper) RemoveDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
@@ -460,7 +466,7 @@ func (k *Keeper) toIpldProofList(proofs []did.Proof) func(fluent.ListAssembler) 
 	}
 }
 
-func (k *Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgGrantAttribute) error {
+func (k *Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgSetAttribute) error {
 	attr := types.DIDAttribute{
 		DidIdentity: msg.DidIdentity,
 		Name:        msg.Name,

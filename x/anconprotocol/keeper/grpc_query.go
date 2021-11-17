@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	jsonstore "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/json"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/ipfs/go-graphsync/ipldutil"
 )
 
 var _ types.QueryServer = Keeper{}
@@ -79,5 +81,67 @@ func wrapJsonResult(ctx context.Context, mux *runtime.ServeMux, client types.Que
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonbytes)
+	}
+}
+
+func wrapSchemaStoreResult(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, requestQuery AnconQueryRequestFunc) (h runtime.HandlerFunc) {
+	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := requestQuery(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		// ancon/schemastore/{cid}?path=/rogelio&codec=dag-json
+		// ancon/schemastore/{cid}?path=/rogelio&codec=dag-cbor
+		// ancon/schemastore/{cid}?path=/rogelio&codec=raw
+		// ancon/schemastore/{cid}?path=/rogelio&codec=dag-eth
+		formatAs := req.URL.Query().Get("codec")
+		typed := resp.(*types.QuerySchemaStoreResponse)
+		node, err := ipldutil.DecodeNode(typed.Data)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		var output []byte
+		var err1 error
+		var str string
+		switch formatAs {
+		case "dag-json":
+			str, err1 = jsonstore.Encode(node)
+			output = []byte(str)
+			w.Header().Set("Content-Type", "application/json")
+
+		case "dag-eth":
+			str, err1 = jsonstore.Encode(node)
+			output = []byte(str)
+			w.Header().Set("Content-Type", "application/json")
+
+		case "raw":
+			str, err1 = jsonstore.Encode(node)
+			output = []byte(str)
+			w.Header().Set("Content-Type", "application/json")
+
+		default:
+			output, err1 = jsonstore.EncodeCBOR(node)
+			w.Header().Set("Content-Type", "application/cbor")
+
+		}
+
+		if err1 != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err1)
+			return
+		}
+		w.Write(output)
 	}
 }

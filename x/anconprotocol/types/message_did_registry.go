@@ -8,7 +8,7 @@ import (
 var _ sdk.Msg = &MsgChangeOwner{}
 var _ sdk.Msg = &MsgGrantDelegate{}
 var _ sdk.Msg = &MsgRevokeDelegate{}
-var _ sdk.Msg = &MsgGrantAttribute{}
+var _ sdk.Msg = &MsgSetAttribute{}
 var _ sdk.Msg = &MsgRevokeAttribute{}
 
 var _ sdk.Msg = &MsgBurnNFT{}
@@ -158,21 +158,21 @@ func (msg *MsgChangeOwner) ValidateBasic() error {
 	return nil
 }
 
-func NewMsgSetAttribute(creator string) *MsgGrantAttribute {
-	return &MsgGrantAttribute{
+func NewMsgSetAttribute(creator string) *MsgSetAttribute {
+	return &MsgSetAttribute{
 		Creator: creator,
 	}
 }
 
-func (msg *MsgGrantAttribute) Route() string {
+func (msg *MsgSetAttribute) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgGrantAttribute) Type() string {
+func (msg *MsgSetAttribute) Type() string {
 	return "GrantAttribute"
 }
 
-func (msg *MsgGrantAttribute) GetSigners() []sdk.AccAddress {
+func (msg *MsgSetAttribute) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -180,12 +180,12 @@ func (msg *MsgGrantAttribute) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgGrantAttribute) GetSignBytes() []byte {
+func (msg *MsgSetAttribute) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgGrantAttribute) ValidateBasic() error {
+func (msg *MsgSetAttribute) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

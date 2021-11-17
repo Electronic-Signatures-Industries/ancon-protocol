@@ -53,6 +53,7 @@ func (du *JSONStore) Put(ctx context.Context, key string, content []byte) error 
 	hashid, _ := rand.Int(rand.Reader, big.NewInt(10000000000))
 	filename := base32.HexEncoding.EncodeToString(hashid.Bytes())
 	du.fss.Put(ctx, filename, content)
+	// we anchor filename path, cid => filename
 	du.store.Set([]byte(key), []byte(filename))
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
@@ -18,6 +19,8 @@ import (
 )
 
 var (
+	ReadSchemaStoreResourceQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "schemastore", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
+
 	ReadResolveDidWebQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"user", "name", "did.json"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadDidKeyQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "didregistry", "name"}, "", runtime.AssumeColonVerbOpt(true)))
@@ -34,8 +37,10 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 	mux.Handle("GET", ReadIdentifyOwnerQuery, wrapJsonResult(ctx, mux, client, readIdentifyOwner))
 	mux.Handle("GET", ReadGetAttributesQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
 	mux.Handle("GET", ReadDelegateQuery, wrapJsonResult(ctx, mux, client, readDelegate))
+
 	mux.Handle("GET", ReadDidKeyQuery, wrapDagCborResult(ctx, mux, client, readDidKey))
 	mux.Handle("GET", ReadResolveDidWebQuery, wrapDagCborResult(ctx, mux, client, readResolveWeb))
+	mux.Handle("GET", ReadSchemaStoreResourceQuery, wrapSchemaStoreResult(ctx, mux, client, readSchemaStore))
 
 	return nil
 }
@@ -144,7 +149,6 @@ func readGetAttributes(ctx context.Context, marshaler runtime.Marshaler, client 
 	return msg, metadata, err
 
 }
-
 func readDidKey(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QueryGetDidRequest
 	var metadata runtime.ServerMetadata
@@ -156,19 +160,84 @@ func readDidKey(ctx context.Context, marshaler runtime.Marshaler, client types.Q
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["hashcid"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "hashcid")
 	}
 
-	protoReq.Name, err = runtime.String(val)
+	protoReq.Hashcid, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "hashcid", err)
 	}
 	msg, err := client.GetDidKey(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
+}
+
+func readSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq types.QuerySchemaStoreRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["cid"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cid")
+	}
+
+	protoReq.Cid, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "cid", err)
+	}
+
+	ok = req.URL.Query().Has("codec")
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "codec")
+	}
+
+	ok = req.URL.Query().Has("path")
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "path")
+	}
+
+	msg, err := client.ReadSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QuerySchemaStoreRequest) (*types.QuerySchemaStoreResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	link, err := ParseCidLink(req.Cid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	node, err := k.ReadAnyFromJSONStore(ctx, req.Path, link)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bz, err := ipldutil.EncodeNode(node)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QuerySchemaStoreResponse{
+		Data: bz,
+	}, nil
 }
 
 func (k Keeper) GetAttributes(goCtx context.Context, req *types.QueryGetAttributesRequest) (*types.QueryGetAttributesResponse, error) {
@@ -178,10 +247,11 @@ func (k Keeper) GetAttributes(goCtx context.Context, req *types.QueryGetAttribut
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
-
-	return &types.QueryGetAttributesResponse{}, nil
+	attr := k.GetAttribute(ctx, req.Address)
+	return &types.QueryGetAttributesResponse{
+		Name:  attr.Name,
+		Value: attr.Value,
+	}, nil
 }
 
 func (k Keeper) IdentifyOwner(goCtx context.Context, req *types.QueryIdentifyOwnerRequest) (*types.QueryIdentifyOwnerResponse, error) {
@@ -204,12 +274,17 @@ func (k Keeper) ReadDelegate(goCtx context.Context, req *types.QueryGetDelegateR
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	de := k.GetDelegate(ctx, req.Id)
 
-	return &types.QueryGetDelegateResponse{}, nil
+	return &types.QueryGetDelegateResponse{
+		Delegate:     de.Delegate,
+		DelegateType: de.DelegateType,
+		Validity:     de.Validity,
+		Creator:      de.Creator,
+	}, nil
 }
 
+// GetDidKey
 func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryResourceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -217,9 +292,9 @@ func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) 
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	node, err := k.GetDidRoute(ctx, req.Name)
+	node, err := k.GetDid(ctx, req.Hashcid)
 	if err != nil {
-		return nil, status.Error(codes.NotFound, "Missing did route")
+		return nil, status.Error(codes.NotFound, "Missing did key hash")
 	}
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(node, &bufdata)
@@ -229,6 +304,7 @@ func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) 
 	}, nil
 }
 
+// ResolveDidWeb
 func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryResourceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")

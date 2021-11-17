@@ -34,7 +34,7 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 	}, nil
 }
 
-func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttribute) (*types.MsgGrantAttributeResponse, error) {
+func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgSetAttribute) (*types.MsgSetAttributeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	k.ApplyAttribute(ctx, msg)
@@ -44,14 +44,14 @@ func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgGrantAttr
 		sdk.NewEvent(
 			types.SetAttributeEvent,
 			sdk.NewAttribute("Identity", msg.Creator),
-			sdk.NewAttribute("Name", string(msg.Name)),
-			sdk.NewAttribute("Value", string(msg.Value)),
+			sdk.NewAttribute("Name", strings.Join(msg.Name, ",")),
+			sdk.NewAttribute("Value", strings.Join(msg.Value, ",")),
 			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
 			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
 		),
 	})
 
-	return &types.MsgGrantAttributeResponse{
+	return &types.MsgSetAttributeResponse{
 		Ok: true,
 	}, nil
 }
