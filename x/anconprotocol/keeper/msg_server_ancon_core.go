@@ -5,9 +5,31 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
+
+func (k msgServer) AddSchemaStore(goCtx context.Context, msg *types.MsgSchemaStore) (*types.MsgSchemaStoreResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	var err error
+
+	err = msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	var lnk datamodel.Link
+	switch msg.Codec {
+	case "dag-json":
+		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
+	default:
+		lnk, err = k.AddCBOR(ctx, msg.Path, string(msg.Data))
+	}
+	return &types.MsgSchemaStoreResponse{
+		Cid: lnk.String(),
+	}, nil
+}
 
 // SendMetadataOwnership
 //TODO: emit event

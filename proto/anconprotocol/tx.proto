@@ -77,7 +77,7 @@ message MsgUpdateMetadataOwnership {
 
 }
 
-message MsgSchemaStoreResponse{
+message MsgSchemaStore{
   string creator = 1;
   string path = 2;
   bytes data = 3;
@@ -86,7 +86,7 @@ message MsgSchemaStoreResponse{
 }
 
 
-message MsgSchemaStore{
+message MsgSchemaStoreResponse {
   string cid = 1;
 }
 

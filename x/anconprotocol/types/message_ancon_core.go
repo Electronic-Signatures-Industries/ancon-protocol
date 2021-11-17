@@ -5,6 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+var _ sdk.Msg = &MsgSchemaStore{}
 var _ sdk.Msg = &MsgFile{}
 var _ sdk.Msg = &MsgUpdateMetadataOwnership{}
 var _ sdk.Msg = &MsgMetadata{}
@@ -13,7 +14,44 @@ var _ sdk.Msg = &MsgSendMetadataOwnership{}
 
 var _ sdk.Msg = &MsgRoyaltyInfo{}
 
-// var _ sdk.Msg = &MsgMintTrustedResource{}
+func NewMsgSchemaStore(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgSchemaStore {
+	return &MsgSchemaStore{
+		Creator:      creator,
+		Path:         path,
+		Data:         payload,
+		Codec:        codec,
+		IsJsonSchema: isJsonSchema,
+	}
+}
+
+func (msg *MsgSchemaStore) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgSchemaStore) Type() string {
+	return "SendMetadataOwnership"
+}
+
+func (msg *MsgSchemaStore) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgSchemaStore) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgSchemaStore) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
 
 func NewMsgSendMetadataOwnership(from sdk.AccAddress, did string, tokenDidAddress string, tokenId int64, didRecipient, uri string) *MsgSendMetadataOwnership {
 	return &MsgSendMetadataOwnership{
