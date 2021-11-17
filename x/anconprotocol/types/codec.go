@@ -13,6 +13,7 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
+	cdc.RegisterConcrete(&MsgSchemaStore{}, "anconprotocol/SchemaStore", nil)
 
 	cdc.RegisterConcrete(&MsgCreateDid{}, "anconprotocol/CreateDid", nil)
 	cdc.RegisterConcrete(&MsgUpdateDid{}, "anconprotocol/UpdateDid", nil)
@@ -69,6 +70,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgAddDataUnion{},
 		&MsgRemoveDataUnion{},
 		&MsgUpdateDataUnion{},
+		&MsgSchemaStore{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

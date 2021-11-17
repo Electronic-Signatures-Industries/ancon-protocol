@@ -29,7 +29,7 @@ func (msg *MsgSchemaStore) Route() string {
 }
 
 func (msg *MsgSchemaStore) Type() string {
-	return "SendMetadataOwnership"
+	return "SchemaStore"
 }
 
 func (msg *MsgSchemaStore) GetSigners() []sdk.AccAddress {

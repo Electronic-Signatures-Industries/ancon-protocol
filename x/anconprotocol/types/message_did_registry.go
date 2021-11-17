@@ -169,7 +169,7 @@ func (msg *MsgSetAttribute) Route() string {
 }
 
 func (msg *MsgSetAttribute) Type() string {
-	return "GrantAttribute"
+	return "SetAttribute"
 }
 
 func (msg *MsgSetAttribute) GetSigners() []sdk.AccAddress {
