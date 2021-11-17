@@ -16,6 +16,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -23,6 +24,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/dataunion"
+	jsonstore "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/json"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,14 +33,15 @@ import (
 )
 
 type Keeper struct {
-	cdc            codec.Codec
-	storeKey       sdk.StoreKey
-	memKey         sdk.StoreKey
-	paramSpace     paramstypes.Subspace
-	accountKeeper  types.AccountKeeper
-	iavltree       *iavl.ImmutableTree
-	bankKeeper     types.BankKeeper
-	queryableStore store.Queryable
+	cdc              codec.Codec
+	storeKey         sdk.StoreKey
+	memKey           sdk.StoreKey
+	paramSpace       paramstypes.Subspace
+	accountKeeper    types.AccountKeeper
+	iavltree         *iavl.ImmutableTree
+	bankKeeper       types.BankKeeper
+	queryableStore   store.Queryable
+	jsonschemaKeeper jsonstore.Keeper
 
 	dataunionKeeper dataunion.Keeper
 	// aguaclaraKeeper aguaclaramodulekeeper.Keeper
@@ -90,15 +93,17 @@ func NewKeeper(
 	kvs := mngr.Unwrap(key)
 
 	dataunionKeeper := dataunion.NewKeeper(kvs)
+	jsonschemaKeeper := jsonstore.NewKeeper(kvs)
 	return Keeper{
-		queryableStore:  queryableStore,
-		dataunionKeeper: dataunionKeeper,
-		storeKey:        key,
-		cdc:             cdc,
-		memKey:          memKey,
-		paramSpace:      paramSpace,
-		accountKeeper:   accountKeeper,
-		bankKeeper:      bankKeeper,
+		queryableStore:   queryableStore,
+		dataunionKeeper:  dataunionKeeper,
+		jsonschemaKeeper: jsonschemaKeeper,
+		storeKey:         key,
+		cdc:              cdc,
+		memKey:           memKey,
+		paramSpace:       paramSpace,
+		accountKeeper:    accountKeeper,
+		bankKeeper:       bankKeeper,
 		// aguaclaraKeeper: aguaclaraKeeper,
 		blockedAddrs: blockedAddrs,
 		cms:          cms,
@@ -143,9 +148,124 @@ func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (st
 	if err != nil {
 		return "", err
 	}
-
-	// id, _ := cid.Decode(link.String())
 	return link.String(), nil
+}
+
+func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link datamodel.Link) (*datamodel.Node, error) {
+	np := basicnode.Prototype.Any
+
+	node, err := k.dataunionKeeper.LinkSystem.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		link,
+		np,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &node, nil
+}
+
+func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamodel.Link) (*datamodel.Node, error) {
+	np := basicnode.Prototype.Any
+
+	node, err := k.jsonschemaKeeper.LinkSystem.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		link,
+		np,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &node, nil
+}
+
+func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content string) (*datamodel.Link, error) {
+	np := basicnode.Prototype.Any
+	node, err := jsonstore.DecodeCBOR(np, []byte(content))
+
+	if err != nil {
+		return nil, err
+	}
+
+	link, err := k.jsonschemaKeeper.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		node,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &link, nil
+}
+
+func (k *Keeper) ReadCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]byte, error) {
+	node, err := k.jsonschemaKeeper.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		link,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	output, err := jsonstore.EncodeCBOR(node)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return output, nil
+}
+func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamodel.Link, error) {
+	np := basicnode.Prototype.Any
+	node, err := jsonstore.Decode(np, content)
+
+	if err != nil {
+		return nil, err
+	}
+
+	link, err := k.jsonschemaKeeper.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		node,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return link, nil
+}
+
+func (k *Keeper) ReadJSON(ctx sdk.Context, path string, link datamodel.Link) (string, error) {
+	node, err := k.jsonschemaKeeper.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath(path),
+		},
+		link,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	output, err := jsonstore.Encode(node)
+
+	if err != nil {
+		return "", err
+	}
+
+	return output, nil
 }
 
 func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (string, error) {

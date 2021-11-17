@@ -67,6 +67,33 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	return &keeper, ctx
 }
 
+func Test_Roundtrip_JSONStore(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+
+	payload := `{
+		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		"dataUnion": {
+			"name":        "Acme SA",
+			"didIdentity": "did:web:acme-sa",
+			"active":      true,
+			"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+		}
+	}`
+
+	lnk, err := keeper.AddJSON(ctx, "/", payload)
+
+	if err != nil {
+		require.NoError(t, err)
+	}
+
+	content, _ := keeper.ReadJSON(ctx, "/", lnk)
+	// x := &types.QueryGetDidRequest{
+	// 	Name: "wonderland",
+	// }
+	// doc, _ := keeper.GetDid(ctx, res.Cid)
+	// route, _ := keeper.GetDidRoute(ctx, x.Name)
+	require.Equal(t, content, `{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`)
+}
 func Test_Add_Data_Union(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 
