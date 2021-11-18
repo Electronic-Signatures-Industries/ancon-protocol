@@ -82,7 +82,7 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 		}
 	}`
 
-	bz,_:= cbor.Marshal(payload)
+	bz, _ := cbor.Marshal(payload)
 	lnk, err := keeper.AddCBOR(ctx, "/", bz)
 
 	if err != nil {
@@ -91,9 +91,8 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 
 	content, _ := keeper.ReadCBOR(ctx, "/", lnk)
 
-
 	dec := cbor.NewDecoder(bytes.NewBuffer(content))
-	
+
 	var w interface{}
 	dec.Decode(&w)
 	// x := &types.QueryGetDidRequest{
@@ -101,8 +100,8 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 	// }
 	// doc, _ := keeper.GetDid(ctx, res.Cid)
 	// route, _ := keeper.GetDidRoute(ctx, x.Name)
-	
-	require.Equal(t,w, `{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`)
+
+	require.Equal(t, w, `{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`)
 }
 func Test_Roundtrip_JSONStore(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
@@ -153,7 +152,7 @@ func Test_Add_Data_Union(t *testing.T) {
 	// }
 	// doc, _ := keeper.GetDid(ctx, res.Cid)
 	// route, _ := keeper.GetDidRoute(ctx, x.Name)
-	require.Equal(t, res, "")
+	require.Equal(t, res, "bafyreiepqwatm3onoraa4s5f66avqx5hovv2nplkopen2okgsdjcr6wtpm")
 }
 func Test_DID_Key(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
@@ -173,11 +172,9 @@ func Test_DID_Key(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
+
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 }
 
@@ -199,11 +196,9 @@ func Test_DID_Delegate(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
+
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
@@ -237,11 +232,9 @@ func Test_DID_ChangeOwner(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
+
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -272,11 +265,9 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
+
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
