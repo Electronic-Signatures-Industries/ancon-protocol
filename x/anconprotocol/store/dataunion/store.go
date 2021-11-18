@@ -11,12 +11,12 @@ import (
 )
 
 type DataUnionStore struct {
-	store store.CommitKVStore
+	store store.KVStore
 	cdc   codec.Codec
 }
 
-func NewDataUnionStore(store store.CommitKVStore) *DataUnionStore {
-	return &DataUnionStore{store: store}
+func NewDataUnionStore(store store.KVStore) DataUnionStore {
+	return DataUnionStore{store: store}
 }
 
 // Has implements go-ipld-prime/storage.Storage.Has.

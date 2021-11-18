@@ -8,21 +8,21 @@ import (
 )
 
 type Keeper struct {
-	Store      *DataUnionStore
+	Store      DataUnionStore
 	Adapter    DataUnionAdapter
 	LinkSystem linking.LinkSystem
 }
 
 func NewKeeper(
-	kvstore store.CommitKVStore,
+	kvstore store.KVStore,
 ) Keeper {
 
 	store := NewDataUnionStore(kvstore)
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.SetWriteStorage(store)
-	lsys.SetReadStorage(store)
+	lsys.SetWriteStorage(&store)
+	lsys.SetReadStorage(&store)
 
-	adapter := DataUnionAdapter{Wrapped: store}
+	adapter := DataUnionAdapter{Wrapped: &store}
 	return Keeper{
 		Store:      store,
 		Adapter:    adapter,

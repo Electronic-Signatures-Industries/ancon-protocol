@@ -17,11 +17,11 @@ import (
 
 type JSONStore struct {
 	fss   fsstore.Store
-	store store.CommitKVStore
+	store store.KVStore
 	cdc   codec.Codec
 }
 
-func NewJSONStore(store store.CommitKVStore) *JSONStore {
+func NewJSONStore(store store.KVStore) JSONStore {
 
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -31,7 +31,7 @@ func NewJSONStore(store store.CommitKVStore) *JSONStore {
 	DefaultNodeHome := filepath.Join(userHomeDir, ".ancon")
 	fss := fsstore.Store{}
 	fss.InitDefaults(DefaultNodeHome)
-	return &JSONStore{store: store, fss: fss}
+	return JSONStore{store: store, fss: fss}
 }
 
 // Has implements go-ipld-prime/storage.Storage.Has.

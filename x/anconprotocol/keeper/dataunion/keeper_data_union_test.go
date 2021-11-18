@@ -106,17 +106,17 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 func Test_Roundtrip_JSONStore(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 
-	payload := `{
-		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
-		"dataUnion": {
-			"name":        "Acme SA",
-			"didIdentity": "did:web:acme-sa",
-			"active":      true,
-			"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
-		}
-	}`
+	// payload := `{
+	// 	"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+	// 	"dataUnion": {
+	// 		"name":        "Acme SA",
+	// 		"didIdentity": "did:web:acme-sa",
+	// 		"active":      true,
+	// 		"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+	// 	}
+	// }`
 
-	lnk, err := keeper.AddJSON(ctx, "/", payload)
+	lnk, err := keeper.AddJSON(ctx, "kendall/a n", "[0,1]")
 
 	if err != nil {
 		require.NoError(t, err)

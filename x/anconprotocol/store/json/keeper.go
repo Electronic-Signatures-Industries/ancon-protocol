@@ -17,18 +17,18 @@ const (
 )
 
 type Keeper struct {
-	DataStore  *JSONStore
+	DataStore  JSONStore
 	LinkSystem linking.LinkSystem
 }
 
 func NewKeeper(
-	kvstore store.CommitKVStore,
+	kvstore store.KVStore,
 ) Keeper {
 
 	store := NewJSONStore(kvstore)
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.SetWriteStorage(store)
-	lsys.SetReadStorage(store)
+	lsys.SetWriteStorage(&store)
+	lsys.SetReadStorage(&store)
 
 	return Keeper{
 		DataStore:  store,

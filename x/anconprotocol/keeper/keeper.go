@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/cosmos/cosmos-sdk/store/cache"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/iavl"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
@@ -31,20 +30,15 @@ import (
 )
 
 type Keeper struct {
-	cdc              codec.Codec
-	storeKey         sdk.StoreKey
-	memKey           sdk.StoreKey
-	paramSpace       paramstypes.Subspace
-	accountKeeper    types.AccountKeeper
-	iavltree         *iavl.ImmutableTree
-	bankKeeper       types.BankKeeper
-	queryableStore   store.Queryable
-	jsonschemaKeeper jsonstore.Keeper
-
-	dataunionKeeper dataunion.Keeper
-	// aguaclaraKeeper aguaclaramodulekeeper.Keeper
-	blockedAddrs map[string]bool
-	cms          store.CommitMultiStore
+	cdc           codec.Codec
+	storeKey      sdk.StoreKey
+	memKey        sdk.StoreKey
+	paramSpace    paramstypes.Subspace
+	accountKeeper types.AccountKeeper
+	iavltree      *iavl.ImmutableTree
+	bankKeeper    types.BankKeeper
+	blockedAddrs  map[string]bool
+	cms           store.CommitMultiStore
 	// this line is used by starport scaffolding # ibc/keeper/attribute
 }
 
@@ -81,28 +75,27 @@ func NewKeeper(
 	blockedAddrs map[string]bool,
 	cms store.CommitMultiStore,
 ) Keeper {
-	// create cache manager to unwrap
-	mngr := cache.NewCommitKVStoreCacheManager(cache.DefaultCommitKVStoreCacheSize)
-	mngr.GetStoreCache(key, cms.GetCommitKVStore(key))
-
-	kvs := mngr.Unwrap(key)
-
-	dataunionKeeper := dataunion.NewKeeper(kvs)
-	jsonschemaKeeper := jsonstore.NewKeeper(kvs)
 	return Keeper{
-		queryableStore:   nil,
-		dataunionKeeper:  dataunionKeeper,
-		jsonschemaKeeper: jsonschemaKeeper,
-		storeKey:         key,
-		cdc:              cdc,
-		memKey:           memKey,
-		paramSpace:       paramSpace,
-		accountKeeper:    accountKeeper,
-		bankKeeper:       bankKeeper,
+		storeKey:      key,
+		cdc:           cdc,
+		memKey:        memKey,
+		paramSpace:    paramSpace,
+		accountKeeper: accountKeeper,
+		bankKeeper:    bankKeeper,
 		// aguaclaraKeeper: aguaclaraKeeper,
 		blockedAddrs: blockedAddrs,
 		cms:          cms,
 	}
+}
+
+// Logger returns a module-specific logger
+func (k *Keeper) DataUnionStore(ctx sdk.Context) dataunion.Keeper {
+	kvs := ctx.KVStore(k.storeKey)
+	return dataunion.NewKeeper(kvs)
+}
+func (k *Keeper) SchemaStore(ctx sdk.Context) jsonstore.Keeper {
+	kvs := ctx.KVStore(k.storeKey)
+	return jsonstore.NewKeeper(kvs)
 }
 
 // Logger returns a module-specific logger
@@ -133,7 +126,9 @@ func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (st
 	}
 	n := bindnode.Wrap(du, nil)
 
-	link, err := k.dataunionKeeper.LinkSystem.Store(
+	dus := k.DataUnionStore(ctx)
+
+	link, err := dus.LinkSystem.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath("dataunion/"),
 		},
@@ -149,7 +144,9 @@ func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (st
 func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
-	node, err := k.dataunionKeeper.LinkSystem.Load(
+	dus := k.DataUnionStore(ctx)
+
+	node, err := dus.LinkSystem.Load(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -166,7 +163,9 @@ func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link da
 func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
-	node, err := k.jsonschemaKeeper.LinkSystem.Load(
+	ss := k.SchemaStore(ctx)
+
+	node, err := ss.LinkSystem.Load(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -188,7 +187,9 @@ func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamode
 		return nil, err
 	}
 
-	link, err := k.jsonschemaKeeper.Store(
+	ss := k.SchemaStore(ctx)
+
+	link, err := ss.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -203,7 +204,9 @@ func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamode
 }
 
 func (k *Keeper) ReadCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]byte, error) {
-	node, err := k.jsonschemaKeeper.Load(
+
+	ss := k.SchemaStore(ctx)
+	node, err := ss.Load(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -229,7 +232,8 @@ func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamode
 		return nil, err
 	}
 
-	link, err := k.jsonschemaKeeper.Store(
+	ss := k.SchemaStore(ctx)
+	link, err := ss.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -244,7 +248,9 @@ func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamode
 }
 
 func (k *Keeper) ReadJSON(ctx sdk.Context, path string, link datamodel.Link) (string, error) {
-	node, err := k.jsonschemaKeeper.Load(
+
+	ss := k.SchemaStore(ctx)
+	node, err := ss.Load(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
@@ -274,9 +280,10 @@ func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (
 		Creator:          msg.Creator,
 	}
 	n := bindnode.Wrap(du, nil)
+	dus := k.DataUnionStore(ctx)
 
 	// parent, _ := ParseCidLink(msg.DataSource.ParentCid)
-	link, err := k.dataunionKeeper.LinkSystem.Store(
+	link, err := dus.LinkSystem.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(
 				strings.Join([]string{"dataunion", msg.DataSource.ParentCid, "datasource"}, "/"),
