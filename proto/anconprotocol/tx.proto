@@ -13,7 +13,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Msg defines the Msg service.
 service Msg {
-  rpc AddSchemaStore(MsgSchemaStore) returns  (MsgSchemaStoreResponse);
+  rpc SchemaStore(MsgSchemaStore) returns  (MsgSchemaStoreResponse);
   
   rpc AddDataSource(MsgAddDataSource) returns  (MsgAddDataSourceResponse);
   rpc RemoveDataSource(MsgRemoveDataSource) returns  (MsgRemoveDataSourceResponse);

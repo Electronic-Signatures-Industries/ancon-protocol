@@ -10,7 +10,7 @@ import (
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
 
-func (k msgServer) AddSchemaStore(goCtx context.Context, msg *types.MsgSchemaStore) (*types.MsgSchemaStoreResponse, error) {
+func (k msgServer) SchemaStore(goCtx context.Context, msg *types.MsgSchemaStore) (*types.MsgSchemaStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	var err error
 
@@ -21,11 +21,15 @@ func (k msgServer) AddSchemaStore(goCtx context.Context, msg *types.MsgSchemaSto
 
 	var lnk datamodel.Link
 	switch msg.Codec {
-	case "dag-json":
-		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
-	default:
+	case "dag-cbor":
 		lnk, err = k.AddCBOR(ctx, msg.Path, (msg.Data))
+	default:
+		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
 	}
+	if err != nil {
+		return nil, err
+	}
+
 	return &types.MsgSchemaStoreResponse{
 		Cid: lnk.String(),
 	}, nil
@@ -75,6 +79,9 @@ func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.Msg
 			CurrentChainId:   msg.CurrentChainId,
 			RecipientChainId: msg.CurrentChainId,
 		})
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgUpdateMetadataOwnershipResponse{
 		MetadataRef: lnk,
