@@ -180,9 +180,9 @@ func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamod
 	return node, nil
 }
 
-func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content string) (datamodel.Link, error) {
+func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamodel.Link, error) {
 	np := basicnode.Prototype.Any
-	node, err := jsonstore.DecodeCBOR(np, []byte(content))
+	node, err := jsonstore.DecodeCBOR(np, content)
 
 	if err != nil {
 		return nil, err

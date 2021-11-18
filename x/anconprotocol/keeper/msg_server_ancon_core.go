@@ -24,7 +24,7 @@ func (k msgServer) AddSchemaStore(goCtx context.Context, msg *types.MsgSchemaSto
 	case "dag-json":
 		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
 	default:
-		lnk, err = k.AddCBOR(ctx, msg.Path, string(msg.Data))
+		lnk, err = k.AddCBOR(ctx, msg.Path, (msg.Data))
 	}
 	return &types.MsgSchemaStoreResponse{
 		Cid: lnk.String(),

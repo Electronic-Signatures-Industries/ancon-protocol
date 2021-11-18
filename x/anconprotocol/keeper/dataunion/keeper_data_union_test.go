@@ -1,10 +1,12 @@
 package dataunion
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/fxamacker/cbor/v2"
 	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -67,6 +69,41 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	return &keeper, ctx
 }
 
+func Test_RoundtripCBOR_JSONStore(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+
+	payload := `{
+		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		"dataUnion": {
+			"name":        "Acme SA",
+			"didIdentity": "did:web:acme-sa",
+			"active":      true,
+			"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+		}
+	}`
+
+	bz,_:= cbor.Marshal(payload)
+	lnk, err := keeper.AddCBOR(ctx, "/", bz)
+
+	if err != nil {
+		require.NoError(t, err)
+	}
+
+	content, _ := keeper.ReadCBOR(ctx, "/", lnk)
+
+
+	dec := cbor.NewDecoder(bytes.NewBuffer(content))
+	
+	var w interface{}
+	dec.Decode(&w)
+	// x := &types.QueryGetDidRequest{
+	// 	Name: "wonderland",;
+	// }
+	// doc, _ := keeper.GetDid(ctx, res.Cid)
+	// route, _ := keeper.GetDidRoute(ctx, x.Name)
+	
+	require.Equal(t,w, `{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`)
+}
 func Test_Roundtrip_JSONStore(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 
@@ -80,13 +117,13 @@ func Test_Roundtrip_JSONStore(t *testing.T) {
 		}
 	}`
 
-	lnk, err := keeper.AddCBOR(ctx, "/", payload)
+	lnk, err := keeper.AddJSON(ctx, "/", payload)
 
 	if err != nil {
 		require.NoError(t, err)
 	}
 
-	content, _ := keeper.ReadCBOR(ctx, "/", lnk)
+	content, _ := keeper.ReadJSON(ctx, "/", lnk)
 	// x := &types.QueryGetDidRequest{
 	// 	Name: "wonderland",
 	// }

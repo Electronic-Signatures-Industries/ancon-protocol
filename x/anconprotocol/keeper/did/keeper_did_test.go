@@ -89,10 +89,10 @@ func Test_DID_Web(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 }
 func Test_DID_Key(t *testing.T) {
@@ -114,10 +114,10 @@ func Test_DID_Key(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 }
 
@@ -140,10 +140,10 @@ func Test_DID_Delegate(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
@@ -178,10 +178,10 @@ func Test_DID_ChangeOwner(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -213,10 +213,10 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 		require.NoError(t, err)
 	}
 	x := &types.QueryGetDidRequest{
-		Name: "wonderland",
+		Hashcid: "wonderland",
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Name)
+	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
