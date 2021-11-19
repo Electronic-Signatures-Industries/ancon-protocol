@@ -1,4 +1,4 @@
-package app
+package gaia
 
 import (
 	"encoding/json"
@@ -13,8 +13,8 @@ import (
 // object provided to it during init.
 type GenesisState map[string]json.RawMessage
 
-// // NewDefaultGenesisState generates the default state for the application.
-// func NewDefaultGenesisState() simapp.GenesisState {
-// 	encCfg := encoding.MakeConfig(ModuleBasics)
-// 	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
-// }
+// NewDefaultGenesisState generates the default state for the application.
+func NewDefaultGenesisState() GenesisState {
+	encCfg := MakeEncodingConfig()
+	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
+}

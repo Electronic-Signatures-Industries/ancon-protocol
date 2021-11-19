@@ -6,6 +6,7 @@ import (
 )
 
 var _ sdk.Msg = &MsgAnchorCid{}
+var _ sdk.Msg = &MsgAnchorCidWithProof{}
 var _ sdk.Msg = &MsgFile{}
 var _ sdk.Msg = &MsgUpdateMetadataOwnership{}
 var _ sdk.Msg = &MsgMetadata{}
@@ -16,7 +17,7 @@ var _ sdk.Msg = &MsgRoyaltyInfo{}
 
 func NewMsgAnchorCid(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgAnchorCid {
 	return &MsgAnchorCid{
-		Creator:      creator,
+		Creator: creator,
 	}
 }
 
@@ -42,6 +43,41 @@ func (msg *MsgAnchorCid) GetSignBytes() []byte {
 }
 
 func (msg *MsgAnchorCid) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
+func NewMsgAnchorCidWithProof(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgAnchorCid {
+	return &MsgAnchorCid{
+		Creator: creator,
+	}
+}
+
+func (msg *MsgAnchorCidWithProof) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAnchorCidWithProof) Type() string {
+	return "AnchorCidWithProof"
+}
+
+func (msg *MsgAnchorCidWithProof) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgAnchorCidWithProof) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAnchorCidWithProof) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

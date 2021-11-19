@@ -42,6 +42,9 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddDataSource{}, "anconprotocol/AddDataSource", nil)
 	cdc.RegisterConcrete(&MsgRemoveDataSource{}, "anconprotocol/RemoveDataSource", nil)
 	cdc.RegisterConcrete(&MsgUpdateDataSource{}, "anconprotocol/UpdateDataSource", nil)
+
+	cdc.RegisterConcrete(&MsgAnchorCidWithProof{}, "anconprotocol/AnchorCidWithProof", nil)
+
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -71,6 +74,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgRemoveDataUnion{},
 		&MsgUpdateDataUnion{},
 		&MsgAnchorCid{},
+		&MsgAnchorCidWithProof{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

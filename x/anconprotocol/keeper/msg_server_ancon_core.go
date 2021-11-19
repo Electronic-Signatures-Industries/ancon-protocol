@@ -15,7 +15,7 @@ import (
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
 
-func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAnchorCid) (*types.MsgAnchorCidWithProofResponse, error) {
+func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAnchorCidWithProof) (*types.MsgAnchorCidWithProofResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	var err error
 
@@ -42,7 +42,6 @@ func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAncho
 	return &types.MsgAnchorCidWithProofResponse{
 		Ok: true,
 	}, nil
-
 
 }
 
