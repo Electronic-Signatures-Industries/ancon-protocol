@@ -14,6 +14,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 // Msg defines the Msg service.
 service Msg {
   rpc AnchorCid(MsgAnchorCid) returns  (MsgAnchorCidResponse);
+  rpc AnchorCidWithProof(MsgAnchorCid) returns  (MsgAnchorCidWithProofResponse);
   
   rpc AddDataSource(MsgAddDataSource) returns  (MsgAddDataSourceResponse);
   rpc RemoveDataSource(MsgRemoveDataSource) returns  (MsgRemoveDataSourceResponse);
@@ -79,15 +80,20 @@ message MsgUpdateMetadataOwnership {
 
 message MsgAnchorCid{
   string creator = 1;
-  string path = 2;
-  bytes data = 3;
-  string codec = 4;
-  bool isJsonSchema = 5;
+  string key = 2;
+  string cid = 3;
+  bytes proof = 4;
+  string did = 5;
 }
 
 
 message MsgAnchorCidResponse {
-  string cid = 1;
+  string challenge = 1;
+  string reason = 2;
+}
+
+message MsgAnchorCidWithProofResponse {
+  bool ok = 1;
 }
 
 message MsgUpdateMetadataOwnershipResponse {

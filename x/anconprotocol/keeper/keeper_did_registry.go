@@ -242,14 +242,11 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
 
-	link, err := lsys.Store(
+	link := lsys.MustStore(
 		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
 		lp,                 // The LinkPrototype says what codec and hashing to use.
 		n,                  // And here's our data.
 	)
-	if err != nil {
-		return "", err
-	}
 
 	// id, _ := cid.Decode(link.String())
 	return link.String(), nil

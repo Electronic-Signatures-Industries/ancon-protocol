@@ -1,14 +1,50 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/fxamacker/cbor/v2"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/spf13/cast"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
+
+func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAnchorCid) (*types.MsgAnchorCidWithProofResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	var err error
+
+	err = msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	sender := k.GetDIDOwner(ctx, msg.Did)
+	node, err := k.GetDid(ctx, sender.Cid)
+	var buf bytes.Buffer
+
+	dagcbor.Encode(node, &buf)
+
+	var d []byte
+	cbor.Unmarshal(buf.Bytes(), d)
+	if err != nil {
+
+		return nil, err
+	}
+	diddoc, err := did.ParseDocument(d)
+
+	k.SetAnchor(ctx, diddoc.ID, msg.Cid, msg.Key)
+	return &types.MsgAnchorCidWithProofResponse{
+		Ok: true,
+	}, nil
+
+
+}
 
 func (k msgServer) AnchorCid(goCtx context.Context, msg *types.MsgAnchorCid) (*types.MsgAnchorCidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -19,19 +55,15 @@ func (k msgServer) AnchorCid(goCtx context.Context, msg *types.MsgAnchorCid) (*t
 		return nil, err
 	}
 
-	var lnk datamodel.Link
-	switch msg.Codec {
-	case "dag-cbor":
-		lnk, err = k.AddCBOR(ctx, msg.Path, (msg.Data))
-	default:
-		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
-	}
-	if err != nil {
-		return nil, err
-	}
+	s := append([]byte(msg.Creator), msg.Cid...)
+	s = append([]byte(s), msg.Key...)
+	s = append([]byte(s), ctx.ChainID()...)
+
+	challenge := sha256.Sum256(s)
 
 	return &types.MsgAnchorCidResponse{
-		Cid: lnk.String(),
+		Challenge: cast.ToString(challenge),
+		Reason:    "Invalid call, request a proof and then call AnchorCidWithProof",
 	}, nil
 }
 

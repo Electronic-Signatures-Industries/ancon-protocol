@@ -393,6 +393,11 @@ func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute)
 	store.Set([]byte(didWebRoute.Name), res)
 }
 
+func (k *Keeper) SetAnchor(ctx sdk.Context, did, cid, key string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
+	store.Set([]byte(key), []byte(cid))
+}
+
 func (k *Keeper) toIpldStringList(items []string) func(fluent.ListAssembler) {
 	return func(la fluent.ListAssembler) {
 		for i := 0; i < len(items); i++ {

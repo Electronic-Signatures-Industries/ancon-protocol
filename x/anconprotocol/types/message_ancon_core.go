@@ -17,10 +17,6 @@ var _ sdk.Msg = &MsgRoyaltyInfo{}
 func NewMsgAnchorCid(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgAnchorCid {
 	return &MsgAnchorCid{
 		Creator:      creator,
-		Path:         path,
-		Data:         payload,
-		Codec:        codec,
-		IsJsonSchema: isJsonSchema,
 	}
 }
 

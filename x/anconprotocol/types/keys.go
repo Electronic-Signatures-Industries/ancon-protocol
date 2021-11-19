@@ -48,7 +48,7 @@ const (
 	DidIPLDStoreKey = "did_ipld_store_key"
 
 	DidWebStoreKey = "did_web_store_key"
-
+	AnchorKey = "anchoring_key"
 	VoucherStoreKey = "voucher_store_key"
 
 	VoucherRecipientStoreKey = "voucher_recipient_store_key"
