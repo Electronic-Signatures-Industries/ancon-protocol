@@ -2,14 +2,14 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseDataSource = { parentCid: '', didIdentityOwner: '', anchors: '', name: '', description: '', creator: '' };
+const baseDataSource = { parentCid: '', didOwner: '', anchors: '', name: '', description: '', creator: '' };
 export const DataSource = {
     encode(message, writer = Writer.create()) {
         if (message.parentCid !== '') {
             writer.uint32(10).string(message.parentCid);
         }
-        if (message.didIdentityOwner !== '') {
-            writer.uint32(18).string(message.didIdentityOwner);
+        if (message.didOwner !== '') {
+            writer.uint32(18).string(message.didOwner);
         }
         for (const v of message.anchors) {
             writer.uint32(26).string(v);
@@ -37,7 +37,7 @@ export const DataSource = {
                     message.parentCid = reader.string();
                     break;
                 case 2:
-                    message.didIdentityOwner = reader.string();
+                    message.didOwner = reader.string();
                     break;
                 case 3:
                     message.anchors.push(reader.string());
@@ -67,11 +67,11 @@ export const DataSource = {
         else {
             message.parentCid = '';
         }
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = String(object.didIdentityOwner);
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = String(object.didOwner);
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.anchors !== undefined && object.anchors !== null) {
             for (const e of object.anchors) {
@@ -101,7 +101,7 @@ export const DataSource = {
     toJSON(message) {
         const obj = {};
         message.parentCid !== undefined && (obj.parentCid = message.parentCid);
-        message.didIdentityOwner !== undefined && (obj.didIdentityOwner = message.didIdentityOwner);
+        message.didOwner !== undefined && (obj.didOwner = message.didOwner);
         if (message.anchors) {
             obj.anchors = message.anchors.map((e) => e);
         }
@@ -122,11 +122,11 @@ export const DataSource = {
         else {
             message.parentCid = '';
         }
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = object.didIdentityOwner;
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = object.didOwner;
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.anchors !== undefined && object.anchors !== null) {
             for (const e of object.anchors) {
@@ -154,14 +154,14 @@ export const DataSource = {
         return message;
     }
 };
-const baseDataUnion = { name: '', didIdentity: '', active: false, creator: '' };
+const baseDataUnion = { name: '', did: '', active: false, creator: '' };
 export const DataUnion = {
     encode(message, writer = Writer.create()) {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
-        if (message.didIdentity !== '') {
-            writer.uint32(18).string(message.didIdentity);
+        if (message.did !== '') {
+            writer.uint32(18).string(message.did);
         }
         if (message.active === true) {
             writer.uint32(24).bool(message.active);
@@ -182,7 +182,7 @@ export const DataUnion = {
                     message.name = reader.string();
                     break;
                 case 2:
-                    message.didIdentity = reader.string();
+                    message.did = reader.string();
                     break;
                 case 3:
                     message.active = reader.bool();
@@ -205,11 +205,11 @@ export const DataUnion = {
         else {
             message.name = '';
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = String(object.didIdentity);
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.active !== undefined && object.active !== null) {
             message.active = Boolean(object.active);
@@ -228,7 +228,7 @@ export const DataUnion = {
     toJSON(message) {
         const obj = {};
         message.name !== undefined && (obj.name = message.name);
-        message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity);
+        message.did !== undefined && (obj.did = message.did);
         message.active !== undefined && (obj.active = message.active);
         message.creator !== undefined && (obj.creator = message.creator);
         return obj;
@@ -241,11 +241,11 @@ export const DataUnion = {
         else {
             message.name = '';
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = object.didIdentity;
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.active !== undefined && object.active !== null) {
             message.active = object.active;
@@ -262,11 +262,11 @@ export const DataUnion = {
         return message;
     }
 };
-const baseAnchor = { didIdentityOwner: '', link: '', parentCid: '', creator: '' };
+const baseAnchor = { didOwner: '', link: '', parentCid: '', creator: '' };
 export const Anchor = {
     encode(message, writer = Writer.create()) {
-        if (message.didIdentityOwner !== '') {
-            writer.uint32(10).string(message.didIdentityOwner);
+        if (message.didOwner !== '') {
+            writer.uint32(10).string(message.didOwner);
         }
         if (message.link !== '') {
             writer.uint32(18).string(message.link);
@@ -287,7 +287,7 @@ export const Anchor = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.didIdentityOwner = reader.string();
+                    message.didOwner = reader.string();
                     break;
                 case 2:
                     message.link = reader.string();
@@ -307,11 +307,11 @@ export const Anchor = {
     },
     fromJSON(object) {
         const message = { ...baseAnchor };
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = String(object.didIdentityOwner);
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = String(object.didOwner);
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.link !== undefined && object.link !== null) {
             message.link = String(object.link);
@@ -335,7 +335,7 @@ export const Anchor = {
     },
     toJSON(message) {
         const obj = {};
-        message.didIdentityOwner !== undefined && (obj.didIdentityOwner = message.didIdentityOwner);
+        message.didOwner !== undefined && (obj.didOwner = message.didOwner);
         message.link !== undefined && (obj.link = message.link);
         message.parentCid !== undefined && (obj.parentCid = message.parentCid);
         message.creator !== undefined && (obj.creator = message.creator);
@@ -343,11 +343,11 @@ export const Anchor = {
     },
     fromPartial(object) {
         const message = { ...baseAnchor };
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = object.didIdentityOwner;
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = object.didOwner;
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.link !== undefined && object.link !== null) {
             message.link = object.link;
@@ -370,11 +370,11 @@ export const Anchor = {
         return message;
     }
 };
-const basePricing = { didIdentityOwner: '', price: 0, dataSourceRef: 0, creator: '' };
+const basePricing = { didOwner: '', price: 0, dataSourceRef: 0, creator: '' };
 export const Pricing = {
     encode(message, writer = Writer.create()) {
-        if (message.didIdentityOwner !== '') {
-            writer.uint32(10).string(message.didIdentityOwner);
+        if (message.didOwner !== '') {
+            writer.uint32(10).string(message.didOwner);
         }
         if (message.price !== 0) {
             writer.uint32(16).uint64(message.price);
@@ -395,7 +395,7 @@ export const Pricing = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.didIdentityOwner = reader.string();
+                    message.didOwner = reader.string();
                     break;
                 case 2:
                     message.price = longToNumber(reader.uint64());
@@ -415,11 +415,11 @@ export const Pricing = {
     },
     fromJSON(object) {
         const message = { ...basePricing };
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = String(object.didIdentityOwner);
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = String(object.didOwner);
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.price !== undefined && object.price !== null) {
             message.price = Number(object.price);
@@ -443,7 +443,7 @@ export const Pricing = {
     },
     toJSON(message) {
         const obj = {};
-        message.didIdentityOwner !== undefined && (obj.didIdentityOwner = message.didIdentityOwner);
+        message.didOwner !== undefined && (obj.didOwner = message.didOwner);
         message.price !== undefined && (obj.price = message.price);
         message.dataSourceRef !== undefined && (obj.dataSourceRef = message.dataSourceRef);
         message.creator !== undefined && (obj.creator = message.creator);
@@ -451,11 +451,11 @@ export const Pricing = {
     },
     fromPartial(object) {
         const message = { ...basePricing };
-        if (object.didIdentityOwner !== undefined && object.didIdentityOwner !== null) {
-            message.didIdentityOwner = object.didIdentityOwner;
+        if (object.didOwner !== undefined && object.didOwner !== null) {
+            message.didOwner = object.didOwner;
         }
         else {
-            message.didIdentityOwner = '';
+            message.didOwner = '';
         }
         if (object.price !== undefined && object.price !== null) {
             message.price = object.price;

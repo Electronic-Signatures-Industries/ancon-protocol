@@ -2,11 +2,11 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
-const baseDIDOwner = { didIdentity: '', owner: '', cid: '', vanityName: '' };
+const baseDIDOwner = { did: '', owner: '', cid: '', vanityName: '' };
 export const DIDOwner = {
     encode(message, writer = Writer.create()) {
-        if (message.didIdentity !== '') {
-            writer.uint32(10).string(message.didIdentity);
+        if (message.did !== '') {
+            writer.uint32(10).string(message.did);
         }
         if (message.owner !== '') {
             writer.uint32(18).string(message.owner);
@@ -27,7 +27,7 @@ export const DIDOwner = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.didIdentity = reader.string();
+                    message.did = reader.string();
                     break;
                 case 2:
                     message.owner = reader.string();
@@ -47,11 +47,11 @@ export const DIDOwner = {
     },
     fromJSON(object) {
         const message = { ...baseDIDOwner };
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = String(object.didIdentity);
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.owner !== undefined && object.owner !== null) {
             message.owner = String(object.owner);
@@ -75,7 +75,7 @@ export const DIDOwner = {
     },
     toJSON(message) {
         const obj = {};
-        message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity);
+        message.did !== undefined && (obj.did = message.did);
         message.owner !== undefined && (obj.owner = message.owner);
         message.cid !== undefined && (obj.cid = message.cid);
         message.vanityName !== undefined && (obj.vanityName = message.vanityName);
@@ -83,11 +83,11 @@ export const DIDOwner = {
     },
     fromPartial(object) {
         const message = { ...baseDIDOwner };
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = object.didIdentity;
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.owner !== undefined && object.owner !== null) {
             message.owner = object.owner;
@@ -110,7 +110,7 @@ export const DIDOwner = {
         return message;
     }
 };
-const baseDIDWebRoute = { name: '', route: '', cid: '', didWebDeactivated: false, didIdentity: '' };
+const baseDIDWebRoute = { name: '', route: '', cid: '', didWebDeactivated: false, did: '' };
 export const DIDWebRoute = {
     encode(message, writer = Writer.create()) {
         if (message.name !== '') {
@@ -125,8 +125,8 @@ export const DIDWebRoute = {
         if (message.didWebDeactivated === true) {
             writer.uint32(32).bool(message.didWebDeactivated);
         }
-        if (message.didIdentity !== '') {
-            writer.uint32(42).string(message.didIdentity);
+        if (message.did !== '') {
+            writer.uint32(42).string(message.did);
         }
         return writer;
     },
@@ -150,7 +150,7 @@ export const DIDWebRoute = {
                     message.didWebDeactivated = reader.bool();
                     break;
                 case 5:
-                    message.didIdentity = reader.string();
+                    message.did = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -185,11 +185,11 @@ export const DIDWebRoute = {
         else {
             message.didWebDeactivated = false;
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = String(object.didIdentity);
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         return message;
     },
@@ -199,7 +199,7 @@ export const DIDWebRoute = {
         message.route !== undefined && (obj.route = message.route);
         message.cid !== undefined && (obj.cid = message.cid);
         message.didWebDeactivated !== undefined && (obj.didWebDeactivated = message.didWebDeactivated);
-        message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity);
+        message.did !== undefined && (obj.did = message.did);
         return obj;
     },
     fromPartial(object) {
@@ -228,16 +228,16 @@ export const DIDWebRoute = {
         else {
             message.didWebDeactivated = false;
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = object.didIdentity;
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         return message;
     }
 };
-const baseDIDDelegate = { delegate: '', delegateType: '', validity: 0, creator: '', didIdentity: '' };
+const baseDIDDelegate = { delegate: '', delegateType: '', validity: 0, creator: '', did: '' };
 export const DIDDelegate = {
     encode(message, writer = Writer.create()) {
         if (message.delegate !== '') {
@@ -252,8 +252,8 @@ export const DIDDelegate = {
         if (message.creator !== '') {
             writer.uint32(34).string(message.creator);
         }
-        if (message.didIdentity !== '') {
-            writer.uint32(42).string(message.didIdentity);
+        if (message.did !== '') {
+            writer.uint32(42).string(message.did);
         }
         return writer;
     },
@@ -277,7 +277,7 @@ export const DIDDelegate = {
                     message.creator = reader.string();
                     break;
                 case 5:
-                    message.didIdentity = reader.string();
+                    message.did = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -312,11 +312,11 @@ export const DIDDelegate = {
         else {
             message.creator = '';
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = String(object.didIdentity);
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         return message;
     },
@@ -326,7 +326,7 @@ export const DIDDelegate = {
         message.delegateType !== undefined && (obj.delegateType = message.delegateType);
         message.validity !== undefined && (obj.validity = message.validity);
         message.creator !== undefined && (obj.creator = message.creator);
-        message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity);
+        message.did !== undefined && (obj.did = message.did);
         return obj;
     },
     fromPartial(object) {
@@ -355,20 +355,20 @@ export const DIDDelegate = {
         else {
             message.creator = '';
         }
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = object.didIdentity;
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         return message;
     }
 };
-const baseDIDAttribute = { didIdentity: '', name: '', value: '' };
+const baseDIDAttribute = { did: '', name: '', value: '' };
 export const DIDAttribute = {
     encode(message, writer = Writer.create()) {
-        if (message.didIdentity !== '') {
-            writer.uint32(10).string(message.didIdentity);
+        if (message.did !== '') {
+            writer.uint32(10).string(message.did);
         }
         for (const v of message.name) {
             writer.uint32(18).string(v);
@@ -388,7 +388,7 @@ export const DIDAttribute = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.didIdentity = reader.string();
+                    message.did = reader.string();
                     break;
                 case 2:
                     message.name.push(reader.string());
@@ -407,11 +407,11 @@ export const DIDAttribute = {
         const message = { ...baseDIDAttribute };
         message.name = [];
         message.value = [];
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = String(object.didIdentity);
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.name !== undefined && object.name !== null) {
             for (const e of object.name) {
@@ -427,7 +427,7 @@ export const DIDAttribute = {
     },
     toJSON(message) {
         const obj = {};
-        message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity);
+        message.did !== undefined && (obj.did = message.did);
         if (message.name) {
             obj.name = message.name.map((e) => e);
         }
@@ -446,11 +446,11 @@ export const DIDAttribute = {
         const message = { ...baseDIDAttribute };
         message.name = [];
         message.value = [];
-        if (object.didIdentity !== undefined && object.didIdentity !== null) {
-            message.didIdentity = object.didIdentity;
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
         }
         else {
-            message.didIdentity = '';
+            message.did = '';
         }
         if (object.name !== undefined && object.name !== null) {
             for (const e of object.name) {

@@ -5,7 +5,7 @@ import { util, configure, Writer, Reader } from 'protobufjs/minimal'
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
 export interface DIDOwner {
-  didIdentity: string
+  did: string
   owner: string
   cid: string
   vanityName: string
@@ -16,7 +16,7 @@ export interface DIDWebRoute {
   route: string
   cid: string
   didWebDeactivated: boolean
-  didIdentity: string
+  did: string
 }
 
 export interface DIDDelegate {
@@ -24,21 +24,21 @@ export interface DIDDelegate {
   delegateType: string
   validity: number
   creator: string
-  didIdentity: string
+  did: string
 }
 
 export interface DIDAttribute {
-  didIdentity: string
+  did: string
   name: string[]
   value: string[]
 }
 
-const baseDIDOwner: object = { didIdentity: '', owner: '', cid: '', vanityName: '' }
+const baseDIDOwner: object = { did: '', owner: '', cid: '', vanityName: '' }
 
 export const DIDOwner = {
   encode(message: DIDOwner, writer: Writer = Writer.create()): Writer {
-    if (message.didIdentity !== '') {
-      writer.uint32(10).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(10).string(message.did)
     }
     if (message.owner !== '') {
       writer.uint32(18).string(message.owner)
@@ -60,7 +60,7 @@ export const DIDOwner = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         case 2:
           message.owner = reader.string()
@@ -81,10 +81,10 @@ export const DIDOwner = {
 
   fromJSON(object: any): DIDOwner {
     const message = { ...baseDIDOwner } as DIDOwner
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner)
@@ -106,7 +106,7 @@ export const DIDOwner = {
 
   toJSON(message: DIDOwner): unknown {
     const obj: any = {}
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     message.owner !== undefined && (obj.owner = message.owner)
     message.cid !== undefined && (obj.cid = message.cid)
     message.vanityName !== undefined && (obj.vanityName = message.vanityName)
@@ -115,10 +115,10 @@ export const DIDOwner = {
 
   fromPartial(object: DeepPartial<DIDOwner>): DIDOwner {
     const message = { ...baseDIDOwner } as DIDOwner
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner
@@ -139,7 +139,7 @@ export const DIDOwner = {
   }
 }
 
-const baseDIDWebRoute: object = { name: '', route: '', cid: '', didWebDeactivated: false, didIdentity: '' }
+const baseDIDWebRoute: object = { name: '', route: '', cid: '', didWebDeactivated: false, did: '' }
 
 export const DIDWebRoute = {
   encode(message: DIDWebRoute, writer: Writer = Writer.create()): Writer {
@@ -155,8 +155,8 @@ export const DIDWebRoute = {
     if (message.didWebDeactivated === true) {
       writer.uint32(32).bool(message.didWebDeactivated)
     }
-    if (message.didIdentity !== '') {
-      writer.uint32(42).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
@@ -181,7 +181,7 @@ export const DIDWebRoute = {
           message.didWebDeactivated = reader.bool()
           break
         case 5:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -213,10 +213,10 @@ export const DIDWebRoute = {
     } else {
       message.didWebDeactivated = false
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   },
@@ -227,7 +227,7 @@ export const DIDWebRoute = {
     message.route !== undefined && (obj.route = message.route)
     message.cid !== undefined && (obj.cid = message.cid)
     message.didWebDeactivated !== undefined && (obj.didWebDeactivated = message.didWebDeactivated)
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
@@ -253,16 +253,16 @@ export const DIDWebRoute = {
     } else {
       message.didWebDeactivated = false
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   }
 }
 
-const baseDIDDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', didIdentity: '' }
+const baseDIDDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', did: '' }
 
 export const DIDDelegate = {
   encode(message: DIDDelegate, writer: Writer = Writer.create()): Writer {
@@ -278,8 +278,8 @@ export const DIDDelegate = {
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
     }
-    if (message.didIdentity !== '') {
-      writer.uint32(42).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
@@ -304,7 +304,7 @@ export const DIDDelegate = {
           message.creator = reader.string()
           break
         case 5:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -336,10 +336,10 @@ export const DIDDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   },
@@ -350,7 +350,7 @@ export const DIDDelegate = {
     message.delegateType !== undefined && (obj.delegateType = message.delegateType)
     message.validity !== undefined && (obj.validity = message.validity)
     message.creator !== undefined && (obj.creator = message.creator)
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
@@ -376,21 +376,21 @@ export const DIDDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   }
 }
 
-const baseDIDAttribute: object = { didIdentity: '', name: '', value: '' }
+const baseDIDAttribute: object = { did: '', name: '', value: '' }
 
 export const DIDAttribute = {
   encode(message: DIDAttribute, writer: Writer = Writer.create()): Writer {
-    if (message.didIdentity !== '') {
-      writer.uint32(10).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(10).string(message.did)
     }
     for (const v of message.name) {
       writer.uint32(18).string(v!)
@@ -411,7 +411,7 @@ export const DIDAttribute = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         case 2:
           message.name.push(reader.string())
@@ -431,10 +431,10 @@ export const DIDAttribute = {
     const message = { ...baseDIDAttribute } as DIDAttribute
     message.name = []
     message.value = []
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.name !== undefined && object.name !== null) {
       for (const e of object.name) {
@@ -451,7 +451,7 @@ export const DIDAttribute = {
 
   toJSON(message: DIDAttribute): unknown {
     const obj: any = {}
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     if (message.name) {
       obj.name = message.name.map((e) => e)
     } else {
@@ -469,10 +469,10 @@ export const DIDAttribute = {
     const message = { ...baseDIDAttribute } as DIDAttribute
     message.name = []
     message.value = []
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.name !== undefined && object.name !== null) {
       for (const e of object.name) {

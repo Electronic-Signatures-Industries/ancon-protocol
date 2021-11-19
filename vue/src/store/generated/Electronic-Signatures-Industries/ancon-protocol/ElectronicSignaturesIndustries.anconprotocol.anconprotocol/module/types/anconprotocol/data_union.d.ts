@@ -3,7 +3,7 @@ export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprot
 /** Data Source is a container of links which contains the data source to be offer */
 export interface DataSource {
     parentCid: string;
-    didIdentityOwner: string;
+    didOwner: string;
     anchors: string[];
     name: string;
     description: string;
@@ -18,21 +18,21 @@ export interface DataUnion {
     /** name */
     name: string;
     /** did identity */
-    didIdentity: string;
+    did: string;
     /** is active */
     active: boolean;
     creator: string;
 }
 /** Anchor connects a CID to an onchain record, in this a data source */
 export interface Anchor {
-    didIdentityOwner: string;
+    didOwner: string;
     link: string;
     parentCid: string;
     creator: string;
 }
 /** Pricing contains prices for fixed prices data sources */
 export interface Pricing {
-    didIdentityOwner: string;
+    didOwner: string;
     price: number;
     dataSourceRef: number;
     creator: string;

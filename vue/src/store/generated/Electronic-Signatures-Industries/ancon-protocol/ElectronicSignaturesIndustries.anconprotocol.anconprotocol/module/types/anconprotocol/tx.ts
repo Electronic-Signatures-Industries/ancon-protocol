@@ -33,16 +33,29 @@ export interface MsgUpdateMetadataOwnership {
   tokenId: string
 }
 
-export interface MsgSchemaStore {
+export interface MsgAnchorCid {
   creator: string
-  path: string
-  data: Uint8Array
-  codec: string
-  isJsonSchema: boolean
+  key: string
+  cid: string
+  proof: Uint8Array
+  did: string
 }
 
-export interface MsgSchemaStoreResponse {
+export interface MsgAnchorCidWithProof {
+  creator: string
+  key: string
   cid: string
+  proof: Uint8Array
+  did: string
+}
+
+export interface MsgAnchorCidResponse {
+  challenge: string
+  reason: string
+}
+
+export interface MsgAnchorCidWithProofResponse {
+  ok: boolean
 }
 
 export interface MsgUpdateMetadataOwnershipResponse {
@@ -257,7 +270,7 @@ export interface MsgTransferNFT {
 }
 
 export interface MsgChangeOwnerResponse {
-  didIdentity: string
+  did: string
   owner: string
   previousChange: number
 }
@@ -272,7 +285,7 @@ export interface MsgGrantDelegate {
   delegateType: string
   validity: number
   creator: string
-  didIdentity: string
+  did: string
 }
 
 export interface MsgGrantDelegateResponse {
@@ -284,7 +297,7 @@ export interface MsgRevokeDelegate {
   delegateType: string
   validity: number
   creator: string
-  didIdentity: string
+  did: string
 }
 
 export interface MsgRevokeDelegateResponse {
@@ -292,7 +305,7 @@ export interface MsgRevokeDelegateResponse {
 }
 
 export interface MsgSetAttribute {
-  didIdentity: string
+  did: string
   actor: string
   creator: string
   name: string[]
@@ -305,7 +318,7 @@ export interface MsgSetAttributeResponse {
 }
 
 export interface MsgRevokeAttribute {
-  didIdentity: string
+  did: string
   actor: string
   name: Uint8Array
   value: Uint8Array
@@ -618,32 +631,32 @@ export const MsgUpdateMetadataOwnership = {
   }
 }
 
-const baseMsgSchemaStore: object = { creator: '', path: '', codec: '', isJsonSchema: false }
+const baseMsgAnchorCid: object = { creator: '', key: '', cid: '', did: '' }
 
-export const MsgSchemaStore = {
-  encode(message: MsgSchemaStore, writer: Writer = Writer.create()): Writer {
+export const MsgAnchorCid = {
+  encode(message: MsgAnchorCid, writer: Writer = Writer.create()): Writer {
     if (message.creator !== '') {
       writer.uint32(10).string(message.creator)
     }
-    if (message.path !== '') {
-      writer.uint32(18).string(message.path)
+    if (message.key !== '') {
+      writer.uint32(18).string(message.key)
     }
-    if (message.data.length !== 0) {
-      writer.uint32(26).bytes(message.data)
+    if (message.cid !== '') {
+      writer.uint32(26).string(message.cid)
     }
-    if (message.codec !== '') {
-      writer.uint32(34).string(message.codec)
+    if (message.proof.length !== 0) {
+      writer.uint32(34).bytes(message.proof)
     }
-    if (message.isJsonSchema === true) {
-      writer.uint32(40).bool(message.isJsonSchema)
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgSchemaStore {
+  decode(input: Reader | Uint8Array, length?: number): MsgAnchorCid {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseMsgSchemaStore } as MsgSchemaStore
+    const message = { ...baseMsgAnchorCid } as MsgAnchorCid
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -651,16 +664,16 @@ export const MsgSchemaStore = {
           message.creator = reader.string()
           break
         case 2:
-          message.path = reader.string()
+          message.key = reader.string()
           break
         case 3:
-          message.data = reader.bytes()
+          message.cid = reader.string()
           break
         case 4:
-          message.codec = reader.string()
+          message.proof = reader.bytes()
           break
         case 5:
-          message.isJsonSchema = reader.bool()
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -670,94 +683,118 @@ export const MsgSchemaStore = {
     return message
   },
 
-  fromJSON(object: any): MsgSchemaStore {
-    const message = { ...baseMsgSchemaStore } as MsgSchemaStore
+  fromJSON(object: any): MsgAnchorCid {
+    const message = { ...baseMsgAnchorCid } as MsgAnchorCid
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator)
     } else {
       message.creator = ''
     }
-    if (object.path !== undefined && object.path !== null) {
-      message.path = String(object.path)
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key)
     } else {
-      message.path = ''
+      message.key = ''
     }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = bytesFromBase64(object.data)
-    }
-    if (object.codec !== undefined && object.codec !== null) {
-      message.codec = String(object.codec)
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
     } else {
-      message.codec = ''
+      message.cid = ''
     }
-    if (object.isJsonSchema !== undefined && object.isJsonSchema !== null) {
-      message.isJsonSchema = Boolean(object.isJsonSchema)
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = bytesFromBase64(object.proof)
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.isJsonSchema = false
+      message.did = ''
     }
     return message
   },
 
-  toJSON(message: MsgSchemaStore): unknown {
+  toJSON(message: MsgAnchorCid): unknown {
     const obj: any = {}
     message.creator !== undefined && (obj.creator = message.creator)
-    message.path !== undefined && (obj.path = message.path)
-    message.data !== undefined && (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()))
-    message.codec !== undefined && (obj.codec = message.codec)
-    message.isJsonSchema !== undefined && (obj.isJsonSchema = message.isJsonSchema)
+    message.key !== undefined && (obj.key = message.key)
+    message.cid !== undefined && (obj.cid = message.cid)
+    message.proof !== undefined && (obj.proof = base64FromBytes(message.proof !== undefined ? message.proof : new Uint8Array()))
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
-  fromPartial(object: DeepPartial<MsgSchemaStore>): MsgSchemaStore {
-    const message = { ...baseMsgSchemaStore } as MsgSchemaStore
+  fromPartial(object: DeepPartial<MsgAnchorCid>): MsgAnchorCid {
+    const message = { ...baseMsgAnchorCid } as MsgAnchorCid
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator
     } else {
       message.creator = ''
     }
-    if (object.path !== undefined && object.path !== null) {
-      message.path = object.path
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key
     } else {
-      message.path = ''
+      message.key = ''
     }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = object.data
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
     } else {
-      message.data = new Uint8Array()
+      message.cid = ''
     }
-    if (object.codec !== undefined && object.codec !== null) {
-      message.codec = object.codec
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = object.proof
     } else {
-      message.codec = ''
+      message.proof = new Uint8Array()
     }
-    if (object.isJsonSchema !== undefined && object.isJsonSchema !== null) {
-      message.isJsonSchema = object.isJsonSchema
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.isJsonSchema = false
+      message.did = ''
     }
     return message
   }
 }
 
-const baseMsgSchemaStoreResponse: object = { cid: '' }
+const baseMsgAnchorCidWithProof: object = { creator: '', key: '', cid: '', did: '' }
 
-export const MsgSchemaStoreResponse = {
-  encode(message: MsgSchemaStoreResponse, writer: Writer = Writer.create()): Writer {
+export const MsgAnchorCidWithProof = {
+  encode(message: MsgAnchorCidWithProof, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.key !== '') {
+      writer.uint32(18).string(message.key)
+    }
     if (message.cid !== '') {
-      writer.uint32(10).string(message.cid)
+      writer.uint32(26).string(message.cid)
+    }
+    if (message.proof.length !== 0) {
+      writer.uint32(34).bytes(message.proof)
+    }
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgSchemaStoreResponse {
+  decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidWithProof {
     const reader = input instanceof Uint8Array ? new Reader(input) : input
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseMsgSchemaStoreResponse } as MsgSchemaStoreResponse
+    const message = { ...baseMsgAnchorCidWithProof } as MsgAnchorCidWithProof
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.key = reader.string()
+          break
+        case 3:
           message.cid = reader.string()
+          break
+        case 4:
+          message.proof = reader.bytes()
+          break
+        case 5:
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -767,28 +804,197 @@ export const MsgSchemaStoreResponse = {
     return message
   },
 
-  fromJSON(object: any): MsgSchemaStoreResponse {
-    const message = { ...baseMsgSchemaStoreResponse } as MsgSchemaStoreResponse
+  fromJSON(object: any): MsgAnchorCidWithProof {
+    const message = { ...baseMsgAnchorCidWithProof } as MsgAnchorCidWithProof
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key)
+    } else {
+      message.key = ''
+    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = String(object.cid)
     } else {
       message.cid = ''
     }
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = bytesFromBase64(object.proof)
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
     return message
   },
 
-  toJSON(message: MsgSchemaStoreResponse): unknown {
+  toJSON(message: MsgAnchorCidWithProof): unknown {
     const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.key !== undefined && (obj.key = message.key)
     message.cid !== undefined && (obj.cid = message.cid)
+    message.proof !== undefined && (obj.proof = base64FromBytes(message.proof !== undefined ? message.proof : new Uint8Array()))
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
-  fromPartial(object: DeepPartial<MsgSchemaStoreResponse>): MsgSchemaStoreResponse {
-    const message = { ...baseMsgSchemaStoreResponse } as MsgSchemaStoreResponse
+  fromPartial(object: DeepPartial<MsgAnchorCidWithProof>): MsgAnchorCidWithProof {
+    const message = { ...baseMsgAnchorCidWithProof } as MsgAnchorCidWithProof
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key
+    } else {
+      message.key = ''
+    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = object.cid
     } else {
       message.cid = ''
+    }
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = object.proof
+    } else {
+      message.proof = new Uint8Array()
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    return message
+  }
+}
+
+const baseMsgAnchorCidResponse: object = { challenge: '', reason: '' }
+
+export const MsgAnchorCidResponse = {
+  encode(message: MsgAnchorCidResponse, writer: Writer = Writer.create()): Writer {
+    if (message.challenge !== '') {
+      writer.uint32(10).string(message.challenge)
+    }
+    if (message.reason !== '') {
+      writer.uint32(18).string(message.reason)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAnchorCidResponse } as MsgAnchorCidResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.challenge = reader.string()
+          break
+        case 2:
+          message.reason = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAnchorCidResponse {
+    const message = { ...baseMsgAnchorCidResponse } as MsgAnchorCidResponse
+    if (object.challenge !== undefined && object.challenge !== null) {
+      message.challenge = String(object.challenge)
+    } else {
+      message.challenge = ''
+    }
+    if (object.reason !== undefined && object.reason !== null) {
+      message.reason = String(object.reason)
+    } else {
+      message.reason = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgAnchorCidResponse): unknown {
+    const obj: any = {}
+    message.challenge !== undefined && (obj.challenge = message.challenge)
+    message.reason !== undefined && (obj.reason = message.reason)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAnchorCidResponse>): MsgAnchorCidResponse {
+    const message = { ...baseMsgAnchorCidResponse } as MsgAnchorCidResponse
+    if (object.challenge !== undefined && object.challenge !== null) {
+      message.challenge = object.challenge
+    } else {
+      message.challenge = ''
+    }
+    if (object.reason !== undefined && object.reason !== null) {
+      message.reason = object.reason
+    } else {
+      message.reason = ''
+    }
+    return message
+  }
+}
+
+const baseMsgAnchorCidWithProofResponse: object = { ok: false }
+
+export const MsgAnchorCidWithProofResponse = {
+  encode(message: MsgAnchorCidWithProofResponse, writer: Writer = Writer.create()): Writer {
+    if (message.ok === true) {
+      writer.uint32(8).bool(message.ok)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidWithProofResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAnchorCidWithProofResponse } as MsgAnchorCidWithProofResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.ok = reader.bool()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAnchorCidWithProofResponse {
+    const message = { ...baseMsgAnchorCidWithProofResponse } as MsgAnchorCidWithProofResponse
+    if (object.ok !== undefined && object.ok !== null) {
+      message.ok = Boolean(object.ok)
+    } else {
+      message.ok = false
+    }
+    return message
+  },
+
+  toJSON(message: MsgAnchorCidWithProofResponse): unknown {
+    const obj: any = {}
+    message.ok !== undefined && (obj.ok = message.ok)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAnchorCidWithProofResponse>): MsgAnchorCidWithProofResponse {
+    const message = { ...baseMsgAnchorCidWithProofResponse } as MsgAnchorCidWithProofResponse
+    if (object.ok !== undefined && object.ok !== null) {
+      message.ok = object.ok
+    } else {
+      message.ok = false
     }
     return message
   }
@@ -3605,12 +3811,12 @@ export const MsgTransferNFT = {
   }
 }
 
-const baseMsgChangeOwnerResponse: object = { didIdentity: '', owner: '', previousChange: 0 }
+const baseMsgChangeOwnerResponse: object = { did: '', owner: '', previousChange: 0 }
 
 export const MsgChangeOwnerResponse = {
   encode(message: MsgChangeOwnerResponse, writer: Writer = Writer.create()): Writer {
-    if (message.didIdentity !== '') {
-      writer.uint32(10).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(10).string(message.did)
     }
     if (message.owner !== '') {
       writer.uint32(18).string(message.owner)
@@ -3629,7 +3835,7 @@ export const MsgChangeOwnerResponse = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         case 2:
           message.owner = reader.string()
@@ -3647,10 +3853,10 @@ export const MsgChangeOwnerResponse = {
 
   fromJSON(object: any): MsgChangeOwnerResponse {
     const message = { ...baseMsgChangeOwnerResponse } as MsgChangeOwnerResponse
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner)
@@ -3667,7 +3873,7 @@ export const MsgChangeOwnerResponse = {
 
   toJSON(message: MsgChangeOwnerResponse): unknown {
     const obj: any = {}
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     message.owner !== undefined && (obj.owner = message.owner)
     message.previousChange !== undefined && (obj.previousChange = message.previousChange)
     return obj
@@ -3675,10 +3881,10 @@ export const MsgChangeOwnerResponse = {
 
   fromPartial(object: DeepPartial<MsgChangeOwnerResponse>): MsgChangeOwnerResponse {
     const message = { ...baseMsgChangeOwnerResponse } as MsgChangeOwnerResponse
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner
@@ -3766,7 +3972,7 @@ export const MsgChangeOwner = {
   }
 }
 
-const baseMsgGrantDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', didIdentity: '' }
+const baseMsgGrantDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', did: '' }
 
 export const MsgGrantDelegate = {
   encode(message: MsgGrantDelegate, writer: Writer = Writer.create()): Writer {
@@ -3782,8 +3988,8 @@ export const MsgGrantDelegate = {
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
     }
-    if (message.didIdentity !== '') {
-      writer.uint32(42).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
@@ -3808,7 +4014,7 @@ export const MsgGrantDelegate = {
           message.creator = reader.string()
           break
         case 5:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -3840,10 +4046,10 @@ export const MsgGrantDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   },
@@ -3854,7 +4060,7 @@ export const MsgGrantDelegate = {
     message.delegateType !== undefined && (obj.delegateType = message.delegateType)
     message.validity !== undefined && (obj.validity = message.validity)
     message.creator !== undefined && (obj.creator = message.creator)
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
@@ -3880,10 +4086,10 @@ export const MsgGrantDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   }
@@ -3944,7 +4150,7 @@ export const MsgGrantDelegateResponse = {
   }
 }
 
-const baseMsgRevokeDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', didIdentity: '' }
+const baseMsgRevokeDelegate: object = { delegate: '', delegateType: '', validity: 0, creator: '', did: '' }
 
 export const MsgRevokeDelegate = {
   encode(message: MsgRevokeDelegate, writer: Writer = Writer.create()): Writer {
@@ -3960,8 +4166,8 @@ export const MsgRevokeDelegate = {
     if (message.creator !== '') {
       writer.uint32(34).string(message.creator)
     }
-    if (message.didIdentity !== '') {
-      writer.uint32(42).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(42).string(message.did)
     }
     return writer
   },
@@ -3986,7 +4192,7 @@ export const MsgRevokeDelegate = {
           message.creator = reader.string()
           break
         case 5:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -4018,10 +4224,10 @@ export const MsgRevokeDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   },
@@ -4032,7 +4238,7 @@ export const MsgRevokeDelegate = {
     message.delegateType !== undefined && (obj.delegateType = message.delegateType)
     message.validity !== undefined && (obj.validity = message.validity)
     message.creator !== undefined && (obj.creator = message.creator)
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     return obj
   },
 
@@ -4058,10 +4264,10 @@ export const MsgRevokeDelegate = {
     } else {
       message.creator = ''
     }
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     return message
   }
@@ -4122,12 +4328,12 @@ export const MsgRevokeDelegateResponse = {
   }
 }
 
-const baseMsgSetAttribute: object = { didIdentity: '', actor: '', creator: '', name: '', value: '', validity: 0 }
+const baseMsgSetAttribute: object = { did: '', actor: '', creator: '', name: '', value: '', validity: 0 }
 
 export const MsgSetAttribute = {
   encode(message: MsgSetAttribute, writer: Writer = Writer.create()): Writer {
-    if (message.didIdentity !== '') {
-      writer.uint32(10).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(10).string(message.did)
     }
     if (message.actor !== '') {
       writer.uint32(18).string(message.actor)
@@ -4157,7 +4363,7 @@ export const MsgSetAttribute = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         case 2:
           message.actor = reader.string()
@@ -4186,10 +4392,10 @@ export const MsgSetAttribute = {
     const message = { ...baseMsgSetAttribute } as MsgSetAttribute
     message.name = []
     message.value = []
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.actor !== undefined && object.actor !== null) {
       message.actor = String(object.actor)
@@ -4221,7 +4427,7 @@ export const MsgSetAttribute = {
 
   toJSON(message: MsgSetAttribute): unknown {
     const obj: any = {}
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     message.actor !== undefined && (obj.actor = message.actor)
     message.creator !== undefined && (obj.creator = message.creator)
     if (message.name) {
@@ -4242,10 +4448,10 @@ export const MsgSetAttribute = {
     const message = { ...baseMsgSetAttribute } as MsgSetAttribute
     message.name = []
     message.value = []
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.actor !== undefined && object.actor !== null) {
       message.actor = object.actor
@@ -4331,12 +4537,12 @@ export const MsgSetAttributeResponse = {
   }
 }
 
-const baseMsgRevokeAttribute: object = { didIdentity: '', actor: '', creator: '' }
+const baseMsgRevokeAttribute: object = { did: '', actor: '', creator: '' }
 
 export const MsgRevokeAttribute = {
   encode(message: MsgRevokeAttribute, writer: Writer = Writer.create()): Writer {
-    if (message.didIdentity !== '') {
-      writer.uint32(10).string(message.didIdentity)
+    if (message.did !== '') {
+      writer.uint32(10).string(message.did)
     }
     if (message.actor !== '') {
       writer.uint32(18).string(message.actor)
@@ -4361,7 +4567,7 @@ export const MsgRevokeAttribute = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.didIdentity = reader.string()
+          message.did = reader.string()
           break
         case 2:
           message.actor = reader.string()
@@ -4385,10 +4591,10 @@ export const MsgRevokeAttribute = {
 
   fromJSON(object: any): MsgRevokeAttribute {
     const message = { ...baseMsgRevokeAttribute } as MsgRevokeAttribute
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = String(object.didIdentity)
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.actor !== undefined && object.actor !== null) {
       message.actor = String(object.actor)
@@ -4411,7 +4617,7 @@ export const MsgRevokeAttribute = {
 
   toJSON(message: MsgRevokeAttribute): unknown {
     const obj: any = {}
-    message.didIdentity !== undefined && (obj.didIdentity = message.didIdentity)
+    message.did !== undefined && (obj.did = message.did)
     message.actor !== undefined && (obj.actor = message.actor)
     message.name !== undefined && (obj.name = base64FromBytes(message.name !== undefined ? message.name : new Uint8Array()))
     message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()))
@@ -4421,10 +4627,10 @@ export const MsgRevokeAttribute = {
 
   fromPartial(object: DeepPartial<MsgRevokeAttribute>): MsgRevokeAttribute {
     const message = { ...baseMsgRevokeAttribute } as MsgRevokeAttribute
-    if (object.didIdentity !== undefined && object.didIdentity !== null) {
-      message.didIdentity = object.didIdentity
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
     } else {
-      message.didIdentity = ''
+      message.did = ''
     }
     if (object.actor !== undefined && object.actor !== null) {
       message.actor = object.actor
@@ -6106,7 +6312,8 @@ export const AguaclaraPacketData = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  SchemaStore(request: MsgSchemaStore): Promise<MsgSchemaStoreResponse>
+  AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>
+  AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>
   AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>
   RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>
   UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>
@@ -6163,10 +6370,16 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
-  SchemaStore(request: MsgSchemaStore): Promise<MsgSchemaStoreResponse> {
-    const data = MsgSchemaStore.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'SchemaStore', data)
-    return promise.then((data) => MsgSchemaStoreResponse.decode(new Reader(data)))
+  AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse> {
+    const data = MsgAnchorCid.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AnchorCid', data)
+    return promise.then((data) => MsgAnchorCidResponse.decode(new Reader(data)))
+  }
+
+  AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse> {
+    const data = MsgAnchorCidWithProof.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AnchorCidWithProof', data)
+    return promise.then((data) => MsgAnchorCidWithProofResponse.decode(new Reader(data)))
   }
 
   AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse> {

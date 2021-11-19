@@ -142,10 +142,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryReadDelegate
          * @summary Queries a list of delegates items.
-         * @request GET:/ancon/didregistry/delegates/{id}
+         * @request GET:/didregistry/delegates/{id}
          */
         this.queryReadDelegate = (id, params = {}) => this.request({
-            path: `/ancon/didregistry/delegates/${id}`,
+            path: `/didregistry/delegates/${id}`,
             method: "GET",
             format: "json",
             ...params,
@@ -156,10 +156,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryIdentifyOwner
          * @summary Queries a list of owners items.
-         * @request GET:/ancon/didregistry/{address}
+         * @request GET:/didregistry/{address}
          */
         this.queryIdentifyOwner = (address, params = {}) => this.request({
-            path: `/ancon/didregistry/${address}`,
+            path: `/didregistry/${address}`,
             method: "GET",
             format: "json",
             ...params,
@@ -170,10 +170,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryGetAttributes
          * @summary Queries a list of Attributes items.
-         * @request GET:/ancon/didregistry/{address}/attributes
+         * @request GET:/didregistry/{address}/attributes
          */
         this.queryGetAttributes = (address, params = {}) => this.request({
-            path: `/ancon/didregistry/${address}/attributes`,
+            path: `/didregistry/${address}/attributes`,
             method: "GET",
             format: "json",
             ...params,
@@ -183,10 +183,24 @@ export class Api extends HttpClient {
          *
          * @tags Query
          * @name QueryGetDidKey
-         * @request GET:/ancon/didregistry/{hashcid}
+         * @request GET:/didregistry/{hashcid}
          */
         this.queryGetDidKey = (hashcid, params = {}) => this.request({
-            path: `/ancon/didregistry/${hashcid}`,
+            path: `/didregistry/${hashcid}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryReadWithPath
+         * @summary Queries a list of resource items.
+         * @request GET:/metadata/{cid}/{path}
+         */
+        this.queryReadWithPath = (cid, path, params = {}) => this.request({
+            path: `/metadata/${cid}/${path}`,
             method: "GET",
             format: "json",
             ...params,
@@ -197,10 +211,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryCollection
          * @summary Collection queries the NFTs of the specified denom
-         * @request GET:/ancon/nft/collections/{denomId}
+         * @request GET:/nft/collections/{denomId}
          */
         this.queryCollection = (denomId, query, params = {}) => this.request({
-            path: `/ancon/nft/collections/${denomId}`,
+            path: `/nft/collections/${denomId}`,
             method: "GET",
             query: query,
             format: "json",
@@ -212,10 +226,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryDenoms
          * @summary Denoms queries all the denoms
-         * @request GET:/ancon/nft/denoms
+         * @request GET:/nft/denoms
          */
         this.queryDenoms = (query, params = {}) => this.request({
-            path: `/ancon/nft/denoms`,
+            path: `/nft/denoms`,
             method: "GET",
             query: query,
             format: "json",
@@ -227,10 +241,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryDenom
          * @summary Denom queries the definition of a given denom
-         * @request GET:/ancon/nft/denoms/{denomId}
+         * @request GET:/nft/denoms/{denomId}
          */
         this.queryDenom = (denomId, params = {}) => this.request({
-            path: `/ancon/nft/denoms/${denomId}`,
+            path: `/nft/denoms/${denomId}`,
             method: "GET",
             format: "json",
             ...params,
@@ -241,10 +255,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryOwner
          * @summary Owner queries the NFTs of the specified owner
-         * @request GET:/ancon/nft/nfts
+         * @request GET:/nft/nfts
          */
         this.queryOwner = (query, params = {}) => this.request({
-            path: `/ancon/nft/nfts`,
+            path: `/nft/nfts`,
             method: "GET",
             query: query,
             format: "json",
@@ -256,10 +270,24 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryGetNft
          * @summary NFT queries the NFT for the given denom and token ID
-         * @request GET:/ancon/nft/nfts/{denomId}/{tokenId}
+         * @request GET:/nft/nfts/{denomId}/{tokenId}
          */
         this.queryGetNft = (denomId, tokenId, params = {}) => this.request({
-            path: `/ancon/nft/nfts/${denomId}/${tokenId}`,
+            path: `/nft/nfts/${denomId}/${tokenId}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryReadRoyaltyInfo
+         * @summary ReadRoyaltyInfo
+         * @request GET:/nft/royalty/{cid}/{price}
+         */
+        this.queryReadRoyaltyInfo = (cid, price, params = {}) => this.request({
+            path: `/nft/royalty/${cid}/${price}`,
             method: "GET",
             format: "json",
             ...params,
@@ -270,10 +298,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryReadMetadataProof
          * @summary Reads metadata proofs
-         * @request GET:/ancon/proof/{cid}/{path}
+         * @request GET:/proof/{cid}/{path}
          */
         this.queryReadMetadataProof = (cid, path, params = {}) => this.request({
-            path: `/ancon/proof/${cid}/${path}`,
+            path: `/proof/${cid}/${path}`,
             method: "GET",
             format: "json",
             ...params,
@@ -284,10 +312,10 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryResource
          * @summary Queries a list of resource items.
-         * @request GET:/ancon/resource/{cid}
+         * @request GET:/resource/{cid}
          */
         this.queryResource = (cid, query, params = {}) => this.request({
-            path: `/ancon/resource/${cid}`,
+            path: `/resource/${cid}`,
             method: "GET",
             query: query,
             format: "json",
@@ -297,13 +325,14 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
-         * @name QueryReadRoyaltyInfo
-         * @summary ReadRoyaltyInfo
-         * @request GET:/ancon/royalty/{cid}/{price}
+         * @name QueryWriteSchemaStoreResource
+         * @request POST:/schemastore
          */
-        this.queryReadRoyaltyInfo = (cid, price, params = {}) => this.request({
-            path: `/ancon/royalty/${cid}/${price}`,
-            method: "GET",
+        this.queryWriteSchemaStoreResource = (body, params = {}) => this.request({
+            path: `/schemastore`,
+            method: "POST",
+            body: body,
+            type: ContentType.Json,
             format: "json",
             ...params,
         });
@@ -312,25 +341,10 @@ export class Api extends HttpClient {
          *
          * @tags Query
          * @name QueryReadSchemaStoreResource
-         * @request GET:/ancon/schemastore/{cid}
+         * @request GET:/schemastore/{cid}/{path}
          */
-        this.queryReadSchemaStoreResource = (cid, query, params = {}) => this.request({
-            path: `/ancon/schemastore/${cid}`,
-            method: "GET",
-            query: query,
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryReadWithPath
-         * @summary Queries a list of resource items.
-         * @request GET:/ancon/{cid}/{path}
-         */
-        this.queryReadWithPath = (cid, path, params = {}) => this.request({
-            path: `/ancon/${cid}/${path}`,
+        this.queryReadSchemaStoreResource = (cid, path, params = {}) => this.request({
+            path: `/schemastore/${cid}/${path}`,
             method: "GET",
             format: "json",
             ...params,

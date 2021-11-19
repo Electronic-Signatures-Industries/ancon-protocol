@@ -39,7 +39,7 @@ export interface AnconprotocolCollection {
 
 export interface AnconprotocolDataSource {
   parentCid?: string;
-  didIdentityOwner?: string;
+  didOwner?: string;
   anchors?: string[];
   name?: string;
   description?: string;
@@ -48,7 +48,7 @@ export interface AnconprotocolDataSource {
 
 export interface AnconprotocolDataUnion {
   name?: string;
-  didIdentity?: string;
+  did?: string;
   active?: boolean;
   creator?: string;
 }
@@ -75,13 +75,22 @@ export interface AnconprotocolMsgAddDataSourceResponse {
 
 export type AnconprotocolMsgAddDataUnionResponse = object;
 
+export interface AnconprotocolMsgAnchorCidResponse {
+  challenge?: string;
+  reason?: string;
+}
+
+export interface AnconprotocolMsgAnchorCidWithProofResponse {
+  ok?: boolean;
+}
+
 /**
  * MsgBurnNFTResponse defines the Msg/BurnNFT response type.
  */
 export type AnconprotocolMsgBurnNFTResponse = object;
 
 export interface AnconprotocolMsgChangeOwnerResponse {
-  didIdentity?: string;
+  did?: string;
   owner?: string;
 
   /** @format uint64 */
@@ -153,10 +162,6 @@ export interface AnconprotocolMsgRoyaltyInfoResponse {
   metadataRef?: string;
 }
 
-export interface AnconprotocolMsgSchemaStoreResponse {
-  cid?: string;
-}
-
 export interface AnconprotocolMsgSendMetadataOwnershipResponse {
   cid?: string;
 }
@@ -192,6 +197,20 @@ export interface AnconprotocolMsgUpdateMetadataOwnershipResponse {
 export interface AnconprotocolOwner {
   address?: string;
   idCollections?: AnconprotocolIDCollection[];
+}
+
+export interface AnconprotocolPostSchemaRequest {
+  did?: string;
+  path?: string;
+
+  /** @format byte */
+  data?: string;
+  codec?: string;
+  isJsonSchema?: boolean;
+}
+
+export interface AnconprotocolPostSchemaResponse {
+  cid?: string;
 }
 
 export interface AnconprotocolQueryCollectionResponse {
@@ -669,11 +688,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryReadDelegate
    * @summary Queries a list of delegates items.
-   * @request GET:/ancon/didregistry/delegates/{id}
+   * @request GET:/didregistry/delegates/{id}
    */
   queryReadDelegate = (id: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryGetDelegateResponse, RpcStatus>({
-      path: `/ancon/didregistry/delegates/${id}`,
+      path: `/didregistry/delegates/${id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -685,11 +704,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryIdentifyOwner
    * @summary Queries a list of owners items.
-   * @request GET:/ancon/didregistry/{address}
+   * @request GET:/didregistry/{address}
    */
   queryIdentifyOwner = (address: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryIdentifyOwnerResponse, RpcStatus>({
-      path: `/ancon/didregistry/${address}`,
+      path: `/didregistry/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -701,11 +720,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryGetAttributes
    * @summary Queries a list of Attributes items.
-   * @request GET:/ancon/didregistry/{address}/attributes
+   * @request GET:/didregistry/{address}/attributes
    */
   queryGetAttributes = (address: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryGetAttributesResponse, RpcStatus>({
-      path: `/ancon/didregistry/${address}/attributes`,
+      path: `/didregistry/${address}/attributes`,
       method: "GET",
       format: "json",
       ...params,
@@ -716,11 +735,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryGetDidKey
-   * @request GET:/ancon/didregistry/{hashcid}
+   * @request GET:/didregistry/{hashcid}
    */
   queryGetDidKey = (hashcid: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/didregistry/${hashcid}`,
+      path: `/didregistry/${hashcid}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadWithPath
+   * @summary Queries a list of resource items.
+   * @request GET:/metadata/{cid}/{path}
+   */
+  queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+      path: `/metadata/${cid}/${path}`,
       method: "GET",
       format: "json",
       ...params,
@@ -732,7 +767,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCollection
    * @summary Collection queries the NFTs of the specified denom
-   * @request GET:/ancon/nft/collections/{denomId}
+   * @request GET:/nft/collections/{denomId}
    */
   queryCollection = (
     denomId: string,
@@ -746,7 +781,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<AnconprotocolQueryCollectionResponse, RpcStatus>({
-      path: `/ancon/nft/collections/${denomId}`,
+      path: `/nft/collections/${denomId}`,
       method: "GET",
       query: query,
       format: "json",
@@ -759,7 +794,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryDenoms
    * @summary Denoms queries all the denoms
-   * @request GET:/ancon/nft/denoms
+   * @request GET:/nft/denoms
    */
   queryDenoms = (
     query?: {
@@ -772,7 +807,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<AnconprotocolQueryDenomsResponse, RpcStatus>({
-      path: `/ancon/nft/denoms`,
+      path: `/nft/denoms`,
       method: "GET",
       query: query,
       format: "json",
@@ -785,11 +820,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryDenom
    * @summary Denom queries the definition of a given denom
-   * @request GET:/ancon/nft/denoms/{denomId}
+   * @request GET:/nft/denoms/{denomId}
    */
   queryDenom = (denomId: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryDenomResponse, RpcStatus>({
-      path: `/ancon/nft/denoms/${denomId}`,
+      path: `/nft/denoms/${denomId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -801,7 +836,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryOwner
    * @summary Owner queries the NFTs of the specified owner
-   * @request GET:/ancon/nft/nfts
+   * @request GET:/nft/nfts
    */
   queryOwner = (
     query?: {
@@ -816,7 +851,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<AnconprotocolQueryOwnerResponse, RpcStatus>({
-      path: `/ancon/nft/nfts`,
+      path: `/nft/nfts`,
       method: "GET",
       query: query,
       format: "json",
@@ -829,11 +864,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryGetNft
    * @summary NFT queries the NFT for the given denom and token ID
-   * @request GET:/ancon/nft/nfts/{denomId}/{tokenId}
+   * @request GET:/nft/nfts/{denomId}/{tokenId}
    */
   queryGetNft = (denomId: string, tokenId: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryNFTResponse, RpcStatus>({
-      path: `/ancon/nft/nfts/${denomId}/${tokenId}`,
+      path: `/nft/nfts/${denomId}/${tokenId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadRoyaltyInfo
+   * @summary ReadRoyaltyInfo
+   * @request GET:/nft/royalty/{cid}/{price}
+   */
+  queryReadRoyaltyInfo = (cid: string, price: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>({
+      path: `/nft/royalty/${cid}/${price}`,
       method: "GET",
       format: "json",
       ...params,
@@ -845,11 +896,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryReadMetadataProof
    * @summary Reads metadata proofs
-   * @request GET:/ancon/proof/{cid}/{path}
+   * @request GET:/proof/{cid}/{path}
    */
   queryReadMetadataProof = (cid: string, path: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryProofResponse, RpcStatus>({
-      path: `/ancon/proof/${cid}/${path}`,
+      path: `/proof/${cid}/${path}`,
       method: "GET",
       format: "json",
       ...params,
@@ -861,11 +912,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryResource
    * @summary Queries a list of resource items.
-   * @request GET:/ancon/resource/{cid}
+   * @request GET:/resource/{cid}
    */
   queryResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
     this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/resource/${cid}`,
+      path: `/resource/${cid}`,
       method: "GET",
       query: query,
       format: "json",
@@ -876,14 +927,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryReadRoyaltyInfo
-   * @summary ReadRoyaltyInfo
-   * @request GET:/ancon/royalty/{cid}/{price}
+   * @name QueryWriteSchemaStoreResource
+   * @request POST:/schemastore
    */
-  queryReadRoyaltyInfo = (cid: string, price: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryReadRoyaltyInfoResponse, RpcStatus>({
-      path: `/ancon/royalty/${cid}/${price}`,
-      method: "GET",
+  queryWriteSchemaStoreResource = (body: AnconprotocolPostSchemaRequest, params: RequestParams = {}) =>
+    this.request<AnconprotocolPostSchemaResponse, RpcStatus>({
+      path: `/schemastore`,
+      method: "POST",
+      body: body,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -893,28 +945,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryReadSchemaStoreResource
-   * @request GET:/ancon/schemastore/{cid}
+   * @request GET:/schemastore/{cid}/{path}
    */
-  queryReadSchemaStoreResource = (cid: string, query?: { path?: string }, params: RequestParams = {}) =>
+  queryReadSchemaStoreResource = (cid: string, path: string, params: RequestParams = {}) =>
     this.request<AnconprotocolQuerySchemaStoreResponse, RpcStatus>({
-      path: `/ancon/schemastore/${cid}`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryReadWithPath
-   * @summary Queries a list of resource items.
-   * @request GET:/ancon/{cid}/{path}
-   */
-  queryReadWithPath = (cid: string, path: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
-      path: `/ancon/${cid}/${path}`,
+      path: `/schemastore/${cid}/${path}`,
       method: "GET",
       format: "json",
       ...params,

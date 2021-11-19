@@ -15,15 +15,26 @@ export interface MsgUpdateMetadataOwnership {
     tokenAddress: string;
     tokenId: string;
 }
-export interface MsgSchemaStore {
+export interface MsgAnchorCid {
     creator: string;
-    path: string;
-    data: Uint8Array;
-    codec: string;
-    isJsonSchema: boolean;
-}
-export interface MsgSchemaStoreResponse {
+    key: string;
     cid: string;
+    proof: Uint8Array;
+    did: string;
+}
+export interface MsgAnchorCidWithProof {
+    creator: string;
+    key: string;
+    cid: string;
+    proof: Uint8Array;
+    did: string;
+}
+export interface MsgAnchorCidResponse {
+    challenge: string;
+    reason: string;
+}
+export interface MsgAnchorCidWithProofResponse {
+    ok: boolean;
 }
 export interface MsgUpdateMetadataOwnershipResponse {
     metadataRef: string;
@@ -213,7 +224,7 @@ export interface MsgTransferNFT {
     recipient: string;
 }
 export interface MsgChangeOwnerResponse {
-    didIdentity: string;
+    did: string;
     owner: string;
     previousChange: number;
 }
@@ -226,7 +237,7 @@ export interface MsgGrantDelegate {
     delegateType: string;
     validity: number;
     creator: string;
-    didIdentity: string;
+    did: string;
 }
 export interface MsgGrantDelegateResponse {
     ok: boolean;
@@ -236,13 +247,13 @@ export interface MsgRevokeDelegate {
     delegateType: string;
     validity: number;
     creator: string;
-    didIdentity: string;
+    did: string;
 }
 export interface MsgRevokeDelegateResponse {
     ok: boolean;
 }
 export interface MsgSetAttribute {
-    didIdentity: string;
+    did: string;
     actor: string;
     creator: string;
     name: string[];
@@ -253,7 +264,7 @@ export interface MsgSetAttributeResponse {
     ok: boolean;
 }
 export interface MsgRevokeAttribute {
-    didIdentity: string;
+    did: string;
     actor: string;
     name: Uint8Array;
     value: Uint8Array;
@@ -376,19 +387,33 @@ export declare const MsgUpdateMetadataOwnership: {
     toJSON(message: MsgUpdateMetadataOwnership): unknown;
     fromPartial(object: DeepPartial<MsgUpdateMetadataOwnership>): MsgUpdateMetadataOwnership;
 };
-export declare const MsgSchemaStore: {
-    encode(message: MsgSchemaStore, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgSchemaStore;
-    fromJSON(object: any): MsgSchemaStore;
-    toJSON(message: MsgSchemaStore): unknown;
-    fromPartial(object: DeepPartial<MsgSchemaStore>): MsgSchemaStore;
+export declare const MsgAnchorCid: {
+    encode(message: MsgAnchorCid, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAnchorCid;
+    fromJSON(object: any): MsgAnchorCid;
+    toJSON(message: MsgAnchorCid): unknown;
+    fromPartial(object: DeepPartial<MsgAnchorCid>): MsgAnchorCid;
 };
-export declare const MsgSchemaStoreResponse: {
-    encode(message: MsgSchemaStoreResponse, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): MsgSchemaStoreResponse;
-    fromJSON(object: any): MsgSchemaStoreResponse;
-    toJSON(message: MsgSchemaStoreResponse): unknown;
-    fromPartial(object: DeepPartial<MsgSchemaStoreResponse>): MsgSchemaStoreResponse;
+export declare const MsgAnchorCidWithProof: {
+    encode(message: MsgAnchorCidWithProof, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidWithProof;
+    fromJSON(object: any): MsgAnchorCidWithProof;
+    toJSON(message: MsgAnchorCidWithProof): unknown;
+    fromPartial(object: DeepPartial<MsgAnchorCidWithProof>): MsgAnchorCidWithProof;
+};
+export declare const MsgAnchorCidResponse: {
+    encode(message: MsgAnchorCidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidResponse;
+    fromJSON(object: any): MsgAnchorCidResponse;
+    toJSON(message: MsgAnchorCidResponse): unknown;
+    fromPartial(object: DeepPartial<MsgAnchorCidResponse>): MsgAnchorCidResponse;
+};
+export declare const MsgAnchorCidWithProofResponse: {
+    encode(message: MsgAnchorCidWithProofResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAnchorCidWithProofResponse;
+    fromJSON(object: any): MsgAnchorCidWithProofResponse;
+    toJSON(message: MsgAnchorCidWithProofResponse): unknown;
+    fromPartial(object: DeepPartial<MsgAnchorCidWithProofResponse>): MsgAnchorCidWithProofResponse;
 };
 export declare const MsgUpdateMetadataOwnershipResponse: {
     encode(message: MsgUpdateMetadataOwnershipResponse, writer?: Writer): Writer;
@@ -763,7 +788,8 @@ export declare const AguaclaraPacketData: {
 };
 /** Msg defines the Msg service. */
 export interface Msg {
-    SchemaStore(request: MsgSchemaStore): Promise<MsgSchemaStoreResponse>;
+    AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>;
+    AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>;
     AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>;
     RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>;
     UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>;
@@ -817,7 +843,8 @@ export interface Msg {
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
-    SchemaStore(request: MsgSchemaStore): Promise<MsgSchemaStoreResponse>;
+    AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>;
+    AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>;
     AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>;
     RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>;
     UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>;

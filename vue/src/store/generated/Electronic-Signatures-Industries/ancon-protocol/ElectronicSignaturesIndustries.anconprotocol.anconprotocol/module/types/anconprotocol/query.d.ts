@@ -118,6 +118,16 @@ export interface QueryResourceRequest {
 export interface QueryResourceResponse {
     data: string;
 }
+export interface PostSchemaRequest {
+    did: string;
+    path: string;
+    data: Uint8Array;
+    codec: string;
+    isJsonSchema: boolean;
+}
+export interface PostSchemaResponse {
+    cid: string;
+}
 export declare const QueryDidWebRequest: {
     encode(message: QueryDidWebRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryDidWebRequest;
@@ -321,6 +331,20 @@ export declare const QueryResourceResponse: {
     toJSON(message: QueryResourceResponse): unknown;
     fromPartial(object: DeepPartial<QueryResourceResponse>): QueryResourceResponse;
 };
+export declare const PostSchemaRequest: {
+    encode(message: PostSchemaRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): PostSchemaRequest;
+    fromJSON(object: any): PostSchemaRequest;
+    toJSON(message: PostSchemaRequest): unknown;
+    fromPartial(object: DeepPartial<PostSchemaRequest>): PostSchemaRequest;
+};
+export declare const PostSchemaResponse: {
+    encode(message: PostSchemaResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): PostSchemaResponse;
+    fromJSON(object: any): PostSchemaResponse;
+    toJSON(message: PostSchemaResponse): unknown;
+    fromPartial(object: DeepPartial<PostSchemaResponse>): PostSchemaResponse;
+};
 /** Query defines the gRPC querier service. */
 export interface Query {
     /** ReadRoyaltyInfo */
@@ -349,6 +373,7 @@ export interface Query {
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
     ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
     GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse>;
     ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
 }
 export declare class QueryClientImpl implements Query {
@@ -368,6 +393,7 @@ export declare class QueryClientImpl implements Query {
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
     ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
     GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse>;
     ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
 }
 interface Rpc {

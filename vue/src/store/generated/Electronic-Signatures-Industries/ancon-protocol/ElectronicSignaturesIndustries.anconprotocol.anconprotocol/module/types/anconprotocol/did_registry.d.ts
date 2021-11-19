@@ -1,7 +1,7 @@
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface DIDOwner {
-    didIdentity: string;
+    did: string;
     owner: string;
     cid: string;
     vanityName: string;
@@ -11,17 +11,17 @@ export interface DIDWebRoute {
     route: string;
     cid: string;
     didWebDeactivated: boolean;
-    didIdentity: string;
+    did: string;
 }
 export interface DIDDelegate {
     delegate: string;
     delegateType: string;
     validity: number;
     creator: string;
-    didIdentity: string;
+    did: string;
 }
 export interface DIDAttribute {
-    didIdentity: string;
+    did: string;
     name: string[];
     value: string[];
 }

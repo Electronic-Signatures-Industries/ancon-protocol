@@ -1764,6 +1764,181 @@ export const QueryResourceResponse = {
         return message;
     }
 };
+const basePostSchemaRequest = { did: '', path: '', codec: '', isJsonSchema: false };
+export const PostSchemaRequest = {
+    encode(message, writer = Writer.create()) {
+        if (message.did !== '') {
+            writer.uint32(10).string(message.did);
+        }
+        if (message.path !== '') {
+            writer.uint32(18).string(message.path);
+        }
+        if (message.data.length !== 0) {
+            writer.uint32(26).bytes(message.data);
+        }
+        if (message.codec !== '') {
+            writer.uint32(34).string(message.codec);
+        }
+        if (message.isJsonSchema === true) {
+            writer.uint32(40).bool(message.isJsonSchema);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...basePostSchemaRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.did = reader.string();
+                    break;
+                case 2:
+                    message.path = reader.string();
+                    break;
+                case 3:
+                    message.data = reader.bytes();
+                    break;
+                case 4:
+                    message.codec = reader.string();
+                    break;
+                case 5:
+                    message.isJsonSchema = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...basePostSchemaRequest };
+        if (object.did !== undefined && object.did !== null) {
+            message.did = String(object.did);
+        }
+        else {
+            message.did = '';
+        }
+        if (object.path !== undefined && object.path !== null) {
+            message.path = String(object.path);
+        }
+        else {
+            message.path = '';
+        }
+        if (object.data !== undefined && object.data !== null) {
+            message.data = bytesFromBase64(object.data);
+        }
+        if (object.codec !== undefined && object.codec !== null) {
+            message.codec = String(object.codec);
+        }
+        else {
+            message.codec = '';
+        }
+        if (object.isJsonSchema !== undefined && object.isJsonSchema !== null) {
+            message.isJsonSchema = Boolean(object.isJsonSchema);
+        }
+        else {
+            message.isJsonSchema = false;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.did !== undefined && (obj.did = message.did);
+        message.path !== undefined && (obj.path = message.path);
+        message.data !== undefined && (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()));
+        message.codec !== undefined && (obj.codec = message.codec);
+        message.isJsonSchema !== undefined && (obj.isJsonSchema = message.isJsonSchema);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...basePostSchemaRequest };
+        if (object.did !== undefined && object.did !== null) {
+            message.did = object.did;
+        }
+        else {
+            message.did = '';
+        }
+        if (object.path !== undefined && object.path !== null) {
+            message.path = object.path;
+        }
+        else {
+            message.path = '';
+        }
+        if (object.data !== undefined && object.data !== null) {
+            message.data = object.data;
+        }
+        else {
+            message.data = new Uint8Array();
+        }
+        if (object.codec !== undefined && object.codec !== null) {
+            message.codec = object.codec;
+        }
+        else {
+            message.codec = '';
+        }
+        if (object.isJsonSchema !== undefined && object.isJsonSchema !== null) {
+            message.isJsonSchema = object.isJsonSchema;
+        }
+        else {
+            message.isJsonSchema = false;
+        }
+        return message;
+    }
+};
+const basePostSchemaResponse = { cid: '' };
+export const PostSchemaResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.cid !== '') {
+            writer.uint32(10).string(message.cid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...basePostSchemaResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...basePostSchemaResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.cid !== undefined && (obj.cid = message.cid);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...basePostSchemaResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
+        return message;
+    }
+};
 export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
@@ -1837,6 +2012,11 @@ export class QueryClientImpl {
         const data = QueryGetDidRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetDidKey', data);
         return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+    }
+    WriteSchemaStoreResource(request) {
+        const data = PostSchemaRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'WriteSchemaStoreResource', data);
+        return promise.then((data) => PostSchemaResponse.decode(new Reader(data)));
     }
     ReadSchemaStoreResource(request) {
         const data = QuerySchemaStoreRequest.encode(request).finish();
