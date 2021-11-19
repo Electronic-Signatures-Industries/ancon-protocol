@@ -41,8 +41,8 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 	mux.Handle("GET", ReadGetAttributesQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
 	mux.Handle("GET", ReadDelegateQuery, wrapJsonResult(ctx, mux, client, readDelegate))
 
-	mux.Handle("GET", ReadDidKeyQuery, wrapDagCborResult(ctx, mux, client, readDidKey))
-	mux.Handle("GET", ReadResolveDidWebQuery, wrapDagCborResult(ctx, mux, client, readResolveWeb))
+	mux.Handle("GET", ReadDidKeyQuery, wrapJsonResult(ctx, mux, client, readDidKey))
+	mux.Handle("GET", ReadResolveDidWebQuery, wrapJsonResult(ctx, mux, client, readResolveWeb))
 	mux.Handle("GET", ReadSchemaStoreResourceQuery, wrapSchemaStoreResult(ctx, mux, client, readSchemaStore))
 
 	// Durin that initiates trusted offchain calls
@@ -203,24 +203,6 @@ func readDidKey(ctx context.Context, marshaler runtime.Marshaler, client types.Q
 func readSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QuerySchemaStoreRequest
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["cid"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cid")
-	}
-
-	protoReq.Cid, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "cid", err)
-	}
 
 	msg, err := client.ReadSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err

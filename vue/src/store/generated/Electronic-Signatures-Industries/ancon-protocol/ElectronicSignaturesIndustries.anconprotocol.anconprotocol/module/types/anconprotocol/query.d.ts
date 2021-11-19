@@ -1,6 +1,6 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
-import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
+import { Owner, Collection, Denom, BaseNFT } from '..anconprotocol/nft';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface QueryDidWebRequest {
     name: string;

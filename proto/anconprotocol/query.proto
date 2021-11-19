@@ -19,6 +19,9 @@ service Query {
 	// 	option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
 	// }
 
+	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/user/{name}/did.json";
+	}
 	// ReadRoyaltyInfo
 	rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
 		option (google.api.http).get = "/nft/royalty/{cid}/{price}";
@@ -32,7 +35,7 @@ service Query {
 
 	// Reads metadata proofs
 	rpc ReadMetadataProof(QueryProofMetadataRequest) returns (QueryProofResponse) {
-		option (google.api.http).get = "/proof/{cid}/{path}";
+		option (google.api.http).get = "/metadara/proof/{cid}/{path}";
 	}
 	// this line is used by starport scaffolding # 2
 
@@ -43,11 +46,6 @@ service Query {
 	// Queries a list of Attributes items.
 	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
 		option (google.api.http).get = "/didregistry/{address}/attributes";
-	}
-
-	// Queries a list of resource items.
-	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/resource/{cid}";
 	}
 
 	// Queries a list of delegates items.
@@ -80,9 +78,6 @@ service Query {
 		option (google.api.http).get = "/nft/nfts/{denom_id}/{token_id}";
 	}
 
-	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/user/{name}/did.json";
-	}
 
 	rpc GetDidKey(QueryGetDidRequest) returns (QueryResourceResponse) {
 		option (google.api.http).get = "/didregistry/{hashcid}";
@@ -98,6 +93,12 @@ service Query {
 	rpc ReadSchemaStoreResource(QuerySchemaStoreRequest) returns (QuerySchemaStoreResponse) {
 		option (google.api.http).get = "/schemastore/{cid}/{path}";
 	}
+
+	// Queries a list of resource items.
+	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
+		option (google.api.http).get = "/resource/{cid}";
+	}
+
 }
 
 message QueryDidWebRequest {

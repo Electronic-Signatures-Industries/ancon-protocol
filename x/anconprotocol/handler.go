@@ -17,18 +17,25 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		// this line is used by starport scaffolding # 1
+		case *types.MsgAddDataSource:
+			res, err := msgServer.AddDataSource(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgAddDataUnion:
+			res, err := msgServer.AddDataUnion(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRemoveDataSource:
+			res, err := msgServer.RemoveDataSource(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-		// Not yet
-		// Use case #2 IDCollection + pub/priv spaces
-		// MsgCreateDIDOwner
-		// MsgMintTrustedResourceContent
-		// Metadata = stored in metadata anconprotocol
-		// NFT Token = mint nft cosmos
-		// DID = create DID Owner
-		// case *types.MsgRoyaltyInfo:
-		// 	res, err := msgServer.RoyaltyInfo(sdk.WrapSDKContext(ctx), msg)
-		// 	return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRemoveDataUnion:
+			res, err := msgServer.RemoveDataUnion(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRoyaltyInfo:
+			res, err := msgServer.RoyaltyInfo(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCreateDid:
+			res, err := msgServer.CreateDid(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgMintTrustedContent:
 			res, err := msgServer.MintTrustedContent(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

@@ -1,4 +1,4 @@
-import { Collection } from '../anconprotocol/nft';
+import { Collection } from '..anconprotocol/nft';
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 /** GenesisState defines the anconprotocol module's genesis state. */

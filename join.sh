@@ -42,7 +42,7 @@ cp genesis.json $HOME/.ancon-protocold/config/genesis.json
 
 #~/go/bin/ancon-protocold keys show alice | echo
 #~/go/bin/ancon-protocold keys show bob | echo
-ancon-protocold tx staking create-validator   --amount=1000000000000aphoton   --pubkey=$(ancon-protocold tendermint show-validator)   --moniker="tensta"   --chain-id=evmos_9000-1   --commission-rate="0.10"   --commission-max-rate="0.20"   --commission-max-change-rate="0.01"   --min-self-delegation="1000000"   --gas="auto"   --gas-prices="0.025aphoton"   --from  $KEY       --home .ancon-protocold/ --keyring-backend $KEYRING
+ancon-protocold tx staking create-validator   --amount=1000000000000aphoton   --pubkey=$(ancon-protocold tendermint show-validator)   --moniker="tensta"   --chain-id=evmos_9000-1   --commission-rate="0.10"   --commission-max-rate="0.20"   --commission-max-change-rate="0.01"   --min-self-delegation="1000000"   --gas="auto"   --gas-prices="0.025aphoton"   --from  $KEY       --home ~/.ancon-protocold/ --keyring-backend $KEYRING
 
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)

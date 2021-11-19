@@ -1,5 +1,5 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-import { MsgAddDataSourceResponse, MsgRemoveDataSourceResponse, MsgUpdateDataSourceResponse, MsgAddDataUnionResponse, MsgRemoveDataUnionResponse, MsgUpdateDataUnionResponse, MsgAddDataSource, MsgRemoveDataSource, MsgUpdateDataSource, MsgAddDataUnion, MsgRemoveDataUnion, MsgUpdateDataUnion } from '../anconprotocol/data_union';
+import { MsgAddDataSourceResponse, MsgRemoveDataSourceResponse, MsgUpdateDataSourceResponse, MsgAddDataUnionResponse, MsgRemoveDataUnionResponse, MsgUpdateDataUnionResponse, MsgAddDataSource, MsgRemoveDataSource, MsgUpdateDataSource, MsgAddDataUnion, MsgRemoveDataUnion, MsgUpdateDataUnion } from '..anconprotocol/data_union';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface MsgUpdateMetadataOwnership {
     hash: string;

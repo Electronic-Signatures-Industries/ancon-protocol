@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination'
-import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft'
+import { Owner, Collection, Denom, BaseNFT } from '..anconprotocol/nft'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 

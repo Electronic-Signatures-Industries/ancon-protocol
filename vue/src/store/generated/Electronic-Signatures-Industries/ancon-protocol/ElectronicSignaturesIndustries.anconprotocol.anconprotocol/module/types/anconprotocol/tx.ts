@@ -14,7 +14,7 @@ import {
   MsgAddDataUnion,
   MsgRemoveDataUnion,
   MsgUpdateDataUnion
-} from '../anconprotocol/data_union'
+} from '..anconprotocol/data_union'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 

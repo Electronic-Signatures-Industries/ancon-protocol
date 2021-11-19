@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Collection } from '../anconprotocol/nft';
+import { Collection } from '..anconprotocol/nft';
 import { Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
 const baseGenesisState = {};
