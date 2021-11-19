@@ -94,8 +94,7 @@ func (k *Keeper) DataUnionStore(ctx sdk.Context) dataunion.Keeper {
 	return dataunion.NewKeeper(kvs)
 }
 func (k *Keeper) SchemaStore(ctx sdk.Context) jsonstore.Keeper {
-	kvs := ctx.KVStore(k.storeKey)
-	return jsonstore.NewKeeper(kvs)
+	return jsonstore.NewKeeper()
 }
 
 // Logger returns a module-specific logger
@@ -119,25 +118,22 @@ func (k *Keeper) EnsureModuleAccountPermissions(ctx sdk.Context) error {
 func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (string, error) {
 
 	du := &types.DataUnion{
-		Name:        msg.DataUnion.Name,
-		DidIdentity: msg.DataUnion.DidIdentity,
-		Active:      msg.DataUnion.Active,
-		Creator:     msg.DataUnion.Creator,
+		Name:    msg.DataUnion.Name,
+		Did:     msg.DataUnion.Did,
+		Active:  msg.DataUnion.Active,
+		Creator: msg.DataUnion.Creator,
 	}
 	n := bindnode.Wrap(du, nil)
 
 	dus := k.DataUnionStore(ctx)
 
-	link, err := dus.LinkSystem.Store(
+	link := dus.LinkSystem.MustStore(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath("dataunion/"),
 		},
 		GetLinkPrototype(),
 		n,
 	)
-	if err != nil {
-		return "", err
-	}
 	return link.String(), nil
 }
 
@@ -189,16 +185,12 @@ func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamode
 
 	ss := k.SchemaStore(ctx)
 
-	link, err := ss.Store(
+	link := ss.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
 		node,
 	)
-
-	if err != nil {
-		return nil, err
-	}
 
 	return link, nil
 }
@@ -233,16 +225,12 @@ func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamode
 	}
 
 	ss := k.SchemaStore(ctx)
-	link, err := ss.Store(
+	link := ss.Store(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(path),
 		},
 		node,
 	)
-
-	if err != nil {
-		return nil, err
-	}
 
 	return link, nil
 }
@@ -272,18 +260,18 @@ func (k *Keeper) ReadJSON(ctx sdk.Context, path string, link datamodel.Link) (st
 func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (string, error) {
 
 	du := &types.DataSource{
-		ParentCid:        msg.DataSource.ParentCid,
-		DidIdentityOwner: msg.DataSource.DidIdentityOwner,
-		Anchors:          msg.DataSource.Anchors,
-		Name:             msg.DataSource.Name,
-		Description:      msg.DataSource.Description,
-		Creator:          msg.Creator,
+		ParentCid:   msg.DataSource.ParentCid,
+		DidOwner:    msg.DataSource.DidOwner,
+		Anchors:     msg.DataSource.Anchors,
+		Name:        msg.DataSource.Name,
+		Description: msg.DataSource.Description,
+		Creator:     msg.Creator,
 	}
 	n := bindnode.Wrap(du, nil)
 	dus := k.DataUnionStore(ctx)
 
 	// parent, _ := ParseCidLink(msg.DataSource.ParentCid)
-	link, err := dus.LinkSystem.Store(
+	link := dus.LinkSystem.MustStore(
 		ipld.LinkContext{
 			LinkPath: datamodel.ParsePath(
 				strings.Join([]string{"dataunion", msg.DataSource.ParentCid, "datasource"}, "/"),
@@ -292,10 +280,6 @@ func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (
 		GetLinkPrototype(),
 		n,
 	)
-	if err != nil {
-		return "", err
-	}
-
 	// id, _ := cid.Decode(link.String())
 	return link.String(), nil
 }
@@ -308,8 +292,8 @@ func (k *Keeper) ApplyOwner(ctx sdk.Context, creator, newOwner string) (*types.D
 		did := k.GetDIDOwner(ctx, creator)
 		//verify that the creator is owner of that account
 		owner := types.DIDOwner{
-			DidIdentity: did.DidIdentity,
-			Owner:       newOwner,
+			Did:   did.Did,
+			Owner: newOwner,
 		}
 
 		k.SetDIDOwner(ctx, &owner)
@@ -343,7 +327,7 @@ func (k *Keeper) ApplyDelegate(ctx sdk.Context, msg *types.MsgGrantDelegate) err
 		DelegateType: msg.DelegateType,
 		Validity:     msg.Validity + uint64(blockTime.Unix()),
 		Creator:      msg.Creator,
-		DidIdentity:  msg.DidIdentity,
+		Did:          msg.Did,
 	}
 	k.SetDelegate(ctx, grantDelegate)
 
@@ -358,23 +342,23 @@ func (k *Keeper) SetDIDOwner(ctx sdk.Context, o *types.DIDOwner) {
 func (k *Keeper) SetAttribute(ctx sdk.Context, msg *types.DIDAttribute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
 	res := k.cdc.MustMarshal(msg)
-	store.Set([]byte(msg.DidIdentity), res)
+	store.Set([]byte(msg.Did), res)
 }
 
 func (k *Keeper) SetDelegate(ctx sdk.Context, msg *types.DIDDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
 	res := k.cdc.MustMarshal(msg)
-	store.Set([]byte(msg.DidIdentity), res)
+	store.Set([]byte(msg.Did), res)
 }
 
 func (k *Keeper) RemoveAttribute(ctx sdk.Context, msg *types.MsgRevokeAttribute) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
-	store.Delete([]byte(msg.DidIdentity))
+	store.Delete([]byte(msg.Did))
 }
 
 func (k *Keeper) RemoveDelegate(ctx sdk.Context, msg *types.MsgRevokeDelegate) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
-	store.Delete([]byte(msg.DidIdentity))
+	store.Delete([]byte(msg.Did))
 }
 func (k *Keeper) GetAttribute(ctx sdk.Context, didIdentity string) *types.DIDAttribute {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DelegateKey))
@@ -470,9 +454,9 @@ func (k *Keeper) toIpldProofList(proofs []did.Proof) func(fluent.ListAssembler) 
 
 func (k *Keeper) ApplyAttribute(ctx sdk.Context, msg *types.MsgSetAttribute) error {
 	attr := types.DIDAttribute{
-		DidIdentity: msg.DidIdentity,
-		Name:        msg.Name,
-		Value:       msg.Value,
+		Did:   msg.Did,
+		Name:  msg.Name,
+		Value: msg.Value,
 	}
 
 	k.SetAttribute(ctx, &attr)

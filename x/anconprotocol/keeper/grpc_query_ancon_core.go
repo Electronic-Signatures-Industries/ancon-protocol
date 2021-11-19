@@ -23,10 +23,10 @@ import (
 )
 
 var (
-	ReadMetadataProofQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "proof", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
-	ReadRoyaltyInfoQuery   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "royalty", "cid", "price"}, "", runtime.AssumeColonVerbOpt(true)))
-	ReadWithPathQuery      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
-	ReadQuery              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"ancon", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadMetadataProofQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"proof", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadRoyaltyInfoQuery   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"nft", "royalty", "cid", "price"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadWithPathQuery      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"metadata", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadQuery              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"resource", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 // func (k Keeper) ReadRoyaltyInfo(goCtx context.Context, req *types.QueryReadRoyaltyInfo) (*types.QueryReadRoyaltyInfoResponse, error) {

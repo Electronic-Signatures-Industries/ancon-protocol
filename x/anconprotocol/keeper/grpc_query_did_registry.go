@@ -12,6 +12,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -19,11 +20,13 @@ import (
 )
 
 var (
-	ReadSchemaStoreResourceQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "schemastore", "cid"}, "", runtime.AssumeColonVerbOpt(true)))
+	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"schemastore"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadSchemaStoreResourceQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"schemastore", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	ReadDidKeyQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"didregistry", "hashcid"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadResolveDidWebQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"user", "name", "did.json"}, "", runtime.AssumeColonVerbOpt(true)))
-
-	ReadDidKeyQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "didregistry", "name"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadIdentifyOwnerQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"ancon", "didregistry", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
@@ -42,9 +45,31 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 	mux.Handle("GET", ReadResolveDidWebQuery, wrapDagCborResult(ctx, mux, client, readResolveWeb))
 	mux.Handle("GET", ReadSchemaStoreResourceQuery, wrapSchemaStoreResult(ctx, mux, client, readSchemaStore))
 
+	// Durin that initiates trusted offchain calls
+	mux.Handle("POST", WriteSchemaStoreResource, wrapPostResult(ctx, mux, client, writeSchemaStore))
+	// mux.Handle("POST", "/files", handleBinaryFileUpload)
 	return nil
 }
 
+// func handleBinaryFileUpload(w http.ResponseWriter, r *http.Request, params map[string]string) {
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		http.Error(w, fmt.Sprintf("failed to parse form: %s", err.Error()), http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	f, header, err := r.FormFile("attachment")
+// 	if err != nil {
+// 		http.Error(w, fmt.Sprintf("failed to get file 'attachment': %s", err.Error()), http.StatusBadRequest)
+// 		return
+// 	}
+// 	defer f.Close()
+
+// 	//
+// 	// Now do something with the io.Reader in `f`, i.e. read it into a buffer or stream it to a gRPC client side stream.
+// 	// Also `header` will contain the filename, size etc of the original file.
+// 	//
+// }
 func readIdentifyOwner(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QueryIdentifyOwnerRequest
 	var metadata runtime.ServerMetadata
@@ -197,16 +222,6 @@ func readSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client ty
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "cid", err)
 	}
 
-	ok = req.URL.Query().Has("codec")
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "codec")
-	}
-
-	ok = req.URL.Query().Has("path")
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "path")
-	}
-
 	msg, err := client.ReadSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -237,6 +252,56 @@ func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QueryS
 	}
 	return &types.QuerySchemaStoreResponse{
 		Data: bz,
+	}, nil
+}
+
+func writeSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq types.PostSchemaRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.WriteSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func (k Keeper) WriteSchemaStoreResource(goCtx context.Context, msg *types.PostSchemaRequest) (*types.PostSchemaResponse, error) {
+	if msg == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	// validate
+	if len(msg.Codec) < 1 {
+		return nil, status.Error(codes.InvalidArgument, "missing codec")
+	}
+	if len(msg.Data) < 1 {
+		return nil, status.Error(codes.InvalidArgument, "missing data")
+	}
+	if len(msg.Did) < 1 {
+		return nil, status.Error(codes.InvalidArgument, "missing did")
+	}
+	if len(msg.Path) < 1 {
+		return nil, status.Error(codes.InvalidArgument, "missing path")
+	}
+	if len(msg.Codec) < 1 {
+		return nil, status.Error(codes.InvalidArgument, "missing codec")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	var err error
+	var lnk datamodel.Link
+	switch msg.Codec {
+	case "dag-cbor":
+		lnk, err = k.AddCBOR(ctx, msg.Path, (msg.Data))
+	default:
+		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.PostSchemaResponse{
+		Cid: lnk.String(),
 	}, nil
 }
 

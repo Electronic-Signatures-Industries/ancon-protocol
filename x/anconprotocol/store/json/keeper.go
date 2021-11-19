@@ -1,7 +1,9 @@
 package json
 
 import (
-	"github.com/cosmos/cosmos-sdk/store"
+	"os"
+	"path/filepath"
+
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
@@ -9,6 +11,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/storage/fsstore"
 	"github.com/multiformats/go-multihash"
 )
 
@@ -17,15 +20,20 @@ const (
 )
 
 type Keeper struct {
-	DataStore  JSONStore
+	DataStore  fsstore.Store
 	LinkSystem linking.LinkSystem
 }
 
-func NewKeeper(
-	kvstore store.KVStore,
-) Keeper {
+func NewKeeper() Keeper {
 
-	store := NewJSONStore(kvstore)
+	userHomeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
+	DefaultNodeHome := filepath.Join(userHomeDir, ".ancon")
+	store := fsstore.Store{}
+	store.InitDefaults(DefaultNodeHome)
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.SetWriteStorage(&store)
 	lsys.SetReadStorage(&store)
@@ -101,13 +109,8 @@ func GetRawLinkPrototype() ipld.LinkPrototype {
 }
 
 // Store node as  dag-json
-func (k *Keeper) Store(linkCtx ipld.LinkContext, node datamodel.Node) (datamodel.Link, error) {
-	link, err := k.LinkSystem.Store(linkCtx, GetDagJSONLinkPrototype(), node)
-	if err != nil {
-		return nil, err
-	}
-
-	return link, nil
+func (k *Keeper) Store(linkCtx ipld.LinkContext, node datamodel.Node) datamodel.Link {
+	return k.LinkSystem.MustStore(linkCtx, GetDagJSONLinkPrototype(), node)
 }
 
 // Load node from  dag-json
@@ -122,30 +125,16 @@ func (k *Keeper) Load(linkCtx ipld.LinkContext, link datamodel.Link) (datamodel.
 }
 
 // Store node as  dag-cbor
-func (k *Keeper) StoreDagCBOR(linkCtx ipld.LinkContext, node datamodel.Node) (datamodel.Link, error) {
-	link, err := k.LinkSystem.Store(linkCtx, GetDagCBORLinkPrototype(), node)
-	if err != nil {
-		return nil, err
-	}
-
-	return link, nil
+func (k *Keeper) StoreDagCBOR(linkCtx ipld.LinkContext, node datamodel.Node) datamodel.Link {
+	return k.LinkSystem.MustStore(linkCtx, GetDagCBORLinkPrototype(), node)
 }
 
 // Store node as  raw
-func (k *Keeper) StoreRaw(linkCtx ipld.LinkContext, node datamodel.Node) (datamodel.Link, error) {
-	link, err := k.LinkSystem.Store(linkCtx, GetRawLinkPrototype(), node)
-	if err != nil {
-		return nil, err
-	}
-
-	return link, nil
+func (k *Keeper) StoreRaw(linkCtx ipld.LinkContext, node datamodel.Node) datamodel.Link {
+	return k.LinkSystem.MustStore(linkCtx, GetRawLinkPrototype(), node)
 }
 
 // Store node as  dag-eth
-func (k *Keeper) StoreDagEth(linkCtx ipld.LinkContext, node datamodel.Node, codecFormat string) (datamodel.Link, error) {
-	link, err := k.LinkSystem.Store(linkCtx, GetDagEthereumLinkPrototype(codecFormat), node)
-	if err != nil {
-		return nil, err
-	}
-	return link, nil
+func (k *Keeper) StoreDagEth(linkCtx ipld.LinkContext, node datamodel.Node, codecFormat string) datamodel.Link {
+	return k.LinkSystem.MustStore(linkCtx, GetDagEthereumLinkPrototype(codecFormat), node)
 }

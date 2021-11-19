@@ -136,10 +136,10 @@ func Test_Add_Data_Union(t *testing.T) {
 	payload := types.MsgAddDataUnion{
 		Creator: "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
 		DataUnion: &types.DataUnion{
-			Name:        "Acme SA",
-			DidIdentity: "did:web:acme-sa",
-			Active:      true,
-			Creator:     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+			Name:    "Acme SA",
+			Did:     "did:web:acme-sa",
+			Active:  true,
+			Creator: "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
 		},
 	}
 	res, err := keeper.ApplyDataUnion(ctx, &payload)
@@ -206,12 +206,12 @@ func Test_DID_Delegate(t *testing.T) {
 		DelegateType: "web",
 		Validity:     100000000,
 		Creator:      payload.Creator,
-		DidIdentity:  "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl",
+		Did:          "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl",
 	})
 
 	res2 := keeper.GetDelegate(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
 
-	require.NotEqual(t, res.DidIdentity, res2.DidIdentity)
+	require.NotEqual(t, res.Did, res2.Did)
 }
 
 func Test_DID_ChangeOwner(t *testing.T) {
@@ -244,7 +244,7 @@ func Test_DID_ChangeOwner(t *testing.T) {
 
 	res2 := keeper.GetDIDOwner(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
 
-	require.Equal(t, res.DidIdentity, res2.DidIdentity)
+	require.Equal(t, res.Did, res2.Did)
 
 }
 func Test_DID_ChangeOwner_NotFound(t *testing.T) {
@@ -277,6 +277,6 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 
 	res2 := keeper.GetDIDOwner(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
 
-	require.NotEqual(t, res.DidIdentity, res2.DidIdentity)
+	require.NotEqual(t, res.Did, res2.Did)
 
 }

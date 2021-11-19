@@ -10,7 +10,7 @@ import (
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
 )
 
-func (k msgServer) SchemaStore(goCtx context.Context, msg *types.MsgSchemaStore) (*types.MsgSchemaStoreResponse, error) {
+func (k msgServer) AnchorCid(goCtx context.Context, msg *types.MsgAnchorCid) (*types.MsgAnchorCidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	var err error
 
@@ -30,7 +30,7 @@ func (k msgServer) SchemaStore(goCtx context.Context, msg *types.MsgSchemaStore)
 		return nil, err
 	}
 
-	return &types.MsgSchemaStoreResponse{
+	return &types.MsgAnchorCidResponse{
 		Cid: lnk.String(),
 	}, nil
 }

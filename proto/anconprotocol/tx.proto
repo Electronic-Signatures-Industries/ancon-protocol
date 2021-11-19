@@ -13,7 +13,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Msg defines the Msg service.
 service Msg {
-  rpc SchemaStore(MsgSchemaStore) returns  (MsgSchemaStoreResponse);
+  rpc AnchorCid(MsgAnchorCid) returns  (MsgAnchorCidResponse);
   
   rpc AddDataSource(MsgAddDataSource) returns  (MsgAddDataSourceResponse);
   rpc RemoveDataSource(MsgRemoveDataSource) returns  (MsgRemoveDataSourceResponse);
@@ -77,7 +77,7 @@ message MsgUpdateMetadataOwnership {
 
 }
 
-message MsgSchemaStore{
+message MsgAnchorCid{
   string creator = 1;
   string path = 2;
   bytes data = 3;
@@ -86,7 +86,7 @@ message MsgSchemaStore{
 }
 
 
-message MsgSchemaStoreResponse {
+message MsgAnchorCidResponse {
   string cid = 1;
 }
 
@@ -313,7 +313,7 @@ message MsgTransferNFT {
 }
 message MsgChangeOwnerResponse {
   option (gogoproto.goproto_getters) = false;
-  string did_identity = 1;
+  string did = 1;
   string owner = 2;
   uint64 previousChange = 3;
 }
@@ -333,7 +333,7 @@ message MsgGrantDelegate {
   string delegateType = 2;
   uint64 validity = 3;
   string creator = 4;
-  string did_identity = 5;
+  string did = 5;
 }
 message MsgGrantDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -346,7 +346,7 @@ message MsgRevokeDelegate {
   string delegateType = 2;
   uint64 validity = 3;
   string creator = 4;
-  string did_identity = 5;
+  string did = 5;
 }
 message MsgRevokeDelegateResponse {
   option (gogoproto.goproto_getters) = false;
@@ -355,7 +355,7 @@ message MsgRevokeDelegateResponse {
 }
 message MsgSetAttribute {
   option (gogoproto.goproto_getters) = false;
-  string did_identity = 1;
+  string did = 1;
   string actor = 2;
   string creator = 3;
   repeated string name = 4;
@@ -374,7 +374,7 @@ message MsgSetAttributeResponse {
 
 message MsgRevokeAttribute {
   option (gogoproto.goproto_getters) = false;
-  string did_identity = 1;
+  string did = 1;
   string actor = 2;
   bytes name = 3;
   bytes value = 4;

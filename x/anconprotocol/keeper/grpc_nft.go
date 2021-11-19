@@ -16,15 +16,15 @@ import (
 )
 
 var (
-	ReadOwnerQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "nfts"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadOwnerQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"nft", "nfts"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	ReadCollectionQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "collections", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadCollectionQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"nft", "collections", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	ReadDenomQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"ancon", "nft", "denoms", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadDenomQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"nft", "denoms", "denom_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	ReadDenomsQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ancon", "nft", "denoms"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadDenomsQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"nft", "denoms"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	ReadGetNftQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"ancon", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	ReadGetNftQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 func RegisterQueryNFTHandler(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, abci client.ABCIClient) error {

@@ -10,7 +10,7 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 // Data Source is a container of links which contains the data source to be offer
 message DataSource {
   string parent_cid = 1;
-  string did_identity_owner = 2;
+  string did_owner = 2;
   repeated string anchors = 3;
   string name = 4;
   string description = 5;
@@ -24,7 +24,7 @@ message DataUnion {
   // name
   string name = 1;
   // did identity
-  string did_identity = 2;
+  string did = 2;
   // is active
   bool  active = 3[ (gogoproto.nullable) = true];
 
@@ -33,7 +33,7 @@ message DataUnion {
 
 // Anchor connects a CID to an onchain record, in this a data source
 message Anchor {
-  string did_identity_owner = 1;
+  string did_owner = 1;
   string link = 2;
   string parent_cid = 3;
   string creator = 4;
@@ -41,7 +41,7 @@ message Anchor {
 
 // Pricing contains prices for fixed prices data sources
 message Pricing {
-    string did_identity_owner = 1;
+    string did_owner = 1;
     uint64 price = 2;
     uint64 data_source_ref = 3;
     string creator = 4;

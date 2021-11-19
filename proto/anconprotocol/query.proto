@@ -21,63 +21,63 @@ service Query {
 
 	// ReadRoyaltyInfo
 	rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
-		option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
+		option (google.api.http).get = "/nft/royalty/{cid}/{price}";
 	}
 
 
 	// Queries a list of resource items.
 	rpc ReadWithPath(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/{cid}/{path}";
+		option (google.api.http).get = "/metadata/{cid}/{path}";
 	}
 
 	// Reads metadata proofs
 	rpc ReadMetadataProof(QueryProofMetadataRequest) returns (QueryProofResponse) {
-		option (google.api.http).get = "/ancon/proof/{cid}/{path}";
+		option (google.api.http).get = "/proof/{cid}/{path}";
 	}
 	// this line is used by starport scaffolding # 2
 
 	// Queries a list of owners items.
 	rpc IdentifyOwner(QueryIdentifyOwnerRequest) returns (QueryIdentifyOwnerResponse) {
-		option (google.api.http).get = "/ancon/didregistry/{address}";
+		option (google.api.http).get = "/didregistry/{address}";
 	}
 	// Queries a list of Attributes items.
 	rpc GetAttributes(QueryGetAttributesRequest) returns (QueryGetAttributesResponse) {
-		option (google.api.http).get = "/ancon/didregistry/{address}/attributes";
+		option (google.api.http).get = "/didregistry/{address}/attributes";
 	}
 
 	// Queries a list of resource items.
 	rpc Resource(QueryResourceRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/resource/{cid}";
+		option (google.api.http).get = "/resource/{cid}";
 	}
 
 	// Queries a list of delegates items.
 	rpc ReadDelegate(QueryGetDelegateRequest) returns (QueryGetDelegateResponse) {
-		option (google.api.http).get = "/ancon/didregistry/delegates/{id}";
+		option (google.api.http).get = "/didregistry/delegates/{id}";
 	}
 
 	// Owner queries the NFTs of the specified owner
 	rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
-		option (google.api.http).get = "/ancon/nft/nfts";
+		option (google.api.http).get = "/nft/nfts";
 	}
 
 	// Collection queries the NFTs of the specified denom
 	rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
-		option (google.api.http).get = "/ancon/nft/collections/{denom_id}";
+		option (google.api.http).get = "/nft/collections/{denom_id}";
 	}
 
 	// Denom queries the definition of a given denom
 	rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
-		option (google.api.http).get = "/ancon/nft/denoms/{denom_id}";
+		option (google.api.http).get = "/nft/denoms/{denom_id}";
 	}
 
 	// Denoms queries all the denoms
 	rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
-		option (google.api.http).get = "/ancon/nft/denoms";
+		option (google.api.http).get = "/nft/denoms";
 	}
 
 	// NFT queries the NFT for the given denom and token ID
 	rpc GetNft(QueryNFTRequest) returns (QueryNFTResponse) {
-		option (google.api.http).get = "/ancon/nft/nfts/{denom_id}/{token_id}";
+		option (google.api.http).get = "/nft/nfts/{denom_id}/{token_id}";
 	}
 
 	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryResourceResponse) {
@@ -85,12 +85,18 @@ service Query {
 	}
 
 	rpc GetDidKey(QueryGetDidRequest) returns (QueryResourceResponse) {
-		option (google.api.http).get = "/ancon/didregistry/{hashcid}";
+		option (google.api.http).get = "/didregistry/{hashcid}";
 	}
 
+	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (PostSchemaResponse) {
+		option (google.api.http) ={
+			post: "/schemastore",
+			body: "*"
+		};
+	}
 
 	rpc ReadSchemaStoreResource(QuerySchemaStoreRequest) returns (QuerySchemaStoreResponse) {
-		option (google.api.http).get = "/ancon/schemastore/{cid}";
+		option (google.api.http).get = "/schemastore/{cid}/{path}";
 	}
 }
 
@@ -244,3 +250,14 @@ message QueryResourceResponse {
 }
 
 
+message PostSchemaRequest {
+	string did = 1;
+	string path = 2;
+	bytes data = 3;
+	string codec = 4;
+	bool isJsonSchema = 5;	
+}
+
+message PostSchemaResponse{
+	string cid = 1;
+}

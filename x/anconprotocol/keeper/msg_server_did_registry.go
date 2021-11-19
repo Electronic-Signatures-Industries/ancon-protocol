@@ -29,8 +29,8 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 	})
 
 	return &types.MsgChangeOwnerResponse{
-		DidIdentity: owner.DidIdentity,
-		Owner:       msg.NewOwner,
+		Did:   owner.Did,
+		Owner: msg.NewOwner,
 	}, nil
 }
 
@@ -66,7 +66,7 @@ func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDeleg
 		sdk.NewEvent(
 			types.SetAttributeEvent,
 			sdk.NewAttribute("Creator", msg.Creator),
-			sdk.NewAttribute("DidIdentity", msg.DidIdentity),
+			sdk.NewAttribute("Did", msg.Did),
 			sdk.NewAttribute("Delegate", string(msg.Delegate)),
 			sdk.NewAttribute("DelegateType", string(msg.DelegateType)),
 			sdk.NewAttribute("ValidTo", fmt.Sprint(until)),
@@ -154,7 +154,7 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 
 	return &types.MsgCreateDidResponse{
 		Cid: didOwner.Cid,
-		Did: didOwner.DidIdentity,
+		Did: didOwner.Did,
 		Url: string(append([]byte(host), addr...)),
 	}, err
 }

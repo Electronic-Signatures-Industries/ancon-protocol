@@ -175,7 +175,7 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 		k.SetDidWebRoute(ctx, didWebRoute)
 	}
 	didOwner.Cid = cid
-	didOwner.DidIdentity = didDoc.ID
+	didOwner.Did = didDoc.ID
 	k.SetDIDOwner(ctx, &didOwner)
 	return &didOwner, nil
 }
