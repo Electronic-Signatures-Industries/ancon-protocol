@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -32,20 +34,20 @@ type Delegate struct {
 }
 
 // BuildDidWeb ....
-func (k Keeper) BuildDidWeb(ctx sdk.Context, creator, vanityName string, pubkey []byte) (*did.Doc, error) {
+func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (*did.Doc, error) {
 	// public
 	encoded := base58.Encode(pubkey)
 	ti := time.Now()
 	//Dev: chain id is replaced on the query by http host
 	// did web
-	base := append([]byte("did:web:"), []byte(vanityName)...)
+	base := append([]byte("did:web:ancon.did.pa:user:"), []byte(vanityName)...)
 	// did web # id
-	id := append(base, []byte("#")...)
-	id = append(id, encoded...)
+	//	id := append(base, []byte("#")...)
+	// id = append(id, encoded...)
 
 	//Authentication method 2018
 	didWebVer := did.NewVerificationMethodFromBytes(
-		string(id),
+		string(base),
 		"Secp256k1VerificationKey2018",
 		string(base),
 		[]byte(encoded),
@@ -72,12 +74,12 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, creator, vanityName string, pubkey 
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
 	)
-	doc.ID = string(id)
+	doc.ID = string(base)
 	return doc, nil
 }
 
 // BuildDidKey ....
-func (k Keeper) BuildDidKey(ctx sdk.Context, creator string) (*did.Doc, error) {
+func (k Keeper) BuildDidKey(ctx sdk.Context) (*did.Doc, error) {
 
 	acc := cosmosed25519.GenPrivKey()
 	encoded := base58.Encode(acc.PubKey().Bytes())
@@ -140,13 +142,13 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 			return nil, err
 		}
 
-		didDoc, err = k.BuildDidWeb(ctx, msg.Creator, msg.VanityName, key)
+		didDoc, err = k.BuildDidWeb(ctx, msg.VanityName, key)
 		if err != nil {
 			return nil, err
 		}
 
 	} else if msg.DidType == "key" {
-		didDoc, err = k.BuildDidKey(ctx, msg.Creator)
+		didDoc, err = k.BuildDidKey(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -157,22 +159,6 @@ func (k *Keeper) AddDid(ctx sdk.Context, msg *types.MsgCreateDid) (*types.DIDOwn
 	cid, err := k.SetDid(ctx, didDoc)
 	if err != nil {
 		return nil, err
-	}
-	if msg.DidType == "web" {
-		didWebRoute := &types.DIDWebRoute{
-			Name:  msg.VanityName,
-			Route: "optional",
-			Cid:   cid,
-		}
-		k.SetDidWebRoute(ctx, didWebRoute)
-	} else {
-
-		didWebRoute := &types.DIDWebRoute{
-			Name:  didDoc.ID,
-			Route: "optional",
-			Cid:   cid,
-		}
-		k.SetDidWebRoute(ctx, didWebRoute)
 	}
 	didOwner.Cid = cid
 	didOwner.Did = didDoc.ID
@@ -196,7 +182,11 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 			//Sample: bafyreie5m2h2ewlqllhps5mg6ekb62eft67gvyieqon6643obz5m7zdhcy
 			//id := append([]byte(lnk.String()), path...)
 			store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidIPLDStoreKey))
-			store.Set([]byte(msg.ID), buf.Bytes())
+			store.Set([]byte(lnk.String()), buf.Bytes())
+			store2 := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidWebStoreKey))
+			store2.Set([]byte(msg.ID), []byte(
+				lnk.String(),
+			))
 			return nil
 		}, nil
 	}
@@ -252,20 +242,6 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 	return link.String(), nil
 }
 
-func (k Keeper) GetDidRoute(ctx sdk.Context, name string) (datamodel.Node, error) {
-	storeRoute := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.DidWebStoreKey))
-	has := storeRoute.Has([]byte(name))
-
-	if !has {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
-	var didRoute types.DIDWebRoute
-	bz := storeRoute.Get([]byte(name))
-	k.cdc.MustUnmarshal(bz, &didRoute)
-
-	return k.GetDid(ctx, didRoute.Cid)
-
-}
 func (k Keeper) GetDid(ctx sdk.Context, hash string) (datamodel.Node, error) {
 
 	lsys := k.GetLinkSystem()
@@ -299,4 +275,41 @@ func (k Keeper) GetDid(ctx sdk.Context, hash string) (datamodel.Node, error) {
 	)
 
 	return n, err
+}
+
+const (
+	defaultPath  = "/.well-known/did.json"
+	documentPath = "/did.json"
+)
+
+func (k Keeper) ParseDIDWeb(id string, useHTTP bool) (string, string, error) {
+	var address, host string
+
+	parsedDID, err := did.Parse(id)
+	if err != nil {
+		return address, host, fmt.Errorf("invalid did, does not conform to generic did standard --> %w", err)
+	}
+
+	pathComponents := strings.Split(parsedDID.MethodSpecificID, ":")
+
+	pathComponents[0], err = url.QueryUnescape(pathComponents[0])
+	if err != nil {
+		return address, host, fmt.Errorf("error parsing did:web did")
+	}
+
+	host = strings.Split(pathComponents[0], ":")[0]
+
+	protocol := "https://"
+	if useHTTP {
+		protocol = "http://"
+	}
+
+	switch len(pathComponents) {
+	case 1:
+		address = protocol + pathComponents[0] + defaultPath
+	default:
+		address = protocol + strings.Join(pathComponents, "/") + documentPath
+	}
+
+	return address, host, nil
 }

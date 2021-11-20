@@ -359,7 +359,7 @@ func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebReque
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	node, err := k.GetDidRoute(ctx, req.Name)
+	node, err := k.GetDidWebRoute(ctx, req.Name)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "Missing did route")
 	}

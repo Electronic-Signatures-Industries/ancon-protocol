@@ -3,12 +3,10 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 )
 
 func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner) (*types.MsgChangeOwnerResponse, error) {
@@ -141,21 +139,26 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 		return nil, err
 	}
 
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
-	_ = ctx
-
-	//creator := msg.Creator
-	addr, host, err := parseDIDWeb(didOwner.Owner, false)
-
-	// Did := res.addDid
-
+	var addr string
+	if msg.DidType == "web" {
+		addr, _, err =
+			k.ParseDIDWeb(didOwner.Did, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.SetAttributeEvent,
+			sdk.NewAttribute("Identity", msg.Creator),
+			sdk.NewAttribute("Did", string(didOwner.Did)),
+			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+		),
+	})
 	return &types.MsgCreateDidResponse{
 		Cid: didOwner.Cid,
 		Did: didOwner.Did,
-		Url: string(append([]byte(host), addr...)),
+		Url: addr,
 	}, err
 }
 
@@ -182,7 +185,7 @@ func (k msgServer) RevokeDid(goCtx context.Context, msg *types.MsgRevokeDid) (*t
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"revoke_did",
 			sdk.NewAttribute("Identity", msg.Creator),
 			sdk.NewAttribute("Did", string(msg.Did)),
 			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
@@ -211,40 +214,3 @@ func (k msgServer) RevokeDid(goCtx context.Context, msg *types.MsgRevokeDid) (*t
 //      "did:web:example.com#owner"
 //   ]
 // }
-
-const (
-	defaultPath  = "/.well-known/did.json"
-	documentPath = "/did.json"
-)
-
-func parseDIDWeb(id string, useHTTP bool) (string, string, error) {
-	var address, host string
-
-	parsedDID, err := did.Parse(id)
-	if err != nil {
-		return address, host, fmt.Errorf("invalid did, does not conform to generic did standard --> %w", err)
-	}
-
-	pathComponents := strings.Split(parsedDID.MethodSpecificID, ":")
-
-	pathComponents[0], err = url.QueryUnescape(pathComponents[0])
-	if err != nil {
-		return address, host, fmt.Errorf("error parsing did:web did")
-	}
-
-	host = strings.Split(pathComponents[0], ":")[0]
-
-	protocol := "https://"
-	if useHTTP {
-		protocol = "http://"
-	}
-
-	switch len(pathComponents) {
-	case 1:
-		address = protocol + pathComponents[0] + defaultPath
-	default:
-		address = protocol + strings.Join(pathComponents, "/") + documentPath
-	}
-
-	return address, host, nil
-}

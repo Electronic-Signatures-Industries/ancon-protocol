@@ -79,7 +79,7 @@ func Test_DID_Web(t *testing.T) {
 
 	payload := types.MsgCreateDid{
 		Creator:        "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
-		VanityName:     "wonderland",
+		VanityName:     "alice",
 		DidType:        "web",
 		PublicKeyBytes: ecKeyBytes,
 	}
@@ -88,12 +88,11 @@ func Test_DID_Web(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
-	require.Equal(t, route, doc)
+
+	a, c, e := keeper.ParseDIDWeb(res.Did, false)
+	require.Equal(t, a, c, e, doc)
+	//	require.Equal(t, route, doc)
 }
 func Test_DID_Key(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
@@ -113,11 +112,8 @@ func Test_DID_Key(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidWebRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 }
 
@@ -139,11 +135,8 @@ func Test_DID_Delegate(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidWebRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
@@ -177,11 +170,8 @@ func Test_DID_ChangeOwner(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidWebRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -212,11 +202,8 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 	if err != nil {
 		require.NoError(t, err)
 	}
-	x := &types.QueryGetDidRequest{
-		Hashcid: "wonderland",
-	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.GetDidRoute(ctx, x.Hashcid)
+	route, _ := keeper.GetDidWebRoute(ctx, payload.VanityName)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,

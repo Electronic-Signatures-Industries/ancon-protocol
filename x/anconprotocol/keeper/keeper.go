@@ -377,21 +377,7 @@ func (k *Keeper) RemoveDid(ctx sdk.Context, id string) {
 	attrsstore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
 	attrsstore.Delete([]byte(id))
 }
-
-func (k *Keeper) GetDidWebRoute(ctx sdk.Context, vanityName string) types.DIDWebRoute {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	var found types.DIDWebRoute
-	id := []byte(vanityName)
-	k.cdc.Unmarshal(store.Get(id), &found)
-
-	return found
-}
-
-func (k *Keeper) SetDidWebRoute(ctx sdk.Context, didWebRoute *types.DIDWebRoute) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	res := k.cdc.MustMarshal(didWebRoute)
-	store.Set([]byte(didWebRoute.Name), res)
-}
+ 
 
 func (k *Keeper) SetAnchor(ctx sdk.Context, did, cid, key string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
@@ -480,6 +466,17 @@ func (k *Keeper) HasDIDOwner(ctx sdk.Context, id string) bool {
 }
 
 func (k *Keeper) HasDidWebRoute(ctx sdk.Context, vn string) bool {
+	base := append([]byte("did:web:ancon.did.pa:user:"), []byte(vn)...)
+
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	return store.Has([]byte(vn))
+	return store.Has([]byte(base))
+}
+
+func (k *Keeper) GetDidWebRoute(ctx sdk.Context, vn string) (datamodel.Node, error) {
+	base := append([]byte("did:web:ancon.did.pa:user:"), []byte(vn)...)
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	return k.GetDid(ctx,  string(store.Get(base)))
+
+	
 }
