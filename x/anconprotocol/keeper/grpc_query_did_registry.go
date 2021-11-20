@@ -3,13 +3,14 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"net/http"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -41,8 +42,8 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 	mux.Handle("GET", ReadGetAttributesQuery, wrapJsonResult(ctx, mux, client, readGetAttributes))
 	mux.Handle("GET", ReadDelegateQuery, wrapJsonResult(ctx, mux, client, readDelegate))
 
-	mux.Handle("GET", ReadDidKeyQuery, wrapJsonResult(ctx, mux, client, readDidKey))
-	mux.Handle("GET", ReadResolveDidWebQuery, wrapJsonResult(ctx, mux, client, readResolveWeb))
+	mux.Handle("GET", ReadDidKeyQuery, wrapRawJsonResult(ctx, mux, client, readDidKey))
+	mux.Handle("GET", ReadResolveDidWebQuery, wrapRawJsonResult(ctx, mux, client, readResolveWeb))
 	mux.Handle("GET", ReadSchemaStoreResourceQuery, wrapSchemaStoreResult(ctx, mux, client, readSchemaStore))
 
 	// Durin that initiates trusted offchain calls
@@ -332,7 +333,7 @@ func (k Keeper) ReadDelegate(goCtx context.Context, req *types.QueryGetDelegateR
 }
 
 // GetDidKey
-func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryResourceResponse, error) {
+func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) (*types.QueryDidResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -346,13 +347,22 @@ func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) 
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(node, &bufdata)
 
-	return &types.QueryResourceResponse{
-		Data: base64.RawStdEncoding.EncodeToString(bufdata.Bytes()),
-	}, nil
+	var d []byte
+	cbor.Unmarshal(bufdata.Bytes(), d)
+	if err != nil {
+
+		return nil, err
+	}
+	_, err = did.ParseDocument(d)
+
+	if err != nil {
+		return nil, err
+	}
+		return &types.QueryDidResponse{Data: d}, nil
 }
 
 // ResolveDidWeb
-func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryResourceResponse, error) {
+func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebRequest) (*types.QueryDidResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -367,7 +377,16 @@ func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebReque
 	var bufdata bytes.Buffer
 	_ = dagcbor.Encode(node, &bufdata)
 
-	return &types.QueryResourceResponse{
-		Data: base64.RawStdEncoding.EncodeToString(bufdata.Bytes()),
-	}, nil
+	var d []byte
+	cbor.Unmarshal(bufdata.Bytes(), d)
+	if err != nil {
+
+		return nil, err
+	}
+	_, err = did.ParseDocument(d)
+
+	if err != nil {
+		return nil, err
+	}
+		return &types.QueryDidResponse{Data: d}, nil
 }

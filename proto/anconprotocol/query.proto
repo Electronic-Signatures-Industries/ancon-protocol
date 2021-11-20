@@ -19,7 +19,7 @@ service Query {
 	// 	option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
 	// }
 
-	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryResourceResponse) {
+	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryDidResponse) {
 		option (google.api.http).get = "/user/{name}/did.json";
 	}
 	// ReadRoyaltyInfo
@@ -79,7 +79,7 @@ service Query {
 	}
 
 
-	rpc GetDidKey(QueryGetDidRequest) returns (QueryResourceResponse) {
+	rpc GetDidKey(QueryGetDidRequest) returns (QueryDidResponse) {
 		option (google.api.http).get = "/didregistry/{hashcid}";
 	}
 
@@ -111,6 +111,10 @@ message QuerySchemaStoreRequest{
 }
 
 message QuerySchemaStoreResponse{
+	bytes data = 1;
+}
+
+message QueryDidResponse{
 	bytes data = 1;
 }
 

@@ -57,6 +57,30 @@ func wrapDagCborResult(ctx context.Context, mux *runtime.ServeMux, client types.
 		w.Write(jsonbytes)
 	}
 }
+func wrapRawJsonResult(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, requestQuery AnconQueryRequestFunc) (h runtime.HandlerFunc) {
+	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := requestQuery(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		typed := resp.(*types.QuerySchemaStoreResponse)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(typed.GetData())
+	}
+}
+
 func wrapJsonResult(ctx context.Context, mux *runtime.ServeMux, client types.QueryClient, requestQuery AnconQueryRequestFunc) (h runtime.HandlerFunc) {
 	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 

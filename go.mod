@@ -32,8 +32,8 @@ require (
 	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
-	google.golang.org/genproto v0.0.0-20211021150943-2b146023228c
-	google.golang.org/grpc v1.41.0
+	google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1
+	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -45,7 +45,7 @@ require (
 	github.com/cosmos/ibc-go/v2 v2.0.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/gravity-devs/liquidity v1.4.2
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect
 	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-graphsync v0.9.3
 	github.com/ipld/go-car/v2 v2.0.2
