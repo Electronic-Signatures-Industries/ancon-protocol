@@ -14,7 +14,6 @@ import (
 	cosmosed25519 "github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/fxamacker/cbor/v2"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
@@ -54,11 +53,10 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (
 	)
 
 	ver := []did.VerificationMethod{
-		{},
 	}
 	ver = append(ver, *didWebVer)
 
-	serv := []did.Service{{}, {}}
+//	serv := []did.Service{{}, {}}
 
 	// Secp256k1SignatureAuthentication2018
 	auth := []did.Verification{{}}
@@ -69,7 +67,7 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (
 
 	doc := did.BuildDoc(
 		did.WithVerificationMethod(ver),
-		did.WithService(serv),
+///		did.WithService(serv),
 		did.WithAuthentication(auth),
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
@@ -101,10 +99,9 @@ func (k Keeper) BuildDidKey(ctx sdk.Context) (*did.Doc, error) {
 	)
 
 	ver := []did.VerificationMethod{
-		{},
 	}
 	ver = append(ver, *didWebVer)
-	serv := []did.Service{{}, {}}
+//	serv := []did.Service{{}, {}}
 
 	// Secp256k1SignatureAuthentication2018
 	auth := []did.Verification{{}}
@@ -115,7 +112,6 @@ func (k Keeper) BuildDidKey(ctx sdk.Context) (*did.Doc, error) {
 
 	doc := did.BuildDoc(
 		did.WithVerificationMethod(ver),
-		did.WithService(serv),
 		did.WithAuthentication(auth),
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
@@ -206,15 +202,12 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 	// 	processingMeta       processingMeta
 	// }
 
-
-
-
 	// Add Document
 	// Basic Node
-	b, err := msg.MarshalJSON()
-	bz, err := cbor.Marshal(b)
+	bz, err := msg.JSONBytes()
+	// bz, err := cbor.Marshal(msg)
 	np := basicnode.Prototype.Any
-	n, err := jsonstore.DecodeCBOR(np, bz)
+	n, err := jsonstore.Decode(np, string(bz))
 
 	if err != nil {
 		return "", err
@@ -223,7 +216,7 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 	// tip: 0x0129 dag-json
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
-		Codec:    0x71, // dag-cbor
+		Codec:   0x0129, // dag-cbor
 		MhType:   0x12, // sha2-256
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}

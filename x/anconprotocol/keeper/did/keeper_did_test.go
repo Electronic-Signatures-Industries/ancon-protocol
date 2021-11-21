@@ -1,6 +1,7 @@
 package did
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -8,6 +9,8 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/keeper"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
+	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	anconapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -89,7 +92,15 @@ func Test_DID_Web(t *testing.T) {
 		require.NoError(t, err)
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
+	var bufdata bytes.Buffer
+	_ = dagjson.Encode(doc, &bufdata)
 
+ 
+	_, err = did.ParseDocument(bufdata.Bytes())
+
+	if err != nil {
+		require.NoError(t, err)
+	}
 	a, c, e := keeper.ParseDIDWeb(res.Did, false)
 	require.Equal(t, a, c, e, doc)
 	//	require.Equal(t, route, doc)
@@ -114,6 +125,7 @@ func Test_DID_Key(t *testing.T) {
 	}
 	doc, _ := keeper.GetDid(ctx, res.Cid)
 	route, _ := keeper.GetDidWebRoute(ctx, payload.VanityName)
+
 	require.Equal(t, route, doc)
 }
 
