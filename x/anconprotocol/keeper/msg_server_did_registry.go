@@ -21,7 +21,7 @@ func (k msgServer) ChangeOwner(goCtx context.Context, msg *types.MsgChangeOwner)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
+			"OwnerChanged",
 			sdk.NewAttribute("NewOwner", msg.NewOwner),
 		),
 	})
@@ -40,7 +40,7 @@ func (k msgServer) GrantAttribute(goCtx context.Context, msg *types.MsgSetAttrib
 	until := msg.Validity + uint64(ctx.BlockTime().Unix())
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"AttributeGranted",
 			sdk.NewAttribute("Identity", msg.Creator),
 			sdk.NewAttribute("Name", strings.Join(msg.Name, ",")),
 			sdk.NewAttribute("Value", strings.Join(msg.Value, ",")),
@@ -62,7 +62,7 @@ func (k msgServer) GrantDelegate(goCtx context.Context, msg *types.MsgGrantDeleg
 	until := msg.Validity + uint64(ctx.BlockTime().Unix())
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"DelegateGranted",
 			sdk.NewAttribute("Creator", msg.Creator),
 			sdk.NewAttribute("Did", msg.Did),
 			sdk.NewAttribute("Delegate", string(msg.Delegate)),
@@ -86,7 +86,7 @@ func (k msgServer) RevokeAttribute(goCtx context.Context, msg *types.MsgRevokeAt
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"AttributeRevoked",
 			sdk.NewAttribute("Creator", msg.Creator),
 			sdk.NewAttribute("Name", string(msg.Name)),
 			sdk.NewAttribute("Value", string(msg.Value)),
@@ -110,7 +110,7 @@ func (k msgServer) RevokeDelegate(goCtx context.Context, msg *types.MsgRevokeDel
 	until := msg.Validity + uint64(ctx.BlockTime().Unix())
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"DelegateRevoked",
 			sdk.NewAttribute("Identity", msg.Creator),
 			sdk.NewAttribute("Name", string(msg.Delegate)),
 			sdk.NewAttribute("Value", string(msg.DelegateType)),
@@ -149,10 +149,11 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.SetAttributeEvent,
+			"DidCreated",
 			sdk.NewAttribute("Identity", msg.Creator),
 			sdk.NewAttribute("Did", string(didOwner.Did)),
-			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
+			sdk.NewAttribute("Cid", string(didOwner.Cid)),
+			sdk.NewAttribute("Url", addr),
 		),
 	})
 	return &types.MsgCreateDidResponse{
@@ -165,13 +166,17 @@ func (k msgServer) CreateDid(goCtx context.Context, msg *types.MsgCreateDid) (*t
 func (k msgServer) UpdateDid(goCtx context.Context, msg *types.MsgUpdateDid) (*types.MsgUpdateDidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	//Revoke DID relationship / acces
+	//	k.ModifyDid(ctx, msg.Did)
 
-	// owners[identity] = newOwner;
-	//   emit DIDOwnerChanged(identity, newOwner, changed[identity]);
-	//   changed[identity] = block.number;
-	// TODO: Handling the message
-	_ = ctx
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"DidUpdated",
+			sdk.NewAttribute("Identity", msg.Creator),
+			// sdk.NewAttribute("Did", string(didOwner.Did)),
+			// sdk.NewAttribute("Cid", string(didOwner.Cid)),
+			// sdk.NewAttribute("Url", addr),
+		),
+	})
 
 	// Did := res.did
 
@@ -185,14 +190,12 @@ func (k msgServer) RevokeDid(goCtx context.Context, msg *types.MsgRevokeDid) (*t
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			"revoke_did",
+			"DidRevoked",
 			sdk.NewAttribute("Identity", msg.Creator),
 			sdk.NewAttribute("Did", string(msg.Did)),
 			sdk.NewAttribute("Height", fmt.Sprint(ctx.BlockHeight())),
 		),
 	})
-
-	_ = ctx
 
 	return &types.MsgRevokeDidResponse{
 		Ok: true,

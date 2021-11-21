@@ -10,55 +10,46 @@ import (
 func (k msgServer) AddDataSource(goCtx context.Context, msg *types.MsgAddDataSource) (*types.MsgAddDataSourceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
+	lnk, err :=
+		k.ApplyDataSource(ctx, msg)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"DataSourceAdded",
+			sdk.NewAttribute("link", lnk),
 		),
 	})
-
 	return &types.MsgAddDataSourceResponse{}, nil
 }
 func (k msgServer) UpdateDataSource(goCtx context.Context, msg *types.MsgUpdateDataSource) (*types.MsgUpdateDataSourceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
+	lnk, err := k.ModifyDataSource(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"DataSourceUpdated",
+			sdk.NewAttribute("Cid", lnk),
 		),
 	})
 
-	return &types.MsgUpdateDataSourceResponse{}, nil
+	return &types.MsgUpdateDataSourceResponse{Cid: lnk}, nil
 }
 func (k msgServer) RemoveDataSource(goCtx context.Context, msg *types.MsgRemoveDataSource) (*types.MsgRemoveDataSourceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
+	k.DeleteDataSource(ctx, msg)
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"DataSourceRemoved",
+			sdk.NewAttribute("Cid", msg.Cid),
 		),
 	})
 
@@ -76,7 +67,7 @@ func (k msgServer) AddDataUnion(goCtx context.Context, msg *types.MsgAddDataUnio
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			"add_data_union",
+			"DataUnionAdded",
 			sdk.NewAttribute("link", lnk),
 		),
 	})
@@ -86,17 +77,11 @@ func (k msgServer) AddDataUnion(goCtx context.Context, msg *types.MsgAddDataUnio
 func (k msgServer) RemoveDataUnion(goCtx context.Context, msg *types.MsgRemoveDataUnion) (*types.MsgRemoveDataUnionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
+	k.DeleteDataUnion(ctx, msg)
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"DataUnionRemoved",
+			sdk.NewAttribute("Cid", msg.Cid),
 		),
 	})
 
@@ -105,19 +90,17 @@ func (k msgServer) RemoveDataUnion(goCtx context.Context, msg *types.MsgRemoveDa
 func (k msgServer) UpdateDataUnion(goCtx context.Context, msg *types.MsgUpdateDataUnion) (*types.MsgUpdateDataUnionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// owner, err :=
-	// 	k.ApplyOwner(ctx, msg.Creator, msg.NewOwner)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
+	lnk, err := k.ModifyDataUnion(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.ChangeOwnerEvent,
-			//sdk.NewAttribute("NewOwner", msg.NewOwner),
+			"DataUnionUpdated",
+			sdk.NewAttribute("Cid", lnk),
 		),
 	})
 
-	return &types.MsgUpdateDataUnionResponse{}, nil
+	return &types.MsgUpdateDataUnionResponse{Cid: lnk}, nil
 }

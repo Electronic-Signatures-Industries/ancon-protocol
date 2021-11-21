@@ -76,9 +76,8 @@ message MsgUpdateDataSource {
 }
   
 
-message MsgUpdateDataSourceResponse{
-    bool ok = 1;
-    string cid = 2;
+message MsgUpdateDataSourceResponse{    
+    string cid = 1;
 }
 
 message MsgAddDataUnion{
@@ -106,5 +105,5 @@ message MsgUpdateDataUnion {
 }  
 
 message MsgUpdateDataUnionResponse{
-    
+    string cid = 1;    
 }

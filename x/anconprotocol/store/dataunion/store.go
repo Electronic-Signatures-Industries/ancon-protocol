@@ -20,6 +20,11 @@ func NewDataUnionStore(store store.KVStore) DataUnionStore {
 }
 
 // Has implements go-ipld-prime/storage.Storage.Has.
+func (du *DataUnionStore) Delete(key string) {
+	du.store.Delete([]byte(key))
+}
+
+// Has implements go-ipld-prime/storage.Storage.Has.
 func (du *DataUnionStore) Has(ctx context.Context, key string) (bool, error) {
 	return du.store.Has([]byte(key)), nil
 }

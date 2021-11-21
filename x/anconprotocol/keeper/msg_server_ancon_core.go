@@ -23,7 +23,12 @@ func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAncho
 	if err != nil {
 		return nil, err
 	}
-
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"AnchorCidWithProofCompleted",
+			sdk.NewAttribute("Done", "true"),
+		),
+	})
 	return &types.MsgAnchorCidWithProofResponse{
 		Ok: true,
 	}, nil
@@ -39,7 +44,16 @@ func (k msgServer) AnchorCid(goCtx context.Context, msg *types.MsgAnchorCid) (*t
 		return nil, err
 	}
 
+	// TODO needs to be replaced with more robust proofs
 	challenge := k.CalculateAnchorChallenge(ctx, msg.Creator, msg.Cid, msg.Key)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"AnchorCidRequested",
+			sdk.NewAttribute("Challenge", string(challenge)),
+		),
+	})
+
 	return &types.MsgAnchorCidResponse{
 		Challenge: cast.ToString(challenge),
 		Reason:    "Invalid call, request a proof and then call AnchorCidWithProof",
@@ -59,6 +73,12 @@ func (k msgServer) SendMetadataOwnership(goCtx context.Context, msg *types.MsgSe
 	lnk, _ := k.CreateSendMetadataPacket(
 		ctx, sdk.AccAddress(msg.Creator), msg.Data,
 	)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"MetadataOwnershipSent",
+			sdk.NewAttribute("PacketToBeSent", lnk),
+		),
+	})
 
 	return &types.MsgSendMetadataOwnershipResponse{
 		Cid: lnk,
@@ -66,7 +86,6 @@ func (k msgServer) SendMetadataOwnership(goCtx context.Context, msg *types.MsgSe
 }
 
 // UpdateMetadataOwnership
-//TODO: emit event
 func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.MsgUpdateMetadataOwnership) (*types.MsgUpdateMetadataOwnershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -93,7 +112,13 @@ func (k msgServer) UpdateMetadataOwnership(goCtx context.Context, msg *types.Msg
 	if err != nil {
 		return nil, err
 	}
-
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"MetadataOwnershipUpdated",
+			sdk.NewAttribute("MetadataRef", lnk),
+			sdk.NewAttribute("PacketRef", lnkPacket),
+		),
+	})
 	return &types.MsgUpdateMetadataOwnershipResponse{
 		MetadataRef: lnk,
 		PacketRef:   lnkPacket,
@@ -114,6 +139,12 @@ func (k msgServer) Metadata(goCtx context.Context, msg *types.MsgMetadata) (*typ
 		ctx,
 		msg,
 	)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"MetadataCreated",
+			sdk.NewAttribute("Cid", lnk),
+		),
+	})
 
 	return &types.MsgMetadataResponse{
 		Cid: lnk,
@@ -128,11 +159,17 @@ func (k msgServer) RoyaltyInfo(goCtx context.Context, msg *types.MsgRoyaltyInfo)
 		return nil, err
 	}
 
-	k.AddRoyaltyInfo(
+	cid, err := k.AddRoyaltyInfo(
 		ctx,
 		msg,
 	)
 
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"RoyaltyInfoAdded",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
 	return &types.MsgRoyaltyInfoResponse{}, nil
 }
 
@@ -145,11 +182,16 @@ func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintT
 		return nil, err
 	}
 
-	k.AddTrustedContent(
+	cid, err := k.AddTrustedContent(
 		ctx,
 		msg,
 	)
-
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"MintTrustedContent",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
 	return &types.MsgMintTrustedContentResponse{}, nil
 }
 
@@ -162,11 +204,16 @@ func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMint
 		return nil, err
 	}
 
-	k.AddTrustedResource(
+	cid, err := k.AddTrustedResource(
 		ctx,
 		msg,
 	)
-
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"MintTrustedResource",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
 	return &types.MsgMintTrustedResourceResponse{}, nil
 }
 

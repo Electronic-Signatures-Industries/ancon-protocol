@@ -222,7 +222,7 @@ func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QueryS
 		return nil, err
 	}
 
-	node, err := k.ReadAnyFromJSONStore(ctx, req.Path, link)
+	node, err := k.ReadAnyFromOffchainJSONStore(ctx, req.Path, link)
 
 	if err != nil {
 		return nil, err
@@ -274,9 +274,9 @@ func (k Keeper) WriteSchemaStoreResource(goCtx context.Context, msg *types.PostS
 	var lnk datamodel.Link
 	switch msg.Codec {
 	case "dag-cbor":
-		lnk, err = k.AddCBOR(ctx, msg.Path, (msg.Data))
+		lnk, err = k.AddOffchainCBOR(ctx, msg.Path, (msg.Data))
 	default:
-		lnk, err = k.AddJSON(ctx, msg.Path, string(msg.Data))
+		lnk, err = k.AddOffchainJSON(ctx, msg.Path, string(msg.Data))
 	}
 	if err != nil {
 		return nil, err

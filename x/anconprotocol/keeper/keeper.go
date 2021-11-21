@@ -13,8 +13,10 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/must"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
+	"github.com/ipld/go-ipld-prime/traversal"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -137,6 +139,108 @@ func (k *Keeper) ApplyDataUnion(ctx sdk.Context, msg *types.MsgAddDataUnion) (st
 	return link.String(), nil
 }
 
+func (k *Keeper) GetDataUnion(ctx sdk.Context, hash string) (interface{}, error) {
+	link, err := ParseCidLink(hash)
+	st := k.DataUnionStore(ctx).Store
+	dus := k.DataUnionStore(ctx)
+	has, err := st.Has(ctx.Context(), hash)
+	if err != nil {
+		return "", err
+	}
+	if has == true {
+		node, err := dus.LinkSystem.Load(
+			ipld.LinkContext{
+				LinkPath: datamodel.ParsePath("dataunion/"),
+			},
+			link,
+			basicnode.Prototype.Any,
+		)
+		if err != nil {
+			return "", err
+		}
+		du := bindnode.Unwrap(node)
+		return du, nil
+	}
+	return nil, nil
+}
+
+func (k *Keeper) ModifyDataUnion(ctx sdk.Context, msg *types.MsgUpdateDataUnion) (string, error) {
+
+	link, err := ParseCidLink(msg.Cid)
+	st := k.DataUnionStore(ctx).Store
+	dus := k.DataUnionStore(ctx)
+	has, err := st.Has(ctx.Context(), msg.Cid)
+	if err != nil {
+		return "", err
+	}
+	if has == true {
+		rootnode, err := dus.LinkSystem.Load(
+			ipld.LinkContext{
+				LinkPath: datamodel.ParsePath("dataunion/"),
+			},
+			link,
+			basicnode.Prototype.Any,
+		)
+		du := bindnode.Unwrap(rootnode)
+		typed := du.(*types.DataUnion)
+		if err != nil {
+			return "", err
+		}
+		// update name
+		update, err := traversal.FocusedTransform(
+			rootnode,
+			datamodel.ParsePath("name"),
+			func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+				if progress.Path.String() == "name" && must.String(prev) == typed.Name {
+					nb := prev.Prototype().NewBuilder()
+					nb.AssignString(msg.Name)
+					return nb.Build(), nil
+				}
+				return nil, fmt.Errorf("Name not found")
+			}, false)
+
+		if err != nil {
+			return "", err
+		}
+
+		// update active
+		update, err = traversal.FocusedTransform(
+			update,
+			datamodel.ParsePath("active"),
+			func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+				previous, _ := prev.AsBool()
+				if progress.Path.String() == "active" && typed.Active == previous {
+					nb := prev.Prototype().NewBuilder()
+					nb.AssignString(msg.Name)
+					return nb.Build(), nil
+				}
+				return nil, fmt.Errorf("Name not found")
+			}, false)
+
+		if err != nil {
+			return "", err
+		}
+
+		// Store
+		lnk, err := dus.LinkSystem.Store(
+			ipld.LinkContext{
+				LinkPath: datamodel.ParsePath("dataunion/"),
+			},
+			GetLinkPrototype(),
+			update,
+		)
+		return lnk.String(), err
+	}
+	return "", nil
+}
+
+func (k *Keeper) DeleteDataUnion(ctx sdk.Context, msg *types.MsgRemoveDataUnion) {
+
+	dus := k.DataUnionStore(ctx)
+	dus.Store.Delete(msg.Cid)
+
+}
+
 func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
@@ -156,7 +260,7 @@ func (k *Keeper) ReadAnyFromDataUnionStore(ctx sdk.Context, path string, link da
 	return node, nil
 }
 
-func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
+func (k *Keeper) ReadAnyFromOffchainJSONStore(ctx sdk.Context, path string, link datamodel.Link) (datamodel.Node, error) {
 	np := basicnode.Prototype.Any
 
 	ss := k.SchemaStore(ctx)
@@ -175,7 +279,7 @@ func (k *Keeper) ReadAnyFromJSONStore(ctx sdk.Context, path string, link datamod
 	return node, nil
 }
 
-func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamodel.Link, error) {
+func (k *Keeper) AddOffchainCBOR(ctx sdk.Context, path string, content []byte) (datamodel.Link, error) {
 	np := basicnode.Prototype.Any
 	node, err := jsonstore.DecodeCBOR(np, content)
 
@@ -195,7 +299,7 @@ func (k *Keeper) AddCBOR(ctx sdk.Context, path string, content []byte) (datamode
 	return link, nil
 }
 
-func (k *Keeper) ReadCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]byte, error) {
+func (k *Keeper) ReadOffchainCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]byte, error) {
 
 	ss := k.SchemaStore(ctx)
 	node, err := ss.Load(
@@ -216,7 +320,7 @@ func (k *Keeper) ReadCBOR(ctx sdk.Context, path string, link datamodel.Link) ([]
 
 	return output, nil
 }
-func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamodel.Link, error) {
+func (k *Keeper) AddOffchainJSON(ctx sdk.Context, path string, content string) (datamodel.Link, error) {
 	np := basicnode.Prototype.Any
 	node, err := jsonstore.Decode(np, content)
 
@@ -235,7 +339,7 @@ func (k *Keeper) AddJSON(ctx sdk.Context, path string, content string) (datamode
 	return link, nil
 }
 
-func (k *Keeper) ReadJSON(ctx sdk.Context, path string, link datamodel.Link) (string, error) {
+func (k *Keeper) ReadOffchainJSON(ctx sdk.Context, path string, link datamodel.Link) (string, error) {
 
 	ss := k.SchemaStore(ctx)
 	node, err := ss.Load(
@@ -255,6 +359,83 @@ func (k *Keeper) ReadJSON(ctx sdk.Context, path string, link datamodel.Link) (st
 	}
 
 	return output, nil
+}
+
+func (k *Keeper) ModifyDataSource(ctx sdk.Context, msg *types.MsgUpdateDataSource) (string, error) {
+
+	// TODO needs further refactoring, incomplete
+	link, err := ParseCidLink(msg.Cid)
+	st := k.DataUnionStore(ctx).Store
+	dus := k.DataUnionStore(ctx)
+	has, err := st.Has(ctx.Context(), msg.Cid)
+	if err != nil {
+		return "", err
+	}
+	if has == true {
+		rootnode, err := dus.LinkSystem.Load(
+			ipld.LinkContext{
+				LinkPath: datamodel.ParsePath(
+					strings.Join([]string{"dataunion", msg.Cid, "datasource"}, "/"),
+				)},
+			link,
+			basicnode.Prototype.Any,
+		)
+		du := bindnode.Unwrap(rootnode)
+		typed := du.(*types.DataSource)
+		if err != nil {
+			return "", err
+		}
+		// update name
+		update, err := traversal.FocusedTransform(
+			rootnode,
+			datamodel.ParsePath("name"),
+			func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+				if progress.Path.String() == "name" && must.String(prev) == typed.Name {
+					nb := prev.Prototype().NewBuilder()
+					nb.AssignString(msg.Name)
+					return nb.Build(), nil
+				}
+				return nil, fmt.Errorf("Name not found")
+			}, false)
+
+		if err != nil {
+			return "", err
+		}
+
+		// update description
+		update, err = traversal.FocusedTransform(
+			update,
+			datamodel.ParsePath("description"),
+			func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+
+				if progress.Path.String() == "description" && typed.Description == must.String(prev) {
+					nb := prev.Prototype().NewBuilder()
+					nb.AssignString(msg.Description)
+					return nb.Build(), nil
+				}
+				return nil, fmt.Errorf("Description not found")
+			}, false)
+
+		if err != nil {
+			return "", err
+		}
+		// Store
+		lnk, err := dus.LinkSystem.Store(
+			ipld.LinkContext{
+				LinkPath: datamodel.ParsePath(
+					strings.Join([]string{"dataunion", msg.Cid, "datasource"}, "/"),
+				)},
+			GetLinkPrototype(),
+			update,
+		)
+		return lnk.String(), err
+	}
+	return "", nil
+}
+
+func (k *Keeper) DeleteDataSource(ctx sdk.Context, msg *types.MsgRemoveDataSource) {
+	dus := k.DataUnionStore(ctx)
+	dus.Store.Delete(msg.Cid)
 }
 
 func (k *Keeper) ApplyDataSource(ctx sdk.Context, msg *types.MsgAddDataSource) (string, error) {
