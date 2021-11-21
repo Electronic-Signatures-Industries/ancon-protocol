@@ -40,7 +40,6 @@ require (
 
 require (
 	github.com/Electronic-Signatures-Industries/ancon-ipld-router-sync v0.0.0-20211005122235-25fc5ac8f59f
-	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cosmos/gaia/v6 v6.0.0-rc3
 	github.com/cosmos/ibc-go/v2 v2.0.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect

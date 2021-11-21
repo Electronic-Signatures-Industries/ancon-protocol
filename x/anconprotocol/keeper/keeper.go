@@ -377,7 +377,6 @@ func (k *Keeper) RemoveDid(ctx sdk.Context, id string) {
 	attrsstore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AttributeKey))
 	attrsstore.Delete([]byte(id))
 }
- 
 
 func (k *Keeper) SetAnchor(ctx sdk.Context, did, cid, key string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
@@ -476,7 +475,13 @@ func (k *Keeper) GetDidWebRoute(ctx sdk.Context, vn string) (datamodel.Node, err
 	base := append([]byte("did:web:ancon.did.pa:user:"), []byte(vn)...)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
-	return k.GetDid(ctx,  string(store.Get(base)))
+	return k.GetDid(ctx, string(store.Get(base)))
 
-	
+}
+
+func (k *Keeper) ReadAnyDid(ctx sdk.Context, did string) (datamodel.Node, error) {
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidWebStoreKey))
+	return k.GetDid(ctx, string(store.Get([]byte(did))))
+
 }

@@ -102,7 +102,8 @@ func (k Keeper) AddTrustedContent(ctx sdk.Context, msg *types.MsgMintTrustedCont
 }
 
 func (k Keeper) AddFile(ctx sdk.Context, msg *types.MsgFile) (string, error) {
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
@@ -179,7 +180,8 @@ func ParseCidLink(hash string) (cidlink.Link, error) {
 }
 
 func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, error) {
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix
@@ -248,21 +250,24 @@ func (k Keeper) AddMetadata(ctx sdk.Context, msg *types.MsgMetadata) (string, er
 		}
 	})
 
-	link, err := lsys.Store(
-		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
-		GetLinkPrototype(),
-		n, // And here's our data.
-	)
-	if err != nil {
-		return "", err
-	}
+	// tip: 0x0129 dag-json
+	lp := cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    cid.DagCBOR, // dag-cbor
+		MhType:   0x12,        // sha2-256
+		MhLength: 32,          // sha2-256 hash has a 32-byte sum.
+	}}
 
-	//	id, _ := cid.Decode(link.String())
+	link := lsys.MustStore(
+		ipld.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		lp,                 // The LinkPrototype says what codec and hashing to use.
+		n)
 	return link.String(), nil
 }
 
 func (k Keeper) GetMetadata(ctx sdk.Context, hash string, path string) (datamodel.Node, error) {
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	lnk, err := cid.Parse(hash)
 	if err != nil {
 		return nil, status.Error(
@@ -427,9 +432,6 @@ func (k Keeper) GetProof(ctx sdk.Context, hash, path string) ([]byte, *ibc.Merkl
 	ctx.Logger().Info("verified membership created")
 	return (root.Hash), &mp, nil
 }
-func (k Keeper) GetLinkSystem() linking.LinkSystem {
-	return cidlink.DefaultLinkSystem()
-}
 
 func GetLinkPrototype() ipld.LinkPrototype {
 	// tip: 0x0129 dag-json
@@ -442,7 +444,8 @@ func GetLinkPrototype() ipld.LinkPrototype {
 }
 
 func (k Keeper) CreateSendMetadataPacket(ctx sdk.Context, sender sdk.AccAddress, packet *types.AguaclaraPacketData) (string, error) {
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	prefixstore := "packet"
 	//   you just need a function that conforms to the ipld.BlockWriteOpener interface.
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
@@ -485,7 +488,8 @@ func (k Keeper) CreateSendMetadataPacket(ctx sdk.Context, sender sdk.AccAddress,
 }
 func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner, newOwner, chainId, recipientChainId string) (string, error) {
 
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	rootNode, err := k.GetMetadata(ctx, hash, "")
 
 	if err != nil {
@@ -549,7 +553,7 @@ func (k Keeper) ChangeOwnerMetadata(ctx sdk.Context, hash string, previousOwner,
 func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (string, error) {
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("royalty"))
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
 
 	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
 		// change prefix

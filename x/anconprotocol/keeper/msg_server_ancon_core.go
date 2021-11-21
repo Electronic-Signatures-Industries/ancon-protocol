@@ -1,15 +1,10 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
-	"crypto/sha256"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/fxamacker/cbor/v2"
-	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
-	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/spf13/cast"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr"
 	// "github.com/hyperledger/aries-framework-go/pkg/vdr/httpbinding"
@@ -24,21 +19,11 @@ func (k msgServer) AnchorCidWithProof(goCtx context.Context, msg *types.MsgAncho
 		return nil, err
 	}
 
-	sender := k.GetDIDOwner(ctx, msg.Did)
-	node, err := k.GetDid(ctx, sender.Cid)
-	var buf bytes.Buffer
-
-	dagcbor.Encode(node, &buf)
-
-	var d []byte
-	cbor.Unmarshal(buf.Bytes(), d)
+	err = k.ApplyAnchorCidWithProof(ctx, msg)
 	if err != nil {
-
 		return nil, err
 	}
-	diddoc, err := did.ParseDocument(d)
 
-	k.SetAnchor(ctx, diddoc.ID, msg.Cid, msg.Key)
 	return &types.MsgAnchorCidWithProofResponse{
 		Ok: true,
 	}, nil
@@ -54,12 +39,7 @@ func (k msgServer) AnchorCid(goCtx context.Context, msg *types.MsgAnchorCid) (*t
 		return nil, err
 	}
 
-	s := append([]byte(msg.Creator), msg.Cid...)
-	s = append([]byte(s), msg.Key...)
-	s = append([]byte(s), ctx.ChainID()...)
-
-	challenge := sha256.Sum256(s)
-
+	challenge := k.CalculateAnchorChallenge(ctx, msg.Creator, msg.Cid, msg.Key)
 	return &types.MsgAnchorCidResponse{
 		Challenge: cast.ToString(challenge),
 		Reason:    "Invalid call, request a proof and then call AnchorCidWithProof",

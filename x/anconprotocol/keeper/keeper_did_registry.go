@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"bytes"
+	"crypto/ed25519"
+	"crypto/rand"
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"net/url"
@@ -10,17 +13,17 @@ import (
 
 	jsonstore "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/json"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
-	"github.com/btcsuite/btcutil/base58"
-	cosmosed25519 "github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/spf13/cast"
 
 	"github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-multicodec"
@@ -34,8 +37,6 @@ type Delegate struct {
 
 // BuildDidWeb ....
 func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (*did.Doc, error) {
-	// public
-	encoded := base58.Encode(pubkey)
 	ti := time.Now()
 	//Dev: chain id is replaced on the query by http host
 	// did web
@@ -49,14 +50,13 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (
 		string(base),
 		"Secp256k1VerificationKey2018",
 		string(base),
-		[]byte(encoded),
+		pubkey,
 	)
 
-	ver := []did.VerificationMethod{
-	}
+	ver := []did.VerificationMethod{}
 	ver = append(ver, *didWebVer)
 
-//	serv := []did.Service{{}, {}}
+	//	serv := []did.Service{{}, {}}
 
 	// Secp256k1SignatureAuthentication2018
 	auth := []did.Verification{{}}
@@ -67,7 +67,7 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (
 
 	doc := did.BuildDoc(
 		did.WithVerificationMethod(ver),
-///		did.WithService(serv),
+		///		did.WithService(serv),
 		did.WithAuthentication(auth),
 		did.WithCreatedTime(ti),
 		did.WithUpdatedTime(ti),
@@ -79,12 +79,13 @@ func (k Keeper) BuildDidWeb(ctx sdk.Context, vanityName string, pubkey []byte) (
 // BuildDidKey ....
 func (k Keeper) BuildDidKey(ctx sdk.Context) (*did.Doc, error) {
 
-	acc := cosmosed25519.GenPrivKey()
-	encoded := base58.Encode(acc.PubKey().Bytes())
-	// public
-	pub := encoded
+	pubKey, _, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		panic(err)
+	}
+
 	ti := time.Now()
-	multi := append([]byte(multicodec.Secp256k1Pub.String()), acc.Bytes()...)
+	multi := append([]byte(multicodec.Secp256k1Pub.String()), pubKey...)
 	code, _ := multibase.Encode(multibase.Base58BTC, multi)
 	// did key
 	base := append([]byte("did:key:"), code...)
@@ -93,15 +94,14 @@ func (k Keeper) BuildDidKey(ctx sdk.Context) (*did.Doc, error) {
 
 	didWebVer := did.NewVerificationMethodFromBytes(
 		string(id),
-		"Secp256k1VerificationKey2018",
+		"Ed25519VerificationKey2018",
 		string(base),
-		[]byte(pub),
+		[]byte(pubKey),
 	)
 
-	ver := []did.VerificationMethod{
-	}
+	ver := []did.VerificationMethod{}
 	ver = append(ver, *didWebVer)
-//	serv := []did.Service{{}, {}}
+	//	serv := []did.Service{{}, {}}
 
 	// Secp256k1SignatureAuthentication2018
 	auth := []did.Verification{{}}
@@ -216,9 +216,9 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 	// tip: 0x0129 dag-json
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
-		Codec:   0x0129, // dag-cbor
-		MhType:   0x12, // sha2-256
-		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
+		Codec:    0x0129, // dag-cbor
+		MhType:   0x12,   // sha2-256
+		MhLength: 32,     // sha2-256 hash has a 32-byte sum.
 	}}
 
 	link := lsys.MustStore(
@@ -233,7 +233,8 @@ func (k *Keeper) SetDid(ctx sdk.Context, msg *did.Doc) (string, error) {
 
 func (k Keeper) GetDid(ctx sdk.Context, hash string) (datamodel.Node, error) {
 
-	lsys := k.GetLinkSystem()
+	lsys := cidlink.DefaultLinkSystem()
+
 	lnk, err := cid.Parse(hash)
 	if err != nil {
 		return nil, status.Error(
@@ -301,4 +302,42 @@ func (k Keeper) ParseDIDWeb(id string, useHTTP bool) (string, string, error) {
 	}
 
 	return address, host, nil
+}
+
+func (k Keeper) CalculateAnchorChallenge(ctx sdk.Context, sender, cid, key string) []byte {
+	s := append([]byte(sender), cid...)
+	s = append([]byte(s), key...)
+	s = append([]byte(s), ctx.ChainID()...)
+
+	challenge := sha256.Sum256(s)
+
+	return []byte(cast.ToString(challenge))
+}
+func (k Keeper) ApplyAnchorCidWithProof(ctx sdk.Context, msg *types.MsgAnchorCidWithProof) error {
+
+	node, err := k.ReadAnyDid(ctx, msg.Did)
+
+	if err != nil {
+		return err
+	}
+
+	var bufdata bytes.Buffer
+	_ = dagjson.Encode(node, &bufdata)
+
+	diddoc, err := did.ParseDocument(bufdata.Bytes())
+
+	if err != nil {
+		return fmt.Errorf("invalid DID document")
+	}
+
+	pk := (diddoc.VerificationMethod[0].Value)
+	challenge := k.CalculateAnchorChallenge(ctx, msg.Creator, msg.Cid, msg.Key)
+	ok := ed25519.Verify(pk, challenge, msg.Proof)
+	// err = diddoc.VerifyProof()
+	if !ok {
+		return fmt.Errorf("invalid proof signature")
+	}
+	k.SetAnchor(ctx, diddoc.ID, msg.Cid, msg.Key)
+
+	return nil
 }

@@ -7,12 +7,11 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/fxamacker/cbor/v2"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
 	"github.com/ipfs/go-graphsync/ipldutil"
-	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
@@ -340,25 +339,20 @@ func (k Keeper) GetDidKey(goCtx context.Context, req *types.QueryGetDidRequest) 
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	node, err := k.GetDid(ctx, req.Hashcid)
+	node, err := k.ReadAnyDid(ctx, req.Hashcid)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "Missing did key hash")
 	}
 	var bufdata bytes.Buffer
-	_ = dagcbor.Encode(node, &bufdata)
+	_ = dagjson.Encode(node, &bufdata)
 
-	var d []byte
-	cbor.Unmarshal(bufdata.Bytes(), d)
-	if err != nil {
-
-		return nil, err
-	}
-	_, err = did.ParseDocument(d)
+	d, err := did.ParseDocument(bufdata.Bytes())
 
 	if err != nil {
 		return nil, err
 	}
-		return &types.QueryDidResponse{Data: d}, nil
+	jsonbytes, err := d.JSONBytes()
+	return &types.QueryDidResponse{Data: jsonbytes}, nil
 }
 
 // ResolveDidWeb
@@ -375,18 +369,13 @@ func (k Keeper) ResolveDidWeb(goCtx context.Context, req *types.QueryDidWebReque
 	}
 
 	var bufdata bytes.Buffer
-	_ = dagcbor.Encode(node, &bufdata)
+	_ = dagjson.Encode(node, &bufdata)
 
-	var d []byte
-	cbor.Unmarshal(bufdata.Bytes(), d)
-	if err != nil {
-
-		return nil, err
-	}
-	_, err = did.ParseDocument(d)
+	d, err := did.ParseDocument(bufdata.Bytes())
 
 	if err != nil {
 		return nil, err
 	}
-		return &types.QueryDidResponse{Data: d}, nil
+	jsonbytes, err := d.JSONBytes()
+	return &types.QueryDidResponse{Data: jsonbytes}, nil
 }
