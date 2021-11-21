@@ -74,7 +74,7 @@ func wrapRawJsonResult(ctx context.Context, mux *runtime.ServeMux, client types.
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		typed := resp.(*types.QuerySchemaStoreResponse)
+		typed := resp.(*types.QueryDidResponse)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(typed.GetData())
