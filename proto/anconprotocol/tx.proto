@@ -15,6 +15,10 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 service Msg {
   rpc AnchorCid(MsgAnchorCid) returns  (MsgAnchorCidResponse);
   rpc AnchorCidWithProof(MsgAnchorCidWithProof) returns  (MsgAnchorCidWithProofResponse);
+  rpc AddSchema(MsgAddSchema) returns (MsgAddSchemaResponse);
+  rpc AddDataContract(MsgAddDataContract) returns  (MsgAddDataContractResponse);
+  rpc ComputeDataContract(MsgComputeDataContract) returns  (MsgComputeDataContractResponse);
+
   
   rpc AddDataSource(MsgAddDataSource) returns  (MsgAddDataSourceResponse);
   rpc RemoveDataSource(MsgRemoveDataSource) returns  (MsgRemoveDataSourceResponse);
@@ -102,6 +106,38 @@ message MsgAnchorCidResponse {
 
 message MsgAnchorCidWithProofResponse {
   bool ok = 1;
+}
+
+message MsgAddSchema{
+  string creator = 1;
+  string did = 2;
+  bytes schema = 3;
+}
+
+message MsgAddSchemaResponse {
+  string cid = 1;
+}
+
+message MsgAddDataContract{
+  string creator = 1;
+  string did = 2;
+  bytes data = 3;
+}
+
+message MsgAddDataContractResponse {
+  string cid = 1;
+}
+message MsgComputeDataContract{
+  string creator = 1;
+  string did = 2;
+  string input_cid = 3;
+  string schema_cid = 4;
+}
+
+message MsgComputeDataContractResponse{
+ string cid = 1;
+ 
+
 }
 
 message MsgUpdateMetadataOwnershipResponse {
