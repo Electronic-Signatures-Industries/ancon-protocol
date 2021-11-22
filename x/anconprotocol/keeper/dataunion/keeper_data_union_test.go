@@ -17,6 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/libs/log"
@@ -325,12 +326,15 @@ func Test_Compute_Data_Contract(t *testing.T) {
 		}`),
 	})
 
+	inputs := `[0, 1, "3", "Hola"]`
+	args := hexutil.Encode([]byte(inputs))
 	out, _ := keeper.ExecuteDataContractTransaction(ctx, &types.MsgComputeDataContract{
 		Creator:   payload.Creator,
 		Did:       res.Did,
 		InputCid:  lnk.String(),
 		SchemaCid: schemaCid,
 		ToCid:     contractCid,
+		JsonArguments: args,
 	})
 
 }

@@ -131,6 +131,7 @@ message MsgComputeDataContract{
   string input_cid = 3;
   string schema_cid = 4;
   string to_cid = 5;
+  string json_arguments = 6; // as hex
 }
 
 message MsgComputeDataContractResponse{

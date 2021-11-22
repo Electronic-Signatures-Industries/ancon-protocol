@@ -9,8 +9,10 @@ import (
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/checker/decls"
 	"github.com/multiformats/go-multihash"
 	"github.com/qri-io/jsonschema"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -619,9 +621,55 @@ func (k Keeper) ApplySchema(ctx sdk.Context, msg *types.MsgAddSchema) (string, e
 	return link.String(), err
 }
 
+
+func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs hexutil.Bytes, sender, did string) map[string]interface{} {
+
+	return map[string]interface{}{
+		"sender": sender,
+		"did": did,
+		"gas_meter": ctx.BlockGasMeter(),
+		"chain_id": ctx.ChainID(),
+		"block_header": ctx.BlockHeader,
+		"block_time": ctx.BlockTime,
+		"block_height": ctx.BlockHeight(),
+	}
+
+}
+
+func (k Keeper) GetDataContractEnvironment() *cel.Env {
+	env, _ := cel.NewEnv(
+		cel.Declarations(
+			decls.NewVar("inputs", decls.NewListType(decls.Dyn)),
+		),
+		cel.Declarations(
+			decls.NewVar("block_time", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("block_height", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("block_header", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("chain_id", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("gas_meter", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("sender", decls.Dyn),
+		),
+		cel.Declarations(
+			decls.NewVar("did", decls.Dyn),
+		),
+	)
+
+	return env
+}
 func (k Keeper) ApplyDataContract(ctx sdk.Context, msg *types.MsgAddDataContract) (string, error) {
 
-	ast, issues := k.dataContractEnv.Compile(string(msg.Data))
+
+	ast, issues := k.GetDataContractEnvironment().Compile(string(msg.Data))
 	if issues != nil && issues.Err() != nil {
 		return "", fmt.Errorf("type-check error: %s", issues.Err())
 	}
@@ -726,17 +774,35 @@ func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgCo
 
 	ast := cel.CheckedExprToAst(dataContr)
 
-	prog, _ := k.dataContractEnv.Program(ast)
+	prog, _ := k.GetDataContractEnvironment().Program(ast)
 
-	out, _, err := prog.Eval(node)
+	out, _, err := prog.Eval(node, 
+		k.GetDataContractGlobals(ctx, hexutil.Bytes(msg.JsonArguments), msg.Creator, msg.Did)
+	)
 	if err != nil {
 		return "", fmt.Errorf("Eval node error", err)
 	}
 
-	clink, err := k.AddOffchainCBOR(ctx, "", []byte(cast.ToString(out.Value())))
+	clink, err := k.AddOffchainJSON(ctx, "", valueToJSON(out))
 	if err != nil {
-		return "", fmt.Errorf("Offchain CBOR error", err)
+		return "", fmt.Errorf("Offchain JSON error", err)
 	}
 
 	return clink.String(), nil
+}
+
+// From: https://github.com/google/cel-go/blob/master/codelab/solution/codelab.go
+// valueToJSON converts the CEL type to a protobuf JSON representation and
+// marshals the result to a string.
+func valueToJSON(val ref.Val) string {
+	v, err := val.ConvertToNative(reflect.TypeOf(&structpb.Value{}))
+	if err != nil {
+		glog.Exit(err)
+	}
+	marshaller := protojson.MarshalOptions{Indent: "    "}
+	bytes, err := marshaller.Marshal(v.(proto.Message))
+	if err != nil {
+		glog.Exit(err)
+	}
+	return string(bytes)
 }
