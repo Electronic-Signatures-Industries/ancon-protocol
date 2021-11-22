@@ -37,11 +37,12 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSendMetadataOwnership{}, "anconprotocol/SendMetadataOwnership", nil)
 
 	cdc.RegisterConcrete(&MsgAddDataUnion{}, "anconprotocol/AddDataUnion", nil)
-	cdc.RegisterConcrete(&MsgUpdateDataUnion{}, "anconprotocol/UpdateDataUnion", nil)
 	cdc.RegisterConcrete(&MsgRemoveDataUnion{}, "anconprotocol/RemoveDataUnion", nil)
 	cdc.RegisterConcrete(&MsgAddDataSource{}, "anconprotocol/AddDataSource", nil)
 	cdc.RegisterConcrete(&MsgRemoveDataSource{}, "anconprotocol/RemoveDataSource", nil)
-	cdc.RegisterConcrete(&MsgUpdateDataSource{}, "anconprotocol/UpdateDataSource", nil)
+	cdc.RegisterConcrete(&MsgAddSchema{}, "anconprotocol/AddSchema", nil)
+	cdc.RegisterConcrete(&MsgComputeDataContract{}, "anconprotocol/ComputeDataContract", nil)
+	cdc.RegisterConcrete(&MsgAddDataContract{}, "anconprotocol/AddDataContract", nil)
 
 	cdc.RegisterConcrete(&MsgAnchorCidWithProof{}, "anconprotocol/AnchorCidWithProof", nil)
 
@@ -68,13 +69,14 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgUpdateMetadataOwnership{},
 		&MsgSendMetadataOwnership{},
 		&MsgAddDataSource{},
-		&MsgUpdateDataSource{},
 		&MsgRemoveDataSource{},
 		&MsgAddDataUnion{},
 		&MsgRemoveDataUnion{},
-		&MsgUpdateDataUnion{},
 		&MsgAnchorCid{},
 		&MsgAnchorCidWithProof{},
+		&MsgAddDataContract{},
+		&MsgAddSchema{},
+		&MsgComputeDataContract{},
 	)
 	registry.RegisterImplementations((*exported.NFT)(nil),
 		&BaseNFT{},

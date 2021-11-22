@@ -14,6 +14,9 @@ var _ sdk.Msg = &MsgMintTrustedContent{}
 var _ sdk.Msg = &MsgSendMetadataOwnership{}
 
 var _ sdk.Msg = &MsgRoyaltyInfo{}
+var _ sdk.Msg = &MsgAddDataContract{}
+var _ sdk.Msg = &MsgAddSchema{}
+var _ sdk.Msg = &MsgComputeDataContract{}
 
 func NewMsgAnchorCid(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgAnchorCid {
 	return &MsgAnchorCid{
@@ -50,6 +53,90 @@ func (msg *MsgAnchorCid) ValidateBasic() error {
 	return nil
 }
 
+func (msg *MsgAddSchema) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAddSchema) Type() string {
+	return "AddSchema"
+}
+
+func (msg *MsgAddSchema) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgAddSchema) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAddSchema) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+func (msg *MsgAddDataContract) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAddDataContract) Type() string {
+	return "AddDataContract"
+}
+
+func (msg *MsgAddDataContract) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgAddDataContract) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAddDataContract) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+func (msg *MsgComputeDataContract) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgComputeDataContract) Type() string {
+	return "ComputeDataContract"
+}
+
+func (msg *MsgComputeDataContract) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgComputeDataContract) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgComputeDataContract) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
 func NewMsgAnchorCidWithProof(creator, path, codec string, payload []byte, isJsonSchema bool) *MsgAnchorCid {
 	return &MsgAnchorCid{
 		Creator: creator,

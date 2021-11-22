@@ -22,10 +22,8 @@ service Msg {
   
   rpc AddDataSource(MsgAddDataSource) returns  (MsgAddDataSourceResponse);
   rpc RemoveDataSource(MsgRemoveDataSource) returns  (MsgRemoveDataSourceResponse);
-  rpc UpdateDataSource(MsgUpdateDataSource) returns  (MsgUpdateDataSourceResponse);
   rpc AddDataUnion(MsgAddDataUnion) returns  (MsgAddDataUnionResponse);
   rpc RemoveDataUnion(MsgRemoveDataUnion) returns  (MsgRemoveDataUnionResponse);
-  rpc UpdateDataUnion(MsgUpdateDataUnion) returns  (MsgUpdateDataUnionResponse);
 
 // Send cross chain message 
 rpc SendMetadataOwnership(MsgSendMetadataOwnership) returns (MsgSendMetadataOwnershipResponse);
@@ -136,7 +134,7 @@ message MsgComputeDataContract{
 
 message MsgComputeDataContractResponse{
  string cid = 1;
- 
+
 
 }
 

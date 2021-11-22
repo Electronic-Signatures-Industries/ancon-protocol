@@ -195,7 +195,66 @@ func (k msgServer) MintTrustedContent(goCtx context.Context, msg *types.MsgMintT
 	return &types.MsgMintTrustedContentResponse{}, nil
 }
 
-//TODO: emit event
+func (k msgServer) AddSchema(goCtx context.Context, msg *types.MsgAddSchema) (*types.MsgAddSchemaResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	cid, err := k.ApplySchema(
+		ctx,
+		msg,
+	)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"AddSchema",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
+	return &types.MsgAddSchemaResponse{Cid: cid}, nil
+}
+func (k msgServer) AddDataContract(goCtx context.Context, msg *types.MsgAddDataContract) (*types.MsgAddDataContractResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	cid, err := k.ApplyDataContract(
+		ctx,
+		msg,
+	)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"AddDataContract",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
+	return &types.MsgAddDataContractResponse{}, nil
+}
+func (k msgServer) ComputeDataContract(goCtx context.Context, msg *types.MsgComputeDataContract) (*types.MsgComputeDataContractResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	cid, err := k.ExecuteDataContractTransaction(
+		ctx,
+		msg,
+	)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			"ComputeDataContract",
+			sdk.NewAttribute("Cid", cid),
+		),
+	})
+	return &types.MsgComputeDataContractResponse{}, nil
+}
 func (k msgServer) MintTrustedResource(goCtx context.Context, msg *types.MsgMintTrustedResource) (*types.MsgMintTrustedResourceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
