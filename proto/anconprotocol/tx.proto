@@ -130,6 +130,7 @@ message MsgComputeDataContract{
   string did = 2;
   string input_cid = 3;
   string schema_cid = 4;
+  string to_cid = 5;
 }
 
 message MsgComputeDataContractResponse{

@@ -43,6 +43,7 @@ require (
 	github.com/cosmos/gaia/v6 v6.0.0-rc3
 	github.com/cosmos/ibc-go/v2 v2.0.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/google/cel-go v0.9.0
 	github.com/gravity-devs/liquidity v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect
 	github.com/ipfs/go-block-format v0.0.3
@@ -57,6 +58,7 @@ require (
 	github.com/libp2p/go-libp2p-routing v0.1.0
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/qri-io/jsonschema v0.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/strangelove-ventures/packet-forward-middleware v1.0.1
 	github.com/tharsis/ethermint v0.7.2

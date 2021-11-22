@@ -28,19 +28,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/checker/decls"
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
 type Keeper struct {
-	cdc           codec.Codec
-	storeKey      sdk.StoreKey
-	memKey        sdk.StoreKey
-	paramSpace    paramstypes.Subspace
-	accountKeeper types.AccountKeeper
-	iavltree      *iavl.ImmutableTree
-	bankKeeper    types.BankKeeper
-	blockedAddrs  map[string]bool
-	cms           store.CommitMultiStore
+	cdc             codec.Codec
+	storeKey        sdk.StoreKey
+	memKey          sdk.StoreKey
+	paramSpace      paramstypes.Subspace
+	accountKeeper   types.AccountKeeper
+	iavltree        *iavl.ImmutableTree
+	bankKeeper      types.BankKeeper
+	blockedAddrs    map[string]bool
+	cms             store.CommitMultiStore
+	dataContractEnv cel.Env
 	// this line is used by starport scaffolding # ibc/keeper/attribute
 }
 
@@ -55,14 +58,20 @@ func NewTestKeeper(
 	blockedAddrs map[string]bool,
 ) Keeper {
 
+	env, _ := cel.NewEnv(
+		cel.Declarations(
+			decls.NewVar("name", decls.String),
+			decls.NewVar("group", decls.String)))
+
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		memKey:        memKey,
-		paramSpace:    paramSpace,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
-		blockedAddrs:  blockedAddrs,
+		storeKey:        key,
+		cdc:             cdc,
+		memKey:          memKey,
+		paramSpace:      paramSpace,
+		accountKeeper:   accountKeeper,
+		bankKeeper:      bankKeeper,
+		blockedAddrs:    blockedAddrs,
+		dataContractEnv: *env,
 	}
 }
 
@@ -77,6 +86,12 @@ func NewKeeper(
 	blockedAddrs map[string]bool,
 	cms store.CommitMultiStore,
 ) Keeper {
+
+	env, _ := cel.NewEnv(
+		cel.Declarations(
+			decls.NewVar("name", decls.String),
+			decls.NewVar("group", decls.String)))
+
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
@@ -85,8 +100,9 @@ func NewKeeper(
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		// aguaclaraKeeper: aguaclaraKeeper,
-		blockedAddrs: blockedAddrs,
-		cms:          cms,
+		blockedAddrs:    blockedAddrs,
+		cms:             cms,
+		dataContractEnv: *env,
 	}
 }
 
@@ -562,6 +578,16 @@ func (k *Keeper) RemoveDid(ctx sdk.Context, id string) {
 func (k *Keeper) SetAnchor(ctx sdk.Context, did, cid, key string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
 	store.Set([]byte(key), []byte(cid))
+}
+
+func (k *Keeper) GetAnchor(ctx sdk.Context, did, key string) []byte {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
+	return store.Get([]byte(key))
+}
+
+func (k *Keeper) HasAnchor(ctx sdk.Context, did, key string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MultiKeyPrefix(types.AnchorKey, []byte(did), []byte{}))
+	return store.Has([]byte(key))
 }
 
 func (k *Keeper) toIpldStringList(items []string) func(fluent.ListAssembler) {

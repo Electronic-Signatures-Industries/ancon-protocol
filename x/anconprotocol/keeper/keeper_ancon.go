@@ -2,13 +2,18 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
+	"github.com/golang/protobuf/proto"
+	"github.com/google/cel-go/cel"
 	"github.com/multiformats/go-multihash"
+	"github.com/qri-io/jsonschema"
+	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -20,6 +25,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	cid "github.com/ipfs/go-cid"
+	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -588,4 +594,149 @@ func (k Keeper) AddRoyaltyInfo(ctx sdk.Context, msg *types.MsgRoyaltyInfo) (stri
 
 	//	id, _ := cid.Decode(link.String())
 	return link.String(), nil
+}
+
+func (k Keeper) ApplySchema(ctx sdk.Context, msg *types.MsgAddSchema) (string, error) {
+
+	rs := &jsonschema.Schema{}
+	if err := json.Unmarshal(msg.Schema, rs); err != nil {
+
+		return "", fmt.Errorf("Invalid JSON Schema")
+	}
+
+	node, err := ipldutil.DecodeNode(msg.Schema)
+
+	dus := k.DataUnionStore(ctx)
+
+	link, err := dus.LinkSystem.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath("schemas/"),
+		},
+		GetLinkPrototype(),
+		node,
+	)
+
+	return link.String(), err
+}
+
+func (k Keeper) ApplyDataContract(ctx sdk.Context, msg *types.MsgAddDataContract) (string, error) {
+
+	ast, issues := k.dataContractEnv.Compile(string(msg.Data))
+	if issues != nil && issues.Err() != nil {
+		return "", fmt.Errorf("type-check error: %s", issues.Err())
+	}
+	temp, err := cel.AstToCheckedExpr(ast)
+
+	bz, err := proto.Marshal(temp)
+	if err != nil {
+		return "", fmt.Errorf("Marshal error", err)
+	}
+
+	node, err := ipldutil.DecodeNode(bz)
+
+	dus := k.DataUnionStore(ctx)
+
+	link, err := dus.LinkSystem.Store(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath("contracts/"),
+		},
+		GetLinkPrototype(),
+		node,
+	)
+
+	return link.String(), err
+}
+
+func (k Keeper) GetDataContract(ctx sdk.Context, hash string) (*expr.CheckedExpr, error) {
+
+	clink, err := ParseCidLink(hash)
+	dus := k.DataUnionStore(ctx)
+
+	node, err := dus.LinkSystem.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath("contracts/"),
+		},
+		clink,
+		basicnode.Prototype.Any,
+	)
+
+	bz, err := ipldutil.EncodeNode(node)
+	exp := expr.CheckedExpr{}
+
+	err = proto.Unmarshal(bz, &exp)
+
+	return &exp, err
+}
+
+func (k Keeper) GetDataSchema(ctx sdk.Context, hash string) (*jsonschema.Schema, error) {
+
+	clink, err := ParseCidLink(hash)
+	dus := k.DataUnionStore(ctx)
+
+	node, err := dus.LinkSystem.Load(
+		ipld.LinkContext{
+			LinkPath: datamodel.ParsePath("schemas/"),
+		},
+		clink,
+		basicnode.Prototype.Any,
+	)
+
+	bz, err := ipldutil.EncodeNode(node)
+
+	jschem := jsonschema.Schema{}
+
+	err = json.Unmarshal(bz, &jschem)
+
+	return &jschem, err
+}
+
+func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgComputeDataContract) (string, error) {
+	//inputs: all cids available in the anchoring list
+	var anch []byte
+
+	if k.HasAnchor(ctx, msg.Did, msg.InputCid) {
+		anch = k.GetAnchor(ctx, msg.Did, msg.InputCid)
+	}
+
+	lnk, err := ParseCidLink(string(anch))
+	if err != nil {
+		return "", fmt.Errorf("Parse link error", err)
+	}
+
+	node, err := k.ReadOffchainJSON(ctx, "", lnk)
+	if err != nil {
+		return "", fmt.Errorf("Read JSON  error", err)
+	}
+
+	schema, err := k.GetDataSchema(ctx, msg.SchemaCid)
+	if err != nil {
+		return "", fmt.Errorf("Get schema error", err)
+	}
+
+	_, err = schema.ValidateBytes(ctx.Context(), []byte(node))
+
+	if err != nil {
+		return "", fmt.Errorf("Validate bytes error", err)
+	}
+
+	dataContr, err := k.GetDataContract(ctx, msg.ToCid)
+	if err != nil {
+		return "", fmt.Errorf("Get contract error", err)
+	}
+
+	ast := cel.CheckedExprToAst(dataContr)
+
+	prog, _ := k.dataContractEnv.Program(ast)
+
+	out, _, err := prog.Eval(node)
+	if err != nil {
+		return "", fmt.Errorf("Eval node error", err)
+	}
+
+	clink, err := k.AddOffchainCBOR(ctx, "", []byte(cast.ToString(out.Value())))
+	if err != nil {
+		return "", fmt.Errorf("Offchain CBOR error", err)
+	}
+
+	return clink.String(), nil
 }
