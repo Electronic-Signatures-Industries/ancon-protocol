@@ -272,9 +272,6 @@ func Test_Compute_Data_Contract(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.ReadAnyDid(ctx, res.Did)
-
 	payload2 := `{
 		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
 		"dataUnion": {
@@ -285,7 +282,7 @@ func Test_Compute_Data_Contract(t *testing.T) {
 		}
 	}`
 
-	var schemaData = []byte(`{
+	schemaData := (`{
 		"$id": "https://qri.io/schema/",
 		"$comment" : "sample comment",
 		"title": "Person",
@@ -310,14 +307,30 @@ func Test_Compute_Data_Contract(t *testing.T) {
 		"required": ["firstName", "lastName"]
 	  }`)
 
-	bz, _ := cbor.Marshal(payload)
 	lnk, err := keeper.AddOffchainJSON(ctx, "/", payload2)
 
-	jschem := msg.schema
-	keeper.ApplySchema(ctx)
+	schemaCid, _ := keeper.ApplySchema(ctx, &types.MsgAddSchema{
+		Creator: payload.Creator,
+		Did:     res.Did,
+		Schema:  []byte(schemaData),
+	})
 
 	keeper.SetAnchor(ctx, res.Did, lnk.String(), lnk.String())
 
-	require.NotEqual(t, res.Did, res2.Did)
+	contractCid, _ := keeper.ApplyDataContract(ctx, &types.MsgAddDataContract{
+		Creator: payload.Creator,
+		Did:     res.Did,
+		Data: []byte(`{
+			"foo: "bar"
+		}`),
+	})
+
+	out, _ := keeper.ExecuteDataContractTransaction(ctx, &types.MsgComputeDataContract{
+		Creator:   payload.Creator,
+		Did:       res.Did,
+		InputCid:  lnk.String(),
+		SchemaCid: schemaCid,
+		ToCid:     contractCid,
+	})
 
 }
