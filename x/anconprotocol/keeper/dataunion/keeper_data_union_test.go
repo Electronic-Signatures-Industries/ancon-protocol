@@ -1,5 +1,3 @@
-
-
 package dataunion
 
 import (
@@ -84,13 +82,13 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 	}`
 
 	bz, _ := cbor.Marshal(payload)
-	lnk, err := keeper.AddCBOR(ctx, "/", bz)
+	lnk, err := keeper.AddOffchainCBOR(ctx, "/", bz)
 
 	if err != nil {
 		require.NoError(t, err)
 	}
 
-	content, _ := keeper.ReadCBOR(ctx, "/", lnk)
+	content, _ := keeper.ReadOffchainCBOR(ctx, "/", lnk)
 
 	var w interface{}
 
@@ -101,9 +99,9 @@ func Test_RoundtripCBOR_JSONStore(t *testing.T) {
 	// doc, _ := keeper.GetDid(ctx, res.Cid)
 	// route, _ := keeper.GetDidRoute(ctx, x.Name)
 
-//	require.Equal(t, (w).([]byte), []byte(`{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`))
+	//	require.Equal(t, (w).([]byte), []byte(`{"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","dataUnion":{"active":true,"creator":"cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6","didIdentity":"did:web:acme-sa","name":"Acme SA"}}`))
 }
- 
+
 func Test_Add_Data_Union(t *testing.T) {
 	keeper, ctx := setupKeeper(t)
 
@@ -148,7 +146,7 @@ func Test_DID_Key(t *testing.T) {
 	}
 
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.ReadDidKey(ctx, res.Did)
+	route, _ := keeper.ReadAnyDid(ctx, res.Did)
 	require.Equal(t, route, doc)
 }
 
@@ -172,7 +170,7 @@ func Test_DID_Delegate(t *testing.T) {
 	}
 
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.ReadDidKey(ctx, res.Did)
+	route, _ := keeper.ReadAnyDid(ctx, res.Did)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyDelegate(ctx, &types.MsgGrantDelegate{
@@ -208,7 +206,7 @@ func Test_DID_ChangeOwner(t *testing.T) {
 	}
 
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.ReadDidKey(ctx, res.Did)
+	route, _ := keeper.ReadAnyDid(ctx, res.Did)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -241,7 +239,7 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 	}
 
 	doc, _ := keeper.GetDid(ctx, res.Cid)
-	route, _ := keeper.ReadDidKey(ctx, res.Did)
+	route, _ := keeper.ReadAnyDid(ctx, res.Did)
 	require.Equal(t, route, doc)
 
 	keeper.ApplyOwner(ctx,
@@ -250,6 +248,75 @@ func Test_DID_ChangeOwner_NotFound(t *testing.T) {
 	)
 
 	res2 := keeper.GetDIDOwner(ctx, "cosmos1h6s0yrj7xasau79tn397mxx4auu25yzll89ptl")
+
+	require.NotEqual(t, res.Did, res2.Did)
+
+}
+
+func Test_Compute_Data_Contract(t *testing.T) {
+	keeper, ctx := setupKeeper(t)
+	// ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// require.NoError(t, err)
+
+	// ecKeyBytes := elliptic.Marshal(elliptic.P256(), ecKey.X, ecKey.Y)
+
+	payload := types.MsgCreateDid{
+		Creator:    "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		VanityName: "wonderland",
+		DidType:    "key",
+		// PublicKeyBytes: ecKeyBytes,
+	}
+	res, err := keeper.AddDid(ctx, &payload)
+
+	if err != nil {
+		require.NoError(t, err)
+	}
+
+	doc, _ := keeper.GetDid(ctx, res.Cid)
+	route, _ := keeper.ReadAnyDid(ctx, res.Did)
+
+	payload2 := `{
+		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
+		"dataUnion": {
+			"name":        "Acme SA",
+			"didIdentity": "did:web:acme-sa",
+			"active":      true,
+			"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
+		}
+	}`
+
+	var schemaData = []byte(`{
+		"$id": "https://qri.io/schema/",
+		"$comment" : "sample comment",
+		"title": "Person",
+		"type": "object",
+		"properties": {
+			"firstName": {
+				"type": "string"
+			},
+			"lastName": {
+				"type": "string"
+			},
+			"age": {
+				"description": "Age in years",
+				"type": "integer",
+				"minimum": 0
+			},
+			"friends": {
+			  "type" : "array",
+			  "items" : { "title" : "REFERENCE", "$ref" : "#" }
+			}
+		},
+		"required": ["firstName", "lastName"]
+	  }`)
+
+	bz, _ := cbor.Marshal(payload)
+	lnk, err := keeper.AddOffchainJSON(ctx, "/", payload2)
+
+	jschem := msg.schema
+	keeper.ApplySchema(ctx)
+
+	keeper.SetAnchor(ctx, res.Did, lnk.String(), lnk.String())
 
 	require.NotEqual(t, res.Did, res2.Did)
 
