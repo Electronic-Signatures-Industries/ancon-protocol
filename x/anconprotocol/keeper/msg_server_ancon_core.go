@@ -250,7 +250,7 @@ func (k msgServer) ComputeDataContract(goCtx context.Context, msg *types.MsgComp
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			"ComputeDataContract",
-			sdk.NewAttribute("Cid", cid),
+			sdk.NewAttribute("Cid", cid.String()),
 		),
 	})
 	return &types.MsgComputeDataContractResponse{}, nil

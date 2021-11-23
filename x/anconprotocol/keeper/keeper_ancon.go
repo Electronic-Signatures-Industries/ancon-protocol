@@ -6,13 +6,19 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 
+	jsonstore "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/store/json"
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core/23-commitment/types"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/golang/protobuf/proto"
+	"github.com/golang/glog"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/google/cel-go/common/types/ref"
 	"github.com/multiformats/go-multihash"
 	"github.com/qri-io/jsonschema"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -27,7 +33,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	cid "github.com/ipfs/go-cid"
-	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -605,8 +610,12 @@ func (k Keeper) ApplySchema(ctx sdk.Context, msg *types.MsgAddSchema) (string, e
 
 		return "", fmt.Errorf("Invalid JSON Schema")
 	}
+	np := basicnode.Prototype.Any
+	node, err := jsonstore.Decode(np, string(msg.Schema))
 
-	node, err := ipldutil.DecodeNode(msg.Schema)
+	if err != nil {
+		return "", err
+	}
 
 	dus := k.DataUnionStore(ctx)
 
@@ -621,17 +630,19 @@ func (k Keeper) ApplySchema(ctx sdk.Context, msg *types.MsgAddSchema) (string, e
 	return link.String(), err
 }
 
+func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs, sender, did, payload string) map[string]interface{} {
 
-func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs hexutil.Bytes, sender, did string) map[string]interface{} {
-
+	//	inputs, _ := json.Marshal((jsonArgs))
 	return map[string]interface{}{
+		//		"inputs":       inputs,
 		"sender": sender,
-		"did": did,
-		"gas_meter": ctx.BlockGasMeter(),
-		"chain_id": ctx.ChainID(),
-		"block_header": ctx.BlockHeader,
-		"block_time": ctx.BlockTime,
-		"block_height": ctx.BlockHeight(),
+		"did":    did,
+		// "gas_meter":    ctx.BlockGasMeter(),
+		// "chain_id":     ctx.ChainID(),
+		// "block_header": ctx.BlockHeader,
+		// "block_time":   ctx.BlockTime,
+		// "block_height": ctx.BlockHeight(),
+		"payload": FromJSON(payload),
 	}
 
 }
@@ -639,35 +650,21 @@ func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs hexutil.Bytes, 
 func (k Keeper) GetDataContractEnvironment() *cel.Env {
 	env, _ := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("inputs", decls.NewListType(decls.Dyn)),
-		),
-		cel.Declarations(
-			decls.NewVar("block_time", decls.Dyn),
-		),
-		cel.Declarations(
-			decls.NewVar("block_height", decls.Dyn),
-		),
-		cel.Declarations(
-			decls.NewVar("block_header", decls.Dyn),
-		),
-		cel.Declarations(
-			decls.NewVar("chain_id", decls.Dyn),
-		),
-		cel.Declarations(
-			decls.NewVar("gas_meter", decls.Dyn),
-		),
-		cel.Declarations(
+			// decls.NewVar("inputs", decls.Dyn),
+			// decls.NewVar("block_time", decls.Dyn),
+			// decls.NewVar("block_height", decls.Dyn),
+			// decls.NewVar("block_header", decls.Dyn),
+			// decls.NewVar("chain_id", decls.Dyn),
+			// decls.NewVar("gas_meter", decls.Dyn),
 			decls.NewVar("sender", decls.Dyn),
-		),
-		cel.Declarations(
 			decls.NewVar("did", decls.Dyn),
+			decls.NewVar("payload", decls.Dyn),
 		),
 	)
 
 	return env
 }
 func (k Keeper) ApplyDataContract(ctx sdk.Context, msg *types.MsgAddDataContract) (string, error) {
-
 
 	ast, issues := k.GetDataContractEnvironment().Compile(string(msg.Data))
 	if issues != nil && issues.Err() != nil {
@@ -680,38 +677,21 @@ func (k Keeper) ApplyDataContract(ctx sdk.Context, msg *types.MsgAddDataContract
 		return "", fmt.Errorf("Marshal error", err)
 	}
 
-	node, err := ipldutil.DecodeNode(bz)
+	lnk := CreateCidLink(bz)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("contracts"))
+	store.Set(lnk.Bytes(), bz)
 
-	dus := k.DataUnionStore(ctx)
-
-	link, err := dus.LinkSystem.Store(
-		ipld.LinkContext{
-			LinkPath: datamodel.ParsePath("contracts/"),
-		},
-		GetLinkPrototype(),
-		node,
-	)
-
-	return link.String(), err
+	return lnk.String(), err
 }
 
 func (k Keeper) GetDataContract(ctx sdk.Context, hash string) (*expr.CheckedExpr, error) {
 
 	clink, err := ParseCidLink(hash)
-	dus := k.DataUnionStore(ctx)
-
-	node, err := dus.LinkSystem.Load(
-		ipld.LinkContext{
-			LinkPath: datamodel.ParsePath("contracts/"),
-		},
-		clink,
-		basicnode.Prototype.Any,
-	)
-
-	bz, err := ipldutil.EncodeNode(node)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("contracts"))
+	s := store.Get([]byte(clink.String()))
 	exp := expr.CheckedExpr{}
 
-	err = proto.Unmarshal(bz, &exp)
+	err = proto.Unmarshal([]byte(s), &exp)
 
 	return &exp, err
 }
@@ -728,17 +708,19 @@ func (k Keeper) GetDataSchema(ctx sdk.Context, hash string) (*jsonschema.Schema,
 		clink,
 		basicnode.Prototype.Any,
 	)
+	s, err := jsonstore.Encode(node)
 
-	bz, err := ipldutil.EncodeNode(node)
+	if err != nil {
+		return nil, err
+	}
 
 	jschem := jsonschema.Schema{}
 
-	err = json.Unmarshal(bz, &jschem)
-
+	err = jschem.UnmarshalJSON([]byte(s))
 	return &jschem, err
 }
 
-func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgComputeDataContract) (string, error) {
+func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgComputeDataContract) (datamodel.Link, error) {
 	//inputs: all cids available in the anchoring list
 	var anch []byte
 
@@ -748,53 +730,59 @@ func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgCo
 
 	lnk, err := ParseCidLink(string(anch))
 	if err != nil {
-		return "", fmt.Errorf("Parse link error", err)
+		return nil, fmt.Errorf("Parse link error", err)
 	}
 
 	node, err := k.ReadOffchainJSON(ctx, "", lnk)
 	if err != nil {
-		return "", fmt.Errorf("Read JSON  error", err)
+		return nil, fmt.Errorf("Read JSON  error", err)
 	}
 
 	schema, err := k.GetDataSchema(ctx, msg.SchemaCid)
 	if err != nil {
-		return "", fmt.Errorf("Get schema error", err)
+		return nil, fmt.Errorf("Get schema error", err)
 	}
 
 	_, err = schema.ValidateBytes(ctx.Context(), []byte(node))
 
 	if err != nil {
-		return "", fmt.Errorf("Validate bytes error", err)
+		return nil, fmt.Errorf("Validate bytes error", err)
 	}
 
 	dataContr, err := k.GetDataContract(ctx, msg.ToCid)
 	if err != nil {
-		return "", fmt.Errorf("Get contract error", err)
+		return nil, fmt.Errorf("Get contract error", dataContr)
 	}
 
-	ast := cel.CheckedExprToAst(dataContr)
+	ast, issues := k.GetDataContractEnvironment().Compile(` payload.lastName`)
+	if len(issues.Errors()) > 0 {
 
-	prog, _ := k.GetDataContractEnvironment().Program(ast)
+		return nil, fmt.Errorf("issues %v", issues.Errors())
+	}
 
-	out, _, err := prog.Eval(node, 
-		k.GetDataContractGlobals(ctx, hexutil.Bytes(msg.JsonArguments), msg.Creator, msg.Did)
+	prog, err := k.GetDataContractEnvironment().Program(ast)
+	if err != nil {
+		return nil, fmt.Errorf("env error: %v", err)
+	}
+	out, _, err := prog.Eval(
+		k.GetDataContractGlobals(ctx, (msg.JsonArguments), msg.Creator, msg.Did, node),
 	)
 	if err != nil {
-		return "", fmt.Errorf("Eval node error", err)
+		return nil, fmt.Errorf("Eval node error", err)
 	}
 
-	clink, err := k.AddOffchainJSON(ctx, "", valueToJSON(out))
+	clink, err := k.AddOffchainJSON(ctx, "", ValueToJSON(out))
 	if err != nil {
-		return "", fmt.Errorf("Offchain JSON error", err)
+		return nil, fmt.Errorf("Offchain JSON error", err)
 	}
 
-	return clink.String(), nil
+	return clink, nil
 }
 
 // From: https://github.com/google/cel-go/blob/master/codelab/solution/codelab.go
 // valueToJSON converts the CEL type to a protobuf JSON representation and
 // marshals the result to a string.
-func valueToJSON(val ref.Val) string {
+func ValueToJSON(val ref.Val) string {
 	v, err := val.ConvertToNative(reflect.TypeOf(&structpb.Value{}))
 	if err != nil {
 		glog.Exit(err)
@@ -805,4 +793,10 @@ func valueToJSON(val ref.Val) string {
 		glog.Exit(err)
 	}
 	return string(bytes)
+}
+func FromJSON(j string) interface{} {
+
+	var val interface{}
+	json.Unmarshal([]byte(j), &val)
+	return val
 }

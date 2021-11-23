@@ -43,6 +43,7 @@ require (
 	github.com/cosmos/gaia/v6 v6.0.0-rc3
 	github.com/cosmos/ibc-go/v2 v2.0.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/golang/glog v1.0.0
 	github.com/google/cel-go v0.9.0
 	github.com/gravity-devs/liquidity v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect

@@ -17,7 +17,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/libs/log"
@@ -274,13 +273,8 @@ func Test_Compute_Data_Contract(t *testing.T) {
 	}
 
 	payload2 := `{
-		"creator": "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6",
-		"dataUnion": {
-			"name":        "Acme SA",
-			"didIdentity": "did:web:acme-sa",
-			"active":      true,
-			"creator":     "cosmos1ec02plr0mddj7r9x3kgh9phunz34t69twpley6"
-		}
+		"firstName": "Alice",
+		"lastName": "In Wonderland"
 	}`
 
 	schemaData := (`{
@@ -308,8 +302,9 @@ func Test_Compute_Data_Contract(t *testing.T) {
 		"required": ["firstName", "lastName"]
 	  }`)
 
-	lnk, err := keeper.AddOffchainJSON(ctx, "/", payload2)
+	lnk, err := keeper.AddOffchainJSON(ctx, "", payload2)
 
+	// Schema
 	schemaCid, _ := keeper.ApplySchema(ctx, &types.MsgAddSchema{
 		Creator: payload.Creator,
 		Did:     res.Did,
@@ -318,23 +313,27 @@ func Test_Compute_Data_Contract(t *testing.T) {
 
 	keeper.SetAnchor(ctx, res.Did, lnk.String(), lnk.String())
 
+	contract := ` payload.lastName`
 	contractCid, _ := keeper.ApplyDataContract(ctx, &types.MsgAddDataContract{
 		Creator: payload.Creator,
 		Did:     res.Did,
-		Data: []byte(`{
-			"foo: "bar"
-		}`),
+		Data:    []byte(contract),
 	})
 
-	inputs := `[0, 1, "3", "Hola"]`
-	args := hexutil.Encode([]byte(inputs))
-	out, _ := keeper.ExecuteDataContractTransaction(ctx, &types.MsgComputeDataContract{
-		Creator:   payload.Creator,
-		Did:       res.Did,
-		InputCid:  lnk.String(),
-		SchemaCid: schemaCid,
-		ToCid:     contractCid,
+	inputs := `{ "index": 0, "numb": 1, "tres": "3", "say": "Hola" }`
+	args := ((inputs))
+	out, err := keeper.ExecuteDataContractTransaction(ctx, &types.MsgComputeDataContract{
+		Creator:       payload.Creator,
+		Did:           res.Did,
+		InputCid:      lnk.String(),
+		SchemaCid:     schemaCid,
+		ToCid:         contractCid,
 		JsonArguments: args,
 	})
+
+	s, err := keeper.ReadOffchainJSON(ctx, "", out)
+
+	require.Equal(t, s, "")
+	require.NoError(t, err)
 
 }
