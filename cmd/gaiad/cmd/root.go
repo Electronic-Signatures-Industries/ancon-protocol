@@ -155,6 +155,25 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
+func celCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:                        "cel",
+		Short:                      "Transactions subcommands",
+		DisableFlagParsing:         true,
+		SuggestionsMinimumDistance: 2,
+		RunE:                       client.ValidateCmd,
+	}
+
+	cmd.AddCommand(
+		anconcmd.ExecuteCelContract(),
+	)
+
+	gaia.ModuleBasics.AddTxCommands(cmd)
+	// cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
+
+	return cmd
+}
+
 type appCreator struct {
 	encCfg params.EncodingConfig
 }
