@@ -195,6 +195,20 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryReadMetadataProof
+         * @summary Reads metadata proofs
+         * @request GET:/metadara/proof/{cid}/{path}
+         */
+        this.queryReadMetadataProof = (cid, path, params = {}) => this.request({
+            path: `/metadara/proof/${cid}/${path}`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryReadWithPath
          * @summary Queries a list of resource items.
          * @request GET:/metadata/{cid}/{path}
@@ -288,20 +302,6 @@ export class Api extends HttpClient {
          */
         this.queryReadRoyaltyInfo = (cid, price, params = {}) => this.request({
             path: `/nft/royalty/${cid}/${price}`,
-            method: "GET",
-            format: "json",
-            ...params,
-        });
-        /**
-         * No description
-         *
-         * @tags Query
-         * @name QueryReadMetadataProof
-         * @summary Reads metadata proofs
-         * @request GET:/proof/{cid}/{path}
-         */
-        this.queryReadMetadataProof = (cid, path, params = {}) => this.request({
-            path: `/proof/${cid}/${path}`,
             method: "GET",
             format: "json",
             ...params,

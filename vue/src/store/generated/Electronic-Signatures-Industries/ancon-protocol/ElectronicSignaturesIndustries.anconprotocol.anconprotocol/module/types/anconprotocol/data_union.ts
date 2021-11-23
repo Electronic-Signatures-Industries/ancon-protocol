@@ -73,7 +73,6 @@ export interface MsgUpdateDataSource {
 }
 
 export interface MsgUpdateDataSourceResponse {
-  ok: boolean
   cid: string
 }
 
@@ -97,7 +96,9 @@ export interface MsgUpdateDataUnion {
   name: string
 }
 
-export interface MsgUpdateDataUnionResponse {}
+export interface MsgUpdateDataUnionResponse {
+  cid: string
+}
 
 const baseDataSource: object = { parentCid: '', didOwner: '', anchors: '', name: '', description: '', creator: '' }
 
@@ -974,15 +975,12 @@ export const MsgUpdateDataSource = {
   }
 }
 
-const baseMsgUpdateDataSourceResponse: object = { ok: false, cid: '' }
+const baseMsgUpdateDataSourceResponse: object = { cid: '' }
 
 export const MsgUpdateDataSourceResponse = {
   encode(message: MsgUpdateDataSourceResponse, writer: Writer = Writer.create()): Writer {
-    if (message.ok === true) {
-      writer.uint32(8).bool(message.ok)
-    }
     if (message.cid !== '') {
-      writer.uint32(18).string(message.cid)
+      writer.uint32(10).string(message.cid)
     }
     return writer
   },
@@ -995,9 +993,6 @@ export const MsgUpdateDataSourceResponse = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.ok = reader.bool()
-          break
-        case 2:
           message.cid = reader.string()
           break
         default:
@@ -1010,11 +1005,6 @@ export const MsgUpdateDataSourceResponse = {
 
   fromJSON(object: any): MsgUpdateDataSourceResponse {
     const message = { ...baseMsgUpdateDataSourceResponse } as MsgUpdateDataSourceResponse
-    if (object.ok !== undefined && object.ok !== null) {
-      message.ok = Boolean(object.ok)
-    } else {
-      message.ok = false
-    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = String(object.cid)
     } else {
@@ -1025,18 +1015,12 @@ export const MsgUpdateDataSourceResponse = {
 
   toJSON(message: MsgUpdateDataSourceResponse): unknown {
     const obj: any = {}
-    message.ok !== undefined && (obj.ok = message.ok)
     message.cid !== undefined && (obj.cid = message.cid)
     return obj
   },
 
   fromPartial(object: DeepPartial<MsgUpdateDataSourceResponse>): MsgUpdateDataSourceResponse {
     const message = { ...baseMsgUpdateDataSourceResponse } as MsgUpdateDataSourceResponse
-    if (object.ok !== undefined && object.ok !== null) {
-      message.ok = object.ok
-    } else {
-      message.ok = false
-    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = object.cid
     } else {
@@ -1355,10 +1339,13 @@ export const MsgUpdateDataUnion = {
   }
 }
 
-const baseMsgUpdateDataUnionResponse: object = {}
+const baseMsgUpdateDataUnionResponse: object = { cid: '' }
 
 export const MsgUpdateDataUnionResponse = {
-  encode(_: MsgUpdateDataUnionResponse, writer: Writer = Writer.create()): Writer {
+  encode(message: MsgUpdateDataUnionResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
     return writer
   },
 
@@ -1369,6 +1356,9 @@ export const MsgUpdateDataUnionResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -1377,18 +1367,29 @@ export const MsgUpdateDataUnionResponse = {
     return message
   },
 
-  fromJSON(_: any): MsgUpdateDataUnionResponse {
+  fromJSON(object: any): MsgUpdateDataUnionResponse {
     const message = { ...baseMsgUpdateDataUnionResponse } as MsgUpdateDataUnionResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
     return message
   },
 
-  toJSON(_: MsgUpdateDataUnionResponse): unknown {
+  toJSON(message: MsgUpdateDataUnionResponse): unknown {
     const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
     return obj
   },
 
-  fromPartial(_: DeepPartial<MsgUpdateDataUnionResponse>): MsgUpdateDataUnionResponse {
+  fromPartial(object: DeepPartial<MsgUpdateDataUnionResponse>): MsgUpdateDataUnionResponse {
     const message = { ...baseMsgUpdateDataUnionResponse } as MsgUpdateDataUnionResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
     return message
   }
 }

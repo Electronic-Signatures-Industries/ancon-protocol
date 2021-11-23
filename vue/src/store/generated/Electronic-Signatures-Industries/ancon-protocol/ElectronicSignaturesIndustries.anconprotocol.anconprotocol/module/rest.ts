@@ -68,12 +68,20 @@ export interface AnconprotocolIDCollection {
   tokenIds?: string[];
 }
 
+export interface AnconprotocolMsgAddDataContractResponse {
+  cid?: string;
+}
+
 export interface AnconprotocolMsgAddDataSourceResponse {
   ok?: boolean;
   cid?: string;
 }
 
 export type AnconprotocolMsgAddDataUnionResponse = object;
+
+export interface AnconprotocolMsgAddSchemaResponse {
+  cid?: string;
+}
 
 export interface AnconprotocolMsgAnchorCidResponse {
   challenge?: string;
@@ -95,6 +103,10 @@ export interface AnconprotocolMsgChangeOwnerResponse {
 
   /** @format uint64 */
   previousChange?: string;
+}
+
+export interface AnconprotocolMsgComputeDataContractResponse {
+  cid?: string;
 }
 
 export interface AnconprotocolMsgCreateDidResponse {
@@ -180,13 +192,6 @@ export type AnconprotocolMsgTransferDenomResponse = object;
  */
 export type AnconprotocolMsgTransferNFTResponse = object;
 
-export interface AnconprotocolMsgUpdateDataSourceResponse {
-  ok?: boolean;
-  cid?: string;
-}
-
-export type AnconprotocolMsgUpdateDataUnionResponse = object;
-
 export type AnconprotocolMsgUpdateDidResponse = object;
 
 export interface AnconprotocolMsgUpdateMetadataOwnershipResponse {
@@ -245,6 +250,11 @@ export interface AnconprotocolQueryDenomsResponse {
    *  }
    */
   pagination?: V1Beta1PageResponse;
+}
+
+export interface AnconprotocolQueryDidResponse {
+  /** @format byte */
+  data?: string;
 }
 
 export interface AnconprotocolQueryGetAttributesResponse {
@@ -738,8 +748,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @request GET:/didregistry/{hashcid}
    */
   queryGetDidKey = (hashcid: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+    this.request<AnconprotocolQueryDidResponse, RpcStatus>({
       path: `/didregistry/${hashcid}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryReadMetadataProof
+   * @summary Reads metadata proofs
+   * @request GET:/metadara/proof/{cid}/{path}
+   */
+  queryReadMetadataProof = (cid: string, path: string, params: RequestParams = {}) =>
+    this.request<AnconprotocolQueryProofResponse, RpcStatus>({
+      path: `/metadara/proof/${cid}/${path}`,
       method: "GET",
       format: "json",
       ...params,
@@ -894,22 +920,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryReadMetadataProof
-   * @summary Reads metadata proofs
-   * @request GET:/proof/{cid}/{path}
-   */
-  queryReadMetadataProof = (cid: string, path: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryProofResponse, RpcStatus>({
-      path: `/proof/${cid}/${path}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
    * @name QueryResource
    * @summary Queries a list of resource items.
    * @request GET:/resource/{cid}
@@ -963,7 +973,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @request GET:/user/{name}/did.json
    */
   queryResolveDidWeb = (name: string, params: RequestParams = {}) =>
-    this.request<AnconprotocolQueryResourceResponse, RpcStatus>({
+    this.request<AnconprotocolQueryDidResponse, RpcStatus>({
       path: `/user/${name}/did.json`,
       method: "GET",
       format: "json",

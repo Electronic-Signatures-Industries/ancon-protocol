@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
-import { Owner, Collection, Denom, BaseNFT } from '..anconprotocol/nft';
+import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol';
 const baseQueryDidWebRequest = { name: '' };
 export const QueryDidWebRequest = {
@@ -164,6 +164,54 @@ export const QuerySchemaStoreResponse = {
     },
     fromPartial(object) {
         const message = { ...baseQuerySchemaStoreResponse };
+        if (object.data !== undefined && object.data !== null) {
+            message.data = object.data;
+        }
+        else {
+            message.data = new Uint8Array();
+        }
+        return message;
+    }
+};
+const baseQueryDidResponse = {};
+export const QueryDidResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.data.length !== 0) {
+            writer.uint32(10).bytes(message.data);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryDidResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.data = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryDidResponse };
+        if (object.data !== undefined && object.data !== null) {
+            message.data = bytesFromBase64(object.data);
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.data !== undefined && (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()));
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryDidResponse };
         if (object.data !== undefined && object.data !== null) {
             message.data = object.data;
         }
@@ -1943,6 +1991,11 @@ export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
     }
+    ResolveDidWeb(request) {
+        const data = QueryDidWebRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ResolveDidWeb', data);
+        return promise.then((data) => QueryDidResponse.decode(new Reader(data)));
+    }
     ReadRoyaltyInfo(request) {
         const data = QueryReadRoyaltyInfo.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadRoyaltyInfo', data);
@@ -1967,11 +2020,6 @@ export class QueryClientImpl {
         const data = QueryGetAttributesRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetAttributes', data);
         return promise.then((data) => QueryGetAttributesResponse.decode(new Reader(data)));
-    }
-    Resource(request) {
-        const data = QueryResourceRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
     }
     ReadDelegate(request) {
         const data = QueryGetDelegateRequest.encode(request).finish();
@@ -2003,15 +2051,10 @@ export class QueryClientImpl {
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetNft', data);
         return promise.then((data) => QueryNFTResponse.decode(new Reader(data)));
     }
-    ResolveDidWeb(request) {
-        const data = QueryDidWebRequest.encode(request).finish();
-        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ResolveDidWeb', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
-    }
     GetDidKey(request) {
         const data = QueryGetDidRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetDidKey', data);
-        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
+        return promise.then((data) => QueryDidResponse.decode(new Reader(data)));
     }
     WriteSchemaStoreResource(request) {
         const data = PostSchemaRequest.encode(request).finish();
@@ -2022,6 +2065,11 @@ export class QueryClientImpl {
         const data = QuerySchemaStoreRequest.encode(request).finish();
         const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadSchemaStoreResource', data);
         return promise.then((data) => QuerySchemaStoreResponse.decode(new Reader(data)));
+    }
+    Resource(request) {
+        const data = QueryResourceRequest.encode(request).finish();
+        const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data);
+        return promise.then((data) => QueryResourceResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {

@@ -4,17 +4,13 @@ import * as Long from 'long'
 import {
   MsgAddDataSourceResponse,
   MsgRemoveDataSourceResponse,
-  MsgUpdateDataSourceResponse,
   MsgAddDataUnionResponse,
   MsgRemoveDataUnionResponse,
-  MsgUpdateDataUnionResponse,
   MsgAddDataSource,
   MsgRemoveDataSource,
-  MsgUpdateDataSource,
   MsgAddDataUnion,
-  MsgRemoveDataUnion,
-  MsgUpdateDataUnion
-} from '..anconprotocol/data_union'
+  MsgRemoveDataUnion
+} from '../anconprotocol/data_union'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
@@ -56,6 +52,40 @@ export interface MsgAnchorCidResponse {
 
 export interface MsgAnchorCidWithProofResponse {
   ok: boolean
+}
+
+export interface MsgAddSchema {
+  creator: string
+  did: string
+  schema: Uint8Array
+}
+
+export interface MsgAddSchemaResponse {
+  cid: string
+}
+
+export interface MsgAddDataContract {
+  creator: string
+  did: string
+  data: Uint8Array
+}
+
+export interface MsgAddDataContractResponse {
+  cid: string
+}
+
+export interface MsgComputeDataContract {
+  creator: string
+  did: string
+  inputCid: string
+  schemaCid: string
+  toCid: string
+  /** as hex */
+  jsonArguments: string
+}
+
+export interface MsgComputeDataContractResponse {
+  cid: string
 }
 
 export interface MsgUpdateMetadataOwnershipResponse {
@@ -995,6 +1025,485 @@ export const MsgAnchorCidWithProofResponse = {
       message.ok = object.ok
     } else {
       message.ok = false
+    }
+    return message
+  }
+}
+
+const baseMsgAddSchema: object = { creator: '', did: '' }
+
+export const MsgAddSchema = {
+  encode(message: MsgAddSchema, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.schema.length !== 0) {
+      writer.uint32(26).bytes(message.schema)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAddSchema {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAddSchema } as MsgAddSchema
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.schema = reader.bytes()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAddSchema {
+    const message = { ...baseMsgAddSchema } as MsgAddSchema
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.schema !== undefined && object.schema !== null) {
+      message.schema = bytesFromBase64(object.schema)
+    }
+    return message
+  },
+
+  toJSON(message: MsgAddSchema): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.schema !== undefined && (obj.schema = base64FromBytes(message.schema !== undefined ? message.schema : new Uint8Array()))
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAddSchema>): MsgAddSchema {
+    const message = { ...baseMsgAddSchema } as MsgAddSchema
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.schema !== undefined && object.schema !== null) {
+      message.schema = object.schema
+    } else {
+      message.schema = new Uint8Array()
+    }
+    return message
+  }
+}
+
+const baseMsgAddSchemaResponse: object = { cid: '' }
+
+export const MsgAddSchemaResponse = {
+  encode(message: MsgAddSchemaResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAddSchemaResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAddSchemaResponse } as MsgAddSchemaResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAddSchemaResponse {
+    const message = { ...baseMsgAddSchemaResponse } as MsgAddSchemaResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgAddSchemaResponse): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAddSchemaResponse>): MsgAddSchemaResponse {
+    const message = { ...baseMsgAddSchemaResponse } as MsgAddSchemaResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgAddDataContract: object = { creator: '', did: '' }
+
+export const MsgAddDataContract = {
+  encode(message: MsgAddDataContract, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(26).bytes(message.data)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAddDataContract {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAddDataContract } as MsgAddDataContract
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.data = reader.bytes()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAddDataContract {
+    const message = { ...baseMsgAddDataContract } as MsgAddDataContract
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data)
+    }
+    return message
+  },
+
+  toJSON(message: MsgAddDataContract): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.data !== undefined && (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()))
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAddDataContract>): MsgAddDataContract {
+    const message = { ...baseMsgAddDataContract } as MsgAddDataContract
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = object.data
+    } else {
+      message.data = new Uint8Array()
+    }
+    return message
+  }
+}
+
+const baseMsgAddDataContractResponse: object = { cid: '' }
+
+export const MsgAddDataContractResponse = {
+  encode(message: MsgAddDataContractResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgAddDataContractResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgAddDataContractResponse } as MsgAddDataContractResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgAddDataContractResponse {
+    const message = { ...baseMsgAddDataContractResponse } as MsgAddDataContractResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgAddDataContractResponse): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgAddDataContractResponse>): MsgAddDataContractResponse {
+    const message = { ...baseMsgAddDataContractResponse } as MsgAddDataContractResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
+    }
+    return message
+  }
+}
+
+const baseMsgComputeDataContract: object = { creator: '', did: '', inputCid: '', schemaCid: '', toCid: '', jsonArguments: '' }
+
+export const MsgComputeDataContract = {
+  encode(message: MsgComputeDataContract, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.did !== '') {
+      writer.uint32(18).string(message.did)
+    }
+    if (message.inputCid !== '') {
+      writer.uint32(26).string(message.inputCid)
+    }
+    if (message.schemaCid !== '') {
+      writer.uint32(34).string(message.schemaCid)
+    }
+    if (message.toCid !== '') {
+      writer.uint32(42).string(message.toCid)
+    }
+    if (message.jsonArguments !== '') {
+      writer.uint32(50).string(message.jsonArguments)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgComputeDataContract {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgComputeDataContract } as MsgComputeDataContract
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.did = reader.string()
+          break
+        case 3:
+          message.inputCid = reader.string()
+          break
+        case 4:
+          message.schemaCid = reader.string()
+          break
+        case 5:
+          message.toCid = reader.string()
+          break
+        case 6:
+          message.jsonArguments = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgComputeDataContract {
+    const message = { ...baseMsgComputeDataContract } as MsgComputeDataContract
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = String(object.did)
+    } else {
+      message.did = ''
+    }
+    if (object.inputCid !== undefined && object.inputCid !== null) {
+      message.inputCid = String(object.inputCid)
+    } else {
+      message.inputCid = ''
+    }
+    if (object.schemaCid !== undefined && object.schemaCid !== null) {
+      message.schemaCid = String(object.schemaCid)
+    } else {
+      message.schemaCid = ''
+    }
+    if (object.toCid !== undefined && object.toCid !== null) {
+      message.toCid = String(object.toCid)
+    } else {
+      message.toCid = ''
+    }
+    if (object.jsonArguments !== undefined && object.jsonArguments !== null) {
+      message.jsonArguments = String(object.jsonArguments)
+    } else {
+      message.jsonArguments = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgComputeDataContract): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.did !== undefined && (obj.did = message.did)
+    message.inputCid !== undefined && (obj.inputCid = message.inputCid)
+    message.schemaCid !== undefined && (obj.schemaCid = message.schemaCid)
+    message.toCid !== undefined && (obj.toCid = message.toCid)
+    message.jsonArguments !== undefined && (obj.jsonArguments = message.jsonArguments)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgComputeDataContract>): MsgComputeDataContract {
+    const message = { ...baseMsgComputeDataContract } as MsgComputeDataContract
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.did !== undefined && object.did !== null) {
+      message.did = object.did
+    } else {
+      message.did = ''
+    }
+    if (object.inputCid !== undefined && object.inputCid !== null) {
+      message.inputCid = object.inputCid
+    } else {
+      message.inputCid = ''
+    }
+    if (object.schemaCid !== undefined && object.schemaCid !== null) {
+      message.schemaCid = object.schemaCid
+    } else {
+      message.schemaCid = ''
+    }
+    if (object.toCid !== undefined && object.toCid !== null) {
+      message.toCid = object.toCid
+    } else {
+      message.toCid = ''
+    }
+    if (object.jsonArguments !== undefined && object.jsonArguments !== null) {
+      message.jsonArguments = object.jsonArguments
+    } else {
+      message.jsonArguments = ''
+    }
+    return message
+  }
+}
+
+const baseMsgComputeDataContractResponse: object = { cid: '' }
+
+export const MsgComputeDataContractResponse = {
+  encode(message: MsgComputeDataContractResponse, writer: Writer = Writer.create()): Writer {
+    if (message.cid !== '') {
+      writer.uint32(10).string(message.cid)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgComputeDataContractResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgComputeDataContractResponse } as MsgComputeDataContractResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.cid = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgComputeDataContractResponse {
+    const message = { ...baseMsgComputeDataContractResponse } as MsgComputeDataContractResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid)
+    } else {
+      message.cid = ''
+    }
+    return message
+  },
+
+  toJSON(message: MsgComputeDataContractResponse): unknown {
+    const obj: any = {}
+    message.cid !== undefined && (obj.cid = message.cid)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgComputeDataContractResponse>): MsgComputeDataContractResponse {
+    const message = { ...baseMsgComputeDataContractResponse } as MsgComputeDataContractResponse
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid
+    } else {
+      message.cid = ''
     }
     return message
   }
@@ -6314,12 +6823,13 @@ export const AguaclaraPacketData = {
 export interface Msg {
   AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>
   AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>
+  AddSchema(request: MsgAddSchema): Promise<MsgAddSchemaResponse>
+  AddDataContract(request: MsgAddDataContract): Promise<MsgAddDataContractResponse>
+  ComputeDataContract(request: MsgComputeDataContract): Promise<MsgComputeDataContractResponse>
   AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>
   RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>
-  UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>
   AddDataUnion(request: MsgAddDataUnion): Promise<MsgAddDataUnionResponse>
   RemoveDataUnion(request: MsgRemoveDataUnion): Promise<MsgRemoveDataUnionResponse>
-  UpdateDataUnion(request: MsgUpdateDataUnion): Promise<MsgUpdateDataUnionResponse>
   /** Send cross chain message */
   SendMetadataOwnership(request: MsgSendMetadataOwnership): Promise<MsgSendMetadataOwnershipResponse>
   /** CreateDid */
@@ -6382,6 +6892,24 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgAnchorCidWithProofResponse.decode(new Reader(data)))
   }
 
+  AddSchema(request: MsgAddSchema): Promise<MsgAddSchemaResponse> {
+    const data = MsgAddSchema.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddSchema', data)
+    return promise.then((data) => MsgAddSchemaResponse.decode(new Reader(data)))
+  }
+
+  AddDataContract(request: MsgAddDataContract): Promise<MsgAddDataContractResponse> {
+    const data = MsgAddDataContract.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDataContract', data)
+    return promise.then((data) => MsgAddDataContractResponse.decode(new Reader(data)))
+  }
+
+  ComputeDataContract(request: MsgComputeDataContract): Promise<MsgComputeDataContractResponse> {
+    const data = MsgComputeDataContract.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'ComputeDataContract', data)
+    return promise.then((data) => MsgComputeDataContractResponse.decode(new Reader(data)))
+  }
+
   AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse> {
     const data = MsgAddDataSource.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDataSource', data)
@@ -6394,12 +6922,6 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgRemoveDataSourceResponse.decode(new Reader(data)))
   }
 
-  UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse> {
-    const data = MsgUpdateDataSource.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'UpdateDataSource', data)
-    return promise.then((data) => MsgUpdateDataSourceResponse.decode(new Reader(data)))
-  }
-
   AddDataUnion(request: MsgAddDataUnion): Promise<MsgAddDataUnionResponse> {
     const data = MsgAddDataUnion.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'AddDataUnion', data)
@@ -6410,12 +6932,6 @@ export class MsgClientImpl implements Msg {
     const data = MsgRemoveDataUnion.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'RemoveDataUnion', data)
     return promise.then((data) => MsgRemoveDataUnionResponse.decode(new Reader(data)))
-  }
-
-  UpdateDataUnion(request: MsgUpdateDataUnion): Promise<MsgUpdateDataUnionResponse> {
-    const data = MsgUpdateDataUnion.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Msg', 'UpdateDataUnion', data)
-    return promise.then((data) => MsgUpdateDataUnionResponse.decode(new Reader(data)))
   }
 
   SendMetadataOwnership(request: MsgSendMetadataOwnership): Promise<MsgSendMetadataOwnershipResponse> {

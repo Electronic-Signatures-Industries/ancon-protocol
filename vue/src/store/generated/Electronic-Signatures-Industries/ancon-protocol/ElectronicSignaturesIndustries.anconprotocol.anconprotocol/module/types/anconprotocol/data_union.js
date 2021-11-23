@@ -882,14 +882,11 @@ export const MsgUpdateDataSource = {
         return message;
     }
 };
-const baseMsgUpdateDataSourceResponse = { ok: false, cid: '' };
+const baseMsgUpdateDataSourceResponse = { cid: '' };
 export const MsgUpdateDataSourceResponse = {
     encode(message, writer = Writer.create()) {
-        if (message.ok === true) {
-            writer.uint32(8).bool(message.ok);
-        }
         if (message.cid !== '') {
-            writer.uint32(18).string(message.cid);
+            writer.uint32(10).string(message.cid);
         }
         return writer;
     },
@@ -901,9 +898,6 @@ export const MsgUpdateDataSourceResponse = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.ok = reader.bool();
-                    break;
-                case 2:
                     message.cid = reader.string();
                     break;
                 default:
@@ -915,12 +909,6 @@ export const MsgUpdateDataSourceResponse = {
     },
     fromJSON(object) {
         const message = { ...baseMsgUpdateDataSourceResponse };
-        if (object.ok !== undefined && object.ok !== null) {
-            message.ok = Boolean(object.ok);
-        }
-        else {
-            message.ok = false;
-        }
         if (object.cid !== undefined && object.cid !== null) {
             message.cid = String(object.cid);
         }
@@ -931,18 +919,11 @@ export const MsgUpdateDataSourceResponse = {
     },
     toJSON(message) {
         const obj = {};
-        message.ok !== undefined && (obj.ok = message.ok);
         message.cid !== undefined && (obj.cid = message.cid);
         return obj;
     },
     fromPartial(object) {
         const message = { ...baseMsgUpdateDataSourceResponse };
-        if (object.ok !== undefined && object.ok !== null) {
-            message.ok = object.ok;
-        }
-        else {
-            message.ok = false;
-        }
         if (object.cid !== undefined && object.cid !== null) {
             message.cid = object.cid;
         }
@@ -1245,9 +1226,12 @@ export const MsgUpdateDataUnion = {
         return message;
     }
 };
-const baseMsgUpdateDataUnionResponse = {};
+const baseMsgUpdateDataUnionResponse = { cid: '' };
 export const MsgUpdateDataUnionResponse = {
-    encode(_, writer = Writer.create()) {
+    encode(message, writer = Writer.create()) {
+        if (message.cid !== '') {
+            writer.uint32(10).string(message.cid);
+        }
         return writer;
     },
     decode(input, length) {
@@ -1257,6 +1241,9 @@ export const MsgUpdateDataUnionResponse = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 1:
+                    message.cid = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -1264,16 +1251,29 @@ export const MsgUpdateDataUnionResponse = {
         }
         return message;
     },
-    fromJSON(_) {
+    fromJSON(object) {
         const message = { ...baseMsgUpdateDataUnionResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = String(object.cid);
+        }
+        else {
+            message.cid = '';
+        }
         return message;
     },
-    toJSON(_) {
+    toJSON(message) {
         const obj = {};
+        message.cid !== undefined && (obj.cid = message.cid);
         return obj;
     },
-    fromPartial(_) {
+    fromPartial(object) {
         const message = { ...baseMsgUpdateDataUnionResponse };
+        if (object.cid !== undefined && object.cid !== null) {
+            message.cid = object.cid;
+        }
+        else {
+            message.cid = '';
+        }
         return message;
     }
 };

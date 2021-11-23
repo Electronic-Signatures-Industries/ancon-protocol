@@ -1,5 +1,5 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-import { MsgAddDataSourceResponse, MsgRemoveDataSourceResponse, MsgUpdateDataSourceResponse, MsgAddDataUnionResponse, MsgRemoveDataUnionResponse, MsgUpdateDataUnionResponse, MsgAddDataSource, MsgRemoveDataSource, MsgUpdateDataSource, MsgAddDataUnion, MsgRemoveDataUnion, MsgUpdateDataUnion } from '..anconprotocol/data_union';
+import { MsgAddDataSourceResponse, MsgRemoveDataSourceResponse, MsgAddDataUnionResponse, MsgRemoveDataUnionResponse, MsgAddDataSource, MsgRemoveDataSource, MsgAddDataUnion, MsgRemoveDataUnion } from '../anconprotocol/data_union';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface MsgUpdateMetadataOwnership {
     hash: string;
@@ -35,6 +35,34 @@ export interface MsgAnchorCidResponse {
 }
 export interface MsgAnchorCidWithProofResponse {
     ok: boolean;
+}
+export interface MsgAddSchema {
+    creator: string;
+    did: string;
+    schema: Uint8Array;
+}
+export interface MsgAddSchemaResponse {
+    cid: string;
+}
+export interface MsgAddDataContract {
+    creator: string;
+    did: string;
+    data: Uint8Array;
+}
+export interface MsgAddDataContractResponse {
+    cid: string;
+}
+export interface MsgComputeDataContract {
+    creator: string;
+    did: string;
+    inputCid: string;
+    schemaCid: string;
+    toCid: string;
+    /** as hex */
+    jsonArguments: string;
+}
+export interface MsgComputeDataContractResponse {
+    cid: string;
 }
 export interface MsgUpdateMetadataOwnershipResponse {
     metadataRef: string;
@@ -415,6 +443,48 @@ export declare const MsgAnchorCidWithProofResponse: {
     toJSON(message: MsgAnchorCidWithProofResponse): unknown;
     fromPartial(object: DeepPartial<MsgAnchorCidWithProofResponse>): MsgAnchorCidWithProofResponse;
 };
+export declare const MsgAddSchema: {
+    encode(message: MsgAddSchema, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddSchema;
+    fromJSON(object: any): MsgAddSchema;
+    toJSON(message: MsgAddSchema): unknown;
+    fromPartial(object: DeepPartial<MsgAddSchema>): MsgAddSchema;
+};
+export declare const MsgAddSchemaResponse: {
+    encode(message: MsgAddSchemaResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddSchemaResponse;
+    fromJSON(object: any): MsgAddSchemaResponse;
+    toJSON(message: MsgAddSchemaResponse): unknown;
+    fromPartial(object: DeepPartial<MsgAddSchemaResponse>): MsgAddSchemaResponse;
+};
+export declare const MsgAddDataContract: {
+    encode(message: MsgAddDataContract, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddDataContract;
+    fromJSON(object: any): MsgAddDataContract;
+    toJSON(message: MsgAddDataContract): unknown;
+    fromPartial(object: DeepPartial<MsgAddDataContract>): MsgAddDataContract;
+};
+export declare const MsgAddDataContractResponse: {
+    encode(message: MsgAddDataContractResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgAddDataContractResponse;
+    fromJSON(object: any): MsgAddDataContractResponse;
+    toJSON(message: MsgAddDataContractResponse): unknown;
+    fromPartial(object: DeepPartial<MsgAddDataContractResponse>): MsgAddDataContractResponse;
+};
+export declare const MsgComputeDataContract: {
+    encode(message: MsgComputeDataContract, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgComputeDataContract;
+    fromJSON(object: any): MsgComputeDataContract;
+    toJSON(message: MsgComputeDataContract): unknown;
+    fromPartial(object: DeepPartial<MsgComputeDataContract>): MsgComputeDataContract;
+};
+export declare const MsgComputeDataContractResponse: {
+    encode(message: MsgComputeDataContractResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgComputeDataContractResponse;
+    fromJSON(object: any): MsgComputeDataContractResponse;
+    toJSON(message: MsgComputeDataContractResponse): unknown;
+    fromPartial(object: DeepPartial<MsgComputeDataContractResponse>): MsgComputeDataContractResponse;
+};
 export declare const MsgUpdateMetadataOwnershipResponse: {
     encode(message: MsgUpdateMetadataOwnershipResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgUpdateMetadataOwnershipResponse;
@@ -790,12 +860,13 @@ export declare const AguaclaraPacketData: {
 export interface Msg {
     AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>;
     AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>;
+    AddSchema(request: MsgAddSchema): Promise<MsgAddSchemaResponse>;
+    AddDataContract(request: MsgAddDataContract): Promise<MsgAddDataContractResponse>;
+    ComputeDataContract(request: MsgComputeDataContract): Promise<MsgComputeDataContractResponse>;
     AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>;
     RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>;
-    UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>;
     AddDataUnion(request: MsgAddDataUnion): Promise<MsgAddDataUnionResponse>;
     RemoveDataUnion(request: MsgRemoveDataUnion): Promise<MsgRemoveDataUnionResponse>;
-    UpdateDataUnion(request: MsgUpdateDataUnion): Promise<MsgUpdateDataUnionResponse>;
     /** Send cross chain message */
     SendMetadataOwnership(request: MsgSendMetadataOwnership): Promise<MsgSendMetadataOwnershipResponse>;
     /** CreateDid */
@@ -845,12 +916,13 @@ export declare class MsgClientImpl implements Msg {
     constructor(rpc: Rpc);
     AnchorCid(request: MsgAnchorCid): Promise<MsgAnchorCidResponse>;
     AnchorCidWithProof(request: MsgAnchorCidWithProof): Promise<MsgAnchorCidWithProofResponse>;
+    AddSchema(request: MsgAddSchema): Promise<MsgAddSchemaResponse>;
+    AddDataContract(request: MsgAddDataContract): Promise<MsgAddDataContractResponse>;
+    ComputeDataContract(request: MsgComputeDataContract): Promise<MsgComputeDataContractResponse>;
     AddDataSource(request: MsgAddDataSource): Promise<MsgAddDataSourceResponse>;
     RemoveDataSource(request: MsgRemoveDataSource): Promise<MsgRemoveDataSourceResponse>;
-    UpdateDataSource(request: MsgUpdateDataSource): Promise<MsgUpdateDataSourceResponse>;
     AddDataUnion(request: MsgAddDataUnion): Promise<MsgAddDataUnionResponse>;
     RemoveDataUnion(request: MsgRemoveDataUnion): Promise<MsgRemoveDataUnionResponse>;
-    UpdateDataUnion(request: MsgUpdateDataUnion): Promise<MsgUpdateDataUnionResponse>;
     SendMetadataOwnership(request: MsgSendMetadataOwnership): Promise<MsgSendMetadataOwnershipResponse>;
     CreateDid(request: MsgCreateDid): Promise<MsgCreateDidResponse>;
     UpdateDid(request: MsgUpdateDid): Promise<MsgUpdateDidResponse>;

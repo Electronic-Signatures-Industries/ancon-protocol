@@ -380,23 +380,6 @@ export default {
                 }
             }
         },
-        async sendMsgSwapWithinBatch({ rootGetters }, { value, fee = [], memo = '' }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgSwapWithinBatch(value);
-                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
-                        gas: "200000" }, memo });
-                return result;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Send', 'Could not broadcast Tx: ' + e.message);
-                }
-            }
-        },
         async sendMsgCreatePool({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -431,6 +414,23 @@ export default {
                 }
             }
         },
+        async sendMsgSwapWithinBatch({ rootGetters }, { value, fee = [], memo = '' }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgSwapWithinBatch(value);
+                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
+                        gas: "200000" }, memo });
+                return result;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Send', 'Could not broadcast Tx: ' + e.message);
+                }
+            }
+        },
         async MsgWithdrawWithinBatch({ rootGetters }, { value }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -443,21 +443,6 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgWithdrawWithinBatch:Create', 'Could not create message: ' + e.message);
-                }
-            }
-        },
-        async MsgSwapWithinBatch({ rootGetters }, { value }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgSwapWithinBatch(value);
-                return msg;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Create', 'Could not create message: ' + e.message);
                 }
             }
         },
@@ -488,6 +473,21 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgDepositWithinBatch:Create', 'Could not create message: ' + e.message);
+                }
+            }
+        },
+        async MsgSwapWithinBatch({ rootGetters }, { value }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgSwapWithinBatch(value);
+                return msg;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgSwapWithinBatch:Create', 'Could not create message: ' + e.message);
                 }
             }
         },

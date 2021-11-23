@@ -60,7 +60,6 @@ export interface MsgUpdateDataSource {
     anchors: number[];
 }
 export interface MsgUpdateDataSourceResponse {
-    ok: boolean;
     cid: string;
 }
 export interface MsgAddDataUnion {
@@ -81,6 +80,7 @@ export interface MsgUpdateDataUnion {
     name: string;
 }
 export interface MsgUpdateDataUnionResponse {
+    cid: string;
 }
 export declare const DataSource: {
     encode(message: DataSource, writer?: Writer): Writer;
@@ -188,11 +188,11 @@ export declare const MsgUpdateDataUnion: {
     fromPartial(object: DeepPartial<MsgUpdateDataUnion>): MsgUpdateDataUnion;
 };
 export declare const MsgUpdateDataUnionResponse: {
-    encode(_: MsgUpdateDataUnionResponse, writer?: Writer): Writer;
+    encode(message: MsgUpdateDataUnionResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgUpdateDataUnionResponse;
-    fromJSON(_: any): MsgUpdateDataUnionResponse;
-    toJSON(_: MsgUpdateDataUnionResponse): unknown;
-    fromPartial(_: DeepPartial<MsgUpdateDataUnionResponse>): MsgUpdateDataUnionResponse;
+    fromJSON(object: any): MsgUpdateDataUnionResponse;
+    toJSON(message: MsgUpdateDataUnionResponse): unknown;
+    fromPartial(object: DeepPartial<MsgUpdateDataUnionResponse>): MsgUpdateDataUnionResponse;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination'
-import { Owner, Collection, Denom, BaseNFT } from '..anconprotocol/nft'
+import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft'
 
 export const protobufPackage = 'ElectronicSignaturesIndustries.anconprotocol.anconprotocol'
 
@@ -16,6 +16,10 @@ export interface QuerySchemaStoreRequest {
 }
 
 export interface QuerySchemaStoreResponse {
+  data: Uint8Array
+}
+
+export interface QueryDidResponse {
   data: Uint8Array
 }
 
@@ -331,6 +335,59 @@ export const QuerySchemaStoreResponse = {
 
   fromPartial(object: DeepPartial<QuerySchemaStoreResponse>): QuerySchemaStoreResponse {
     const message = { ...baseQuerySchemaStoreResponse } as QuerySchemaStoreResponse
+    if (object.data !== undefined && object.data !== null) {
+      message.data = object.data
+    } else {
+      message.data = new Uint8Array()
+    }
+    return message
+  }
+}
+
+const baseQueryDidResponse: object = {}
+
+export const QueryDidResponse = {
+  encode(message: QueryDidResponse, writer: Writer = Writer.create()): Writer {
+    if (message.data.length !== 0) {
+      writer.uint32(10).bytes(message.data)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryDidResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryDidResponse } as QueryDidResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.data = reader.bytes()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryDidResponse {
+    const message = { ...baseQueryDidResponse } as QueryDidResponse
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data)
+    }
+    return message
+  },
+
+  toJSON(message: QueryDidResponse): unknown {
+    const obj: any = {}
+    message.data !== undefined && (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()))
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryDidResponse>): QueryDidResponse {
+    const message = { ...baseQueryDidResponse } as QueryDidResponse
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data
     } else {
@@ -2190,6 +2247,7 @@ export const PostSchemaResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
+  ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidResponse>
   /** ReadRoyaltyInfo */
   ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>
   /** Queries a list of resource items. */
@@ -2200,8 +2258,6 @@ export interface Query {
   IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>
   /** Queries a list of Attributes items. */
   GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>
-  /** Queries a list of resource items. */
-  Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
   /** Queries a list of delegates items. */
   ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse>
   /** Owner queries the NFTs of the specified owner */
@@ -2214,10 +2270,11 @@ export interface Query {
   Denoms(request: QueryDenomsRequest): Promise<QueryDenomsResponse>
   /** NFT queries the NFT for the given denom and token ID */
   GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>
-  ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>
-  GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>
+  GetDidKey(request: QueryGetDidRequest): Promise<QueryDidResponse>
   WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse>
   ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>
+  /** Queries a list of resource items. */
+  Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>
 }
 
 export class QueryClientImpl implements Query {
@@ -2225,6 +2282,12 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidResponse> {
+    const data = QueryDidWebRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ResolveDidWeb', data)
+    return promise.then((data) => QueryDidResponse.decode(new Reader(data)))
+  }
+
   ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse> {
     const data = QueryReadRoyaltyInfo.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadRoyaltyInfo', data)
@@ -2253,12 +2316,6 @@ export class QueryClientImpl implements Query {
     const data = QueryGetAttributesRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetAttributes', data)
     return promise.then((data) => QueryGetAttributesResponse.decode(new Reader(data)))
-  }
-
-  Resource(request: QueryResourceRequest): Promise<QueryResourceResponse> {
-    const data = QueryResourceRequest.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data)
-    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
   }
 
   ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse> {
@@ -2297,16 +2354,10 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryNFTResponse.decode(new Reader(data)))
   }
 
-  ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse> {
-    const data = QueryDidWebRequest.encode(request).finish()
-    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ResolveDidWeb', data)
-    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
-  }
-
-  GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse> {
+  GetDidKey(request: QueryGetDidRequest): Promise<QueryDidResponse> {
     const data = QueryGetDidRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'GetDidKey', data)
-    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
+    return promise.then((data) => QueryDidResponse.decode(new Reader(data)))
   }
 
   WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse> {
@@ -2319,6 +2370,12 @@ export class QueryClientImpl implements Query {
     const data = QuerySchemaStoreRequest.encode(request).finish()
     const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'ReadSchemaStoreResource', data)
     return promise.then((data) => QuerySchemaStoreResponse.decode(new Reader(data)))
+  }
+
+  Resource(request: QueryResourceRequest): Promise<QueryResourceResponse> {
+    const data = QueryResourceRequest.encode(request).finish()
+    const promise = this.rpc.request('ElectronicSignaturesIndustries.anconprotocol.anconprotocol.Query', 'Resource', data)
+    return promise.then((data) => QueryResourceResponse.decode(new Reader(data)))
   }
 }
 

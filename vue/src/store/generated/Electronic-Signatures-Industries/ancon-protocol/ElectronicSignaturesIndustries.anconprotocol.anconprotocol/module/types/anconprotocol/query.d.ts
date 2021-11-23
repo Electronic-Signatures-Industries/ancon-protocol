@@ -1,6 +1,6 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
-import { Owner, Collection, Denom, BaseNFT } from '..anconprotocol/nft';
+import { Owner, Collection, Denom, BaseNFT } from '../anconprotocol/nft';
 export declare const protobufPackage = "ElectronicSignaturesIndustries.anconprotocol.anconprotocol";
 export interface QueryDidWebRequest {
     name: string;
@@ -10,6 +10,9 @@ export interface QuerySchemaStoreRequest {
     path: string;
 }
 export interface QuerySchemaStoreResponse {
+    data: Uint8Array;
+}
+export interface QueryDidResponse {
     data: Uint8Array;
 }
 export interface QueryProofMetadataRequest {
@@ -148,6 +151,13 @@ export declare const QuerySchemaStoreResponse: {
     fromJSON(object: any): QuerySchemaStoreResponse;
     toJSON(message: QuerySchemaStoreResponse): unknown;
     fromPartial(object: DeepPartial<QuerySchemaStoreResponse>): QuerySchemaStoreResponse;
+};
+export declare const QueryDidResponse: {
+    encode(message: QueryDidResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryDidResponse;
+    fromJSON(object: any): QueryDidResponse;
+    toJSON(message: QueryDidResponse): unknown;
+    fromPartial(object: DeepPartial<QueryDidResponse>): QueryDidResponse;
 };
 export declare const QueryProofMetadataRequest: {
     encode(message: QueryProofMetadataRequest, writer?: Writer): Writer;
@@ -347,6 +357,7 @@ export declare const PostSchemaResponse: {
 };
 /** Query defines the gRPC querier service. */
 export interface Query {
+    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidResponse>;
     /** ReadRoyaltyInfo */
     ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>;
     /** Queries a list of resource items. */
@@ -357,8 +368,6 @@ export interface Query {
     IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
     /** Queries a list of Attributes items. */
     GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
-    /** Queries a list of resource items. */
-    Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     /** Queries a list of delegates items. */
     ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse>;
     /** Owner queries the NFTs of the specified owner */
@@ -371,30 +380,31 @@ export interface Query {
     Denoms(request: QueryDenomsRequest): Promise<QueryDenomsResponse>;
     /** NFT queries the NFT for the given denom and token ID */
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
-    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
-    GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    GetDidKey(request: QueryGetDidRequest): Promise<QueryDidResponse>;
     WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse>;
     ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
+    /** Queries a list of resource items. */
+    Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
+    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryDidResponse>;
     ReadRoyaltyInfo(request: QueryReadRoyaltyInfo): Promise<QueryReadRoyaltyInfoResponse>;
     ReadWithPath(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadMetadataProof(request: QueryProofMetadataRequest): Promise<QueryProofResponse>;
     IdentifyOwner(request: QueryIdentifyOwnerRequest): Promise<QueryIdentifyOwnerResponse>;
     GetAttributes(request: QueryGetAttributesRequest): Promise<QueryGetAttributesResponse>;
-    Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
     ReadDelegate(request: QueryGetDelegateRequest): Promise<QueryGetDelegateResponse>;
     Owner(request: QueryOwnerRequest): Promise<QueryOwnerResponse>;
     Collection(request: QueryCollectionRequest): Promise<QueryCollectionResponse>;
     Denom(request: QueryDenomRequest): Promise<QueryDenomResponse>;
     Denoms(request: QueryDenomsRequest): Promise<QueryDenomsResponse>;
     GetNft(request: QueryNFTRequest): Promise<QueryNFTResponse>;
-    ResolveDidWeb(request: QueryDidWebRequest): Promise<QueryResourceResponse>;
-    GetDidKey(request: QueryGetDidRequest): Promise<QueryResourceResponse>;
+    GetDidKey(request: QueryGetDidRequest): Promise<QueryDidResponse>;
     WriteSchemaStoreResource(request: PostSchemaRequest): Promise<PostSchemaResponse>;
     ReadSchemaStoreResource(request: QuerySchemaStoreRequest): Promise<QuerySchemaStoreResponse>;
+    Resource(request: QueryResourceRequest): Promise<QueryResourceResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
