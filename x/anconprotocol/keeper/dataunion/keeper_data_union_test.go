@@ -313,7 +313,7 @@ func Test_Compute_Data_Contract(t *testing.T) {
 
 	keeper.SetAnchor(ctx, res.Did, lnk.String(), lnk.String())
 
-	contract := ` payload.lastName`
+	contract := ` [payload.lastName, payload.firstName, inputs.say, did,  chain_id]`
 	contractCid, _ := keeper.ApplyDataContract(ctx, &types.MsgAddDataContract{
 		Creator: payload.Creator,
 		Did:     res.Did,

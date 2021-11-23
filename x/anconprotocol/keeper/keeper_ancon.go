@@ -21,7 +21,6 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/multiformats/go-multihash"
 	"github.com/qri-io/jsonschema"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -632,17 +631,18 @@ func (k Keeper) ApplySchema(ctx sdk.Context, msg *types.MsgAddSchema) (string, e
 
 func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs, sender, did, payload string) map[string]interface{} {
 
-	//	inputs, _ := json.Marshal((jsonArgs))
+	h, _ := json.Marshal(ctx.BlockHeader())
+	g, _ := json.Marshal(ctx.BlockGasMeter())
 	return map[string]interface{}{
-		//		"inputs":       inputs,
-		"sender": sender,
-		"did":    did,
-		// "gas_meter":    ctx.BlockGasMeter(),
-		// "chain_id":     ctx.ChainID(),
-		// "block_header": ctx.BlockHeader,
-		// "block_time":   ctx.BlockTime,
-		// "block_height": ctx.BlockHeight(),
-		"payload": FromJSON(payload),
+		"inputs":       FromJSON(jsonArgs),
+		"sender":       sender,
+		"did":          did,
+		"gas_meter":    FromJSON(string(g)),
+		"chain_id":     ctx.ChainID(),
+		"block_header": FromJSON(string(h)),
+		"block_time":   ctx.BlockTime,
+		"block_height": ctx.BlockHeight(),
+		"payload":      FromJSON(payload),
 	}
 
 }
@@ -650,12 +650,12 @@ func (k Keeper) GetDataContractGlobals(ctx sdk.Context, jsonArgs, sender, did, p
 func (k Keeper) GetDataContractEnvironment() *cel.Env {
 	env, _ := cel.NewEnv(
 		cel.Declarations(
-			// decls.NewVar("inputs", decls.Dyn),
-			// decls.NewVar("block_time", decls.Dyn),
-			// decls.NewVar("block_height", decls.Dyn),
-			// decls.NewVar("block_header", decls.Dyn),
-			// decls.NewVar("chain_id", decls.Dyn),
-			// decls.NewVar("gas_meter", decls.Dyn),
+			decls.NewVar("inputs", decls.Dyn),
+			decls.NewVar("block_time", decls.Dyn),
+			decls.NewVar("block_height", decls.Dyn),
+			decls.NewVar("block_header", decls.Dyn),
+			decls.NewVar("chain_id", decls.Dyn),
+			decls.NewVar("gas_meter", decls.Dyn),
 			decls.NewVar("sender", decls.Dyn),
 			decls.NewVar("did", decls.Dyn),
 			decls.NewVar("payload", decls.Dyn),
@@ -666,34 +666,32 @@ func (k Keeper) GetDataContractEnvironment() *cel.Env {
 }
 func (k Keeper) ApplyDataContract(ctx sdk.Context, msg *types.MsgAddDataContract) (string, error) {
 
-	ast, issues := k.GetDataContractEnvironment().Compile(string(msg.Data))
+	_, issues := k.GetDataContractEnvironment().Compile(string(msg.Data))
 	if issues != nil && issues.Err() != nil {
 		return "", fmt.Errorf("type-check error: %s", issues.Err())
 	}
-	temp, err := cel.AstToCheckedExpr(ast)
+	// temp, err := cel.AstToCheckedExpr(ast)
 
-	bz, err := proto.Marshal(temp)
-	if err != nil {
-		return "", fmt.Errorf("Marshal error", err)
-	}
+	// bz, err := proto.Marshal(temp)
+	// if err != nil {
+	// 	return "", fmt.Errorf("Marshal error", err)
+	// }
 
+	bz := msg.Data
 	lnk := CreateCidLink(bz)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("contracts"))
-	store.Set(lnk.Bytes(), bz)
+	store.Set([]byte(lnk.String()), bz)
 
-	return lnk.String(), err
+	return lnk.String(), nil
 }
 
-func (k Keeper) GetDataContract(ctx sdk.Context, hash string) (*expr.CheckedExpr, error) {
+func (k Keeper) GetDataContract(ctx sdk.Context, hash string) ([]byte, error) {
 
-	clink, err := ParseCidLink(hash)
+//	clink, err := ParseCidLink(hash)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte("contracts"))
-	s := store.Get([]byte(clink.String()))
-	exp := expr.CheckedExpr{}
+	s := store.Get([]byte(hash))
 
-	err = proto.Unmarshal([]byte(s), &exp)
-
-	return &exp, err
+	return s, nil
 }
 
 func (k Keeper) GetDataSchema(ctx sdk.Context, hash string) (*jsonschema.Schema, error) {
@@ -726,38 +724,42 @@ func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgCo
 
 	if k.HasAnchor(ctx, msg.Did, msg.InputCid) {
 		anch = k.GetAnchor(ctx, msg.Did, msg.InputCid)
+	} else {
+		return nil, fmt.Errorf("invalid anchor link")
+
 	}
 
 	lnk, err := ParseCidLink(string(anch))
 	if err != nil {
-		return nil, fmt.Errorf("Parse link error", err)
+		return nil, fmt.Errorf("parse anchor link error %v", err)
 	}
 
 	node, err := k.ReadOffchainJSON(ctx, "", lnk)
 	if err != nil {
-		return nil, fmt.Errorf("Read JSON  error", err)
+		return nil, fmt.Errorf("read trusted anchor JSON  error %v", err)
 	}
 
 	schema, err := k.GetDataSchema(ctx, msg.SchemaCid)
 	if err != nil {
-		return nil, fmt.Errorf("Get schema error", err)
+		return nil, fmt.Errorf("get schema error %v", err)
 	}
 
 	_, err = schema.ValidateBytes(ctx.Context(), []byte(node))
 
 	if err != nil {
-		return nil, fmt.Errorf("Validate bytes error", err)
+		return nil, fmt.Errorf("validate payload error %v", err)
 	}
 
 	dataContr, err := k.GetDataContract(ctx, msg.ToCid)
 	if err != nil {
-		return nil, fmt.Errorf("Get contract error", dataContr)
+		return nil, fmt.Errorf("get contract error", dataContr)
 	}
 
-	ast, issues := k.GetDataContractEnvironment().Compile(` payload.lastName`)
+	ast, issues := k.GetDataContractEnvironment().Compile(string(dataContr))
+
 	if len(issues.Errors()) > 0 {
 
-		return nil, fmt.Errorf("issues %v", issues.Errors())
+		return nil, fmt.Errorf("reverted %v", issues.Errors())
 	}
 
 	prog, err := k.GetDataContractEnvironment().Program(ast)
@@ -768,12 +770,12 @@ func (k Keeper) ExecuteDataContractTransaction(ctx sdk.Context, msg *types.MsgCo
 		k.GetDataContractGlobals(ctx, (msg.JsonArguments), msg.Creator, msg.Did, node),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("Eval node error", err)
+		return nil, fmt.Errorf("eval node error", err)
 	}
 
 	clink, err := k.AddOffchainJSON(ctx, "", ValueToJSON(out))
 	if err != nil {
-		return nil, fmt.Errorf("Offchain JSON error", err)
+		return nil, fmt.Errorf("save offchain JSON error", err)
 	}
 
 	return clink, nil
