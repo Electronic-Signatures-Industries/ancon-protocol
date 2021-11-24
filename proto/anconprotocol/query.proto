@@ -6,8 +6,10 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 
 
-import "google/api/annotations.proto";
 import "anconprotocol/nft.proto";
+import "google/api/httpbody.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types";
@@ -83,13 +85,17 @@ service Query {
 		option (google.api.http).get = "/didregistry/{hashcid}";
 	}
 
-	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (PostSchemaResponse) {
-		option (google.api.http) ={
-			post: "/schemastore",
-			body: "*"
+	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (google.api.HttpBody) {
+		option (google.api.http) = {
+			post: "/add"
 		};
 	}
-
+	rpc Download(google.protobuf.Empty) returns (stream google.api.HttpBody) {
+		option (google.api.http) = {
+			get: "/get"
+		};
+	}
+	
 	rpc ReadSchemaStoreResource(QuerySchemaStoreRequest) returns (QuerySchemaStoreResponse) {
 		option (google.api.http).get = "/schemastore/{cid}/{path}";
 	}

@@ -20,7 +20,9 @@ import (
 )
 
 var (
-	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"schemastore"}, "", runtime.AssumeColonVerbOpt(true)))
+	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"add"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	Download = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"get"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadSchemaStoreResourceQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"schemastore", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
 
@@ -237,6 +239,8 @@ func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QueryS
 	}, nil
 }
 
+// WriteSchemaStoreResource(context.Context, *emptypb.Empty) (*httpbody.HttpBody, error)
+// Download(*emptypb.Empty, Query_DownloadServer) error
 func writeSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.PostSchemaRequest
 	var metadata runtime.ServerMetadata
@@ -249,23 +253,6 @@ func writeSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client t
 func (k Keeper) WriteSchemaStoreResource(goCtx context.Context, msg *types.PostSchemaRequest) (*types.PostSchemaResponse, error) {
 	if msg == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	// validate
-	if len(msg.Codec) < 1 {
-		return nil, status.Error(codes.InvalidArgument, "missing codec")
-	}
-	if len(msg.Data) < 1 {
-		return nil, status.Error(codes.InvalidArgument, "missing data")
-	}
-	if len(msg.Did) < 1 {
-		return nil, status.Error(codes.InvalidArgument, "missing did")
-	}
-	if len(msg.Path) < 1 {
-		return nil, status.Error(codes.InvalidArgument, "missing path")
-	}
-	if len(msg.Codec) < 1 {
-		return nil, status.Error(codes.InvalidArgument, "missing codec")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
