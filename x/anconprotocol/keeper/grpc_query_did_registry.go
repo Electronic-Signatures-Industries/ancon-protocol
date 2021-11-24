@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"net/http"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -244,7 +245,20 @@ func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QueryS
 func writeSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.PostSchemaRequest
 	var metadata runtime.ServerMetadata
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
+	protoReq.Codec = req.PostForm.Get("codec")
+	d, err := base64.StdEncoding.DecodeString(req.PostForm.Get("data"))
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	protoReq.Data = d
+	protoReq.Did = req.PostForm.Get("did")
+	protoReq.Path = req.PostForm.Get("path")
+	// protoReq.IsJsonSchema = req.PostForm.Get("codec")
 	msg, err := client.WriteSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 

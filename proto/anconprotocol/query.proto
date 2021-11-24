@@ -266,7 +266,6 @@ message PostSchemaRequest {
 	string path = 2;
 	bytes data = 3;
 	string codec = 4;
-	bool isJsonSchema = 5;	
 }
 
 message PostSchemaResponse{
