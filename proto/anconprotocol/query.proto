@@ -90,11 +90,11 @@ service Query {
 			post: "/add"
 		};
 	}
-	rpc Download(google.protobuf.Empty) returns (stream google.api.HttpBody) {
-		option (google.api.http) = {
-			get: "/get"
-		};
-	}
+	// rpc Download(google.protobuf.Empty) returns (stream google.api.HttpBody) {
+	// 	option (google.api.http) = {
+	// 		get: "/get"
+	// 	};
+	// }
 	
 	rpc ReadSchemaStoreResource(QuerySchemaStoreRequest) returns (QuerySchemaStoreResponse) {
 		option (google.api.http).get = "/schemastore/{cid}/{path}";
