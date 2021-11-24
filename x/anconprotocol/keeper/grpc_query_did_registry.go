@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"add"}, "", runtime.AssumeColonVerbOpt(true)))
+	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"schemastore"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	Download = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"get"}, "", runtime.AssumeColonVerbOpt(true)))
 

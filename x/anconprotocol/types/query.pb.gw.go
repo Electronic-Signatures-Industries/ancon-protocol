@@ -1754,7 +1754,7 @@ var (
 
 	pattern_Query_GetDidKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"didregistry", "hashcid"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_WriteSchemaStoreResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"add"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_WriteSchemaStoreResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"schemastore"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_ReadSchemaStoreResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"schemastore", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
 

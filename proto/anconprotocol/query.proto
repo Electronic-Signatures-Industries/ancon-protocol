@@ -85,9 +85,9 @@ service Query {
 		option (google.api.http).get = "/didregistry/{hashcid}";
 	}
 
-	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (google.api.HttpBody) {
+	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (PostSchemaResponse) {
 		option (google.api.http) = {
-			post: "/add"
+			post: "/schemastore"
 		};
 	}
 	// rpc Download(google.protobuf.Empty) returns (stream google.api.HttpBody) {
