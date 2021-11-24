@@ -16,11 +16,6 @@ option go_package = "github.com/Electronic-Signatures-Industries/ancon-protocol/
 
 // Query defines the gRPC querier service.
 service Query {
-	// // ReadRoyaltyInfo
-	// rpc ReadRoyaltyInfo(QueryReadRoyaltyInfo) returns (QueryReadRoyaltyInfoResponse) {
-	// 	option (google.api.http).get = "/ancon/royalty/{cid}/{price}";
-	// }
-
 	rpc ResolveDidWeb(QueryDidWebRequest) returns (QueryDidResponse) {
 		option (google.api.http).get = "/user/{name}/did.json";
 	}
@@ -83,21 +78,6 @@ service Query {
 
 	rpc GetDidKey(QueryGetDidRequest) returns (QueryDidResponse) {
 		option (google.api.http).get = "/didregistry/{hashcid}";
-	}
-
-	rpc WriteSchemaStoreResource(PostSchemaRequest) returns (PostSchemaResponse) {
-		option (google.api.http) = {
-			post: "/schemastore"
-		};
-	}
-	// rpc Download(google.protobuf.Empty) returns (stream google.api.HttpBody) {
-	// 	option (google.api.http) = {
-	// 		get: "/get"
-	// 	};
-	// }
-	
-	rpc ReadSchemaStoreResource(QuerySchemaStoreRequest) returns (QuerySchemaStoreResponse) {
-		option (google.api.http).get = "/schemastore/{cid}/{path}";
 	}
 
 	// Queries a list of resource items.

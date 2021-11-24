@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"net/http"
 
 	"github.com/Electronic-Signatures-Industries/ancon-protocol/x/anconprotocol/types"
@@ -11,9 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/hyperledger/aries-framework-go/pkg/doc/did"
-	"github.com/ipfs/go-graphsync/ipldutil"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/tendermint/tendermint/rpc/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -21,12 +18,6 @@ import (
 )
 
 var (
-	WriteSchemaStoreResource = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"schemastore"}, "", runtime.AssumeColonVerbOpt(true)))
-
-	Download = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"get"}, "", runtime.AssumeColonVerbOpt(true)))
-
-	ReadSchemaStoreResourceQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"schemastore", "cid", "path"}, "", runtime.AssumeColonVerbOpt(true)))
-
 	ReadDidKeyQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"didregistry", "hashcid"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	ReadResolveDidWebQuery = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"user", "name", "did.json"}, "", runtime.AssumeColonVerbOpt(true)))
@@ -46,33 +37,9 @@ func RegisterQueryDidRegistryHandler(ctx context.Context, mux *runtime.ServeMux,
 
 	mux.Handle("GET", ReadDidKeyQuery, wrapRawJsonResult(ctx, mux, client, readDidKey))
 	mux.Handle("GET", ReadResolveDidWebQuery, wrapRawJsonResult(ctx, mux, client, readResolveWeb))
-	mux.Handle("GET", ReadSchemaStoreResourceQuery, wrapSchemaStoreResult(ctx, mux, client, readSchemaStore))
-
-	// Durin that initiates trusted offchain calls
-	mux.Handle("POST", WriteSchemaStoreResource, wrapPostResult(ctx, mux, client, writeSchemaStore))
-	// mux.Handle("POST", "/files", handleBinaryFileUpload)
 	return nil
 }
 
-// func handleBinaryFileUpload(w http.ResponseWriter, r *http.Request, params map[string]string) {
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		http.Error(w, fmt.Sprintf("failed to parse form: %s", err.Error()), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	f, header, err := r.FormFile("attachment")
-// 	if err != nil {
-// 		http.Error(w, fmt.Sprintf("failed to get file 'attachment': %s", err.Error()), http.StatusBadRequest)
-// 		return
-// 	}
-// 	defer f.Close()
-
-// 	//
-// 	// Now do something with the io.Reader in `f`, i.e. read it into a buffer or stream it to a gRPC client side stream.
-// 	// Also `header` will contain the filename, size etc of the original file.
-// 	//
-// }
 func readIdentifyOwner(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq types.QueryIdentifyOwnerRequest
 	var metadata runtime.ServerMetadata
@@ -201,91 +168,6 @@ func readDidKey(ctx context.Context, marshaler runtime.Marshaler, client types.Q
 	msg, err := client.GetDidKey(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
-}
-
-func readSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq types.QuerySchemaStoreRequest
-	var metadata runtime.ServerMetadata
-
-	msg, err := client.ReadSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func (k Keeper) ReadSchemaStoreResource(goCtx context.Context, req *types.QuerySchemaStoreRequest) (*types.QuerySchemaStoreResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	link, err := ParseCidLink(req.Cid)
-
-	if err != nil {
-		return nil, err
-	}
-
-	node, err := k.ReadAnyFromOffchainJSONStore(ctx, req.Path, link)
-
-	if err != nil {
-		return nil, err
-	}
-
-	bz, err := ipldutil.EncodeNode(node)
-	if err != nil {
-		return nil, err
-	}
-	return &types.QuerySchemaStoreResponse{
-		Data: bz,
-	}, nil
-}
-
-// WriteSchemaStoreResource(context.Context, *emptypb.Empty) (*httpbody.HttpBody, error)
-// Download(*emptypb.Empty, Query_DownloadServer) error
-func writeSchemaStore(ctx context.Context, marshaler runtime.Marshaler, client types.QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq types.PostSchemaRequest
-	var metadata runtime.ServerMetadata
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	protoReq.Codec = req.PostForm.Get("codec")
-	d, err := base64.StdEncoding.DecodeString(req.PostForm.Get("data"))
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	protoReq.Data = d
-	protoReq.Did = req.PostForm.Get("did")
-	protoReq.Path = req.PostForm.Get("path")
-	// protoReq.IsJsonSchema = req.PostForm.Get("codec")
-	msg, err := client.WriteSchemaStoreResource(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func (k Keeper) WriteSchemaStoreResource(goCtx context.Context, msg *types.PostSchemaRequest) (*types.PostSchemaResponse, error) {
-	if msg == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var err error
-	var lnk datamodel.Link
-	switch msg.Codec {
-	case "dag-cbor":
-		lnk, err = k.AddOffchainCBOR(ctx, msg.Path, (msg.Data))
-	default:
-		lnk, err = k.AddOffchainJSON(ctx, msg.Path, string(msg.Data))
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.PostSchemaResponse{
-		Cid: lnk.String(),
-	}, nil
 }
 
 func (k Keeper) GetAttributes(goCtx context.Context, req *types.QueryGetAttributesRequest) (*types.QueryGetAttributesResponse, error) {
