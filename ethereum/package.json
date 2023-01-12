@@ -25,7 +25,7 @@
         "@poanet/solidity-flattener": "^3.0.6",
         "@truffle/hdwallet-provider": "1.2.3",
         "class-transformer": "^0.3.2",
-        "class-validator": "^0.13.1",
+        "class-validator": "^0.14.0",
         "dag-jose": "^0.3.0",
         "did-jwt": "^4.8.1",
         "did-jwt-vc": "^1.0.7",
