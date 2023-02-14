@@ -16,10 +16,10 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hyperledger/aries-framework-go v0.1.7
 	github.com/improbable-eng/grpc-web v0.14.1
-	github.com/ipfs/go-cid v0.1.0
-	github.com/ipld/go-ipld-prime v0.14.0
+	github.com/ipfs/go-cid v0.3.2
+	github.com/ipld/go-ipld-prime v0.19.0
 	github.com/multiformats/go-multibase v0.0.3
-	github.com/multiformats/go-multicodec v0.3.0
+	github.com/multiformats/go-multicodec v0.6.0
 	github.com/prometheus/procfs v0.7.0 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
@@ -57,7 +57,7 @@ require (
 	github.com/libp2p/go-libp2p-kad-dht v0.13.1
 	github.com/libp2p/go-libp2p-noise v0.2.0
 	github.com/libp2p/go-libp2p-routing v0.1.0
-	github.com/multiformats/go-multihash v0.1.0
+	github.com/multiformats/go-multihash v0.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/qri-io/jsonschema v0.2.1
 	github.com/spf13/pflag v1.0.5
